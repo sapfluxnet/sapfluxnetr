@@ -10,7 +10,8 @@ Main class for storing sapfluxnet project site data and metadata
 }
 \details{
 This class allows to store all the data and metadata for a sapfluxnet site
-in one single object, to easily work with it.
+in one single object, to easily work with it. See
+\code{vignette('sfn_data_classes', package = 'sapfluxnetr')} for more info.
 }
 \section{Slots}{
 

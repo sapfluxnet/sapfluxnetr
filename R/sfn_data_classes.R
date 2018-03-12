@@ -1,9 +1,13 @@
+#### sfn_data classes definitions ####
+
+##### sfn_data #################################################################
 #' S4 class for sapfluxnet site data
 #'
 #' Main class for storing sapfluxnet project site data and metadata
 #'
 #' This class allows to store all the data and metadata for a sapfluxnet site
-#' in one single object, to easily work with it.
+#' in one single object, to easily work with it. See
+#' \code{vignette('sfn_data_classes', package = 'sapfluxnetr')} for more info.
 #'
 #' @slot sapf_data A data frame with the sapf data
 #'
@@ -56,6 +60,7 @@ sfn_data <- setClass(
   )
 )
 
+##### sfn_data_multi ###########################################################
 #' S4 class for sapfluxnet multi-site data
 #'
 #' Multi sfn data class, derived from list
