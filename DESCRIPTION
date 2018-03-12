@@ -1,9 +1,9 @@
 Package: sapfluxnetr
-Title: What the Package Does (one line, title case)
+Title: Working with SAPFLUXNET Project data
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: person("Víctor", "Granda", email = "victorgrandagarcia@gmail.com", role = c("aut", "cre"))
+Description: Download, aggregate and select data from SAPFLUXNET Project.
 Depends: R (>= 3.4.3)
-License: What license is it under?
+License: MIT
 Encoding: UTF-8
 LazyData: true
