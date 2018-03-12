@@ -82,6 +82,11 @@ setValidity(
       info <- c(info, 'TIMESTAMP must be of length >= 1')
     }
 
+    if (length(slot(object, "solar_timestamp")) < 1) {
+      valid <- FALSE
+      info <- c(info, 'solar TIMESTAMP must be of length >= 1')
+    }
+
     # check for si_code presence
     if (length(slot(object, "si_code")) != 1) {
       valid <- FALSE
@@ -118,7 +123,7 @@ setValidity(
 
     # check if all are sfn_data
     if (
-      object %>%
+      slot(object, ".Data") %>%
         purrr::map_lgl(is(.x, 'sfn_data')) %>%
         all()
     ) {
@@ -132,5 +137,80 @@ setValidity(
     if (valid) {
       return(TRUE)
     } else {return(info)}
+  }
+)
+
+#### sfn_data show #############################################################
+#' Show method for sfn_data
+#'
+#' print a summary for sfn_data objects
+#'
+#' @param object sfn_data object to show
+#'
+#' @name sfn_data_show
+#'
+#' @importFrom dplyr %>%
+#'
+#' @export
+
+setMethod(
+  "show", "sfn_data",
+  definition = function(object) {
+    # object class
+    cat(class(object), " object\n", sep = "")
+    # site code
+    cat("Data from ", unique(slot(object, 'si_code')), " site/s\n\n", sep = "")
+    # number of trees
+    cat("Sapflow data: ", nrow(slot(object, "sapf_data")), " observations of ",
+        length(names(slot(object, "sapf_data"))), " trees/plants\n\n")
+    # env_vars
+    cat("Environmental data: ", nrow(slot(object, "env_data")), " observations.\n",
+        "Env vars: ", paste(names(slot(object, "env_data"))), "\n\n")
+    # timestamp span
+    cat("TIMESTAMP span, from ", as.character(head(slot(object, 'timestamp'), 1)),
+        "to ", as.character(tail(slot(object, 'timestamp'), 1)), "\n\n")
+
+    # solar_timestamp
+    cat("Solar TIMESTAMP available: ", !all(is.na(slot(object, 'solar_timestamp'))),
+        "\n\n")
+
+    # sapf_flags
+    unique_sapf_flags <- slot(object, 'sapf_flags') %>%
+      purrr::map(~ stringr::str_split(.x, '; ')) %>%
+      purrr::map(flatten_chr) %>%
+      purrr::flatten_chr() %>%
+      unique()
+
+    sapf_flags_table <- unique_sapf_flags[unique_sapf_flags != ''] %>%
+      purrr::map(~ stringr::str_count(as.matrix(slot(object, "sapf_flags")), .x)) %>%
+      purrr::map(sum) %>%
+      purrr::flatten_int()
+    names(sapf_flags_table) <- unique_sapf_flags[unique_sapf_flags != '']
+
+    cat("Sapflow data flags:\n")
+    if (length(sapf_flags_table)) {
+      print(sort(sapf_flags_table))
+    } else {cat("No flags present")}
+    cat("\n")
+
+    # env_flags
+    unique_env_flags <- slot(object, 'env_flags') %>%
+      purrr::map(~ stringr::str_split(.x, '; ')) %>%
+      purrr::map(flatten_chr) %>%
+      purrr::flatten_chr() %>%
+      unique()
+
+    env_flags_table <- unique_env_flags[unique_env_flags != ''] %>%
+      purrr::map(~ stringr::str_count(as.matrix(slot(object, "env_flags")), .x)) %>%
+      purrr::map(sum) %>%
+      purrr::flatten_int()
+    names(env_flags_table) <- unique_env_flags[unique_env_flags != '']
+
+    cat("Sapflow data flags:\n")
+    if (length(env_flags_table)) {
+      print(sort(env_flags_table))
+    } else {cat("No flags present")}
+    cat("\n")
+
   }
 )
