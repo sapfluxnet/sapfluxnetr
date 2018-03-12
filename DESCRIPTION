@@ -7,3 +7,7 @@ Depends: R (>= 3.4.3)
 License: MIT
 Encoding: UTF-8
 LazyData: true
+Imports:
+    tibbletime,
+    tidyverse
+RoxygenNote: 6.0.1
