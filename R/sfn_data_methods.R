@@ -214,3 +214,32 @@ setMethod(
 
   }
 )
+
+#### sfn_data_multi show #############################################################
+#' Show method for sfn_data_multi
+#'
+#' print a summary for sfn_data_multi objects
+#'
+#' @param object sfn_data_multi object to show
+#'
+#' @name sfn_data_multi_show
+#'
+#' @export
+
+setMethod(
+  'show', 'sfn_data_multi',
+  definition = function(object) {
+
+    # class
+    cat(class(object), " object\n", sep = "")
+
+    # so what, what can be here?
+    # 1. a list with max 6 site codes
+    if (length(object) > 6) {
+      cat(length(object), " sites: ", names(object)[1:6], " ...\n", sep = '')
+    } else {
+      cat(length(object), " sites: ", names(object)[1:6], "\n", sep = '')
+    }
+  }
+)
+
