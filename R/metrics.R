@@ -145,3 +145,6 @@ sfn_metrics <- function(
   res <- dplyr::bind_cols(period_summary, predawn_summary, midday_summary)
   return(res)
 }
+
+## TODO ahora toca el resto de high level functions para las metricas (daily,
+## solo predawn, este tipo de cosas)
