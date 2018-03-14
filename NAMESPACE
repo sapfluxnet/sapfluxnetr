@@ -2,6 +2,7 @@
 
 export(sfn_data)
 export(sfn_data_multi)
+export(sfn_metrics)
 exportClasses(sfn_data)
 exportClasses(sfn_data_multi)
 exportMethods(show)

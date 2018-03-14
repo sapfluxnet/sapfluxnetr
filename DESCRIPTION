@@ -8,6 +8,7 @@ License: MIT
 Encoding: UTF-8
 LazyData: true
 Imports:
+    lubridate,
     tibbletime,
     tidyverse
 RoxygenNote: 6.0.1
