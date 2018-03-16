@@ -43,3 +43,6 @@ get_env_md(object, ...)
 \description{
 Generics for getting the info in the slots of SfnData
 }
+\details{
+see \code{\link{sfn_get_methods}} for more info
+}

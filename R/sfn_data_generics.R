@@ -2,6 +2,8 @@
 #'
 #' Generics for getting the info in the slots of SfnData
 #'
+#' see \code{\link{sfn_get_methods}} for more info
+#'
 #' @name sfn_get_generics
 #' @include sfn_data_classes.R
 NULL
@@ -117,6 +119,8 @@ setGeneric(
 #' Replacement generics
 #'
 #' Generic functions for replacement functions for SfnData
+#'
+#' see \code{\link{sfn_replacement_methods}} for more info
 #'
 #' @name sfn_replacement_generics
 NULL

@@ -43,3 +43,6 @@ get_env_md(object) <- value
 \description{
 Generic functions for replacement functions for SfnData
 }
+\details{
+see \code{\link{sfn_replacement_methods}} for more info
+}

@@ -264,10 +264,414 @@ setMethod(
 #'
 #' @param object Object of class sfn_data from which data is retrieved
 #'
-#' @param solar Logical indicating if the timestamp to return in the get_sapf,
-#'   get_env, get_sapf_flags and get_env_flags methods
+#' @param solar Logical indicating if the timestamp to return in the \code{get_sapf},
+#'   \code{get_env}, \code{get_sapf_flags} and \code{get_env_flags} methods is
+#'   the solarTIMESTAMP (TRUE) or the contributors provided TIMESTAMP (FALSE)
+#'
+#' @examples
+#' data('FOO', pkg = 'sapfluxnetr')
+#' sapf_data <- get_sapf(FOO, solar = TRUE)
+#' env_data_no_solar <- get_env(FOO, solar = FALSE)
+#' plant_md <- get_plant_md(FOO)
+#'
+#' # dplyr pipe to get the mean dbh for a site
+#' FOO %>%
+#'   get_plant_md() %>%
+#'   summarise(dbh_mean = mean(dbh, na.rm = TRUE)) %>%
+#'   pull(dbh_mean)
 #'
 #' @name sfn_get_methods
 #' @include sfn_data_classes.R sfn_data_generics.R
 NULL
 
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_sapf", "sfn_data",
+  function(object, solar = FALSE) {
+    # data
+    .sapf <- slot(object, "sapf_data")
+
+    # timestamp
+    if (solar) {
+      TIMESTAMP <- slot(object, "solar_timestamp")
+    } else {
+      TIMESTAMP <- slot(object, "timestamp")
+    }
+
+    # combining both
+    res <- cbind(TIMESTAMP, .sapf)
+
+    # return
+    return(res)
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_env", "sfn_data",
+  function(object, solar = FALSE) {
+    # data
+    .env <- slot(object, "env_data")
+
+    # timestamp
+    if (solar) {
+      TIMESTAMP <- slot(object, "solar_timestamp")
+    } else {
+      TIMESTAMP <- slot(object, "timestamp")
+    }
+
+    # combining both
+    res <- cbind(TIMESTAMP, .env)
+
+    # return
+    return(res)
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_sapf_flags", "sfn_data",
+  function(object, solar = FALSE) {
+    .sapf_flags <- slot(object, "sapf_flags")
+
+    # timestamp
+    if (solar) {
+      TIMESTAMP <- slot(object, "solar_timestamp")
+    } else {
+      TIMESTAMP <- slot(object, "timestamp")
+    }
+
+    # combining both
+    res <- cbind(TIMESTAMP, .sapf_flags)
+
+    # return
+    return(res)
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_env_flags", "sfn_data",
+  function(object, solar = FALSE) {
+    .env_flags <- slot(object, "env_flags")
+
+    # timestamp
+    if (solar) {
+      TIMESTAMP <- slot(object, "solar_timestamp")
+    } else {
+      TIMESTAMP <- slot(object, "timestamp")
+    }
+
+    # combining both
+    res <- cbind(TIMESTAMP, .env_flags)
+
+    # return
+    return(res)
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_timestamp", "sfn_data",
+  function(object) {
+    slot(object, "timestamp")
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_solar_timestamp", "sfn_data",
+  function(object) {
+    slot(object, "solar_timestamp")
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_si_code", "sfn_data",
+  function(object) {
+    slot(object, "si_code")
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_site_md", "sfn_data",
+  function(object) {
+    slot(object, "site_md")
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_stand_md", "sfn_data",
+  function(object) {
+    slot(object, "stand_md")
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_species_md", "sfn_data",
+  function(object) {
+    slot(object, "species_md")
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_plant_md", "sfn_data",
+  function(object) {
+    slot(object, "plant_md")
+  }
+)
+
+#' @rdname sfn_get_methods
+#' @export
+setMethod(
+  "get_env_md", "sfn_data",
+  function(object) {
+    slot(object, "env_md")
+  }
+)
+
+#### sfn_data replacement methods ######################################################
+#' sfn_data replacement methods
+#'
+#' Methods to replace the data and metadata from the sfn_data class slots
+#'
+#' The replacement object must be a valid object for that slot:
+#' \itemize{
+#'   \item{For \code{get_sapf}, \code{get_env}, \code{get_sapf_flags} and
+#'         \code{get_env_flags} a data.frame or tibble without the TIMESTAMP
+#'         variable}
+#'   \item{For \code{get_*_md} a data.frame or tibble}
+#'   \item{For \code{get_timestamp} and \code{get_solar_timestamp} a POSIXct
+#'         vector of length == nrow(sapf/env_data)}
+#'   \item{For \code{get_si_code} a character vector}
+#' }
+#' Validity is automatically checked before modifing the sfn_data object, and
+#' an error is raised if not valid
+#'
+#' @examples
+#' data('FOO', pkg = 'sapfluxnetr')
+#' sapf_data <- get_sapf(FOO, solar = TRUE)
+#' sapf_data[1:10, 2] <- NA
+#' get_sapf(FOO) <- sapf_data
+#'
+#' @name sfn_replacement_methods
+NULL
+
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_sapf", "sfn_data",
+  function(object, value) {
+    slot(object, "sapf_data") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_env", "sfn_data",
+  function(object, value) {
+    slot(object, "env_data") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_sapf_flags", "sfn_data",
+  function(object, value) {
+    slot(object, "sapf_flags") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_env_flags", "sfn_data",
+  function(object, value) {
+    slot(object, "env_flags") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_timestamp", "sfn_data",
+  function(object, value) {
+    slot(object, "timestamp") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_solar_timestamp", "sfn_data",
+  function(object, value) {
+    slot(object, "solar_timestamp") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_si_code", "sfn_data",
+  function(object, value) {
+    slot(object, "si_code") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_site_md", "sfn_data",
+  function(object, value) {
+    slot(object, "site_md") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_stand_md", "sfn_data",
+  function(object, value) {
+    slot(object, "stand_md") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_species_md", "sfn_data",
+  function(object, value) {
+    slot(object, "species_md") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_plant_md", "sfn_data",
+  function(object, value) {
+    slot(object, "plant_md") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
+
+#' @export
+#' @rdname sfn_replacement_methods
+setReplaceMethod(
+  "get_env_md", "sfn_data",
+  function(object, value) {
+    slot(object, "env_md") <- value
+
+    # check validity before return the object, we don't want a messy object
+    validity <- try(validObject(object))
+    if (is(validity, "try-error")) {
+      stop('new data is not valid: ', validity[1])
+    }
+
+    return(object)
+  }
+)
