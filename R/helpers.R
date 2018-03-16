@@ -29,4 +29,63 @@ period_summaries <- function(sfn_data, period, .funs, ...) {
   return(res)
 }
 
-#' getting the formals (arguments and their default value)
+#' data coverage
+#'
+#' helper for sfn_metrics
+#'
+#' This helper function calculates the coverage percentage in a vector, and is
+#' designed to be used inside a dplyr summarise statement.
+#'
+#' @param x a vector, usually a variable in the sapflow or environmental data.
+#'
+#' @return a single value (numeric) with the percentage of coverage for that
+#'   variable
+#'
+#' @examples
+#' library(dplyr)
+#' iris %>%
+#'   group_by(Species)
+#'   summarise_all(data_coverage) # 100 for all variables
+#'
+#' @export
+
+data_coverage <- function(x) {
+  (sum(!is.na(x)) / length(x)) * 100
+}
+
+#' time at maximum/minimum
+#'
+#' helper for sfn_metrics
+#'
+#' This helper functions return the TIMESTAMP value at which the maximum value
+#' occurs. It is designed to be used inside a dplyr summarise statement.
+#'
+#' @param x a numeric vector, usually a variable in the sapflow or environmental
+#'   data.
+#'
+#' @param time a POSIXct or character vector with the TIMESTAMP
+#'
+#' @return a single value (character) with the TIMESTAMP value.
+#'
+#' @examples
+#' library(dplyr)
+#' storms %>%
+#'   group_by(year) %>%
+#'   summarise(wind_max = max(wind),
+#'             hour_at_max = max_time(wind, time = hour),
+#'             wind_min = min(wind),
+#'             hour_at_min = min_time(wind, time = hour))
+#'
+#' @export
+
+max_time <- function(x, time) {
+  time[which.max(x)]
+}
+
+#' @describeIn max_time helper for sfn_metrics
+#'
+#' @export
+
+min_time <- function(x, time) {
+  time[which.min(x)]
+}

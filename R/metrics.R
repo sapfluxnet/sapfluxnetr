@@ -190,6 +190,7 @@ daily_metrics <- function(
     .funs <- dplyr::funs(
       mean, dplyr::n, quantile, data_coverage, max, min, max_time, min_time
     )
+    dots <- c(dots, quo(time := TIMESTAMP))
   }
 
   # just input all in the sfn_function
@@ -250,6 +251,7 @@ monthly_metrics <- function(
     .funs <- dplyr::funs(
       mean, dplyr::n, quantile, data_coverage, max, min, max_time, min_time
     )
+    dots <- c(dots, quo(time := TIMESTAMP))
   }
 
   # just input all in the sfn_metrics function
