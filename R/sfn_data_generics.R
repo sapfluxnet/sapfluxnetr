@@ -3,7 +3,7 @@
 #' Generics for getting the info in the slots of SfnData
 #'
 #' @name sfn_get_generics
-#' @include SfnData_class.R
+#' @include sfn_data_classes.R
 NULL
 
 #' @rdname sfn_get_generics

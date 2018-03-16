@@ -268,6 +268,6 @@ setMethod(
 #'   get_env, get_sapf_flags and get_env_flags methods
 #'
 #' @name sfn_get_methods
-#' @include sfn_data_class.R sfn_data_generics.R
+#' @include sfn_data_classes.R sfn_data_generics.R
 NULL
 

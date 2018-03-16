@@ -12,3 +12,9 @@ Imports:
     tibbletime,
     tidyverse
 RoxygenNote: 6.0.1
+Collate: 
+    'helpers.R'
+    'metrics.R'
+    'sfn_data_classes.R'
+    'sfn_data_generics.R'
+    'sfn_data_methods.R'

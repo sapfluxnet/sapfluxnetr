@@ -141,5 +141,137 @@ sfn_metrics <- function(
   return(res)
 }
 
+
+####### shorthand functions for sfn_metrics ####################################
+
+#' Complete daily metrics for a site (or multi-site)
+#'
+#' This function returns a complete summary of the site/s with our exclusive set of metrics developed with love for you
+#'
+#' @inheritParams sfn_metrics
+#'
+#' @param probs numeric vector of probabilities for \code{\link[stats]{quantile}}
+#'
+#' @param na.rm logical; if true, any NA and NaN's are removed in the summarise
+#'
+#' @param ... optional arguments passed to \code{\link{sfn_metrics}}
+#'
+#' @family metrics
+#'
+#' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
+#'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
+#'   for each site.
+#'
+#' @export
+
+daily_metrics <- function(
+  sfn_data,
+  solar = TRUE,
+  predawn = TRUE,
+  pd_start = 3,
+  pd_end = 5,
+  midday = TRUE,
+  md_start = 11,
+  md_end = 13,
+  probs = c(0.95, 0.99),
+  na.rm = FALSE,
+  ...
+) {
+
+  # hardcoded values
+  period <- 'daily'
+
+  # check if user supplied custom funs (.funs), if not, harcoded values
+  dots <- list(...)
+  if ('.funs' %in% names(dots)) {
+    .funs <- dots[['.funs']]
+    dots <- dots[names(dots) != '.funs']
+  } else {
+    .funs <- dplyr::funs(
+      mean, dplyr::n, quantile, data_coverage, max, min, max_time, min_time
+    )
+  }
+
+  # just input all in the sfn_function
+  sfn_metrics(
+    sfn_data,
+    period = period,
+    .funs = .funs,
+    solar = solar,
+    predawn = predawn,
+    pd_start = pd_start,
+    pd_end = pd_end,
+    midday = midday,
+    md_start = md_start,
+    md_end = md_end,
+    probs = probs,
+    na.rm = na.rm,
+    !!! dots
+  )
+}
+
+#' Complete monthly metrics for a site (or multi-site)
+#'
+#' This function returns a complete summary of the site/s
+#'
+#' @inheritParams daily_metrics
+#'
+#' @family metrics
+#'
+#' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
+#'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
+#'   for each site.
+#'
+#' @export
+
+monthly_metrics <- function(
+  sfn_data,
+  solar = TRUE,
+  predawn = TRUE,
+  pd_start = 3,
+  pd_end = 5,
+  midday = TRUE,
+  md_start = 11,
+  md_end = 13,
+  probs = c(0.95, 0.99),
+  na.rm = FALSE,
+  ...
+) {
+
+  # hardcoded values
+  period <- 'monthly'
+
+  # check if user supplied custom funs (.funs), if not, harcoded values
+  dots <- list(...)
+  if ('.funs' %in% names(dots)) {
+    .funs <- dots[['.funs']]
+    dots <- dots[names(dots) != '.funs']
+  } else {
+    .funs <- dplyr::funs(
+      mean, dplyr::n, quantile, data_coverage, max, min, max_time, min_time
+    )
+  }
+
+  # just input all in the sfn_metrics function
+  sfn_metrics(
+    sfn_data,
+    period = period,
+    .funs = .funs,
+    solar = solar,
+    predawn = predawn,
+    pd_start = pd_start,
+    pd_end = pd_end,
+    midday = midday,
+    md_start = md_start,
+    md_end = md_end,
+    probs = probs,
+    na.rm = na.rm,
+    !!! dots
+  )
+}
+
+
+
+
 ## TODO ahora toca el resto de high level functions para las metricas (daily,
 ## solo predawn, este tipo de cosas)
