@@ -167,17 +167,18 @@ setMethod(
     cat("Environmental data: ", nrow(slot(object, "env_data")), " observations.\n",
         "Env vars: ", paste(names(slot(object, "env_data"))), "\n\n")
     # timestamp span
-    cat("TIMESTAMP span, from ", as.character(head(slot(object, 'timestamp'), 1)),
-        "to ", as.character(tail(slot(object, 'timestamp'), 1)), "\n\n")
-
+    timestamp_span <- min_max(slot(object, 'timestamp')) %>%
+      lubridate::int_diff()
+    cat("TIMESTAMP span: ", timestamp_span, "\n\n")
     # solar_timestamp
-    cat("Solar TIMESTAMP available: ", !all(is.na(slot(object, 'solar_timestamp'))),
-        "\n\n")
+    solar_timestamp_span <- min_max(slot(object, 'solar_timestamp')) %>%
+      lubridate::int_diff()
+    cat("TIMESTAMP span: ", solar_timestamp_span, "\n\n")
 
     # sapf_flags
     unique_sapf_flags <- slot(object, 'sapf_flags') %>%
       purrr::map(~ stringr::str_split(.x, '; ')) %>%
-      purrr::map(flatten_chr) %>%
+      purrr::map(purrr::flatten_chr) %>%
       purrr::flatten_chr() %>%
       unique()
 
@@ -242,7 +243,7 @@ setMethod(
 
     # 2. combined timespan
     timestamp_span <- object %>%
-      purrr::map(~ slot(., 'timestamp')[1]) %>%
+      purrr::map(~ slot(., 'timestamp')) %>%
       purrr::flatten() %>%
       min_max() %>%
       lubridate::int_diff()

@@ -111,5 +111,5 @@ min_time <- function(x, time) {
 #' min_max(iris$Sepal.Length)
 
 min_max <- function(x) {
-  c(min = min(x), max = max(x))
+  c(min = min(x, na.rm = TRUE), max = max(x, na.rm = TRUE))
 }
