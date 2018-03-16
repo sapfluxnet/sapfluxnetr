@@ -89,3 +89,27 @@ max_time <- function(x, time) {
 min_time <- function(x, time) {
   time[which.min(x)]
 }
+
+#' min max
+#'
+#' wrapper for quicky return the max and the min value of a vector to use in
+#' a dplyr pipe
+#'
+#' @param x a numeric, POSIXct... (any accepted by \code{\link[base]{max}} and
+#'   \code{\link[base]{min}}) vector
+#'
+#' @return a two-element named vector, c(min = value, max = value)
+#'
+#' @examples
+#' library(tidiverse)
+#' # pipe example, not efficient
+#' iris %>%
+#'   pull(Sepal.Length) %>%
+#'   min_max()
+#'
+#' # the same, directly
+#' min_max(iris$Sepal.Length)
+
+min_max <- function(x) {
+  c(min = min(x), max = max(x))
+}

@@ -237,8 +237,16 @@ setMethod(
     if (length(object) > 6) {
       cat(length(object), " sites: ", names(object)[1:6], " ...\n", sep = '')
     } else {
-      cat(length(object), " sites: ", names(object)[1:6], "\n", sep = '')
+      cat(length(object), " sites: ", names(object), "\n", sep = '')
     }
+
+    # 2. combined timespan
+    timestamp_span <- object %>%
+      purrr::map(~ get_timestamp(.)[1]) %>%
+      purrr::flatten() %>%
+      min_max() %>%
+      lubridate::int_diff()
+    cat('Time span for the combined sites: ', timestamp_span, '\n', sep = '')
   }
 )
 
