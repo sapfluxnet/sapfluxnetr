@@ -242,7 +242,7 @@ setMethod(
 
     # 2. combined timespan
     timestamp_span <- object %>%
-      purrr::map(~ get_timestamp(.)[1]) %>%
+      purrr::map(~ slot(., 'timestamp')[1]) %>%
       purrr::flatten() %>%
       min_max() %>%
       lubridate::int_diff()
