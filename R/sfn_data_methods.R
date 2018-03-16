@@ -215,7 +215,7 @@ setMethod(
   }
 )
 
-#### sfn_data_multi show #############################################################
+#### sfn_data_multi show #######################################################
 #' Show method for sfn_data_multi
 #'
 #' print a summary for sfn_data_multi objects
@@ -233,7 +233,6 @@ setMethod(
     # class
     cat(class(object), " object\n", sep = "")
 
-    # so what, what can be here?
     # 1. a list with max 6 site codes
     if (length(object) > 6) {
       cat(length(object), " sites: ", names(object)[1:6], " ...\n", sep = '')
@@ -242,4 +241,33 @@ setMethod(
     }
   }
 )
+
+#### sfn_data get methods ######################################################
+#' sfn_data get methods
+#'
+#' Methods to get the data and metadata from the sfn_data class slots
+#'
+#' \code{get_sapf} and \code{get_env} methods retrieve sapflow or environmental
+#' data and timestamp to create a functional dataset to work with.
+#'
+#' \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
+#' environmental flags also with the timestamp.
+#'
+#' \code{get_timestamp} method retrieve only the timestamp as POSIXct vector.
+#'
+#' \code{get_si_code} method retrieve a character vector with length(timestamp)
+#' containing the site code.
+#'
+#' \code{get_site_md}, \code{get_stand_md}, \code{get_species_md},
+#' \code{get_plant_md} and \code{get_env_md} methods retrieve the corresponding
+#' metadata.
+#'
+#' @param object Object of class sfn_data from which data is retrieved
+#'
+#' @param solar Logical indicating if the timestamp to return in the get_sapf,
+#'   get_env, get_sapf_flags and get_env_flags methods
+#'
+#' @name sfn_get_methods
+#' @include sfn_data_class.R sfn_data_generics.R
+NULL
 
