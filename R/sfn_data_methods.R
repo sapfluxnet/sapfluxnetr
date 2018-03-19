@@ -123,9 +123,9 @@ setValidity(
 
     # check if all are sfn_data
     if (
-      slot(object, ".Data") %>%
-        purrr::map_lgl(is(.x, 'sfn_data')) %>%
-        all()
+      !(slot(object, ".Data") %>%
+        purrr::map_lgl(~ is(.x, 'sfn_data')) %>%
+        all())
     ) {
       valid <- FALSE
       info <- c(info, 'Some element is NOT an sfn_data class object')
@@ -137,6 +137,31 @@ setValidity(
     if (valid) {
       return(TRUE)
     } else {return(info)}
+  }
+)
+
+#### sfn_data_multi initialize #################################################
+#' Initialize method for sfn_data multi
+#'
+#' Initialize an sfn_data_multi object
+#'
+#' @param .Object sfn_data_multi object to create
+#'
+#' @param ... sfn_data elements
+#'
+#' @export
+
+setMethod(
+  "initialize", "sfn_data_multi",
+  definition = function(.Object, ...) {
+    .Data <- list(...)
+
+    site_codes <- .Data %>%
+      purrr::map_chr(get_si_code)
+
+    names(.Data) <- site_codes
+
+    .Object <- callNextMethod(.Object, .Data = .Data)
   }
 )
 
@@ -167,13 +192,19 @@ setMethod(
     cat("Environmental data: ", nrow(slot(object, "env_data")), " observations.\n",
         "Env vars: ", paste(names(slot(object, "env_data"))), "\n\n")
     # timestamp span
-    timestamp_span <- min_max(slot(object, 'timestamp')) %>%
-      lubridate::int_diff()
+    timestamp_minmax <- min_max(slot(object, 'timestamp'))
+    timestamp_span <- lubridate::interval(timestamp_minmax[1],
+                                          timestamp_minmax[2],
+                                          tzone = get_timezone(object)) %>%
+      as.character()
     cat("TIMESTAMP span: ", timestamp_span, "\n\n")
     # solar_timestamp
-    solar_timestamp_span <- min_max(slot(object, 'solar_timestamp')) %>%
-      lubridate::int_diff()
-    cat("TIMESTAMP span: ", solar_timestamp_span, "\n\n")
+    solar_timestamp_minmax <- min_max(slot(object, 'timestamp'))
+    solar_timestamp_span <- lubridate::interval(solar_timestamp_minmax[1],
+                                                solar_timestamp_minmax[2],
+                                                tzone = get_timezone(object)) %>%
+      as.character()
+    cat("Solar TIMESTAMP span: ", solar_timestamp_span, "\n\n")
 
     # sapf_flags
     unique_sapf_flags <- slot(object, 'sapf_flags') %>%
@@ -207,7 +238,7 @@ setMethod(
       purrr::flatten_int()
     names(env_flags_table) <- unique_env_flags[unique_env_flags != '']
 
-    cat("Sapflow data flags:\n")
+    cat("Environmental data flags:\n")
     if (length(env_flags_table)) {
       print(sort(env_flags_table))
     } else {cat("No flags present")}
@@ -236,18 +267,24 @@ setMethod(
 
     # 1. a list with max 6 site codes
     if (length(object) > 6) {
-      cat(length(object), " sites: ", names(object)[1:6], " ...\n", sep = '')
+      cat(length(object), " sites: ",
+          paste(names(object)[1:6], collapse = ' '), " ...\n", sep = '')
     } else {
-      cat(length(object), " sites: ", names(object), "\n", sep = '')
+      cat(length(object), " sites: ",
+          paste(names(object), collapse = ' '), "\n", sep = '')
     }
 
     # 2. combined timespan
-    timestamp_span <- object %>%
-      purrr::map(~ slot(., 'timestamp')) %>%
-      purrr::flatten() %>%
-      min_max() %>%
-      lubridate::int_diff()
-    cat('Time span for the combined sites: ', timestamp_span, '\n', sep = '')
+    timestamp_minmax <- object %>%
+      purrr::map(~ slot(.x, 'timestamp')) %>%
+      purrr::map(as.character) %>%
+      purrr::flatten_chr() %>%
+      sort()
+    timestamp_span <- lubridate::interval(timestamp_minmax[1],
+                                          tail(timestamp_minmax, 1),
+                                          tzone = "") %>%
+      as.character()
+    cat('Time span (UTC) for the combined sites: ', timestamp_span, '\n', sep = '')
   }
 )
 
