@@ -475,7 +475,7 @@ test_that('replacement methods work as intended', {
 })
 
 
-# testspara show methods
+# tests para show methods
 test_that('show methods works', {
   expect_output(print(FOO), 'Data from FOO site/s')
   expect_output(print(FOO), 'Environmental data flags:')
@@ -483,4 +483,6 @@ test_that('show methods works', {
   expect_output(print(BAR), 'Environmental data flags:')
   expect_output(print(BAZ), 'Data from BAZ site/s')
   expect_output(print(BAZ), 'Environmental data flags:')
+  expect_output(print(multi_sfn), 'FOO BAR BAZ')
+  expect_output(print(multi_sfn), 'for the combined sites:')
 })
