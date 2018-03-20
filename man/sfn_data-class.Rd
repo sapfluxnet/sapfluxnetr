@@ -26,7 +26,7 @@ with the flag info for each tree/TIMESTAMP combination}
 \item{\code{env_flags}}{A data frame with the same dimensions of \code{env_data} with
 the flag info for each env_var/TIMESTAMP combination}
 
-\item{\code{si_code}}{A character vector of length \code{nrow(sapf_data)} indicating
+\item{\code{si_code}}{A character vector of length one indicating
 the site code}
 
 \item{\code{timestamp}}{A POSIXct vector of length \code{nrow(sapf_data)} with the

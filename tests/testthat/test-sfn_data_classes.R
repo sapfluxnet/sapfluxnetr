@@ -6,10 +6,10 @@ load('BAR.RData')
 load('BAZ.RData')
 
 FOO <- sfn_data(
-  sapf_data = FOO_sapf_data[,-1],
-  env_data = FOO_env_data[,-1],
-  sapf_flags = FOO_sapf_flags[,-1],
-  env_flags = FOO_env_flags[, -1],
+  sapf_data = FOO_sapf_data,
+  env_data = FOO_env_data,
+  sapf_flags = FOO_sapf_flags,
+  env_flags = FOO_env_flags,
   si_code = FOO_si_code,
   timestamp = FOO_timestamp,
   solar_timestamp = FOO_solar_timestamp,
@@ -21,10 +21,10 @@ FOO <- sfn_data(
 )
 
 BAR <- sfn_data(
-  sapf_data = BAR_sapf_data[,-1],
-  env_data = BAR_env_data[,-1],
-  sapf_flags = BAR_sapf_flags[,-1],
-  env_flags = BAR_env_flags[, -1],
+  sapf_data = BAR_sapf_data,
+  env_data = BAR_env_data,
+  sapf_flags = BAR_sapf_flags,
+  env_flags = BAR_env_flags,
   si_code = BAR_si_code,
   timestamp = BAR_timestamp,
   solar_timestamp = BAR_solar_timestamp,
@@ -36,10 +36,10 @@ BAR <- sfn_data(
 )
 
 BAZ <- sfn_data(
-  sapf_data = BAZ_sapf_data[,-1],
-  env_data = BAZ_env_data[,-1],
-  sapf_flags = BAZ_sapf_flags[,-1],
-  env_flags = BAZ_env_flags[, -1],
+  sapf_data = BAZ_sapf_data,
+  env_data = BAZ_env_data,
+  sapf_flags = BAZ_sapf_flags,
+  env_flags = BAZ_env_flags,
   si_code = BAZ_si_code,
   timestamp = BAZ_timestamp,
   solar_timestamp = BAZ_solar_timestamp,
@@ -62,10 +62,10 @@ test_that('constructors_work', {
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data_bad[,-1],
-      env_data = FOO_env_data[,-1],
-      sapf_flags = FOO_sapf_flags[,-1],
-      env_flags = FOO_env_flags[, -1],
+      sapf_data = FOO_sapf_data_bad,
+      env_data = FOO_env_data,
+      sapf_flags = FOO_sapf_flags,
+      env_flags = FOO_env_flags,
       si_code = FOO_si_code,
       timestamp = FOO_timestamp,
       solar_timestamp = FOO_solar_timestamp,
@@ -74,15 +74,16 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data[,-1],
-      env_data = FOO_env_data_bad[,-1],
-      sapf_flags = FOO_sapf_flags[,-1],
-      env_flags = FOO_env_flags[, -1],
+      sapf_data = FOO_sapf_data,
+      env_data = FOO_env_data_bad,
+      sapf_flags = FOO_sapf_flags,
+      env_flags = FOO_env_flags,
       si_code = FOO_si_code,
       timestamp = FOO_timestamp,
       solar_timestamp = FOO_solar_timestamp,
@@ -91,15 +92,16 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data[,-1],
-      env_data = FOO_env_data[,-1],
-      sapf_flags = FOO_sapf_flags_bad[,-1],
-      env_flags = FOO_env_flags[, -1],
+      sapf_data = FOO_sapf_data,
+      env_data = FOO_env_data,
+      sapf_flags = FOO_sapf_flags_bad,
+      env_flags = FOO_env_flags,
       si_code = FOO_si_code,
       timestamp = FOO_timestamp,
       solar_timestamp = FOO_solar_timestamp,
@@ -108,15 +110,16 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data[,-1],
-      env_data = FOO_env_data[,-1],
-      sapf_flags = FOO_sapf_flags[,-1],
-      env_flags = FOO_env_flags_bad[, -1],
+      sapf_data = FOO_sapf_data,
+      env_data = FOO_env_data,
+      sapf_flags = FOO_sapf_flags,
+      env_flags = FOO_env_flags_bad,
       si_code = FOO_si_code,
       timestamp = FOO_timestamp,
       solar_timestamp = FOO_solar_timestamp,
@@ -125,15 +128,16 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data_bad[,-1],
-      env_data = FOO_env_data_bad[,-1],
-      sapf_flags = FOO_sapf_flags_bad[,-1],
-      env_flags = FOO_env_flags_bad[, -1],
+      sapf_data = FOO_sapf_data_bad,
+      env_data = FOO_env_data_bad,
+      sapf_flags = FOO_sapf_flags_bad,
+      env_flags = FOO_env_flags_bad,
       si_code = FOO_si_code,
       timestamp = FOO_timestamp,
       solar_timestamp = FOO_solar_timestamp,
@@ -142,15 +146,16 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data[,-1],
-      env_data = FOO_env_data[,-1],
-      sapf_flags = FOO_sapf_flags[,-1],
-      env_flags = FOO_env_flags[, -1],
+      sapf_data = FOO_sapf_data,
+      env_data = FOO_env_data,
+      sapf_flags = FOO_sapf_flags,
+      env_flags = FOO_env_flags,
       si_code = FOO_si_code,
       timestamp = FOO_timestamp_bad,
       solar_timestamp = FOO_solar_timestamp,
@@ -159,15 +164,16 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data[,-1],
-      env_data = FOO_env_data[,-1],
-      sapf_flags = FOO_sapf_flags[,-1],
-      env_flags = FOO_env_flags[, -1],
+      sapf_data = FOO_sapf_data,
+      env_data = FOO_env_data,
+      sapf_flags = FOO_sapf_flags,
+      env_flags = FOO_env_flags,
       si_code = FOO_si_code,
       timestamp = FOO_timestamp,
       solar_timestamp = FOO_solar_timestamp,
@@ -176,15 +182,16 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data[,-1],
-      env_data = FOO_env_data[,-1],
-      sapf_flags = FOO_sapf_flags[,-1],
-      env_flags = FOO_env_flags[, -1],
+      sapf_data = FOO_sapf_data,
+      env_data = FOO_env_data,
+      sapf_flags = FOO_sapf_flags,
+      env_flags = FOO_env_flags,
       si_code = '',
       timestamp = FOO_timestamp,
       solar_timestamp = FOO_solar_timestamp,
@@ -193,15 +200,16 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data[,-1],
-      env_data = FOO_env_data[,-1],
-      sapf_flags = FOO_sapf_flags[,-1],
-      env_flags = FOO_env_flags[, -1],
+      sapf_data = FOO_sapf_data,
+      env_data = FOO_env_data,
+      sapf_flags = FOO_sapf_flags,
+      env_flags = FOO_env_flags,
       si_code = FOO_si_code,
       timestamp = FOO_timestamp,
       solar_timestamp = FOO_solar_timestamp,
@@ -210,15 +218,16 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
     sfn_data(
-      sapf_data = FOO_sapf_data[,-1],
-      env_data = FOO_env_data[,-1],
-      sapf_flags = FOO_sapf_flags[,-1],
-      env_flags = FOO_env_flags[, -1],
+      sapf_data = FOO_sapf_data,
+      env_data = FOO_env_data,
+      sapf_flags = FOO_sapf_flags,
+      env_flags = FOO_env_flags,
       si_code = rep(FOO_si_code, length(FOO_timestamp)),
       timestamp = FOO_timestamp,
       solar_timestamp = FOO_solar_timestamp,
@@ -227,15 +236,18 @@ test_that('constructors_work', {
       species_md = FOO_species_md,
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
-    )
+    ),
+    'invalid class “sfn_data” object'
   )
 
   expect_error(
-    sfn_data_multi(FOO, BAR, BAZ_sapf_data)
+    sfn_data_multi(FOO, BAR, BAZ_sapf_data),
+    'All elements must be sfn_data objects'
   )
 
   expect_error(
-    sfn_data_multi(FOO, 'BAR', BAZ)
+    sfn_data_multi(FOO, 'BAR', BAZ),
+    'All elements must be sfn_data objects'
   )
 
   expect_identical(names(multi_sfn), c('FOO', 'BAR', 'BAZ'))
@@ -288,25 +300,25 @@ test_that('get methods returns the correct object', {
   expect_is(foo_timestamp, 'POSIXct')
   expect_identical(attr(foo_timestamp, 'tz'), 'Etc/GMT+3')
   expect_is(foo_solar_timestamp, 'POSIXct')
-  expect_identical(attr(foo_solar_timestamp, 'tz'), 'Etc/GMT+3')
+  expect_identical(attr(foo_solar_timestamp, 'tz'), 'UTC')
   expect_true(is.character(foo_si_code))
 
-  expect_identical(FOO_sapf_data, foo_sapf_data)
-  expect_identical(FOO_sapf_flags, foo_sapf_flags)
-  expect_identical(FOO_env_data, foo_env_data)
-  expect_identical(FOO_env_flags, foo_env_flags)
-  expect_identical(FOO_sapf_data[,-1], foo_sapf_data_solar[,-1])
-  expect_identical(FOO_sapf_flags[,-1], foo_sapf_flags_solar[,-1])
-  expect_identical(FOO_env_data[,-1], foo_env_data_solar[,-1])
-  expect_identical(FOO_env_flags[,-1], foo_env_flags_solar[,-1])
+  expect_identical(FOO_sapf_data[[2]], foo_sapf_data[[3]])
+  expect_identical(FOO_sapf_flags[[2]], foo_sapf_flags[[3]])
+  expect_identical(FOO_env_data[[2]], foo_env_data[[3]])
+  expect_identical(FOO_env_flags[[2]], foo_env_flags[[3]])
+  expect_identical(FOO_sapf_data[[2]], foo_sapf_data_solar[[3]])
+  expect_identical(FOO_sapf_flags[[2]], foo_sapf_flags_solar[[3]])
+  expect_identical(FOO_env_data[[2]], foo_env_data_solar[[3]])
+  expect_identical(FOO_env_flags[[2]], foo_env_flags_solar[[3]])
   expect_identical(FOO_timestamp, foo_timestamp)
   expect_identical(FOO_solar_timestamp, foo_solar_timestamp)
   expect_identical(FOO_si_code, foo_si_code)
-  expect_identical(FOO_site_md, foo_site_md)
-  expect_identical(FOO_stand_md, foo_stand_md)
-  expect_identical(FOO_species_md, foo_species_md)
-  expect_identical(FOO_plant_md, foo_plant_md)
-  expect_identical(FOO_env_md, foo_env_md)
+  expect_identical(tibble::as_tibble(FOO_site_md), foo_site_md)
+  expect_identical(tibble::as_tibble(FOO_stand_md), foo_stand_md)
+  expect_identical(tibble::as_tibble(FOO_species_md), foo_species_md)
+  expect_identical(tibble::as_tibble(FOO_plant_md), foo_plant_md)
+  expect_identical(tibble::as_tibble(FOO_env_md), foo_env_md)
 })
 
 # tests para replacement methods
@@ -436,19 +448,30 @@ test_that('replacement methods work as intended', {
   )
 
   # works when substituting with correct data
-  expect_s4_class(get_sapf(FOO) <- foo_sapf_data_NA[,-1])
-  expect_s4_class(get_sapf_flags(FOO) <- foo_sapf_flags_NA[,-1])
-  expect_s4_class(get_env(FOO) <- foo_env_data_NA[,-1])
-  expect_s4_class(get_env_flags(FOO) <- foo_env_flags_NA[,-1])
-  expect_s4_class(get_timestamp(FOO) <- foo_timestamp_NA)
-  expect_s4_class(get_solar_timestamp(FOO) <- foo_solar_timestamp_NA)
-  expect_s4_class(get_si_code(FOO) <- 'BAR')
-  expect_s4_class(get_site_md(FOO) <- foo_site_md_NA)
-  expect_s4_class(get_stand_md(FOO) <- foo_stand_md_NA)
-  expect_s4_class(get_species_md(FOO) <- foo_species_md_NA)
-  expect_s4_class(get_plant_md(FOO) <- foo_plant_md_NA)
-  expect_s4_class(get_env_md(FOO) <- foo_env_md_NA)
-
+  get_sapf(FOO) <- foo_sapf_data_NA[,-1]
+  expect_s4_class(FOO, 'sfn_data')
+  get_sapf_flags(FOO) <- foo_sapf_flags_NA[,-1]
+  expect_s4_class(FOO, 'sfn_data')
+  get_env(FOO) <- foo_env_data_NA[,-1]
+  expect_s4_class(FOO, 'sfn_data')
+  get_env_flags(FOO) <- foo_env_flags_NA[,-1]
+  expect_s4_class(FOO, 'sfn_data')
+  get_timestamp(FOO) <- foo_timestamp_NA
+  expect_s4_class(FOO, 'sfn_data')
+  get_solar_timestamp(FOO) <- foo_solar_timestamp_NA
+  expect_s4_class(FOO, 'sfn_data')
+  get_si_code(FOO) <- 'BAR'
+  expect_s4_class(FOO, 'sfn_data')
+  get_site_md(FOO) <- foo_site_md_NA
+  expect_s4_class(FOO, 'sfn_data')
+  get_stand_md(FOO) <- foo_stand_md_NA
+  expect_s4_class(FOO, 'sfn_data')
+  get_species_md(FOO) <- foo_species_md_NA
+  expect_s4_class(FOO, 'sfn_data')
+  get_plant_md(FOO) <- foo_plant_md_NA
+  expect_s4_class(FOO, 'sfn_data')
+  get_env_md(FOO) <- foo_env_md_NA
+  expect_s4_class(FOO, 'sfn_data')
 })
 
 

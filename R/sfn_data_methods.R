@@ -187,6 +187,130 @@ setValidity(
 #'
 #' @export
 
+setMethod(
+  "initialize", "sfn_data",
+  definition = function(
+    .Object,
+    sapf_data, env_data, sapf_flags, env_flags,
+    si_code, timestamp, solar_timestamp,
+    site_md, stand_md, species_md, plant_md, env_md
+  ) {
+    
+    # ## Coerce to tibble, fail if not possible
+    # # sapf_data
+    # sapf_data_tbl <- try(
+    #   tibble::as_tibble(sapf_data)
+    # )
+    # 
+    # if (is(sapf_data_tbl, "try-error")) {
+    #   stop('sapf_data must be a tibble or an object coercible to one')
+    # }
+    # 
+    # # env_data
+    # env_data_tbl <- try(
+    #   tibble::as_tibble(env_data)
+    # )
+    # 
+    # if (is(env_data_tbl, "try-error")) {
+    #   stop('env_data must be a tibble or an object coercible to one')
+    # }
+    # 
+    # # sapf_data
+    # sapf_flags_tbl <- try(
+    #   tibble::as_tibble(sapf_flags)
+    # )
+    # 
+    # if (is(sapf_flags_tbl, "try-error")) {
+    #   stop('sapf_flags must be a tibble or an object coercible to one')
+    # }
+    # 
+    # # env_flags
+    # env_flags_tbl <- try(
+    #   tibble::as_tibble(env_flags)
+    # )
+    # 
+    # if (is(env_flags_tbl, "try-error")) {
+    #   stop('env_flags must be a tibble or an object coercible to one')
+    # }
+    # 
+    # # site_md
+    # site_md_tbl <- try(
+    #   tibble::as_tibble(site_md)
+    # )
+    # 
+    # if (is(site_md_tbl, "try-error")) {
+    #   stop('site_md must be a tibble or an object coercible to one')
+    # }
+    # 
+    # # stand_md
+    # stand_md_tbl <- try(
+    #   tibble::as_tibble(stand_md)
+    # )
+    # 
+    # if (is(stand_md_tbl, "try-error")) {
+    #   stop('stand_md must be a tibble or an object coercible to one')
+    # }
+    # 
+    # # species_md
+    # species_md_tbl <- try(
+    #   tibble::as_tibble(species_md)
+    # )
+    # 
+    # if (is(species_md_tbl, "try-error")) {
+    #   stop('species_md must be a tibble or an object coercible to one')
+    # }
+    # 
+    # # plant_md
+    # plant_md_tbl <- try(
+    #   tibble::as_tibble(plant_md)
+    # )
+    # 
+    # if (is(plant_md_tbl, "try-error")) {
+    #   stop('plant_md must be a tibble or an object coercible to one')
+    # }
+    # 
+    # # env_md
+    # env_md_tbl <- try(
+    #   tibble::as_tibble(env_md)
+    # )
+    # 
+    # if (is(env_md_tbl, "try-error")) {
+    #   stop('env_md must be a tibble or an object coercible to one')
+    # }
+    # 
+    # .Object <- callNextMethod(
+    #   .Object,
+    #   sapf_data = sapf_data_tbl,
+    #   env_data = env_data_tbl,
+    #   sapf_flags = sapf_flags_tbl,
+    #   env_flags = env_flags_tbl,
+    #   si_code = si_code,
+    #   timestamp = timestamp,
+    #   solar_timestamp = solar_timestamp,
+    #   site_md = site_md_tbl,
+    #   stand_md = stand_md_tbl,
+    #   species_md = species_md_tbl,
+    #   plant_md = plant_md_tbl,
+    #   env_md = env_md_tbl
+    # )
+    .Object <- callNextMethod(
+      .Object,
+      sapf_data = sapf_data,
+      env_data = env_data,
+      sapf_flags = sapf_flags,
+      env_flags = env_flags,
+      si_code = si_code,
+      timestamp = timestamp,
+      solar_timestamp = solar_timestamp,
+      site_md = site_md,
+      stand_md = stand_md,
+      species_md = species_md,
+      plant_md = plant_md,
+      env_md = env_md
+    )
+  }
+)
+
 #### sfn_data_multi initialize #################################################
 #' Initialize method for sfn_data multi
 #'
@@ -202,9 +326,15 @@ setMethod(
   "initialize", "sfn_data_multi",
   definition = function(.Object, ...) {
     .Data <- list(...)
-
-    site_codes <- .Data %>%
-      purrr::map_chr(get_si_code)
+    
+    site_codes <- try(
+      .Data %>%
+        purrr::map_chr(get_si_code)
+    )
+    
+    if (is(site_codes, 'try-error')) {
+      stop('All elements must be sfn_data objects')
+    }
 
     names(.Data) <- site_codes
 
@@ -341,10 +471,10 @@ setMethod(
 #' Methods to get the data and metadata from the sfn_data class slots
 #'
 #' \code{get_sapf} and \code{get_env} methods retrieve sapflow or environmental
-#' data and timestamp to create a functional dataset to work with.
+#' tibbletime object to create a functional dataset to work with.
 #'
 #' \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
-#' environmental flags also with the timestamp.
+#' environmental flags as tibbletime objects.
 #'
 #' \code{get_timestamp} method retrieve only the timestamp as POSIXct vector.
 #'
@@ -393,7 +523,8 @@ setMethod(
     }
 
     # combining both
-    res <- cbind(TIMESTAMP, .sapf)
+    res <- cbind(TIMESTAMP, .sapf) %>%
+      tibbletime::as_tbl_time(index = TIMESTAMP)
 
     # return
     return(res)
@@ -416,7 +547,8 @@ setMethod(
     }
 
     # combining both
-    res <- cbind(TIMESTAMP, .env)
+    res <- cbind(TIMESTAMP, .env) %>%
+      tibbletime::as_tbl_time(index = TIMESTAMP)
 
     # return
     return(res)
@@ -438,7 +570,8 @@ setMethod(
     }
 
     # combining both
-    res <- cbind(TIMESTAMP, .sapf_flags)
+    res <- cbind(TIMESTAMP, .sapf_flags) %>%
+      tibbletime::as_tbl_time(index = TIMESTAMP)
 
     # return
     return(res)
@@ -460,7 +593,8 @@ setMethod(
     }
 
     # combining both
-    res <- cbind(TIMESTAMP, .env_flags)
+    res <- cbind(TIMESTAMP, .env_flags) %>%
+      tibbletime::as_tbl_time(index = TIMESTAMP)
 
     # return
     return(res)
@@ -499,7 +633,8 @@ setMethod(
 setMethod(
   "get_site_md", "sfn_data",
   function(object) {
-    slot(object, "site_md")
+    slot(object, "site_md") %>%
+      tibble::as_tibble()
   }
 )
 
@@ -508,7 +643,8 @@ setMethod(
 setMethod(
   "get_stand_md", "sfn_data",
   function(object) {
-    slot(object, "stand_md")
+    slot(object, "stand_md") %>%
+      tibble::as_tibble()
   }
 )
 
@@ -517,7 +653,8 @@ setMethod(
 setMethod(
   "get_species_md", "sfn_data",
   function(object) {
-    slot(object, "species_md")
+    slot(object, "species_md") %>%
+      tibble::as_tibble()
   }
 )
 
@@ -526,7 +663,8 @@ setMethod(
 setMethod(
   "get_plant_md", "sfn_data",
   function(object) {
-    slot(object, "plant_md")
+    slot(object, "plant_md") %>%
+      tibble::as_tibble()
   }
 )
 
@@ -535,11 +673,12 @@ setMethod(
 setMethod(
   "get_env_md", "sfn_data",
   function(object) {
-    slot(object, "env_md")
+    slot(object, "env_md") %>%
+      tibble::as_tibble()
   }
 )
 
-#### sfn_data replacement methods ######################################################
+#### sfn_data replacement methods ##############################################
 #' sfn_data replacement methods
 #'
 #' Methods to replace the data and metadata from the sfn_data class slots
