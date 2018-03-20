@@ -405,7 +405,7 @@ setMethod(
     # env_flags
     unique_env_flags <- slot(object, 'env_flags') %>%
       purrr::map(~ stringr::str_split(.x, '; ')) %>%
-      purrr::map(flatten_chr) %>%
+      purrr::map(purrr::flatten_chr) %>%
       purrr::flatten_chr() %>%
       unique()
 
