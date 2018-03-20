@@ -140,6 +140,53 @@ setValidity(
   }
 )
 
+#### sfn_data initialize #################################################
+#' Initialize method for sfn_data
+#'
+#' Initialize an sfn_data object
+#'
+#' @param .Object sfn_data object to create
+#'
+#' @param sapf_data A tibble (or any object coercible to one) with the sapf_data
+#'   (without the TIMESTAMP variable)
+#'
+#' @param env_data A tibble (or any object coercible to one) with the env_data
+#'   (without the TIMESTAMP variable)
+#'
+#' @param sapf_flags A tibble (or any object coercible to one) with the same
+#'   dimensions of \code{sapf_data} with the flag info for each tree/TIMESTAMP
+#'   combination
+#'
+#' @param env_flags A tibble (or any object coercible to one) with the same
+#'   dimensions of \code{env_data} with the flag info for each env_var/TIMESTAMP
+#'   combination
+#'
+#' @param si_code A character vector of length one indicating
+#'   the site code
+#'
+#' @param timestamp A POSIXct vector of length \code{nrow(sapf_data)} with the
+#'   timestamp
+#'
+#' @param solar_timestamp A POSIXct vector of length \code{nrow(sapf_data)} with
+#'   the solar timestamp
+#'
+#' @param site_md A tibble (or any object coercible to one) containing the site
+#'   metadata
+#'
+#' @param stand_md A tibble (or any object coercible to one) containing the stand
+#'   metadata
+#'
+#' @param species_md A tibble (or any object coercible to one) containing the species
+#'   metadata
+#'
+#' @param plant_md A tibble (or any object coercible to one) containing the plant
+#'   metadata
+#'
+#' @param env_md A tibble (or any object coercible to one) containing the env
+#'   metadata
+#'
+#' @export
+
 #### sfn_data_multi initialize #################################################
 #' Initialize method for sfn_data multi
 #'

@@ -19,7 +19,7 @@
 #' @slot env_flags A data frame with the same dimensions of \code{env_data} with
 #'   the flag info for each env_var/TIMESTAMP combination
 #'
-#' @slot si_code A character vector of length \code{nrow(sapf_data)} indicating
+#' @slot si_code A character vector of length one indicating
 #'   the site code
 #'
 #' @slot timestamp A POSIXct vector of length \code{nrow(sapf_data)} with the
