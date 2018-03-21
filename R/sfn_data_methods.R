@@ -195,119 +195,112 @@ setMethod(
     si_code, timestamp, solar_timestamp,
     site_md, stand_md, species_md, plant_md, env_md
   ) {
-    
-    # ## Coerce to tibble, fail if not possible
-    # # sapf_data
-    # sapf_data_tbl <- try(
-    #   tibble::as_tibble(sapf_data)
-    # )
-    # 
-    # if (is(sapf_data_tbl, "try-error")) {
-    #   stop('sapf_data must be a tibble or an object coercible to one')
-    # }
-    # 
-    # # env_data
-    # env_data_tbl <- try(
-    #   tibble::as_tibble(env_data)
-    # )
-    # 
-    # if (is(env_data_tbl, "try-error")) {
-    #   stop('env_data must be a tibble or an object coercible to one')
-    # }
-    # 
-    # # sapf_data
-    # sapf_flags_tbl <- try(
-    #   tibble::as_tibble(sapf_flags)
-    # )
-    # 
-    # if (is(sapf_flags_tbl, "try-error")) {
-    #   stop('sapf_flags must be a tibble or an object coercible to one')
-    # }
-    # 
-    # # env_flags
-    # env_flags_tbl <- try(
-    #   tibble::as_tibble(env_flags)
-    # )
-    # 
-    # if (is(env_flags_tbl, "try-error")) {
-    #   stop('env_flags must be a tibble or an object coercible to one')
-    # }
-    # 
-    # # site_md
-    # site_md_tbl <- try(
-    #   tibble::as_tibble(site_md)
-    # )
-    # 
-    # if (is(site_md_tbl, "try-error")) {
-    #   stop('site_md must be a tibble or an object coercible to one')
-    # }
-    # 
-    # # stand_md
-    # stand_md_tbl <- try(
-    #   tibble::as_tibble(stand_md)
-    # )
-    # 
-    # if (is(stand_md_tbl, "try-error")) {
-    #   stop('stand_md must be a tibble or an object coercible to one')
-    # }
-    # 
-    # # species_md
-    # species_md_tbl <- try(
-    #   tibble::as_tibble(species_md)
-    # )
-    # 
-    # if (is(species_md_tbl, "try-error")) {
-    #   stop('species_md must be a tibble or an object coercible to one')
-    # }
-    # 
-    # # plant_md
-    # plant_md_tbl <- try(
-    #   tibble::as_tibble(plant_md)
-    # )
-    # 
-    # if (is(plant_md_tbl, "try-error")) {
-    #   stop('plant_md must be a tibble or an object coercible to one')
-    # }
-    # 
-    # # env_md
-    # env_md_tbl <- try(
-    #   tibble::as_tibble(env_md)
-    # )
-    # 
-    # if (is(env_md_tbl, "try-error")) {
-    #   stop('env_md must be a tibble or an object coercible to one')
-    # }
-    # 
-    # .Object <- callNextMethod(
-    #   .Object,
-    #   sapf_data = sapf_data_tbl,
-    #   env_data = env_data_tbl,
-    #   sapf_flags = sapf_flags_tbl,
-    #   env_flags = env_flags_tbl,
-    #   si_code = si_code,
-    #   timestamp = timestamp,
-    #   solar_timestamp = solar_timestamp,
-    #   site_md = site_md_tbl,
-    #   stand_md = stand_md_tbl,
-    #   species_md = species_md_tbl,
-    #   plant_md = plant_md_tbl,
-    #   env_md = env_md_tbl
-    # )
+
+    ## Coerce to tibble, fail if not possible
+    # sapf_data
+    if (any(class(sapf_data) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+      sapf_data_tbl <- tibble::as_tibble(sapf_data)
+    } else {
+      stop('sapf_data must be a tibble or an object coercible to one',
+           ' (data.frame, tbl_df, tbl, tbl_time)')
+    }
+
+    # env_data
+    if (any(class(env_data) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+      env_data_tbl <- tibble::as_tibble(env_data)
+    } else {
+      stop('env_data must be a tibble or an object coercible to one',
+           ' (data.frame, tbl_df, tbl, tbl_time)')
+    }
+
+    # sapf_flags
+    if (any(class(sapf_flags) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+      sapf_flags_tbl <- tibble::as_tibble(sapf_flags)
+    } else {
+      stop('sapf_flags must be a tibble or an object coercible to one',
+           ' (data.frame, tbl_df, tbl, tbl_time)')
+    }
+
+    # env_flags
+    if (any(class(env_flags) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+      env_flags_tbl <- tibble::as_tibble(env_flags)
+    } else {
+      stop('env_flags must be a tibble or an object coercible to one',
+           ' (data.frame, tbl_df, tbl, tbl_time)')
+    }
+
+    # site_md
+    if (any(class(site_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+      site_md_tbl <- tibble::as_tibble(site_md)
+    } else {
+      stop('site_md must be a tibble or an object coercible to one',
+           ' (data.frame, tbl_df, tbl, tbl_time)')
+    }
+
+    # stand_md
+    if (any(class(stand_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+      stand_md_tbl <- tibble::as_tibble(stand_md)
+    } else {
+      stop('stand_md must be a tibble or an object coercible to one',
+           ' (data.frame, tbl_df, tbl, tbl_time)')
+    }
+
+    # species_md
+    if (any(class(species_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+      species_md_tbl <- tibble::as_tibble(species_md)
+    } else {
+      stop('species_md must be a tibble or an object coercible to one',
+           ' (data.frame, tbl_df, tbl, tbl_time)')
+    }
+
+    # plant_md
+    if (any(class(plant_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+      plant_md_tbl <- tibble::as_tibble(plant_md)
+    } else {
+      stop('plant_md must be a tibble or an object coercible to one',
+           ' (data.frame, tbl_df, tbl, tbl_time)')
+    }
+
+    # env_md
+    if (any(class(env_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+      env_md_tbl <- tibble::as_tibble(env_md)
+    } else {
+      stop('env_md must be a tibble or an object coercible to one',
+           ' (data.frame, tbl_df, tbl, tbl_time)')
+    }
+
     .Object <- callNextMethod(
       .Object,
-      sapf_data = sapf_data,
-      env_data = env_data,
-      sapf_flags = sapf_flags,
-      env_flags = env_flags,
+      sapf_data = sapf_data_tbl,
+      env_data = env_data_tbl,
+      sapf_flags = sapf_flags_tbl,
+      env_flags = env_flags_tbl,
       si_code = si_code,
       timestamp = timestamp,
       solar_timestamp = solar_timestamp,
-      site_md = site_md,
-      stand_md = stand_md,
-      species_md = species_md,
-      plant_md = plant_md,
-      env_md = env_md
+      site_md = site_md_tbl,
+      stand_md = stand_md_tbl,
+      species_md = species_md_tbl,
+      plant_md = plant_md_tbl,
+      env_md = env_md_tbl
     )
+
+
+    # .Object <- callNextMethod(
+    #   .Object,
+    #   sapf_data = sapf_data,
+    #   env_data = env_data,
+    #   sapf_flags = sapf_flags,
+    #   env_flags = env_flags,
+    #   si_code = si_code,
+    #   timestamp = timestamp,
+    #   solar_timestamp = solar_timestamp,
+    #   site_md = site_md,
+    #   stand_md = stand_md,
+    #   species_md = species_md,
+    #   plant_md = plant_md,
+    #   env_md = env_md
+    # )
   }
 )
 
@@ -326,12 +319,12 @@ setMethod(
   "initialize", "sfn_data_multi",
   definition = function(.Object, ...) {
     .Data <- list(...)
-    
+
     site_codes <- try(
       .Data %>%
         purrr::map_chr(get_si_code)
     )
-    
+
     if (is(site_codes, 'try-error')) {
       stop('All elements must be sfn_data objects')
     }

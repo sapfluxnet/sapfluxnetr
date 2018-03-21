@@ -183,7 +183,7 @@ test_that('constructors_work', {
       plant_md = FOO_plant_md,
       env_md = FOO_env_md
     ),
-    'invalid class “sfn_data” object'
+    'stand_md must be a tibble or an object coercible to one'
   )
 
   expect_error(
