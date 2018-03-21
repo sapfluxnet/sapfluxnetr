@@ -362,14 +362,14 @@ setMethod(
     cat("Environmental data: ", nrow(slot(object, "env_data")), " observations.\n",
         "Env vars: ", paste(names(slot(object, "env_data"))), "\n\n")
     # timestamp span
-    timestamp_minmax <- min_max(slot(object, 'timestamp'))
+    timestamp_minmax <- .min_max(slot(object, 'timestamp'))
     timestamp_span <- lubridate::interval(timestamp_minmax[1],
                                           timestamp_minmax[2],
                                           tzone = get_timezone(object)) %>%
       as.character()
     cat("TIMESTAMP span: ", timestamp_span, "\n\n")
     # solar_timestamp
-    solar_timestamp_minmax <- min_max(slot(object, 'timestamp'))
+    solar_timestamp_minmax <- .min_max(slot(object, 'timestamp'))
     solar_timestamp_span <- lubridate::interval(solar_timestamp_minmax[1],
                                                 solar_timestamp_minmax[2],
                                                 tzone = get_timezone(object)) %>%
