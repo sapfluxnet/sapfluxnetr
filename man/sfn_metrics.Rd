@@ -38,7 +38,7 @@ returned.}
 \item{nighttime}{Experimental, not implemented (stats for night time)}
 
 \item{...}{optional arguments to pass to methods used
-(i.e. tibbletime::collapse_by or summarise funs extra arguments)}
+(i.e. tibbletime::collapse_index or summarise funs extra arguments)}
 }
 \value{
 For \code{\link{sfn_data}} objects, a tibble with the metrics. For
@@ -50,8 +50,8 @@ Generate daily or above metrics from a site data for the period indicated
 }
 \section{period}{
 
-\code{period} argument is piped to \code{tibbletime::collapse_by} function.
-See \code{\link[tibbletime]{collapse_by}} for a detailed explanation but in
+\code{period} argument is piped to \code{tibbletime::collapse_index} function.
+See \code{\link[tibbletime]{collapse_index}} for a detailed explanation but in
 short:
 \itemize{
   \item{\emph{frequency period} format: "1 day", "7 day", "1 month", "1 year"}

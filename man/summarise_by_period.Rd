@@ -10,11 +10,11 @@ summarise_by_period(data, period, .funs, ...)
 \item{data}{sapflow or environmental data as obtained by \code{\link{get_sapf}}
 and \code{\link{get_env}}}
 
-\item{period}{tibbletime::collapse_by period}
+\item{period}{tibbletime::collapse_index period}
 
 \item{.funs}{dplyr::summarise_all funs}
 
-\item{...}{optional arguments for tibbletime::collapse_by function and
+\item{...}{optional arguments for tibbletime::collapse_index function and
 dplyr::summarise_all function}
 }
 \value{
@@ -27,7 +27,7 @@ This helper pipes the different chain of commands to perform the period
 summaries, shared by general, predawn, midday and nighttime metrics
 }
 \details{
-This function uses internally \code{\link[tibbletime]{collapse_by}} and
+This function uses internally \code{\link[tibbletime]{collapse_index}} and
 \code{\link[dplyr]{summarise_all}} and arguments to control these functions
 can be passed as `...`. Arguments for each function are spliced and applied
 when needed. Be advised that all arguments passed to the summarise_all function

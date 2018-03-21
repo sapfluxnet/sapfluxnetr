@@ -2,6 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{max_time}
 \alias{max_time}
+\alias{max_time}
 \alias{min_time}
 \title{time at maximum/minimum}
 \usage{
@@ -22,11 +23,13 @@ a single value (character) with the TIMESTAMP value.
 helper for sfn_metrics
 }
 \details{
-This helper functions return the TIMESTAMP value at which the maximum value
+These helper functions return the TIMESTAMP value at which the maximum value
 occurs. It is designed to be used inside a dplyr summarise statement.
 }
 \section{Functions}{
 \itemize{
+\item \code{max_time}: helper for sfn_metrics
+
 \item \code{min_time}: helper for sfn_metrics
 }}
 

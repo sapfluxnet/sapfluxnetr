@@ -3,7 +3,7 @@
 #' This helper pipes the different chain of commands to perform the period
 #' summaries, shared by general, predawn, midday and nighttime metrics
 #'
-#' This function uses internally \code{\link[tibbletime]{collapse_by}} and
+#' This function uses internally \code{\link[tibbletime]{collapse_index}} and
 #' \code{\link[dplyr]{summarise_all}} and arguments to control these functions
 #' can be passed as `...`. Arguments for each function are spliced and applied
 #' when needed. Be advised that all arguments passed to the summarise_all function
@@ -31,9 +31,9 @@
 #'
 #' @param data sapflow or environmental data as obtained by \code{\link{get_sapf}}
 #'   and \code{\link{get_env}}
-#' @param period tibbletime::collapse_by period
+#' @param period tibbletime::collapse_index period
 #' @param .funs dplyr::summarise_all funs
-#' @param ... optional arguments for tibbletime::collapse_by function and
+#' @param ... optional arguments for tibbletime::collapse_index function and
 #'   dplyr::summarise_all function
 #'
 #' @return A `tbl_time` object with the metrics results. The names of the columns
@@ -57,24 +57,24 @@ summarise_by_period <- function(data, period, .funs, ...) {
 
   # we will need the extra arguments (...) if any, just in case
   dots <- list(...)
-  dots_collapse_by <- dots[names(dots) %in% methods::formalArgs(tibbletime::collapse_by)]
-  dots_summarise_all <- dots[!(names(dots) %in% methods::formalArgs(tibbletime::collapse_by))]
+  dots_collapse_index <- dots[names(dots) %in% methods::formalArgs(tibbletime::collapse_index)]
+  dots_summarise_all <- dots[!(names(dots) %in% methods::formalArgs(tibbletime::collapse_index))]
 
-  # if we need to pass unknown arguments to collapse_by and summarise_all, then
+  # if we need to pass unknown arguments to collapse_index and summarise_all, then
   # we use the quasiquotation system (!!!args_list), that way we don't need to
   # worry about which arguments are supplied
   # But there is a problem, if no extra arguments provided, !!! fails, so we need
   # to cover all possible scenarios
-  if (length(dots_collapse_by) > 0) {
+  if (length(dots_collapse_index) > 0) {
     if (length(dots_summarise_all) > 0) {
       data %>%
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        # tibbletime::collapse_by(period = period, !!! dots_collapse_by) %>%
+        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
           TIMESTAMP = tibbletime::collapse_index(
             index = TIMESTAMP,
             period = period,
-            !!! dots_collapse_by
+            !!! dots_collapse_index
           )
         ) %>%
         dplyr::group_by(TIMESTAMP) %>%
@@ -84,12 +84,12 @@ summarise_by_period <- function(data, period, .funs, ...) {
     } else {
       data %>%
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        # tibbletime::collapse_by(period = period, !!! dots_collapse_by) %>%
+        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
           TIMESTAMP = tibbletime::collapse_index(
             index = TIMESTAMP,
             period = period,
-            !!! dots_collapse_by
+            !!! dots_collapse_index
           )
         ) %>%
         dplyr::group_by(TIMESTAMP) %>%
@@ -101,7 +101,13 @@ summarise_by_period <- function(data, period, .funs, ...) {
     if (length(dots_summarise_all) > 0) {
       data %>%
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        tibbletime::collapse_by(period = period) %>%
+        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
+        dplyr::mutate(
+          TIMESTAMP = tibbletime::collapse_index(
+            index = TIMESTAMP,
+            period = period
+          )
+        ) %>%
         dplyr::group_by(TIMESTAMP) %>%
         dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) -> res
 
@@ -109,7 +115,13 @@ summarise_by_period <- function(data, period, .funs, ...) {
     } else {
       data %>%
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        tibbletime::collapse_by(period = period) %>%
+        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
+        dplyr::mutate(
+          TIMESTAMP = tibbletime::collapse_index(
+            index = TIMESTAMP,
+            period = period
+          )
+        ) %>%
         dplyr::group_by(TIMESTAMP) %>%
         dplyr::summarise_all(.funs = .funs) -> res
 
@@ -146,7 +158,7 @@ data_coverage <- function(x) {
 #'
 #' helper for sfn_metrics
 #'
-#' This helper functions return the TIMESTAMP value at which the maximum value
+#' These helper functions return the TIMESTAMP value at which the maximum value
 #' occurs. It is designed to be used inside a dplyr summarise statement.
 #'
 #' @param x a numeric vector, usually a variable in the sapflow or environmental
@@ -164,6 +176,11 @@ data_coverage <- function(x) {
 #'             hour_at_max = max_time(wind, time = hour),
 #'             wind_min = min(wind),
 #'             hour_at_min = min_time(wind, time = hour))
+#'
+#' @name max_time
+NULL
+
+#' @describeIn max_time helper for sfn_metrics
 #'
 #' @export
 
