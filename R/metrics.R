@@ -53,18 +53,89 @@
 #'
 #' @family metrics
 #'
-#' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
-#'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
-#'   for each site.
+#' @return For \code{\link{sfn_data}} objects, a list of tbl_time objects 
+#'   with the following structure:
+#'   \itemize{
+#'     \item{$sapf: metrics for the sapflow data
+#'           \itemize{
+#'             \item{$sapf: general metrics}
+#'             \item{$sapf_pd: metrics for predawn interval}
+#'             \item{$sapf_md: metrics for midday interval}
+#'           }}
+#'     \item{$env: metrics for the environmental data
+#'           \itemize{
+#'             \item{$env: general metrics}
+#'             \item{$env_pd: metrics for predawn interval}
+#'             \item{$env_md: metrics for midday interval}
+#'           }}
+#'   }
+#'   
+#'   For \code{\link{sfn_data_multi}} objects, a list of lists of tbl_time objects
+#'   with the metrics for each site:
+#'   \itemize{
+#'     \item{$SITE_CODE
+#'       \itemize{
+#'         \item{$sapf: metrics for the sapflow data
+#'           \itemize{
+#'             \item{$sapf: general metrics}
+#'             \item{$sapf_pd: metrics for predawn interval}
+#'             \item{$sapf_md: metrics for midday interval}
+#'           }}
+#'       }
+#'       \itemize{
+#'         \item{$env: metrics for the environmental data
+#'           \itemize{
+#'             \item{$env: general metrics}
+#'             \item{$env_pd: metrics for predawn interval}
+#'             \item{$env_md: metrics for midday interval}
+#'           }}
+#'       }
+#'     }
+#'     \item{$NEXT_SITE_CODE...}
+#'   }
 #'
 #' @examples
 #' ## sfn_data
 #' data('FOO', pkg = 'sapfluxnetr')
-#' sfn_metrics(FOO)
+#' FOO_metrics <- sfn_metrics(
+#'   FOO,
+#'   period = '7 days',
+#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+#'   solar = FALSE,
+#'   predawn = TRUE,
+#'   pd_start = 4,
+#'   pd_end = 6,
+#'   midday = TRUE,
+#'   md_start = 12,
+#'   md_end = 14,
+#'   side = 'start'
+#' )
+#' 
+#' str(FOO_metrics)
+#' FOO_metrics[['sapf']][['sapf_pd']]
 #'
 #' ## sfn_data_multi
-#' data('sfn_multi', pkg = 'sapfluxnetr')
-#' sfn_metrics(FOO)
+#' data('BAR', pkg = 'sapfluxnetr')
+#' data('BAZ', pkg = 'sapfluxnetr')
+#' multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+#' 
+#' multi_metrics <- sfn_metrics(
+#'   multi_sfn,
+#'   period = '7 days',
+#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+#'   solar = FALSE,
+#'   predawn = TRUE,
+#'   pd_start = 4,
+#'   pd_end = 6,
+#'   midday = TRUE,
+#'   md_start = 12,
+#'   md_end = 14,
+#'   side = 'start'
+#' )
+#' 
+#' str(multi_metrics)
+#' 
+#' multi_metrics[['FOO']][['sapf']][['sapf_pd']]
 #'
 #' @export
 
@@ -133,8 +204,9 @@ sfn_metrics <- function(
       ) %>%
       purrr::map(summarise_by_period, period, .funs, ...) -> predawn_summary
 
-    names(predawn_summary[['sapf']]) <- paste0(names(predawn_summary[['sapf']]), '_pd')
-    names(predawn_summary[['env']]) <- paste0(names(predawn_summary[['env']]), '_pd')
+    names(predawn_summary) <- paste0(names(predawn_summary), '_pd')
+    names(predawn_summary[['sapf_pd']]) <- paste0(names(predawn_summary[['sapf_pd']]), '_pd')
+    names(predawn_summary[['env_pd']]) <- paste0(names(predawn_summary[['env_pd']]), '_pd')
 
   } else {
     predawn_summary <- NULL
@@ -149,16 +221,38 @@ sfn_metrics <- function(
       ) %>%
       purrr::map(summarise_by_period, period, .funs, ...) -> midday_summary
 
-    names(midday_summary[['sapf']]) <- paste0(names(midday_summary[['sapf']]), '_md')
-    names(midday_summary[['env']]) <- paste0(names(midday_summary[['env']]), '_md')
+    names(midday_summary) <- paste0(names(midday_summary), '_md')
+    names(midday_summary[['sapf_md']]) <- paste0(names(midday_summary[['sapf_md']]), '_md')
+    names(midday_summary[['env_md']]) <- paste0(names(midday_summary[['env_md']]), '_md')
 
   } else {
     midday_summary <- NULL
   }
-
-  # we create the result object by joining the summaries. If they are null
-  # bind_cols ignore them, so no problem, and no need of check if they exist.
-  res <- dplyr::bind_cols(period_summary, predawn_summary, midday_summary)
+  
+  # we create the result object:
+  # res
+  #   $sapf
+  #     $sapf
+  #     $sapf_pd
+  #     $spf_md
+  #   $env
+  #     $env
+  #     $env_pd
+  #     $env_md
+  # this way all is modular and after that they can be combined by bind_cols
+  res <- list(
+    sapf = list(
+      sapf = period_summary[['sapf']],
+      sapf_pd = predawn_summary[['sapf_pd']],
+      sapf_md = midday_summary[['sapf_md']]
+    ),
+    env = list(
+      env = period_summary[['env']],
+      env_pd = predawn_summary[['env_pd']],
+      env_md = midday_summary[['env_md']]
+    )
+  )
+  
   return(res)
 }
 

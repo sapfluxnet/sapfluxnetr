@@ -41,9 +41,46 @@ returned.}
 \item{nighttime}{Experimental, not implemented (stats for night time)}
 }
 \value{
-For \code{\link{sfn_data}} objects, a tibble with the metrics. For
-  \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
-  for each site.
+For \code{\link{sfn_data}} objects, a list of tbl_time objects 
+  with the following structure:
+  \itemize{
+    \item{$sapf: metrics for the sapflow data
+          \itemize{
+            \item{$sapf: general metrics}
+            \item{$sapf_pd: metrics for predawn interval}
+            \item{$sapf_md: metrics for midday interval}
+          }}
+    \item{$env: metrics for the environmental data
+          \itemize{
+            \item{$env: general metrics}
+            \item{$env_pd: metrics for predawn interval}
+            \item{$env_md: metrics for midday interval}
+          }}
+  }
+  
+  For \code{\link{sfn_data_multi}} objects, a list of lists of tbl_time objects
+  with the metrics for each site:
+  \itemize{
+    \item{$SITE_CODE
+      \itemize{
+        \item{$sapf: metrics for the sapflow data
+          \itemize{
+            \item{$sapf: general metrics}
+            \item{$sapf_pd: metrics for predawn interval}
+            \item{$sapf_md: metrics for midday interval}
+          }}
+      }
+      \itemize{
+        \item{$env: metrics for the environmental data
+          \itemize{
+            \item{$env: general metrics}
+            \item{$env_pd: metrics for predawn interval}
+            \item{$env_md: metrics for midday interval}
+          }}
+      }
+    }
+    \item{$NEXT_SITE_CODE...}
+  }
 }
 \description{
 Generate daily or above metrics from a site data for the period indicated
@@ -72,11 +109,45 @@ function you can specify it here.
 \examples{
 ## sfn_data
 data('FOO', pkg = 'sapfluxnetr')
-sfn_metrics(FOO)
+FOO_metrics <- sfn_metrics(
+  FOO,
+  period = '7 days',
+  .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+  solar = FALSE,
+  predawn = TRUE,
+  pd_start = 4,
+  pd_end = 6,
+  midday = TRUE,
+  md_start = 12,
+  md_end = 14,
+  side = 'start'
+)
+
+str(FOO_metrics)
+FOO_metrics[['sapf']][['sapf_pd']]
 
 ## sfn_data_multi
-data('sfn_multi', pkg = 'sapfluxnetr')
-sfn_metrics(FOO)
+data('BAR', pkg = 'sapfluxnetr')
+data('BAZ', pkg = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+
+multi_metrics <- sfn_metrics(
+  multi_sfn,
+  period = '7 days',
+  .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+  solar = FALSE,
+  predawn = TRUE,
+  pd_start = 4,
+  pd_end = 6,
+  midday = TRUE,
+  md_start = 12,
+  md_end = 14,
+  side = 'start'
+)
+
+str(multi_metrics)
+
+multi_metrics[['FOO']][['sapf']][['sapf_pd']]
 
 }
 \seealso{
