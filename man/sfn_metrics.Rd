@@ -5,7 +5,7 @@
 \title{Metrics summary function}
 \usage{
 sfn_metrics(sfn_data, period, .funs, solar, predawn, pd_start, pd_end, midday,
-  md_start, md_end, nighttime, ...)
+  md_start, md_end, ...)
 }
 \arguments{
 \item{sfn_data}{\code{\link{sfn_data}} or \code{\link{sfn_data_multi}} object
@@ -35,10 +35,10 @@ returned.}
 
 \item{md_end}{Hour to end the midday interval}
 
-\item{nighttime}{Experimental, not implemented (stats for night time)}
-
 \item{...}{optional arguments to pass to methods used
 (i.e. tibbletime::collapse_index or summarise funs extra arguments)}
+
+\item{nighttime}{Experimental, not implemented (stats for night time)}
 }
 \value{
 For \code{\link{sfn_data}} objects, a tibble with the metrics. For

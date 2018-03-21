@@ -79,7 +79,7 @@ sfn_metrics <- function(
   midday,
   md_start,
   md_end,
-  nighttime,
+  # nighttime,
   ...
 ) {
 
@@ -91,9 +91,21 @@ sfn_metrics <- function(
   }
 
   # we need to check if multi and then repeat the function for each element
-  if (is('sfn_data_multi', sfn_data)) {
-    sfn_data %>%
-      purrr::map(sfn_metrics) -> res_multi
+  if (is(sfn_data, 'sfn_data_multi')) {
+    res_multi <- sfn_data %>%
+      purrr::map(sfn_metrics,
+        period = period,
+        .funs = .funs,
+        solar = solar,
+        predawn = predawn,
+        pd_start = pd_start,
+        pd_end = pd_end,
+        midday = midday,
+        md_start = md_start,
+        md_end = md_end,
+        # nighttime,
+        ...
+      )
 
     return(res_multi)
   }
@@ -120,6 +132,10 @@ sfn_metrics <- function(
         dplyr::between(lubridate::hour(TIMESTAMP), pd_start, pd_end)
       ) %>%
       purrr::map(summarise_by_period, period, .funs, ...) -> predawn_summary
+
+    names(predawn_summary[['sapf']]) <- paste0(names(predawn_summary[['sapf']]), '_pd')
+    names(predawn_summary[['env']]) <- paste0(names(predawn_summary[['env']]), '_pd')
+
   } else {
     predawn_summary <- NULL
   }
@@ -132,6 +148,10 @@ sfn_metrics <- function(
         dplyr::between(lubridate::hour(TIMESTAMP), md_start, md_end)
       ) %>%
       purrr::map(summarise_by_period, period, .funs, ...) -> midday_summary
+
+    names(midday_summary[['sapf']]) <- paste0(names(midday_summary[['sapf']]), '_md')
+    names(midday_summary[['env']]) <- paste0(names(midday_summary[['env']]), '_md')
+
   } else {
     midday_summary <- NULL
   }
