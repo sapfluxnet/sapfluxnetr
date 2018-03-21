@@ -106,11 +106,12 @@ sfn_metrics <- function(
 
   # period summaries: we want to know period means, maximum, minimum, quantiles...
   whole_data %>%
-    purrr::map(period_summaries, period, .funs, ...) -> period_summary
+    purrr::map(summarise_by_period, period, .funs, ...) -> period_summary
 
   # filtering summaries we want to know filtered period (predawn, midday) means,
   # maximum, minimum, quantiles...
-  # `period_summaries` is a helper function documented in helpers.R
+  # `summarise_by_period` is a helper function documented in helpers.R
+
   # predawn
   if (predawn) {
     whole_data %>%
@@ -118,7 +119,7 @@ sfn_metrics <- function(
         dplyr::filter,
         dplyr::between(lubridate::hour(TIMESTAMP), pd_start, pd_end)
       ) %>%
-      purrr::map(period_summaries, period, .funs, ...) -> predawn_summary
+      purrr::map(summarise_by_period, period, .funs, ...) -> predawn_summary
   } else {
     predawn_summary <- NULL
   }
@@ -130,7 +131,7 @@ sfn_metrics <- function(
         dplyr::filter,
         dplyr::between(lubridate::hour(TIMESTAMP), md_start, md_end)
       ) %>%
-      purrr::map(period_summaries, period, .funs, ...) -> midday_summary
+      purrr::map(summarise_by_period, period, .funs, ...) -> midday_summary
   } else {
     midday_summary <- NULL
   }
@@ -188,9 +189,16 @@ daily_metrics <- function(
     dots <- dots[names(dots) != '.funs']
   } else {
     .funs <- dplyr::funs(
-      mean, dplyr::n, quantile, data_coverage, max, min, max_time, min_time
+      mean(., na.rm = TRUE),
+      dplyr::n(),
+      data_coverage(.),
+      quantile(., na.rm = TRUE),
+      max(., na.rm = TRUE),
+      min(., na.rm = TRUE),
+      max_time(., !!"time := TIMESTAMP"),
+      min_time(., !!"time := TIMESTAMP")
     )
-    dots <- c(dots, quo(time := TIMESTAMP))
+    # dots <- c(dots, quo(time := TIMESTAMP))
   }
 
   # just input all in the sfn_function
@@ -249,9 +257,16 @@ monthly_metrics <- function(
     dots <- dots[names(dots) != '.funs']
   } else {
     .funs <- dplyr::funs(
-      mean, dplyr::n, quantile, data_coverage, max, min, max_time, min_time
+      mean(., na.rm = TRUE),
+      dplyr::n(),
+      data_coverage(.),
+      quantile(., na.rm = TRUE),
+      max(., na.rm = TRUE),
+      min(., na.rm = TRUE),
+      max_time(., !!"time := TIMESTAMP"),
+      min_time(., !!"time := TIMESTAMP")
     )
-    dots <- c(dots, quo(time := TIMESTAMP))
+    # dots <- c(dots, quo(time := TIMESTAMP))
   }
 
   # just input all in the sfn_metrics function

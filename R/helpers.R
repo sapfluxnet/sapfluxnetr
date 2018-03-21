@@ -1,16 +1,59 @@
 #' metrics shared statistics
 #'
-#' helper for sfn_metrics
-#'
 #' This helper pipes the different chain of commands to perform the period
-#' summaries, shared by general, predawn and midday metrics
+#' summaries, shared by general, predawn, midday and nighttime metrics
 #'
-#' @param sfn_data an sfn_data object
+#' This function uses internally \code{\link[tibbletime]{collapse_by}} and
+#' \code{\link[dplyr]{summarise_all}} and arguments to control these functions
+#' can be passed as `...`. Arguments for each function are spliced and applied
+#' when needed. Be advised that all arguments passed to the summarise_all function
+#' will be applied to all the sumarising functions used, so it will fail if any
+#' of that functions does not have that argument. To complex function-argument
+#' relationships, indicate each function extra argument in the .funs argument
+#' with the dplyr::funs function:
+#' \preformatted{
+#' # This will fail beacuse na.rm argument will be also passed to n function,
+#' # which does not accept any argument
+#' summarise_by_period(
+#'   data = get_sapf(FOO),
+#'   period = '7 days',
+#'   .funs = funs(mean, sd, n),
+#'   na.rm = TRUE
+#' )
+#'
+#' # to solve this is better to use:
+#' summarise_by_period(
+#'   data = get_sapf(FOO),
+#'   period = '7 days',
+#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+#' )
+#' }
+#'
+#' @param data sapflow or environmental data as obtained by \code{\link{get_sapf}}
+#'   and \code{\link{get_env}}
 #' @param period tibbletime::collapse_by period
-#' @param .funs summarise_all funs
-#' @param ... optional arguments for tibbletime::collapse_by function
+#' @param .funs dplyr::summarise_all funs
+#' @param ... optional arguments for tibbletime::collapse_by function and
+#'   dplyr::summarise_all function
+#'
+#' @return A `tbl_time` object with the metrics results. The names of the columns
+#'   indicate the original variable (tree or environmental variable) and the
+#'   metric calculated (i.e. `vpd_mean`)
+#'
+#' @examples
+#' #data
+#' load('FOO', package = 'sapfluxnetr')
+#'
+#' # simple summary
+#' summarise_by_period(
+#'   data = get_sapf(FOO),
+#'   period = '7 days',
+#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+#' )
+#'
+#' @export
 
-period_summaries <- function(sfn_data, period, .funs, ...) {
+summarise_by_period <- function(data, period, .funs, ...) {
 
   # we will need the extra arguments (...) if any, just in case
   dots <- list(...)
@@ -20,13 +63,59 @@ period_summaries <- function(sfn_data, period, .funs, ...) {
   # if we need to pass unknown arguments to collapse_by and summarise_all, then
   # we use the quasiquotation system (!!!args_list), that way we don't need to
   # worry about which arguments are supplied
-  sfn_data %>%
-    tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-    tibbletime::collpase_by(period = period, !!! dots_collapse_by) %>%
-    dplyr::group_by(TIMESTAMP) %>%
-    dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) -> res
+  # But there is a problem, if no extra arguments provided, !!! fails, so we need
+  # to cover all possible scenarios
+  if (length(dots_collapse_by) > 0) {
+    if (length(dots_summarise_all) > 0) {
+      data %>%
+        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::collapse_by(period = period, !!! dots_collapse_by) %>%
+        dplyr::mutate(
+          TIMESTAMP = tibbletime::collapse_index(
+            index = TIMESTAMP,
+            period = period,
+            !!! dots_collapse_by
+          )
+        ) %>%
+        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) -> res
 
-  return(res)
+      return(res)
+    } else {
+      data %>%
+        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::collapse_by(period = period, !!! dots_collapse_by) %>%
+        dplyr::mutate(
+          TIMESTAMP = tibbletime::collapse_index(
+            index = TIMESTAMP,
+            period = period,
+            !!! dots_collapse_by
+          )
+        ) %>%
+        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::summarise_all(.funs = .funs) -> res
+
+      return(res)
+    }
+  } else {
+    if (length(dots_summarise_all) > 0) {
+      data %>%
+        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        tibbletime::collapse_by(period = period) %>%
+        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) -> res
+
+      return(res)
+    } else {
+      data %>%
+        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        tibbletime::collapse_by(period = period) %>%
+        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::summarise_all(.funs = .funs) -> res
+
+      return(res)
+    }
+  }
 }
 
 #' data coverage
