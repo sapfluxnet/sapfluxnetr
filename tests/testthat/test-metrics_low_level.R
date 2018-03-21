@@ -433,8 +433,8 @@ test_that('sfn_metrics examples work', {
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
       solar = FALSE,
       predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
+      md_start = 12,
+      md_end = 14,
       midday = TRUE,
       pd_start = 4,
       pd_end = 6,
@@ -450,8 +450,8 @@ test_that('sfn_metrics examples work', {
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
       solar = FALSE,
       predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
+      md_start = 12,
+      md_end = 14,
       midday = TRUE,
       pd_start = 4,
       pd_end = 6,
@@ -467,14 +467,43 @@ test_that('sfn_metrics examples work', {
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
       solar = FALSE,
       predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
+      md_start = 12,
+      md_end = 14,
       midday = TRUE,
       pd_start = 4,
       pd_end = 6,
       side = 'start'
     )[['BAZ']],
     'list'
+  )
+  
+  expect_equal(
+    sfn_metrics(
+      FOO,
+      period = '7 days',
+      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+      solar = FALSE,
+      predawn = TRUE,
+      pd_start = 4,
+      pd_end = 6,
+      midday = TRUE,
+      md_start = 12,
+      md_end = 14,
+      side = 'start'
+    )[['sapf']][['sapf_pd']],
+    sfn_metrics(
+      multi_sfn,
+      period = '7 days',
+      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+      solar = FALSE,
+      predawn = TRUE,
+      pd_start = 4,
+      pd_end = 6,
+      midday = TRUE,
+      md_start = 12,
+      md_end = 14,
+      side = 'start'
+    )[['FOO']][['sapf']][['sapf_pd']]
   )
   
 })
