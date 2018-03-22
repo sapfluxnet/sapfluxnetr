@@ -41,7 +41,7 @@ returned.}
 \item{nighttime}{Experimental, not implemented (stats for night time)}
 }
 \value{
-For \code{\link{sfn_data}} objects, a list of tbl_time objects 
+For \code{\link{sfn_data}} objects, a list of tbl_time objects
   with the following structure:
   \itemize{
     \item{$sapf: metrics for the sapflow data
@@ -61,7 +61,7 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
                   \code{midday = TRUE})}
           }}
   }
-  
+
   For \code{\link{sfn_data_multi}} objects, a list of lists of tbl_time objects
   with the metrics for each site:
   \itemize{

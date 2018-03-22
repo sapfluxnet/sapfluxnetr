@@ -54,27 +54,27 @@
 #'
 #' @family metrics
 #'
-#' @return For \code{\link{sfn_data}} objects, a list of tbl_time objects 
+#' @return For \code{\link{sfn_data}} objects, a list of tbl_time objects
 #'   with the following structure:
 #'   \itemize{
 #'     \item{$sapf: metrics for the sapflow data
 #'           \itemize{
 #'             \item{$sapf: general metrics}
 #'             \item{$sapf_pd: metrics for predawn interval (if
-#'                   \code{predawn = TRUE})}
+#'                   \code{predawn = FALSE} the slot will be empty)}
 #'             \item{$sapf_md: metrics for midday interval (if
-#'                   \code{midday = TRUE})}
+#'                   \code{midday = FALSE} the slot will be empty)}
 #'           }}
 #'     \item{$env: metrics for the environmental data
 #'           \itemize{
 #'             \item{$env: general metrics}
 #'             \item{$env_pd: metrics for predawn interval (if
-#'                   \code{predawn = TRUE})}
+#'                   \code{predawn = FALSE} the slot will be empty)}
 #'             \item{$env_md: metrics for midday interval (if
-#'                   \code{midday = TRUE})}
+#'                   \code{midday = FALSE} the slot will be empty)}
 #'           }}
 #'   }
-#'   
+#'
 #'   For \code{\link{sfn_data_multi}} objects, a list of lists of tbl_time objects
 #'   with the metrics for each site:
 #'   \itemize{
@@ -84,9 +84,9 @@
 #'           \itemize{
 #'             \item{$sapf: general metrics}
 #'             \item{$sapf_pd: metrics for predawn interval (if
-#'                   \code{predawn = TRUE})}
+#'                   \code{predawn = FALSE} the slot will be empty)}
 #'             \item{$sapf_md: metrics for midday interval (if
-#'                   \code{midday = TRUE})}
+#'                   \code{midday = FALSE} the slot will be empty)}
 #'           }}
 #'       }
 #'       \itemize{
@@ -94,9 +94,9 @@
 #'           \itemize{
 #'             \item{$env: general metrics}
 #'             \item{$env_pd: metrics for predawn interval (if
-#'                   \code{predawn = TRUE})}
+#'                   \code{predawn = FALSE} the slot will be empty)}
 #'             \item{$env_md: metrics for midday interval (if
-#'                   \code{midday = TRUE})}
+#'                   \code{midday = FALSE} the slot will be empty)}
 #'           }}
 #'       }
 #'     }
@@ -119,7 +119,7 @@
 #'   md_end = 14,
 #'   side = 'start'
 #' )
-#' 
+#'
 #' str(FOO_metrics)
 #' FOO_metrics[['sapf']][['sapf_pd']]
 #'
@@ -127,7 +127,7 @@
 #' data('BAR', pkg = 'sapfluxnetr')
 #' data('BAZ', pkg = 'sapfluxnetr')
 #' multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
-#' 
+#'
 #' multi_metrics <- sfn_metrics(
 #'   multi_sfn,
 #'   period = '7 days',
@@ -141,9 +141,9 @@
 #'   md_end = 14,
 #'   side = 'start'
 #' )
-#' 
+#'
 #' str(multi_metrics)
-#' 
+#'
 #' multi_metrics[['FOO']][['sapf']][['sapf_pd']]
 #'
 #' @export
@@ -237,7 +237,7 @@ sfn_metrics <- function(
   } else {
     midday_summary <- NULL
   }
-  
+
   # we create the result object:
   # res
   #   $sapf
@@ -261,7 +261,7 @@ sfn_metrics <- function(
       env_md = midday_summary[['env_md']]
     )
   )
-  
+
   return(res)
 }
 
@@ -276,11 +276,34 @@ sfn_metrics <- function(
 #'
 #' @param probs numeric vector of probabilities for \code{\link[stats]{quantile}}
 #'
-#' @param na.rm logical; if true, any NA and NaN's are removed in the summarise
-#'
 #' @param ... optional arguments passed to \code{\link{sfn_metrics}}
 #'
 #' @family metrics
+#'
+#' @examples
+#' # data load
+#' data('FOO', package = 'sapfluxnetr')
+#'
+#' # default complete daily metrics
+#' FOO_daily <- daily_metrics(FOO)
+#'
+#' str(FOO_daily)
+#' FOO_daily[['env']][['env']]
+#'
+#' # change the predawn and midday interval
+#' FOO_int_daily <- daily_metrics(
+#'   FOO,
+#'   pd_start = 5, pd_end = 7, # predawn starting and ending hour
+#'   md_start = 13, md_end = 15 # midday starting and ending hour
+#' )
+#'
+#' # get only the general metrics
+#' FOO_gen <- daily_metrics(FOO, predawn = FALSE, midday = FALSE)
+#'
+#' str(FOO_gen)
+#' # no predawn or midday
+#' FOO[['sapf']][['sapf_pd']] # error
+#' FOO[['sapf']][['sapf']]
 #'
 #' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
 #'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
@@ -298,7 +321,6 @@ daily_metrics <- function(
   md_start = 11,
   md_end = 13,
   probs = c(0.95, 0.99),
-  na.rm = FALSE,
   ...
 ) {
 
@@ -315,7 +337,7 @@ daily_metrics <- function(
       mean(., na.rm = TRUE),
       dplyr::n(),
       data_coverage(.),
-      quantile(., na.rm = TRUE),
+      quantile(., probs = probs, na.rm = TRUE),
       max(., na.rm = TRUE),
       min(., na.rm = TRUE),
       max_time(., !!"time := TIMESTAMP"),
@@ -337,7 +359,6 @@ daily_metrics <- function(
     md_start = md_start,
     md_end = md_end,
     probs = probs,
-    na.rm = na.rm,
     !!! dots
   )
 }

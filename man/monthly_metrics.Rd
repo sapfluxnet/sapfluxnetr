@@ -31,8 +31,6 @@ returned.}
 
 \item{probs}{numeric vector of probabilities for \code{\link[stats]{quantile}}}
 
-\item{na.rm}{logical; if true, any NA and NaN's are removed in the summarise}
-
 \item{...}{optional arguments passed to \code{\link{sfn_metrics}}}
 }
 \value{

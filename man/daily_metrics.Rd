@@ -6,7 +6,7 @@
 \usage{
 daily_metrics(sfn_data, solar = TRUE, predawn = TRUE, pd_start = 3,
   pd_end = 5, midday = TRUE, md_start = 11, md_end = 13,
-  probs = c(0.95, 0.99), na.rm = FALSE, ...)
+  probs = c(0.95, 0.99), ...)
 }
 \arguments{
 \item{sfn_data}{\code{\link{sfn_data}} or \code{\link{sfn_data_multi}} object
@@ -31,8 +31,6 @@ returned.}
 
 \item{probs}{numeric vector of probabilities for \code{\link[stats]{quantile}}}
 
-\item{na.rm}{logical; if true, any NA and NaN's are removed in the summarise}
-
 \item{...}{optional arguments passed to \code{\link{sfn_metrics}}}
 }
 \value{
@@ -42,6 +40,32 @@ For \code{\link{sfn_data}} objects, a tibble with the metrics. For
 }
 \description{
 This function returns a complete summary of the site/s with our exclusive set of metrics developed with love for you
+}
+\examples{
+# data load
+data('FOO', package = 'sapfluxnetr')
+
+# default complete daily metrics
+FOO_daily <- daily_metrics(FOO)
+
+str(FOO_daily)
+FOO_daily[['env']][['env']]
+
+# change the predawn and midday interval
+FOO_int_daily <- daily_metrics(
+  FOO,
+  pd_start = 5, pd_end = 7, # predawn starting and ending hour
+  md_start = 13, md_end = 15 # midday starting and ending hour
+)
+
+# get only the general metrics
+FOO_gen <- daily_metrics(FOO, predawn = FALSE, midday = FALSE)
+
+str(FOO_gen)
+# no predawn or midday
+FOO[['sapf']][['sapf_pd']] # error
+FOO[['sapf']][['sapf']]
+
 }
 \seealso{
 Other metrics: \code{\link{monthly_metrics}},
