@@ -70,6 +70,8 @@
 #'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
 #' )
 #'
+#' @importFrom rlang .data
+#'
 #' @export
 
 summarise_by_period <- function(data, period, .funs, ...) {
@@ -90,14 +92,14 @@ summarise_by_period <- function(data, period, .funs, ...) {
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
-          TIMESTAMP_coll = TIMESTAMP,
+          TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
-            index = TIMESTAMP,
+            index = .data$TIMESTAMP,
             period = period,
             !!! dots_collapse_index
           )
         ) %>%
-        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::group_by(.data$TIMESTAMP) %>%
         dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
         dplyr::select(-dplyr::contains('_coll_')) -> res
 
@@ -107,14 +109,14 @@ summarise_by_period <- function(data, period, .funs, ...) {
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
-          TIMESTAMP_coll = TIMESTAMP,
+          TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
-            index = TIMESTAMP,
+            index = .data$TIMESTAMP,
             period = period,
             !!! dots_collapse_index
           )
         ) %>%
-        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::group_by(.data$TIMESTAMP) %>%
         dplyr::summarise_all(.funs = .funs) %>%
         dplyr::select(-dplyr::contains('_coll_')) -> res
 
@@ -126,13 +128,13 @@ summarise_by_period <- function(data, period, .funs, ...) {
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
-          TIMESTAMP_coll = TIMESTAMP,
+          TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
-            index = TIMESTAMP,
+            index = .data$TIMESTAMP,
             period = period
           )
         ) %>%
-        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::group_by(.data$TIMESTAMP) %>%
         dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
         dplyr::select(-dplyr::contains('_coll_')) -> res
 
@@ -142,13 +144,13 @@ summarise_by_period <- function(data, period, .funs, ...) {
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
-          TIMESTAMP_coll = TIMESTAMP,
+          TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
-            index = TIMESTAMP,
+            index = .data$TIMESTAMP,
             period = period
           )
         ) %>%
-        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::group_by(.data$TIMESTAMP) %>%
         dplyr::summarise_all(.funs = .funs) %>%
         dplyr::select(-dplyr::contains('_coll_')) -> res
 
@@ -369,7 +371,7 @@ sfn_metrics <- function(
     whole_data %>%
       purrr::map(
         dplyr::filter,
-        dplyr::between(lubridate::hour(TIMESTAMP), pd_start, pd_end)
+        dplyr::between(lubridate::hour(.data$TIMESTAMP), pd_start, pd_end)
       ) %>%
       purrr::map(summarise_by_period, period, .funs, ...) -> predawn_summary
 
@@ -386,7 +388,7 @@ sfn_metrics <- function(
     whole_data %>%
       purrr::map(
         dplyr::filter,
-        dplyr::between(lubridate::hour(TIMESTAMP), md_start, md_end)
+        dplyr::between(lubridate::hour(.data$TIMESTAMP), md_start, md_end)
       ) %>%
       purrr::map(summarise_by_period, period, .funs, ...) -> midday_summary
 
@@ -510,9 +512,9 @@ daily_metrics <- function(
       coverage = data_coverage(.),
       !!! quantile_args,
       max = max(., na.rm = TRUE),
-      max_time = max_time(., TIMESTAMP_coll),
+      max_time = max_time(., .data$TIMESTAMP_coll),
       min = min(., na.rm = TRUE),
-      min_time = min_time(., TIMESTAMP_coll)
+      min_time = min_time(., .data$TIMESTAMP_coll)
     )
   }
 
@@ -609,9 +611,9 @@ monthly_metrics <- function(
       coverage = data_coverage(.),
       !!! quantile_args,
       max = max(., na.rm = TRUE),
-      max_time = max_time(., TIMESTAMP_coll),
+      max_time = max_time(., .data$TIMESTAMP_coll),
       min = min(., na.rm = TRUE),
-      min_time = min_time(., TIMESTAMP_coll)
+      min_time = min_time(., .data$TIMESTAMP_coll)
     )
   }
 

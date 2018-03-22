@@ -186,3 +186,17 @@ get_timezone <- function(
   # get the timezone
   .timezone_dic(get_env_md(sfn_data)[['env_time_zone']])
 }
+
+#' as_sfn_data_multi helper
+#'
+#' Convert any list of sfn_data objects in a sfn_data_multi object
+#'
+#' @param x A list of sfn_data objects
+#'
+#' @return A sfn_data_multi object
+
+as_sfn_data_multi <- function(x) {
+
+  dplyr::quo(sfn_data_multi(!!!x))
+
+}
