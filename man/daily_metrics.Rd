@@ -39,7 +39,7 @@ For \code{\link{sfn_data}} objects, a tibble with the metrics. For
   for each site.
 }
 \description{
-This function returns a complete summary of the site/s with our exclusive set of metrics developed with love for you
+This function returns a complete daily summary for the site/s
 }
 \examples{
 # data load

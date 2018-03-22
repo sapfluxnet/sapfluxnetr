@@ -1393,3 +1393,11 @@ test_that('daily metrics returns the variables required', {
 
 })
 
+test_that('monthly metrics examples work', {
+
+  # we only test the main example, as the previous tests already cover almost
+  # all functionality
+  expect_is(monthly_metrics(FOO, solar = FALSE), 'list')
+  expect_s3_class(monthly_metrics(FOO, solar = TRUE)[['sapf']][['sapf']], 'tbl_df')
+
+})

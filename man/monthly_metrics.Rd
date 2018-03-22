@@ -39,7 +39,35 @@ For \code{\link{sfn_data}} objects, a tibble with the metrics. For
   for each site.
 }
 \description{
-This function returns a complete summary of the site/s
+This function returns a complete monthly summary for the site/s
+}
+\examples{
+# data load
+data('FOO', package = 'sapfluxnetr')
+
+# default complete daily metrics
+FOO_monthly <- monthly_metrics(FOO)
+
+str(FOO_monthly)
+FOO_monthly[['env']][['env']]
+
+# change the predawn and midday interval
+FOO_int_monthly <- monthly_metrics(
+  FOO,
+  pd_start = 5, pd_end = 7, # predawn starting and ending hour
+  md_start = 13, md_end = 15 # midday starting and ending hour
+)
+
+str(FOO_int_monthly)
+
+# get only the general metrics
+FOO_gen <- monthly_metrics(FOO, predawn = FALSE, midday = FALSE)
+
+str(FOO_gen)
+# no predawn or midday
+FOO_gen[['sapf']][['sapf_pd']] # NULL
+FOO_gen[['sapf']][['sapf']] # data
+
 }
 \seealso{
 Other metrics: \code{\link{daily_metrics}},
