@@ -1,3 +1,163 @@
+#' Summaries by period
+#'
+#' This function collapse the TIMESTAMP to the desired period (day, month...)
+#' by setting the same value to all timestamps within the period. This modified
+#' TIMESTAMP is used to group by and summarise the data.
+#'
+#' This function uses internally \code{\link[tibbletime]{collapse_index}} and
+#' \code{\link[dplyr]{summarise_all}} and arguments to control these functions
+#' can be passed as `...`. Arguments for each function are spliced and applied
+#' when needed. Be advised that all arguments passed to the summarise_all function
+#' will be applied to all the summarising functions used, so it will fail if any
+#' of that functions does not accept that argument. To complex function-argument
+#' relationships, indicate each summary function call within the \code{.funs}
+#' argument with \code{\link[dplyr]{funs}}:
+#' \preformatted{
+#' # This will fail beacuse na.rm argument will be also passed to the n function,
+#' # which does not accept any argument:
+#' summarise_by_period(
+#'   data = get_sapf(FOO),
+#'   period = '7 days',
+#'   .funs = funs(mean, sd, n),
+#'   na.rm = TRUE
+#' )
+#'
+#' # to solve this is better to use the .funs argument:
+#' summarise_by_period(
+#'   data = get_sapf(FOO),
+#'   period = '7 days',
+#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+#' )
+#' }
+#'
+#' @section TIMESTAMP_coll:
+#'   Previously to the collapsing step, a temporal variable called \code{TIMESTAMP_coll}
+#'   is created to be able to catch the real timestamp when some events happens, for
+#'   example to use the \code{min_time} function. If your custom summarise function
+#'   needs to get the time at which some event happens, use TIMESTAMP_coll instead of
+#'   TIMESTAMP for that:
+#'   \preformatted{
+#'     min_time <- function(x, time) {
+#'       time[which.min(x)]
+#'     }
+#'
+#'     summarise_by_period(
+#'       data = get_sapf(FOO),
+#'       period = 'daily',
+#'       .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
+#'     )
+#'   }
+#'
+#' @param data sapflow or environmental data as obtained by \code{\link{get_sapf}}
+#'   and \code{\link{get_env}}
+#' @param period tibbletime::collapse_index period
+#' @param .funs dplyr::summarise_all funs
+#' @param ... optional arguments for tibbletime::collapse_index function and
+#'   dplyr::summarise_all function
+#'
+#' @return A `tbl_time` object with the metrics results. The names of the columns
+#'   indicate the original variable (tree or environmental variable) and the
+#'   metric calculated (i.e. `vpd_mean`)
+#'
+#' @examples
+#' # data
+#' load('FOO', package = 'sapfluxnetr')
+#'
+#' # simple summary
+#' summarise_by_period(
+#'   data = get_sapf(FOO),
+#'   period = '7 days',
+#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+#' )
+#'
+#' @export
+
+summarise_by_period <- function(data, period, .funs, ...) {
+
+  # we will need the extra arguments (...) if any, just in case
+  dots <- list(...)
+  dots_collapse_index <- dots[names(dots) %in% methods::formalArgs(tibbletime::collapse_index)]
+  dots_summarise_all <- dots[!(names(dots) %in% methods::formalArgs(tibbletime::collapse_index))]
+
+  # if we need to pass unknown arguments to collapse_index and summarise_all, then
+  # we use the quasiquotation system (!!!args_list), that way we don't need to
+  # worry about which arguments are supplied
+  # But there is a problem, if no extra arguments provided, !!! fails, so we need
+  # to cover all possible scenarios
+  if (length(dots_collapse_index) > 0) {
+    if (length(dots_summarise_all) > 0) {
+      data %>%
+        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
+        dplyr::mutate(
+          TIMESTAMP_coll = TIMESTAMP,
+          TIMESTAMP = tibbletime::collapse_index(
+            index = TIMESTAMP,
+            period = period,
+            !!! dots_collapse_index
+          )
+        ) %>%
+        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
+        dplyr::select(-dplyr::contains('_coll_')) -> res
+
+      return(res)
+    } else {
+      data %>%
+        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
+        dplyr::mutate(
+          TIMESTAMP_coll = TIMESTAMP,
+          TIMESTAMP = tibbletime::collapse_index(
+            index = TIMESTAMP,
+            period = period,
+            !!! dots_collapse_index
+          )
+        ) %>%
+        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::summarise_all(.funs = .funs) %>%
+        dplyr::select(-dplyr::contains('_coll_')) -> res
+
+      return(res)
+    }
+  } else {
+    if (length(dots_summarise_all) > 0) {
+      data %>%
+        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
+        dplyr::mutate(
+          TIMESTAMP_coll = TIMESTAMP,
+          TIMESTAMP = tibbletime::collapse_index(
+            index = TIMESTAMP,
+            period = period
+          )
+        ) %>%
+        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
+        dplyr::select(-dplyr::contains('_coll_')) -> res
+
+      return(res)
+    } else {
+      data %>%
+        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
+        dplyr::mutate(
+          TIMESTAMP_coll = TIMESTAMP,
+          TIMESTAMP = tibbletime::collapse_index(
+            index = TIMESTAMP,
+            period = period
+          )
+        ) %>%
+        dplyr::group_by(TIMESTAMP) %>%
+        dplyr::summarise_all(.funs = .funs) %>%
+        dplyr::select(-dplyr::contains('_coll_')) -> res
+
+      return(res)
+    }
+  }
+}
+
+
 #' Metrics summary function
 #'
 #' Generate daily or above metrics from a site data for the period indicated
