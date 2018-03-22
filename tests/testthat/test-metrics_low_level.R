@@ -1144,7 +1144,7 @@ test_that('sfn_metrics return the expected object', {
       FOO,
       period = 'daily',
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = TRUE,
+      solar = FALSE,
       predawn = FALSE,
       midday = FALSE,
       side = 'start'
@@ -1152,3 +1152,244 @@ test_that('sfn_metrics return the expected object', {
   )
 
 })
+
+test_that('daily metrics examples work', {
+
+  expect_is(daily_metrics(FOO, solar = FALSE), 'list')
+  expect_s3_class(daily_metrics(FOO, solar = FALSE)[['env']][['env']], 'tbl_time')
+
+  expect_is(daily_metrics(
+    FOO, solar = FALSE,
+    pd_start = 5, pd_end = 7,
+    md_start = 13, md_end = 15
+  ), 'list')
+  expect_s3_class(daily_metrics(
+    FOO, solar = FALSE,
+    pd_start = 5, pd_end = 7,
+    md_start = 13, md_end = 15
+  )[['sapf']][['sapf_pd']], 'tbl_time')
+
+  expect_is(daily_metrics(FOO, solar = FALSE, predawn = FALSE, midday = FALSE), 'list')
+  expect_null(daily_metrics(FOO, solar = FALSE, predawn = FALSE, midday = FALSE)[['env']][['env_md']])
+  expect_s3_class(daily_metrics(
+    FOO, solar = FALSE, predawn = FALSE, midday = FALSE
+  )[['env']][['env']], 'tbl_time')
+
+})
+
+test_that('daily metrics returns the variables required', {
+
+  FOO_daily <- daily_metrics(FOO, solar = FALSE)
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf']]),
+    '_q_95', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf']]),
+    '_q_99', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf']]),
+    '_coverage', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf']]),
+    '_min_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf']]),
+    '_max_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf']]),
+    '_min', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf']]),
+    '_max', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_pd']]),
+    '_q_95', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_pd']]),
+    '_q_99', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_pd']]),
+    '_coverage', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_pd']]),
+    '_min_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_pd']]),
+    '_max_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_pd']]),
+    '_min', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_pd']]),
+    '_max', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_md']]),
+    '_q_95', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_md']]),
+    '_q_99', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_md']]),
+    '_coverage', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_md']]),
+    '_min_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_md']]),
+    '_max_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_md']]),
+    '_min', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['sapf']][['sapf_md']]),
+    '_max', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env']]),
+    '_q_95', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env']]),
+    '_q_99', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env']]),
+    '_coverage', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env']]),
+    '_min_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env']]),
+    '_max_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env']]),
+    '_min', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env']]),
+    '_max', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_pd']]),
+    '_q_95', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_pd']]),
+    '_q_99', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_pd']]),
+    '_coverage', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_pd']]),
+    '_min_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_pd']]),
+    '_max_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_pd']]),
+    '_min', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_pd']]),
+    '_max', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_md']]),
+    '_q_95', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_md']]),
+    '_q_99', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_md']]),
+    '_coverage', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_md']]),
+    '_min_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_md']]),
+    '_max_time', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_md']]),
+    '_min', all = FALSE
+  )
+
+  expect_match(
+    names(FOO_daily[['env']][['env_md']]),
+    '_max', all = FALSE
+  )
+
+})
+

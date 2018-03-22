@@ -1,19 +1,20 @@
 #' metrics shared statistics
 #'
-#' This helper pipes the different chain of commands to perform the period
-#' summaries, shared by general, predawn, midday and nighttime metrics
+#' This function collapse the TIMESTAMP to the desired period (day, month...)
+#' by setting the same value to all timestamps within the period. This modified
+#' TIMESTAMP is used to group by and summarise the data.
 #'
 #' This function uses internally \code{\link[tibbletime]{collapse_index}} and
 #' \code{\link[dplyr]{summarise_all}} and arguments to control these functions
 #' can be passed as `...`. Arguments for each function are spliced and applied
 #' when needed. Be advised that all arguments passed to the summarise_all function
-#' will be applied to all the sumarising functions used, so it will fail if any
-#' of that functions does not have that argument. To complex function-argument
-#' relationships, indicate each function extra argument in the .funs argument
-#' with the dplyr::funs function:
+#' will be applied to all the summarising functions used, so it will fail if any
+#' of that functions does not accept that argument. To complex function-argument
+#' relationships, indicate each summary function call within the \code{.funs}
+#' argument with \code{\link[dplyr]{funs}}:
 #' \preformatted{
-#' # This will fail beacuse na.rm argument will be also passed to n function,
-#' # which does not accept any argument
+#' # This will fail beacuse na.rm argument will be also passed to the n function,
+#' # which does not accept any argument:
 #' summarise_by_period(
 #'   data = get_sapf(FOO),
 #'   period = '7 days',
@@ -21,13 +22,31 @@
 #'   na.rm = TRUE
 #' )
 #'
-#' # to solve this is better to use:
+#' # to solve this is better to use the .funs argument:
 #' summarise_by_period(
 #'   data = get_sapf(FOO),
 #'   period = '7 days',
 #'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
 #' )
 #' }
+#'
+#' @section TIMESTAMP_coll:
+#'   Previously to the collapsing step, a temporal variable called \code{TIMESTAMP_coll}
+#'   is created to be able to catch the real timestamp when some events happens, for
+#'   example to use the \code{min_time} function. If your custom summarise function
+#'   needs to get the time at which some event happens, use TIMESTAMP_coll instead of
+#'   TIMESTAMP for that:
+#'   \preformatted{
+#'     min_time <- function(x, time) {
+#'       time[which.min(x)]
+#'     }
+#'
+#'     summarise_by_period(
+#'       data = get_sapf(FOO),
+#'       period = 'daily',
+#'       .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
+#'     )
+#'   }
 #'
 #' @param data sapflow or environmental data as obtained by \code{\link{get_sapf}}
 #'   and \code{\link{get_env}}
@@ -41,7 +60,7 @@
 #'   metric calculated (i.e. `vpd_mean`)
 #'
 #' @examples
-#' #data
+#' # data
 #' load('FOO', package = 'sapfluxnetr')
 #'
 #' # simple summary
@@ -71,6 +90,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
+          TIMESTAMP_coll = TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
             index = TIMESTAMP,
             period = period,
@@ -78,7 +98,8 @@ summarise_by_period <- function(data, period, .funs, ...) {
           )
         ) %>%
         dplyr::group_by(TIMESTAMP) %>%
-        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) -> res
+        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
+        dplyr::select(-dplyr::contains('_coll_')) -> res
 
       return(res)
     } else {
@@ -86,6 +107,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
+          TIMESTAMP_coll = TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
             index = TIMESTAMP,
             period = period,
@@ -93,7 +115,8 @@ summarise_by_period <- function(data, period, .funs, ...) {
           )
         ) %>%
         dplyr::group_by(TIMESTAMP) %>%
-        dplyr::summarise_all(.funs = .funs) -> res
+        dplyr::summarise_all(.funs = .funs) %>%
+        dplyr::select(-dplyr::contains('_coll_')) -> res
 
       return(res)
     }
@@ -103,13 +126,15 @@ summarise_by_period <- function(data, period, .funs, ...) {
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
+          TIMESTAMP_coll = TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
             index = TIMESTAMP,
             period = period
           )
         ) %>%
         dplyr::group_by(TIMESTAMP) %>%
-        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) -> res
+        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
+        dplyr::select(-dplyr::contains('_coll_')) -> res
 
       return(res)
     } else {
@@ -117,13 +142,15 @@ summarise_by_period <- function(data, period, .funs, ...) {
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
+          TIMESTAMP_coll = TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
             index = TIMESTAMP,
             period = period
           )
         ) %>%
         dplyr::group_by(TIMESTAMP) %>%
-        dplyr::summarise_all(.funs = .funs) -> res
+        dplyr::summarise_all(.funs = .funs) %>%
+        dplyr::select(-dplyr::contains('_coll_')) -> res
 
       return(res)
     }

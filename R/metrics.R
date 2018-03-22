@@ -297,17 +297,21 @@ sfn_metrics <- function(
 #'   md_start = 13, md_end = 15 # midday starting and ending hour
 #' )
 #'
+#' str(FOO_int_daily)
+#'
 #' # get only the general metrics
 #' FOO_gen <- daily_metrics(FOO, predawn = FALSE, midday = FALSE)
 #'
 #' str(FOO_gen)
 #' # no predawn or midday
-#' FOO[['sapf']][['sapf_pd']] # error
-#' FOO[['sapf']][['sapf']]
+#' FOO_gen[['sapf']][['sapf_pd']] # NULL
+#' FOO_gen[['sapf']][['sapf']] # data
 #'
 #' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
 #'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
 #'   for each site.
+#'
+#' @importFrom dplyr n
 #'
 #' @export
 
@@ -333,15 +337,22 @@ daily_metrics <- function(
     .funs <- dots[['.funs']]
     dots <- dots[names(dots) != '.funs']
   } else {
+
+    # we need magic to add the quantiles as they return more than one value
+    # (usually). So lets play with quasiquotation
+    quantile_args <- probs %>%
+      purrr::map(function(x) {dplyr::quo(quantile(., probs = x, na.rm = TRUE))})
+    names(quantile_args) <- paste0('q_', round(probs*100, 0))
+
     .funs <- dplyr::funs(
-      mean(., na.rm = TRUE),
-      dplyr::n(),
-      data_coverage(.),
-      quantile(., probs = probs, na.rm = TRUE),
-      max(., na.rm = TRUE),
-      min(., na.rm = TRUE),
-      max_time(., !!"time := TIMESTAMP"),
-      min_time(., !!"time := TIMESTAMP")
+      mean = mean(., na.rm = TRUE),
+      n = n(),
+      coverage = data_coverage(.),
+      !!! quantile_args,
+      max = max(., na.rm = TRUE),
+      max_time = max_time(., TIMESTAMP_coll),
+      min = min(., na.rm = TRUE),
+      min_time = min_time(., TIMESTAMP_coll)
     )
     # dots <- c(dots, quo(time := TIMESTAMP))
   }
@@ -358,8 +369,7 @@ daily_metrics <- function(
     midday = midday,
     md_start = md_start,
     md_end = md_end,
-    probs = probs,
-    !!! dots
+    ...
   )
 }
 

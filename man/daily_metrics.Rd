@@ -58,13 +58,15 @@ FOO_int_daily <- daily_metrics(
   md_start = 13, md_end = 15 # midday starting and ending hour
 )
 
+str(FOO_int_daily)
+
 # get only the general metrics
 FOO_gen <- daily_metrics(FOO, predawn = FALSE, midday = FALSE)
 
 str(FOO_gen)
 # no predawn or midday
-FOO[['sapf']][['sapf_pd']] # error
-FOO[['sapf']][['sapf']]
+FOO_gen[['sapf']][['sapf_pd']] # NULL
+FOO_gen[['sapf']][['sapf']] # data
 
 }
 \seealso{

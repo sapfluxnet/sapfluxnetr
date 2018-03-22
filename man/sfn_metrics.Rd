@@ -48,17 +48,17 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
           \itemize{
             \item{$sapf: general metrics}
             \item{$sapf_pd: metrics for predawn interval (if
-                  \code{predawn = TRUE})}
+                  \code{predawn = FALSE} the slot will be empty)}
             \item{$sapf_md: metrics for midday interval (if
-                  \code{midday = TRUE})}
+                  \code{midday = FALSE} the slot will be empty)}
           }}
     \item{$env: metrics for the environmental data
           \itemize{
             \item{$env: general metrics}
             \item{$env_pd: metrics for predawn interval (if
-                  \code{predawn = TRUE})}
+                  \code{predawn = FALSE} the slot will be empty)}
             \item{$env_md: metrics for midday interval (if
-                  \code{midday = TRUE})}
+                  \code{midday = FALSE} the slot will be empty)}
           }}
   }
 
@@ -71,9 +71,9 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
           \itemize{
             \item{$sapf: general metrics}
             \item{$sapf_pd: metrics for predawn interval (if
-                  \code{predawn = TRUE})}
+                  \code{predawn = FALSE} the slot will be empty)}
             \item{$sapf_md: metrics for midday interval (if
-                  \code{midday = TRUE})}
+                  \code{midday = FALSE} the slot will be empty)}
           }}
       }
       \itemize{
@@ -81,9 +81,9 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
           \itemize{
             \item{$env: general metrics}
             \item{$env_pd: metrics for predawn interval (if
-                  \code{predawn = TRUE})}
+                  \code{predawn = FALSE} the slot will be empty)}
             \item{$env_md: metrics for midday interval (if
-                  \code{midday = TRUE})}
+                  \code{midday = FALSE} the slot will be empty)}
           }}
       }
     }
