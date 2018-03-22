@@ -28,8 +28,9 @@ read_sfn_data <- function(site_code, folder = '.') {
 
   # if more than one site we need to map the call
   if (length(site_code) > 1) {
-    sites_multi <- purrr::map(site_code, read_sfn_data, folder)
-    # TODO convert the list obtained in a sfn_data_multi
+    sites_multi <- purrr::map(site_code, read_sfn_data, folder) %>%
+      as_sfn_data_multi()
+
     return(sites_multi)
   }
 

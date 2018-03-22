@@ -1,0 +1,52 @@
+context("getters")
+
+test_that('read_sfn_data load the objects correctly', {
+
+  expect_s4_class(
+    read_sfn_data('FOO', 'Data'), 'sfn_data'
+  )
+
+  expect_s4_class(
+    read_sfn_data('BAR', 'Data'), 'sfn_data'
+  )
+
+  expect_s4_class(
+    read_sfn_data('BAZ', 'Data'), 'sfn_data'
+  )
+
+  expect_s4_class(
+    read_sfn_data(c('FOO', 'BAR', 'BAZ'), 'Data'), 'sfn_data_multi'
+  )
+
+})
+
+test_that('as_sfn_data_multi helper works as intended', {
+
+  FOO <- read_sfn_data('FOO', 'Data')
+  BAR <- read_sfn_data('BAR', 'Data')
+  BAZ <- read_sfn_data('BAZ', 'Data')
+
+  multi_list <- list(FOO, BAR, BAZ)
+
+  expect_s4_class(
+    sapfluxnetr:::as_sfn_data_multi(multi_list), 'sfn_data_multi'
+  )
+
+  multi_sfn <- sapfluxnetr:::as_sfn_data_multi(multi_list)
+
+  expect_identical(
+    names(multi_sfn), c('FOO', 'BAR', 'BAZ')
+  )
+
+  expect_s4_class(
+    multi_sfn[[1]], 'sfn_data'
+  )
+
+  expect_s4_class(
+    multi_sfn[[2]], 'sfn_data'
+  )
+
+  expect_s4_class(
+    multi_sfn[['BAZ']], 'sfn_data'
+  )
+})

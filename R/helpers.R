@@ -197,6 +197,7 @@ get_timezone <- function(
 
 as_sfn_data_multi <- function(x) {
 
-  dplyr::quo(sfn_data_multi(!!!x))
+  dplyr::quo(sfn_data_multi(!!!x)) %>%
+    rlang::eval_tidy()
 
 }
