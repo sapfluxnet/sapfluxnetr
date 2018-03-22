@@ -201,3 +201,190 @@ as_sfn_data_multi <- function(x) {
     rlang::eval_tidy()
 
 }
+
+
+#' List all variables that can be used to filter sites
+#'
+#' \code{sfn_vars_to_filter()} returns a list with the variables for each
+#' kind of metadata that can be used to select and filter sites
+#'
+#' @examples
+#' # all variables
+#' sfn_vars_to_filter()
+#'
+#' # by some metadata
+#' sfn_vars_to_filter()$site_md
+#'
+#' @return A list with five elements, \code{site_md}, \code{stand_md},
+#'   \code{species_md}, \code{plant_md} and \code{env_md}
+#'
+#' @export
+
+sfn_vars_to_filter <- function() {
+
+  arch_list <- .metadata_factor_architecture()
+
+  vars_to_filter <- list(
+    site_md = names(arch_list$site_md),
+    stand_md = names(arch_list$stand_md),
+    species_md = names(arch_list$species_md),
+    plant_md = names(arch_list$plant_md),
+    env_md = names(arch_list$env_md)
+  )
+
+  return(vars_to_filter)
+
+}
+
+#' Metadata factor variables architecture
+#'
+#' This function returns a nested list with the metadata, the variable and the
+#' values for it use in sfn_vars_to_filter and sfn_values_for
+#'
+#' @return a list with the metadata architecture
+
+.metadata_factor_architecture <- function() {
+
+  arch_list <- list(
+    site_md = list(
+      si_country = c('AFG', 'ALA', 'ALB', 'DZA', 'ASM', 'AND', 'AGO', 'AIA', 'ATA',
+                     'ATG', 'ARG', 'ARM', 'ABW', 'AUS', 'AUT', 'AZE', 'BHS', 'BHR',
+                     'BGD', 'BRB', 'BLR', 'BEL', 'BLZ', 'BEN', 'BMU', 'BTN', 'BOL',
+                     'BES', 'BIH', 'BWA', 'BVT', 'BRA', 'IOT', 'BRN', 'BGR', 'BFA',
+                     'BDI', 'CPV', 'KHM', 'CMR', 'CAN', 'CYM', 'CAF', 'TCD', 'CHL',
+                     'CHN', 'CXR', 'CCK', 'COL', 'COM', 'COG', 'COD', 'COK', 'CRI',
+                     'CIV', 'HRV', 'CUB', 'CUW', 'CYP', 'CZE', 'DNK', 'DJI', 'DMA',
+                     'DOM', 'ECU', 'EGY', 'SLV', 'GNQ', 'ERI', 'EST', 'ETH', 'FLK',
+                     'FRO', 'FJI', 'FIN', 'FRA', 'GUF', 'PYF', 'ATF', 'GAB', 'GMB',
+                     'GEO', 'DEU', 'GHA', 'GIB', 'GRC', 'GRL', 'GRD', 'GLP', 'GUM',
+                     'GTM', 'GGY', 'GIN', 'GNB', 'GUY', 'HTI', 'HMD', 'VAT', 'HND',
+                     'HKG', 'HUN', 'ISL', 'IND', 'IDN', 'IRN', 'IRQ', 'IRL', 'IMN',
+                     'ISR', 'ITA', 'JAM', 'JPN', 'JEY', 'JOR', 'KAZ', 'KEN', 'KIR',
+                     'PRK', 'KOR', 'KWT', 'KGZ', 'LAO', 'LVA', 'LBN', 'LSO', 'LBR',
+                     'LBY', 'LIE', 'LTU', 'LUX', 'MAC', 'MKD', 'MDG', 'MWI', 'MYS',
+                     'MDV', 'MLI', 'MLT', 'MHL', 'MTQ', 'MRT', 'MUS', 'MYT', 'MEX',
+                     'FSM', 'MDA', 'MCO', 'MNG', 'MNE', 'MSR', 'MAR', 'MOZ', 'MMR',
+                     'NAM', 'NRU', 'NPL', 'NLD', 'NCL', 'NZL', 'NIC', 'NER', 'NGA',
+                     'NIU', 'NFK', 'MNP', 'NOR', 'OMN', 'PAK', 'PLW', 'PSE', 'PAN',
+                     'PNG', 'PRY', 'PER', 'PHL', 'PCN', 'POL', 'PRT', 'PRI', 'QAT',
+                     'REU', 'ROU', 'RUS', 'RWA', 'BLM', 'SHN', 'KNA', 'LCA', 'MAF',
+                     'SPM', 'VCT', 'WSM', 'SMR', 'STP', 'SAU', 'SEN', 'SRB', 'SYC',
+                     'SLE', 'SGP', 'SXM', 'SVK', 'SVN', 'SLB', 'SOM', 'ZAF', 'SGS',
+                     'SSD', 'ESP', 'LKA', 'SDN', 'SUR', 'SJM', 'SWZ', 'SWE', 'CHE',
+                     'SYR', 'TWN', 'TJK', 'TZA', 'THA', 'TLS', 'TGO', 'TKL', 'TON',
+                     'TTO', 'TUN', 'TUR', 'TKM', 'TCA', 'TUV', 'UGA', 'UKR', 'ARE',
+                     'GBR', 'USA', 'UMI', 'URY', 'UZB', 'VUT', 'VEN', 'VNM', 'VGB',
+                     'VIR', 'WLF', 'ESH', 'YEM', 'ZMB', 'ZWE'),
+      si_dist_mgmt = c('Agriculture', 'Drought', 'Fire', 'Forestry', 'Grazing',
+                       'Hydrologic event', 'Land cover change', 'Pests and disease',
+                       'NULL'),
+      si_igbp = c('BSV', 'CRO', 'CSH', 'CVM', 'DBF', 'DNF', 'EBF',
+                  'ENF', 'MF', 'OSH', 'SAV', 'URB', 'WET', 'WSA')
+    ),
+    stand_md = list(
+      st_growth_condition = c('Naturally regenerated, unmanaged',
+                              'Naturally regenerated, managed',
+                              'Plantation, managed', 'Plantation, unmanaged',
+                              'Orchard', 'Urban'),
+      st_aspect = c('Flat', 'N', 'E', 'S', 'W'),
+      st_terrain = c('Flat', 'Undulated/Variable', 'Valley', 'Gentle slope (<2 %)',
+                     'Medium Slope (>2 %, <5%)', 'Significant Slope (>5%, <10%)',
+                     'Strong Slope (>10%)', 'Hilltop'),
+      st_soil_texture = c('SAND', 'LOAM', 'SILT', 'CLAY')
+    ),
+    species_md = list(
+      sp_leaf_habit = c('evergreen', 'cold deciduous',
+                        'drought deciduous', 'marcescent')
+    ),
+    plant_md = list(
+      pl_social = c('dominant', 'codominant', 'suppressed'),
+      pl_sens_meth = c('CAG', 'HD', 'CHP', 'CHD', 'HFD', 'HPTM',
+                       'HR', 'SFPLUS', 'SHB', 'TSHB', 'Other/unknown'),
+      pl_sens_man = c('Lab made', 'Dynamax', 'UP GmbH', 'Ecomatik', 'PlantSensors',
+                      'ICT International', 'Ems Brno', 'East30', 'Tranzflo', 'Phytech',
+                      'Puech Asociados', 'Advanced Measurements and Controls',
+                      'HortResearch', 'Greenspan Technology', 'Other/unknown'),
+      pl_sens_cor_grad = c('No correction', 'NTG separately measured',
+                           'NTG measured in cyclic heating deisgn','NTG modelled',
+                           'Other/unknown'),
+      pl_sens_cor_zero = c('Previous night zero flow', 'Long time-window zero flow',
+                           'Moist nights zero flow', 'Manipulative zero flow', 'Not needed',
+                           'Other/unknown'),
+      pl_sap_units = c('“cm3 cm-2 h-1”', '“cm3 m-2 s-1”', '“dm3 dm-2 h-1”',
+                       '“dm3 dm-2 s-1”', '“mm3 mm-2 s-1”', '“g m-2 s-1”',
+                       '“kg m-2 h-1”', '“kg m-2 s-1”', '“cm3 s-1”',
+                       '“cm3 h-1”', '“dm3 h-1”', '“g h-1”', '“kg h-1”'),
+      pl_radial_int = c('No radial correction', 'Sensor-integrated', 'Measured',
+                        'Corrected, measured radial variation',
+                        'Corrected, species coefficients', 'Corrected, other coefficients'),
+      pl_azimut_int = c('No azimuthal correction', 'sensor_integrated', 'measured',
+                        'Corrected, measured azimuthal variation')
+    ),
+    env_md = list(
+      env_time_zone = c('1UTC-12:00, Y', '2UTC-11:00, X', '3UTC-10:00, W',
+                        '4UTC-09:30, V†', '5UTC-09:00, V', '6UTC-08:00, U',
+                        '7UTC-07:00, T', '8UTC-06:00, S',
+                        '9UTC-05:00, R', '10UTC-04:30, Q†', '11UTC-04:00, Q',
+                        '12UTC-03:30, P†', '13UTC-03:00, P', '14UTC-02:00, O',
+                        '15UTC-01:00, N','16UTC±00:00, Z', '17UTC+01:00, A',
+                        '18UTC+02:00, B', '19UTC+03:00, C', '20UTC+03:30, C†',
+                        '21UTC+04:00, D', '22UTC+04:30, D†', '23UTC+05:00, E',
+                        '24UTC+05:30, E†', '25UTC+05:45, E*', '26UTC+06:00, F',
+                        '27UTC+06:30, F†', '28UTC+07:00, G', '29UTC+08:00, H',
+                        '30UTC+08:30, H†', '31UTC+08:45, H*', '32UTC+09:00, I',
+                        '33UTC+09:30, I†', '34UTC+10:00, K', '35UTC+10:30, K†',
+                        '36UTC+11:00, L', '37UTC+12:00, M', '38UTC+12:45, M*',
+                        '39UTC+13:00, M†', '40UTC+14:00, M†'),
+      env_ta = c('Above canopy', 'Within canopy', 'Clearing',
+                 'Off-site', 'Not provided'),
+      env_rh = c('Above canopy', 'Within canopy', 'Clearing',
+                 'Off-site', 'Not provided'),
+      env_vpd = c('Above canopy', 'Within canopy', 'Clearing',
+                  'Off-site', 'Not provided'),
+      env_sw_in = c('Above canopy', 'Within canopy', 'Clearing',
+                    'Off-site', 'Not provided'),
+      env_ppfd_in = c('Above canopy', 'Within canopy', 'Clearing',
+                      'Off-site', 'Not provided'),
+      env_netrad = c('Above canopy', 'Within canopy', 'Clearing',
+                     'Off-site', 'Not provided'),
+      env_ws = c('Above canopy', 'Within canopy', 'Clearing',
+                 'Off-site', 'Not provided'),
+      env_precip = c('Above canopy', 'Within canopy', 'Clearing',
+                     'Off-site', 'Not provided'),
+      env_plant_watpot = c('leaf: predawn', 'leaf: midday', 'xylem: predawn', 'xylem: midday',
+                           'leaf: predawn and midday', 'xylem: predawn and midday',
+                           'xylem: continuous', 'leaf: continuous'),
+      env_leafarea_seasonal = c('stand level', 'species level', 'tree level', 'NULL')
+    )
+  )
+
+  return(arch_list)
+
+}
+
+#' List all possible values for a filtering metadata variable
+#'
+#' \code{sfn_values_for} function returns a vector with the accepted values for
+#' the required metadata variable, and can be used to filter the sites with
+#' \code{\link{filter_by_var}}
+#'
+#' @param var Character indicating the metadata variable
+#'
+#' @examples
+#' # accepted values for plant sensor method (pl_sens_meth)
+#' sfn_values_for('pl_sens_meth')
+#'
+#' @return A character vector with the accepted values for the desired variable
+#'
+#' @export
+
+sfn_values_for <- function(var = 'pl_sens_meth') {
+
+  # we create a nested list with the metadata, the variable and the values and
+  # we call purrr::modify_depth to extract the desired value
+  arch_list <- .metadata_factor_architecture()
+
+  purrr::modify_depth(arch_list, 1, var) %>%
+    purrr::flatten_chr()
+
+}
