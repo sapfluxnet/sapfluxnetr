@@ -202,40 +202,6 @@ as_sfn_data_multi <- function(x) {
 
 }
 
-
-#' List all variables that can be used to filter sites
-#'
-#' \code{sfn_vars_to_filter()} returns a list with the variables for each
-#' kind of metadata that can be used to select and filter sites
-#'
-#' @examples
-#' # all variables
-#' sfn_vars_to_filter()
-#'
-#' # by some metadata
-#' sfn_vars_to_filter()$site_md
-#'
-#' @return A list with five elements, \code{site_md}, \code{stand_md},
-#'   \code{species_md}, \code{plant_md} and \code{env_md}
-#'
-#' @export
-
-sfn_vars_to_filter <- function() {
-
-  arch_list <- .metadata_factor_architecture()
-
-  vars_to_filter <- list(
-    site_md = names(arch_list$site_md),
-    stand_md = names(arch_list$stand_md),
-    species_md = names(arch_list$species_md),
-    plant_md = names(arch_list$plant_md),
-    env_md = names(arch_list$env_md)
-  )
-
-  return(vars_to_filter)
-
-}
-
 #' Metadata factor variables architecture
 #'
 #' This function returns a nested list with the metadata, the variable and the
@@ -359,6 +325,39 @@ sfn_vars_to_filter <- function() {
   )
 
   return(arch_list)
+
+}
+
+#' List all variables that can be used to filter sites
+#'
+#' \code{sfn_vars_to_filter()} returns a list with the variables for each
+#' kind of metadata that can be used to select and filter sites
+#'
+#' @examples
+#' # all variables
+#' sfn_vars_to_filter()
+#'
+#' # by some metadata
+#' sfn_vars_to_filter()$site_md
+#'
+#' @return A list with five elements, \code{site_md}, \code{stand_md},
+#'   \code{species_md}, \code{plant_md} and \code{env_md}
+#'
+#' @export
+
+sfn_vars_to_filter <- function() {
+
+  arch_list <- .metadata_factor_architecture()
+
+  vars_to_filter <- list(
+    site_md = names(arch_list$site_md),
+    stand_md = names(arch_list$stand_md),
+    species_md = names(arch_list$species_md),
+    plant_md = names(arch_list$plant_md),
+    env_md = names(arch_list$env_md)
+  )
+
+  return(vars_to_filter)
 
 }
 
