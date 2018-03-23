@@ -84,5 +84,13 @@ test_that('filter_by_var combines all metadata correctly', {
     'tururu'
   )
   
+  variables <- c('pl_sens_meth', 'env_nonexistenname')
+  
+  expect_error(
+    filter_by_var(variables, values, folder = 'Data'),
+    'tururu'
+  )
+  
+  # TODO tests con los diferentes metadatas por separado, tests con combinaciones
   
 })

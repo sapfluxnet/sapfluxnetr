@@ -7,7 +7,8 @@
 sfn_values_for(var = "pl_sens_meth")
 }
 \arguments{
-\item{var}{Character indicating the metadata variable}
+\item{var}{Character indicating the metadata variable to look for
+accepted values}
 }
 \value{
 A character vector with the accepted values for the desired variable

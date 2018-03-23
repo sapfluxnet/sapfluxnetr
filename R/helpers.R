@@ -347,17 +347,10 @@ as_sfn_data_multi <- function(x) {
 
 sfn_vars_to_filter <- function() {
 
-  arch_list <- .metadata_factor_architecture()
-
-  vars_to_filter <- list(
-    site_md = names(arch_list$site_md),
-    stand_md = names(arch_list$stand_md),
-    species_md = names(arch_list$species_md),
-    plant_md = names(arch_list$plant_md),
-    env_md = names(arch_list$env_md)
-  )
-
-  return(vars_to_filter)
+  # we get a nested list with the metadata and call names on the first level,
+  # obtaining the names of the variables in each metadata
+  .metadata_factor_architecture() %>%
+    purrr::modify_depth(1, names)
 
 }
 
@@ -367,7 +360,8 @@ sfn_vars_to_filter <- function() {
 #' the required metadata variable, and can be used to filter the sites with
 #' \code{\link{filter_by_var}}
 #'
-#' @param var Character indicating the metadata variable
+#' @param var Character indicating the metadata variable to look for
+#'   accepted values
 #'
 #' @examples
 #' # accepted values for plant sensor method (pl_sens_meth)
@@ -381,9 +375,8 @@ sfn_values_for <- function(var = 'pl_sens_meth') {
 
   # we create a nested list with the metadata, the variable and the values and
   # we call purrr::modify_depth to extract the desired value
-  arch_list <- .metadata_factor_architecture()
-
-  purrr::modify_depth(arch_list, 1, var) %>%
+  .metadata_factor_architecture() %>%
+    purrr::modify_depth(1, var) %>%
     purrr::flatten_chr()
 
 }
