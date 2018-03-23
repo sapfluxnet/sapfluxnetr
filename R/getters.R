@@ -103,8 +103,12 @@ filter_by_var <- function(variables, values, folder = '.', .use_cache = FALSE) {
       metadata,
       'si_' = get_site_md(read_sfn_data(site, folder)),
       'st_' = get_stand_md(read_sfn_data(site, folder)),
-      'sp_' = get_species_md(read_sfn_data(site, folder)),
-      'pl_' = get_plant_md(read_sfn_data(site, folder)),
+      'sp_' = get_species_md(read_sfn_data(site, folder)) %>%
+        dplyr::summarise_all(stringr::str_flatten, collapse = '-') %>%
+        dplyr::mutate_all(stringr::str_split, pattern = '-'),
+      'pl_' = get_plant_md(read_sfn_data(site, folder)) %>%
+        dplyr::summarise_all(stringr::str_flatten, collapse = '-') %>%
+        dplyr::mutate_all(stringr::str_split, pattern = '-'),
       'env' = get_env_md(read_sfn_data(site, folder))
     )
 
@@ -113,6 +117,10 @@ filter_by_var <- function(variables, values, folder = '.', .use_cache = FALSE) {
   # list of sites for search
   sites_codes <- list.files(folder, recursive = TRUE, pattern = '.RData') %>%
     stringr::str_remove('.RData')
+  
+  if (length(sites_codes) < 1) {
+    stop(folder, ' seems to contain no sapfluxnet data files (.RData)')
+  }
 
   # quo for future filters.
   # This takes the variable character, transforms it to
@@ -126,7 +134,8 @@ filter_by_var <- function(variables, values, folder = '.', .use_cache = FALSE) {
     purrr::map2(
       values,
       function(var_name, accepted_values) {
-        dplyr::quo(!!var_name %in% accepted_values)
+        # dplyr::quo(!!var_name %in% accepted_values)
+        dplyr::quo(stringr::str_detect(!!var_name, stringr::str_flatten(accepted_values, '|')))
       }
     )
 
@@ -151,7 +160,8 @@ filter_by_var <- function(variables, values, folder = '.', .use_cache = FALSE) {
       !!! filters
     ) %>%
     # pull the si_code variable
-    dplyr::pull(.data$si_code)
-
+    dplyr::pull(.data$si_code) %>%
+    purrr::flatten_chr() %>%
+    unique()
 
 }

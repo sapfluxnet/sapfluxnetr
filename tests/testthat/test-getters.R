@@ -1,5 +1,6 @@
 context("getters")
 
+#### read_sfn_data tests ####
 test_that('read_sfn_data load the objects correctly', {
 
   expect_s4_class(
@@ -20,6 +21,7 @@ test_that('read_sfn_data load the objects correctly', {
 
 })
 
+#### as_sfn_data_multi tests ####
 test_that('as_sfn_data_multi helper works as intended', {
 
   FOO <- read_sfn_data('FOO', 'Data')
@@ -49,4 +51,38 @@ test_that('as_sfn_data_multi helper works as intended', {
   expect_s4_class(
     multi_sfn[['BAZ']], 'sfn_data'
   )
+})
+
+#### filter_by_var tests ####
+test_that('filter_by_var combines all metadata correctly', {
+  
+  variables <- c('pl_sens_meth', 'env_ta')
+  values <- list(pl_sens_meth = 'HR', env_ta = 'Clearing')
+  
+  expect_true(
+    is.character(filter_by_var(variables, values, folder = 'Data'))
+  )
+  
+  expect_length(
+    filter_by_var(variables, values, folder = 'Data'), 3
+  )
+  
+  values <- list(pl_sens_meth = 'HD', env_ta = 'Clearing')
+  
+  expect_length(
+    filter_by_var(variables, values, folder = 'Data'), 0
+  )
+  
+  values <- list(pl_sens_meth = 'HR', env_ta = 'Above canopy')
+  
+  expect_length(
+    filter_by_var(variables, values, folder = 'Data'), 0
+  )
+  
+  expect_error(
+    filter_by_var(variables, values, folder = 'tururu'),
+    'tururu'
+  )
+  
+  
 })
