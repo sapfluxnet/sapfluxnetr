@@ -214,6 +214,12 @@ as_sfn_data_multi <- function(x) {
 
   arch_list <- list(
     site_md = list(
+      si_name = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Site name given by contributors'
+      ),
       si_country = list(
         values = c('AFG', 'ALA', 'ALB', 'DZA', 'ASM', 'AND', 'AGO', 'AIA', 'ATA',
                    'ATG', 'ARG', 'ARM', 'ABW', 'AUS', 'AUT', 'AZE', 'BHS', 'BHR',
@@ -245,7 +251,82 @@ as_sfn_data_multi <- function(x) {
                    'VIR', 'WLF', 'ESH', 'YEM', 'ZMB', 'ZWE'),
         type = "Character",
         units = "Fixed values",
-        description = ""
+        description = "Country code (ISO)"
+      ),
+      si_contact_firstname = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Contributor first name'
+      ),
+      si_contact_lastname = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Contributor last name'
+      ),
+      si_contact_email = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Contributor email'
+      ),
+      si_contact_institution = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Contributor affiliation'
+      ),
+      si_addcontr_firstname = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Additional contributor first name'
+      ),
+      si_addcontr_lastname = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Additional contributor last name'
+      ),
+      si_addcontr_email = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Additional contributor email'
+      ),
+      si_addcontr_institution = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Additional contributor affiliation'
+      ),
+      si_lat = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'Latitude, decimal format',
+        description = 'Site latitude (i.e. 42.36)'
+      ),
+      si_long = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'Longitude, decimal format',
+        description = 'Site longitude (i.e. -8.23)'
+      ),
+      si_elev = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'meters',
+        description = 'Elevation above sea level'
+      ),
+      si_paper = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'DOI link',
+        description = paste0(
+          'Paper with relevant information to understand the site',
+          ' as DOI links or DOI codes'
+        )
       ),
       si_dist_mgmt = list(
         units = c('Agriculture', 'Drought', 'Fire', 'Forestry', 'Grazing',
@@ -253,17 +334,79 @@ as_sfn_data_multi <- function(x) {
                   'NULL'),
         type = "Character",
         units = "Fixed values",
-        description = ""
+        description = paste0(
+          "Recent and historic disturbance and management events that",
+          " affected the measurement years"
+        )
       ),
       si_igbp = list(
         values = c('BSV', 'CRO', 'CSH', 'CVM', 'DBF', 'DNF', 'EBF',
                    'ENF', 'MF', 'OSH', 'SAV', 'URB', 'WET', 'WSA'),
         type = 'Character',
         units = "Fixed values",
-        description = ""
+        description = "Vegetation type based on IGBP definition"
+      ),
+      si_flux_network = list(
+        values = c(TRUE, FALSE),
+        type = 'Logical',
+        units = 'Fixed values',
+        description = paste0(
+          'Logical indicating if site is participating in the FLUXNET network'
+        )
+      ),
+      si_dendro_network = list(
+        values = c(TRUE, FALSE),
+        type = 'Logical',
+        units = 'Fixed values',
+        description = paste0(
+          'Logical indicating if site is participating in the DENDROGLOBAL',
+          ' network'
+        )
+      ),
+      si_remarks = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = paste0(
+          'Remarks and commentaries useful to grasp some site-specific',
+          ' peculiarities'
+        )
+      ),
+      si_code = list(
+        values = 'sapfluxnet defined',
+        type = 'Character',
+        units = 'Fixed value',
+        description = 'sapfluxnet site code, unique for each site'
+      ),
+      si_mat = list(
+        values = 'sapfluxnet calculated',
+        type = 'Numeric',
+        units = 'Celsius degrees',
+        description = 'Site annual mean temperature, as obtained from WorldClim'
+      ),
+      si_map = list(
+        values = 'sapfluxnet calculated',
+        type = 'Numeric',
+        units = 'mm',
+        description = 'Site annual mean precipitation, as obtained from WorldClim'
+      ),
+      si_biome = list(
+        values = '',
+        type = 'Character',
+        units = 'sapfluxnet calculated',
+        description = paste0(
+          'Biome classification as per Whitaker diagram, based on mat and',
+          ' map obtained from WorldClim'
+        )
       )
     ),
     stand_md = list(
+      st_name = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Stand name given by contributors'
+      ),
       st_growth_condition = list(
         values = c('Naturally regenerated, unmanaged',
                    'Naturally regenerated, managed',
@@ -271,13 +414,49 @@ as_sfn_data_multi <- function(x) {
                    'Orchard', 'Urban'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Growth condition with respect to stand origin and management'
+      ),
+      st_treatment = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Treatment applied at stand level'
+      ),
+      st_age = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'years',
+        description = 'Mean stand age at the moment of sap flow measurements'
+      ),
+      st_height = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'meters',
+        description = 'Canopy height'
+      ),
+      st_density = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'stems/ha',
+        description = 'Total stem density for stand'
+      ),
+      st_basal_area = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'm2/ha',
+        description = 'Total stand basal area'
+      ),
+      st_lai = list(
+        values = 'Coontributor defined',
+        type = 'Numeric',
+        units = '',
+        description = 'Total maximum stand leaf area (one-sided, projected)'
       ),
       st_aspect = list(
         values = c('Flat', 'N', 'E', 'S', 'W'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Aspect the stand is facing (exposure)'
       ),
       st_terrain = list(
         values = c('Flat', 'Undulated/Variable', 'Valley', 'Gentle slope (<2 %)',
@@ -285,37 +464,166 @@ as_sfn_data_multi <- function(x) {
                    'Strong Slope (>10%)', 'Hilltop'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Slope and/or relief of the stand'
+      ),
+      st_soil_depth = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'cm',
+        description = 'Soil total depth'
       ),
       st_soil_texture = list(
         values = c('SAND', 'LOAM', 'SILT', 'CLAY'),
         type = 'Character',
         units = 'Fixed values',
-        description = 'USDA simplified classification'
+        description = 'Soil texture class, based on USDA classification'
+      ),
+      st_sand_perc = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = '% percentage',
+        description = 'Soil sand content, % mass'
+      ),
+      st_silt_perc = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = '% percentage',
+        description = 'Soil silt content, % mass'
+      ),
+      st_clay_perc = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = '% percentage',
+        description = 'Soil clay content, % mass'
+      ),
+      st_remarks = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = paste0(
+          'Remarks and commentaries useful to grasp some stand-specific',
+          ' peculiarities'
+        )
+      ),
+      st_USDA_soil_texture = list(
+        values = '',
+        type = 'Character',
+        units = 'sapfluxnet calculated',
+        description = paste0(
+          'USDA soil classification based on the percentages provided by',
+          ' the contributor'
+        )
       )
     ),
     species_md = list(
+      sp_name = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = paste0(
+          'Scientific name without author abbreviation, as accepted by The',
+          ' Plant List'
+        ),
+        description = 'Identity of each measured species'
+      ),
+      sp_ntrees = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'number of trees',
+        description = 'Number of trees measured of each species'
+      ),
       sp_leaf_habit = list(
         values = c('evergreen', 'cold deciduous',
                    'drought deciduous', 'marcescent'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Leaf habit of the measured species'
+      ),
+      sp_basal_area_perc = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = '% percentage',
+        description = paste0(
+          'Basal area occupied by each measured species, in percentage',
+          ' over total stand basal area'
+        )
       )
     ),
     plant_md = list(
+      pl_name = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Plant code assigned by contributors'
+      ),
+      pl_species = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = paste0(
+          'Scientific name without author abbreviation, as accepted by The',
+          ' Plant List'
+        ),
+        description = 'Species identity of the measured plant'
+      ),
+      pl_treatment = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = 'Experimental treatment (if any)'
+      ),
+      pl_dbh = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'cm',
+        description = 'Diameter at breast height of measured plants'
+      ),
+      pl_height = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'm',
+        description = 'Height of measured plants'
+      ),
+      pl_age = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'years',
+        description = 'Plant age at the moment of measure'
+      ),
       pl_social = list(
         values = c('dominant', 'codominant', 'suppressed'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Plant social status'
+      ),
+      pl_sapw_area = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'cm2',
+        description = 'Cross-sectional sapwood area'
+      ),
+      pl_sapw_depth = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'cm',
+        description = 'Sapwood depth, measured at breast height'
+      ),
+      pl_bark_thick = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'cm',
+        description = 'Plant bark thickness'
+      ),
+      pl_leaf_area = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'cm2',
+        description = 'Leaf area of eachvvmeasured plant'
       ),
       pl_sens_meth = list(
         values = c('CAG', 'HD', 'CHP', 'CHD', 'HFD', 'HPTM',
                    'HR', 'SFPLUS', 'SHB', 'TSHB', 'Other/unknown'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Sap flow measures method'
       ),
       pl_sens_man = list(
         values = c('Lab made', 'Dynamax', 'UP GmbH', 'Ecomatik', 'PlantSensors',
@@ -324,7 +632,7 @@ as_sfn_data_multi <- function(x) {
                    'HortResearch', 'Greenspan Technology', 'Other/unknown'),
         type = 'Character',
         units = 'Fixed values',
-        description = 'Sap flow sensor manufacturer'
+        description = 'Sap flow measures sensor manufacturer'
       ),
       pl_sens_cor_grad = list(
         units = c('No correction', 'NTG separately measured',
@@ -332,7 +640,7 @@ as_sfn_data_multi <- function(x) {
                   'Other/unknown'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Correction for natural temperature gradients method'
       ),
       pl_sens_cor_zero = list(
         values = c('Previous night zero flow', 'Long time-window zero flow',
@@ -340,7 +648,13 @@ as_sfn_data_multi <- function(x) {
                    'Not needed', 'Other/unknown'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Zero flow determination method'
+      ),
+      pl_sens_calib = list(
+        values = '',
+        type = 'Character',
+        units = 'Fixed values',
+        description = 'Species-specific calibration used'
       ),
       pl_sap_units = list(
         values = c('“cm3 cm-2 h-1”', '“cm3 h-1”'),
@@ -355,7 +669,25 @@ as_sfn_data_multi <- function(x) {
                    '“cm3 h-1”', '“dm3 h-1”', '“g h-1”', '“kg h-1”'),
         type = 'Character',
         units = 'Fixed values',
-        description = 'Original contribution units'
+        description = 'Original contribution units (by sapwood or plant level)'
+      ),
+      pl_sens_length = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'mm',
+        description = 'Length of the needles or electrodes forming the sensor'
+      ),
+      pl_sens_hgt = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'm',
+        description = 'Sensor installation height, measured from the ground'
+      ),
+      pl_sens_timestep = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'minutes',
+        description = 'Subdaily time step of sensor measures'
       ),
       pl_radial_int = list(
         values = c('No radial correction', 'Sensor-integrated', 'Measured',
@@ -372,6 +704,21 @@ as_sfn_data_multi <- function(x) {
         type = 'Character',
         units = 'Fixed values',
         description = ''
+      ),
+      pl_remarks = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = paste0(
+          'Remarks and commentaries useful to grasp some plant-specific',
+          ' peculiarities'
+        )
+      ),
+      pl_code = list(
+        values = 'sapfluxnet defined',
+        type = 'Character',
+        units = 'Fixed value',
+        description = 'sapfluxnet plant code, unique for each plant'
       )
     ),
     env_md = list(
@@ -392,63 +739,87 @@ as_sfn_data_multi <- function(x) {
                    '39UTC+13:00, M†', '40UTC+14:00, M†'),
         type = 'Character',
         units = 'Fixed values',
-        description = 'ISO codes'
+        description = 'Time zone of site used in the TIMESTAMPS'
+      ),
+      env_time_daylight = list(
+        values = c(TRUE, FALSE),
+        type = 'Logical',
+        units = 'Fixed values',
+        description = 'Is daylight saving time applied to the original timestamp?'
+      ),
+      env_timestep = list(
+        values = 'Contributor defined',
+        type = 'Numeric',
+        units = 'minutes',
+        description = 'Subdaily timestep of environmental measures'
       ),
       env_ta = list(
         values = c('Above canopy', 'Within canopy', 'Clearing',
                    'Off-site', 'Not provided'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Location of air temperature sensor'
       ),
       env_rh = list(
         values = c('Above canopy', 'Within canopy', 'Clearing',
                    'Off-site', 'Not provided'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Location of relative humidity sensor'
       ),
       env_vpd = list(
         values = c('Above canopy', 'Within canopy', 'Clearing',
                    'Off-site', 'Not provided'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Location of relative vapour pressure decifit sensor'
       ),
       env_sw_in = list(
         values = c('Above canopy', 'Within canopy', 'Clearing',
                    'Off-site', 'Not provided'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Location of shortwave incoming radiation sensor'
       ),
       env_ppfd_in = list(
         values = c('Above canopy', 'Within canopy', 'Clearing',
                    'Off-site', 'Not provided'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Location of incoming photosynthetic photon flux density sensor'
       ),
       env_netrad = list(
         values = c('Above canopy', 'Within canopy', 'Clearing',
                    'Off-site', 'Not provided'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Location of net radiation sensor'
       ),
       env_ws = list(
         values = c('Above canopy', 'Within canopy', 'Clearing',
                    'Off-site', 'Not provided'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Location of wind speed sensor'
       ),
       env_precip = list(
         values = c('Above canopy', 'Within canopy', 'Clearing',
                    'Off-site', 'Not provided'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Location of precipitation sensor'
+      ),
+      env_swc_shallow_depth = list(
+        values = 'COntributor defined',
+        type = 'Numeric',
+        units = 'cm',
+        description = 'Average depth for shallow soil water content measures'
+      ),
+      env_swc_deep_depth = list(
+        values = 'COntributor defined',
+        type = 'Numeric',
+        units = 'cm',
+        description = 'Average depth for deep soil water content measures'
       ),
       env_plant_watpot = list(
         values = c('leaf: predawn', 'leaf: midday', 'xylem: predawn',
@@ -457,13 +828,25 @@ as_sfn_data_multi <- function(x) {
                    'leaf: continuous'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = paste0(
+          'Availability of water potential values for the same measured plants',
+          ' during the sap flow measurements period'
+        )
       ),
       env_leafarea_seasonal = list(
         values = c('stand level', 'species level', 'tree level', 'NULL'),
         type = 'Character',
         units = 'Fixed values',
-        description = ''
+        description = 'Availability of seasonal course leaf area data and level'
+      ),
+      env_remarks = list(
+        values = 'Contributor defined',
+        type = 'Character',
+        units = 'None',
+        description = paste0(
+          'Remarks and commentaries useful to grasp some environmental-specific',
+          ' peculiarities'
+        )
       )
     )
   )
@@ -573,7 +956,4 @@ describe_md_variable <- function(variable) {
     cat('\n', sep = '')
 }
 
-# TODO a variable descriptor (describe_variable('pl_sens_meth')). To do this, 
-# create a new nested level in the .arch data with values, explanation and units.
-# Then describe variable will show all of this based on sfn_values_for kind of
-# functions
+# TODO fill the metadata_arch list wth values for biome, pl_sens_calib, st_USDA*
