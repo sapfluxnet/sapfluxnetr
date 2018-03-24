@@ -853,6 +853,10 @@ as_sfn_data_multi <- function(x) {
 
   return(arch_list)
 
+  # TODO fill the metadata_arch list wth values for biome, pl_sens_calib, st_USDA*
+  # and check the units for all numeric variables, as I'm sure they are wrong in
+  # some cases
+  
 }
 
 #' List all variables that can be used to filter sites
@@ -955,5 +959,3 @@ describe_md_variable <- function(variable) {
     purrr::flatten_chr() %>%
     cat('\n', sep = '')
 }
-
-# TODO fill the metadata_arch list wth values for biome, pl_sens_calib, st_USDA*
