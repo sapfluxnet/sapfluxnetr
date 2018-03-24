@@ -525,6 +525,54 @@ sfn_values_for <- function(variable = 'pl_sens_meth') {
 
 }
 
+#' Detailed description of metadata variables
+#' 
+#' \code{describe_md_variable} prints in console a detailed description for the
+#' requested variable. Useful to know which values to filter or in which units
+#' the variables are.
+#' 
+#' @param variable A character with the name of the variable 
+#'
+#' @return Nothing, prints information to console
+#' @export
+#'
+#' @examples
+#' # info avout pl_sens_meth
+#' describe_md_variable('pl_sens_meth')
+
+describe_md_variable <- function(variable) {
+  
+  arch_list <- .metadata_architecture()
+  
+  # description
+  cat('Description:\n')
+  arch_list %>%
+    purrr::modify(c(variable, 'description')) %>%
+    purrr::flatten_chr() %>%
+    cat('\n', sep = '', fill = 80)
+  
+  # values
+  cat('Values:\n')
+  arch_list %>%
+    purrr::modify(c(variable, 'values')) %>%
+    purrr::flatten_chr() %>%
+    cat('\n', sep = ' | ', fill = 80)
+  
+  # units
+  cat('Units:\n')
+  arch_list %>%
+    purrr::modify(c(variable, 'units')) %>%
+    purrr::flatten_chr() %>%
+    cat('\n\n', sep = '')
+  
+  # type
+  cat('Type:\n')
+  arch_list %>%
+    purrr::modify(c(variable, 'type')) %>%
+    purrr::flatten_chr() %>%
+    cat('\n', sep = '')
+}
+
 # TODO a variable descriptor (describe_variable('pl_sens_meth')). To do this, 
 # create a new nested level in the .arch data with values, explanation and units.
 # Then describe variable will show all of this based on sfn_values_for kind of
