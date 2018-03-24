@@ -49,6 +49,85 @@ read_sfn_data <- function(site_code, folder = '.') {
 
 }
 
+#' Read and combine all metadata
+#' 
+#' Read metadata from all sites in folder and write it to disk to cache the
+#' info for easy and fast access
+#' 
+#' Load all data in memory to collect metadata info can be resource limiting.
+#' For easy and quick access to metadata, this function stores an .RData file
+#' in the specified folder along the data with all the metadata preloaded. Also
+#' it return it as an object to use in filtering and selecting sites.
+#' 
+#' @param folder Route to the folder containing the data. Default to working
+#'   directory
+#' 
+#' @param .write_cache Logical indicating if a cached copy of the metadata must
+#'   be written in \code{folder}.
+#'
+#' @examples
+#' # load the metadata for the first time, it can be a minute ;)
+#' sites_metadata <- read_metadata(folder = 'Data')
+#' 
+#' # a cached copy must have been written to "folder"
+#' file.exists('Data/.metadata_cache.RData') # TRUE
+#' 
+#' # inspect the metadata
+#' sites_metadata
+#' 
+#' @return A list of tibbles with the five metadata classes (site, stand,
+#'   species, plant and environmental)
+#'
+#' @export
+
+read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
+  
+  # In order to avoid loading all data objects at one time in memory (it could be
+  # too much in a normal system we think), lets only store the metadata. To do
+  # that, we load one site and store the metadata before to pass to the next.
+  # If we simply map read_sfn_data %>% get_plant_md for example, that will
+  # result in all objects in memory, so NO GOOD, we nned to circumvent that.
+  sites_codes <- list.files(folder, recursive = TRUE, pattern = '.RData') %>%
+    stringr::str_remove('.RData')
+  
+  sfn_metadata <- list(
+    site_md = tibble::tibble(),
+    stand_md = tibble::tibble(),
+    species_md = tibble::tibble(),
+    plant_md = tibble::tibble(),
+    env_md = tibble::tibble()
+  )
+  
+  for (i in 1:length(sites_codes)) {
+    sfn_data <- read_sfn_data(sites_codes[i], folder)
+    
+    sfn_metadata[['site_md']] <- dplyr::bind_rows(
+      sfn_metadata[['site_md']], get_site_md(sfn_data)
+    )
+    sfn_metadata[['stand_md']] <- dplyr::bind_rows(
+      sfn_metadata[['stand_md']], get_stand_md(sfn_data)
+    )
+    sfn_metadata[['species_md']] <- dplyr::bind_rows(
+      sfn_metadata[['species_md']], get_species_md(sfn_data)
+    )
+    sfn_metadata[['plant_md']] <- dplyr::bind_rows(
+      sfn_metadata[['plant_md']], get_plant_md(sfn_data)
+    )
+    sfn_metadata[['env_md']] <- dplyr::bind_rows(
+      sfn_metadata[['env_md']], get_env_md(sfn_data)
+    )
+  }
+  
+  # cache thing
+  if (.write_cache) {
+    save(sfn_metadata, file = file.path(folder, '.metadata_cache.RData'))
+  }
+  
+  return(sfn_metadata)
+  
+}
+
+
 #' Filter the sites by metadata variable values
 #'
 #' \code{filter_by_var} function takes a vector of variables and a list of
