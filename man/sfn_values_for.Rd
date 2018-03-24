@@ -4,10 +4,10 @@
 \alias{sfn_values_for}
 \title{List all possible values for a filtering metadata variable}
 \usage{
-sfn_values_for(var = "pl_sens_meth")
+sfn_values_for(variable = "pl_sens_meth")
 }
 \arguments{
-\item{var}{Character indicating the metadata variable to look for
+\item{variable}{Character indicating the metadata variable to look for
 accepted values}
 }
 \value{

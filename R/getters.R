@@ -164,4 +164,26 @@ filter_by_var <- function(variables, values, folder = '.', .use_cache = FALSE) {
     purrr::flatten_chr() %>%
     unique()
 
+  # TODO transform with help quo and ... in an equivalent of filter (you put
+  # a logical expression that is evaluated a posteriori. To do that maybe
+  # we need to load all the metadatas, do the filtering and collapse to
+  # lists)
+  # > quo(pl_sens_meth %in% c('tururu', 'tarara'))
+  # <quosure>
+  #   expr: ^pl_sens_meth %in% c("tururu", "tarara")
+  # env:  global
+  # > quo(pl_sens_meth %in% c('tururu', 'tarara')) -> quo_foo
+  # > get_expr(quo_foo)
+  # Error in get_expr(quo_foo) : no se pudo encontrar la función "get_expr"
+  # > rlang::get_expr(quo_foo)
+  # pl_sens_meth %in% c("tururu", "tarara")
+  # > class(rlang::get_expr(quo_foo))
+  # [1] "call"
+  # > as.character(rlang::get_expr(quo_foo))
+  # [1] "%in%"                      "pl_sens_meth"              "c(\"tururu\", \"tarara\")"
+  # > length(as.character(rlang::get_expr(quo_foo)))
+  # [1] 3
+  # El caso es dividir las calls en metadatas y aplicarlas a la hora de cargar
+  # los datos (de esa manera)
+  
 }
