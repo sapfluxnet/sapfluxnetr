@@ -125,25 +125,29 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
   
   return(sfn_metadata)
   
+  # TODO Add progress to the loop, this way the user will know that is working
+  
 }
 
 
 #' Filter the sites by metadata variable values
 #'
-#' \code{filter_by_var} function takes a vector of variables and a list of
-#' possible values and list the sites that comply with the request
+#' \code{filter_by_var} function takes logical expressions for the metadata
+#' variables (i.e. \code{pl_sens_meth == 'HR'}), and list the sites that meet
+#' the expressions.
+#' 
+#' \code{join} argument indicates how sites must be filtered between metadata
+#' classes. \code{'and'} indicates only sites meeting all conditions for all
+#' metadata classes are returned. \code{'or'}cindicates all sites meeting any
+#' condition between classes are returned. For two or more filtes of the same
+#' metadata class, they are combined as 'and'.
 #'
-#' If \code{variables} length > 1, then only sites that match the values for
-#' ALL variables declared are showed.
-#'
-#' \code{variables} and \code{values} must be of the same length.
-#'
-#' @param variables A character vector indicating the variables to check
-#'
-#' @param values A named list. Each element is named as the variable and contains
-#'   a character vector with the desired values for that variable
+#' @param ... Logical expressions for the metadata variables, as in
+#'   \code{\link[dplyr]{filter}}.
 #'
 #' @param folder Route to the folder containing the data files (*.RData)
+#' 
+#' @param join Character indicating how to filter the sites, see details.
 #'
 #' @param .use_cache Experimental, not implemented yet. Searches can be time
 #'   and resources consuming. Using a cache speed up the searches storing the
@@ -152,117 +156,112 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #' @examples
 #' # simple, want to know which sites are using the Heat Ratio method to measure
 #' # the sap flow
-#' filter_by_var('pl_sens_meth', 'HR', folder = 'Data')
+#' filter_by_var(pl_sens_meth == 'HR', folder = 'Data')
 #'
 #' # Both, Heat Ratio and Heat Dissipation
-#' filter_by_var('pl_sens_meth',
-#'               list(pl_sens_meth = c('HR', 'HD')),
+#' filter_by_var(pl_sens_meth %in% c('HR', 'HD'),
 #'               folder = 'Data')
 #'
 #' # more complex, Heat Ratio method AND Mediterranean biome
 #' filter_by_var(
-#'   variables = c('pl_sens_meth', 'env_biome'),
-#'   values = list(pl_sens_meth = 'HR',
-#'                 env_biome = 'Mediterranean'),
-#'   folder = 'Data'
+#'   pl_sens_meth == 'HR',
+#'   si_biome == 'Mediterranean',
+#'   folder = 'Data',
+#'   join = 'and' # default
+#' )
+#' 
+#' # join = 'or' returns sites that meet any condition
+#' filter_by_var(
+#'   pl_sens_meth == 'HR',
+#'   si_biome == 'Mediterranean',
+#'   folder = 'Data',
+#'   join = 'or'
 #' )
 #'
 #' @return A character vector with the sites fullfilling the premises
 #'
 #' @export
 
-filter_by_var <- function(variables, values, folder = '.', .use_cache = FALSE) {
-
-  # a custom function to read the metadata directly. This way when used inside
-  # a purrr::map statement, not all the objects are stored (memory problem),
-  # only the metadata is stored
-  read_metadata <- function(site, metadata, folder) {
-
-    switch(
-      metadata,
-      'si_' = get_site_md(read_sfn_data(site, folder)),
-      'st_' = get_stand_md(read_sfn_data(site, folder)),
-      'sp_' = get_species_md(read_sfn_data(site, folder)) %>%
-        dplyr::summarise_all(stringr::str_flatten, collapse = '-') %>%
-        dplyr::mutate_all(stringr::str_split, pattern = '-'),
-      'pl_' = get_plant_md(read_sfn_data(site, folder)) %>%
-        dplyr::summarise_all(stringr::str_flatten, collapse = '-') %>%
-        dplyr::mutate_all(stringr::str_split, pattern = '-'),
-      'env' = get_env_md(read_sfn_data(site, folder))
-    )
-
-  }
-
-  # list of sites for search
-  sites_codes <- list.files(folder, recursive = TRUE, pattern = '.RData') %>%
-    stringr::str_remove('.RData')
+filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache = FALSE) {
   
-  if (length(sites_codes) < 1) {
-    stop(folder, ' seems to contain no sapfluxnet data files (.RData)')
+  # Don't waste resources, if cache, read metadata from disk directly
+  if (.use_cache) {
+    
+    cache_file <- file.path(folder, '.metadata_cache.RData')
+    
+    if (file.exists(cache_file)) {
+      sfn_metadata <- load(cache_file)
+    } else {
+      warning('.use_cache is TRUE but no cache file could be found in ', folder,
+              '\n', 'Running read_sfn_metadata with .write_cache = TRUE to ',
+              'create the sapfluxnet metadata db. This can take a while...')
+      sfn_metadata <- read_sfn_metadata(folder, .write_cache = TRUE)
+    }
+  } else {
+    message('.use_cache is set to FALSE, creating a temporal metadata db. ',
+            'This can take a while...')
+    sfn_metadata <- read_sfn_metadata(folder, .write_cache = FALSE)
   }
-
-  # quo for future filters.
-  # This takes the variable character, transforms it to
-  # a name (symbol) and creates a quosure with the filtering expression,
-  # some in the form variable %in% y, see rlang::get_expr(filters[[1]])
-  # After that, all will be evaluated when called inside of filter (see below in
-  # the purrr pipeline step)
-  filters <- purrr::map(
-    variables, as.name
-  ) %>%
-    purrr::map2(
-      values,
-      function(var_name, accepted_values) {
-        # dplyr::quo(!!var_name %in% accepted_values)
-        dplyr::quo(stringr::str_detect(!!var_name, stringr::str_flatten(accepted_values, '|')))
-      }
-    )
-
-  # purrr pipeline
-  variables %>%
-    # we select the metadata (by the code in the variable name)
-    purrr::map(stringr::str_sub, start = 1, end = 3) %>%
-    # remove duplicate metadatas (to avoid load the same twice or more times)
-    unique() %>%
-    # read the corresponding metadata for all sites stored in folder
-    # (remember this is a list with elements for each metadata kind)
-    purrr::map(
-      ~ purrr::map(sites_codes, read_metadata, metadata = .x, folder = folder)
-    ) %>%
-    # join all the sites by rows for each metadata loaded
-    purrr::map(~ dplyr::bind_rows(.x)) %>%
-    # get a unique tbl by joining the columns of the metadatas. This way we will
-    # be able to filter by variable and values provided
-    dplyr::bind_cols() %>%
-    # we use the quo made before as filter args
-    dplyr::filter(
-      !!! filters
-    ) %>%
-    # pull the si_code variable
-    dplyr::pull(.data$si_code) %>%
-    purrr::flatten_chr() %>%
-    unique()
-
-  # TODO transform with help quo and ... in an equivalent of filter (you put
-  # a logical expression that is evaluated a posteriori. To do that maybe
-  # we need to load all the metadatas, do the filtering and collapse to
-  # lists)
-  # > quo(pl_sens_meth %in% c('tururu', 'tarara'))
-  # <quosure>
-  #   expr: ^pl_sens_meth %in% c("tururu", "tarara")
-  # env:  global
-  # > quo(pl_sens_meth %in% c('tururu', 'tarara')) -> quo_foo
-  # > get_expr(quo_foo)
-  # Error in get_expr(quo_foo) : no se pudo encontrar la función "get_expr"
-  # > rlang::get_expr(quo_foo)
-  # pl_sens_meth %in% c("tururu", "tarara")
-  # > class(rlang::get_expr(quo_foo))
-  # [1] "call"
-  # > as.character(rlang::get_expr(quo_foo))
-  # [1] "%in%"                      "pl_sens_meth"              "c(\"tururu\", \"tarara\")"
-  # > length(as.character(rlang::get_expr(quo_foo)))
-  # [1] 3
-  # El caso es dividir las calls en metadatas y aplicarlas a la hora de cargar
-  # los datos (de esa manera)
   
+  # if we accept ... (expressions with logical result) we need to enquo them
+  dots <- dplyr::quos(...)
+  
+  metadata <- c(site_md = 'si_', stand_md = 'st_',
+                species_md = 'sp_', plant_md = 'pl_', env_md = 'env_')
+  res_list <- vector(mode = 'list')
+  
+  # loop along all metadata classes to check if there is filters and apply them
+  for (md in 1:5) {
+    
+    # dot dispatcher, distribute the dots in the corresponding metadata
+    md_dots <- dots %>%
+      purrr::map(rlang::quo_get_expr) %>%
+      purrr::map(as.character) %>%
+      purrr::map(stringr::str_detect, pattern = metadata[[md]]) %>%
+      purrr::map_lgl(any) %>%
+      dots[.]
+    
+    # if there is filters, filter the corresponding metadata, pull the codes
+    # and get the unique (in case of plant and species md, that can be repeated)
+    if (length(md_dots) > 0) {
+      md_sites_selected <- sfn_metadata[[names(metadata)[md]]] %>%
+        dplyr::filter(
+          !!! md_dots
+        ) %>%
+        # pull the si_code variable
+        dplyr::pull(.data$si_code) %>%
+        unique()
+      
+      res_list[[md]] <- md_sites_selected
+      names(res_list)[md] <- names(metadata)[md]
+      
+    } else {
+      # if there is no filter, return NULL to the list, we will remove it after
+      res_list[[md]] <- NULL
+    }
+  }
+  
+  # remove the NULL elements, this way we can check for values in all elements
+  # We do it with purrr::keep (compact removes also empty vectors, which is not
+  # desirable in this situation)
+  names_sites <- res_list %>%
+    purrr::keep(~ !is.null(.x))
+  
+  # get the join argument
+  join <- match.arg(join)
+  if (join == 'or') {
+    
+    # 'or' indicates any site that meet any condition
+    res_names <- purrr::flatter_chr(names_sites) %>%
+      unique()
+    return(res_names)
+    
+  } else {
+    
+    # 'and' indicates only sites that meet all conditions, we will do that with
+    # Reduce and intersect
+    res_names <- Reduce(intersect, names_sites)
+    return(res_names)
+    
+  }
 }

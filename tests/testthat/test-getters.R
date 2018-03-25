@@ -56,38 +56,46 @@ test_that('as_sfn_data_multi helper works as intended', {
 #### filter_by_var tests ####
 test_that('filter_by_var combines all metadata correctly', {
   
-  variables <- c('pl_sens_meth', 'env_ta')
-  values <- list(pl_sens_meth = 'HR', env_ta = 'Clearing')
+  filters <- list(dplyr::quo(pl_sens_meth == 'HR'))
   
   expect_true(
-    is.character(filter_by_var(variables, values, folder = 'Data'))
+    is.character(filter_by_var(!!!filters, folder = 'Data'))
   )
   
   expect_length(
-    filter_by_var(variables, values, folder = 'Data'), 3
+    filter_by_var(!!!filters, folder = 'Data'), 3
   )
   
-  values <- list(pl_sens_meth = 'HD', env_ta = 'Clearing')
-  
-  expect_length(
-    filter_by_var(variables, values, folder = 'Data'), 0
+  filters <- list(
+    dplyr::quo(pl_sens_meth == 'HD'),
+    dplyr::quo(env_ta == 'Clearing')
   )
   
-  values <- list(pl_sens_meth = 'HR', env_ta = 'Above canopy')
+  expect_length(
+    filter_by_var(!!!filters, folder = 'Data'), 0
+  )
+  
+  filters <- list(
+    dplyr::quo(pl_sens_meth == 'HR'),
+    dplyr::quo(env_ta == 'Above canopy')
+  )
   
   expect_length(
-    filter_by_var(variables, values, folder = 'Data'), 0
+    filter_by_var(!!!filters, folder = 'Data'), 0
   )
   
   expect_error(
-    filter_by_var(variables, values, folder = 'tururu'),
+    filter_by_var(!!!filters, folder = 'tururu'),
     'tururu'
   )
   
-  variables <- c('pl_sens_meth', 'env_nonexistenname')
+  filters <- list(
+    dplyr::quo(pl_sens_meth == 'HR'),
+    dplyr::quo(env_nonexistentname == 'Above canopy')
+  )
   
   expect_error(
-    filter_by_var(variables, values, folder = 'Data'),
+    filter_by_var(!!!filters, folder = 'Data'),
     'tururu'
   )
   

@@ -4,15 +4,16 @@
 \alias{filter_by_var}
 \title{Filter the sites by metadata variable values}
 \usage{
-filter_by_var(variables, values, folder = ".", .use_cache = FALSE)
+filter_by_var(..., folder = ".", join = c("and", "or"),
+  .use_cache = FALSE)
 }
 \arguments{
-\item{variables}{A character vector indicating the variables to check}
-
-\item{values}{A named list. Each element is named as the variable and contains
-a character vector with the desired values for that variable}
+\item{...}{Logical expressions for the metadata variables, as in
+\code{\link[dplyr]{filter}}.}
 
 \item{folder}{Route to the folder containing the data files (*.RData)}
+
+\item{join}{Character indicating how to filter the sites, see details.}
 
 \item{.use_cache}{Experimental, not implemented yet. Searches can be time
 and resources consuming. Using a cache speed up the searches storing the
@@ -22,31 +23,40 @@ results in a cache folder and serving directly from the file.}
 A character vector with the sites fullfilling the premises
 }
 \description{
-\code{filter_by_var} function takes a vector of variables and a list of
-possible values and list the sites that comply with the request
+\code{filter_by_var} function takes logical expressions for the metadata
+variables (i.e. \code{pl_sens_meth == 'HR'}), and list the sites that meet
+the expressions.
 }
 \details{
-If \code{variables} length > 1, then only sites that match the values for
-ALL variables declared are showed.
-
-\code{variables} and \code{values} must be of the same length.
+\code{join} argument indicates how sites must be filtered between metadata
+classes. \code{'and'} indicates only sites meeting all conditions for all
+metadata classes are returned. \code{'or'}cindicates all sites meeting any
+condition between classes are returned. For two or more filtes of the same
+metadata class, they are combined as 'and'.
 }
 \examples{
 # simple, want to know which sites are using the Heat Ratio method to measure
 # the sap flow
-filter_by_var('pl_sens_meth', 'HR', folder = 'Data')
+filter_by_var(pl_sens_meth == 'HR', folder = 'Data')
 
 # Both, Heat Ratio and Heat Dissipation
-filter_by_var('pl_sens_meth',
-              list(pl_sens_meth = c('HR', 'HD')),
+filter_by_var(pl_sens_meth \%in\% c('HR', 'HD'),
               folder = 'Data')
 
 # more complex, Heat Ratio method AND Mediterranean biome
 filter_by_var(
-  variables = c('pl_sens_meth', 'env_biome'),
-  values = list(pl_sens_meth = 'HR',
-                env_biome = 'Mediterranean'),
-  folder = 'Data'
+  pl_sens_meth == 'HR',
+  si_biome == 'Mediterranean',
+  folder = 'Data',
+  join = 'and' # default
+)
+
+# join = 'or' returns sites that meet any condition
+filter_by_var(
+  pl_sens_meth == 'HR',
+  si_biome == 'Mediterranean',
+  folder = 'Data',
+  join = 'or'
 )
 
 }
