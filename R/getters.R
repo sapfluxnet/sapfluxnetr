@@ -99,6 +99,11 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
   )
   
   for (i in 1:length(sites_codes)) {
+    
+    print(paste0(
+      'processing site ', sites_codes[i], ' (', i, ' of ', length(sites_codes), ')' 
+    ), width = 80)
+    
     sfn_data <- read_sfn_data(sites_codes[i], folder)
     
     sfn_metadata[['site_md']] <- dplyr::bind_rows(
