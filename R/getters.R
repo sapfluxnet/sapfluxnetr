@@ -130,8 +130,6 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
   
   return(sfn_metadata)
   
-  # TODO Add progress to the loop, this way the user will know that is working
-  
 }
 
 

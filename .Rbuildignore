@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+
+tests/testthat/Data/.metadata_cache.RData
+tests/testthat/big_test/
