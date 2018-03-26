@@ -23,4 +23,5 @@ Collate:
     'sfn_data_classes.R'
     'sfn_data_generics.R'
     'sfn_data_methods.R'
+    'visualizations.R'
 Suggests: testthat
