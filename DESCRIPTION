@@ -1,7 +1,11 @@
 Package: sapfluxnetr
 Title: Working with SAPFLUXNET Project data
-Version: 0.0.0.9000
-Authors@R: person("Víctor", "Granda", email = "victorgrandagarcia@gmail.com", role = c("aut", "cre"))
+Version: 0.0.0.9001
+Authors@R: c(
+  person("Víctor", "Granda", email = "victorgrandagarcia@gmail.com", role = c("aut", "cre")),
+  person("Rafael", "Poyatos", email = "r.poyatos@creaf.uab.cat", role = "aut"),
+  person("Víctor", "Flo", email = "v.flo@creaf.uab.cat", role = "aut")
+  )
 Description: Download, aggregate and select data from SAPFLUXNET Project.
 Depends: R (>= 3.4.3)
 License: MIT
