@@ -351,6 +351,12 @@ sfn_metrics <- function(
 
     return(res_multi)
   }
+  
+  # progress to not scare seeming like freezed
+  print(paste0(
+    'Crunching data for ', get_si_code(sfn_data), '. In large datasets this ',
+    'could take a while'
+  ))
 
   # if sfn_data then we have to calculate the desired metrics from the data
   sapf_data <- get_sapf(sfn_data, solar = solar)
@@ -368,6 +374,13 @@ sfn_metrics <- function(
 
   # predawn
   if (predawn) {
+    
+    # progress to not scare seeming like freezed
+    print(paste0(
+      'Crunching predawn data for ', get_si_code(sfn_data),
+      '. In large datasets this could take a while'
+    ))
+    
     whole_data %>%
       purrr::map(
         dplyr::filter,
@@ -385,6 +398,13 @@ sfn_metrics <- function(
 
   # midday
   if (midday) {
+    
+    # progress to not scare seeming like freezed
+    print(paste0(
+      'Crunching midday data for ', get_si_code(sfn_data),
+      '. In large datasets this could take a while'
+    ))
+    
     whole_data %>%
       purrr::map(
         dplyr::filter,
