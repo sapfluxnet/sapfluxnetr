@@ -284,6 +284,16 @@ test_that('min_time and max_time functions work as intended', {
 
 })
 
+test_that('max and min_time functions return NA when all values are NA', {
+  
+  x <- rep(NA, 99)
+  time <- seq.POSIXt(as.POSIXct(Sys.Date()), by = 'day', length.out = 99)
+  
+  expect_true(is.na(min_time(x, time)))
+  expect_true(is.na(max_time(x, time)))
+  
+})
+
 #### sfn_metrics tests ####
 test_that('sfn_metrics examples work', {
 

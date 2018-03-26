@@ -116,7 +116,8 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
       sfn_metadata[['species_md']], get_species_md(sfn_data)
     )
     sfn_metadata[['plant_md']] <- dplyr::bind_rows(
-      sfn_metadata[['plant_md']], get_plant_md(sfn_data)
+      sfn_metadata[['plant_md']], get_plant_md(sfn_data) %>%
+        dplyr::mutate(pl_name = as.character(pl_name)) # TODO remove this when the sites are corrected
     )
     sfn_metadata[['env_md']] <- dplyr::bind_rows(
       sfn_metadata[['env_md']], get_env_md(sfn_data)
@@ -193,7 +194,7 @@ filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache =
     cache_file <- file.path(folder, '.metadata_cache.RData')
     
     if (file.exists(cache_file)) {
-      sfn_metadata <- load(cache_file)
+      load(cache_file) # loads and object called sfn_metadata
     } else {
       warning('.use_cache is TRUE but no cache file could be found in ', folder,
               '\n', 'Running read_sfn_metadata with .write_cache = TRUE to ',
@@ -255,7 +256,7 @@ filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache =
   if (join == 'or') {
     
     # 'or' indicates any site that meet any condition
-    res_names <- purrr::flatter_chr(names_sites) %>%
+    res_names <- purrr::flatten_chr(names_sites) %>%
       unique()
     return(res_names)
     

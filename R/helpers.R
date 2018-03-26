@@ -54,7 +54,15 @@ NULL
 #' @export
 
 max_time <- function(x, time) {
-  time[which.max(x)]
+  
+  # if all the values in x are NAs (a daily summmarise of no measures day for
+  # example) this will return a length 0 POSIXct vector, which will crash
+  # dplyr summarise step. So, check if all NA and if true return NA
+  if(all(is.na(x))) {
+    return(NA)
+  } else {
+    time[which.max(x)]
+  }
 }
 
 #' @describeIn time_at_events helper for sfn_metrics
@@ -62,7 +70,15 @@ max_time <- function(x, time) {
 #' @export
 
 min_time <- function(x, time) {
-  time[which.min(x)]
+  
+  # if all the values in x are NAs (a daily summmarise of no measures day for
+  # example) this will return a length 0 POSIXct vector, which will crash
+  # dplyr summarise step. So, check if all NA and if true return NA
+  if(all(is.na(x))) {
+    return(NA)
+  } else {
+    time[which.min(x)]
+  }
 }
 
 #' min max
