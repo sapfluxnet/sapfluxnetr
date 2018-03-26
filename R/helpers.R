@@ -81,6 +81,51 @@ min_time <- function(x, time) {
   }
 }
 
+#' Diurnal centroid calculation
+#' 
+#' Calculate the diurnal centroid for sapflow and environmental variables
+#' 
+#' The code for this function has been kindly provided by Jacob Nelson in python
+#' (see https://github.com/jnelson18/FluxnetTools/blob/master/FileS3.py) and has
+#' been translated to a tidy data phylosophy in R to be used inside a
+#' \code{\link[dplyr]{summary}} statement.
+#' 
+#' @section Diurnal centroid algorithm:
+#' Given a continuous subdaily values at regular intervals
+#' \eqn{V = {x_1, ..., x_n}} to obtain the diurnal centroid each value is
+#' multiplied by its interval index and summed up and divided
+#' by the sum of the values for the day and finally the value is normalized to
+#' 24h:
+#' 
+#' \deqn{
+#' \sum {x_1 * 1, x_2 * 2, ···, x_n * n} / \sum {x_1, x_2, ···, x_n} * (24/n)
+#' }
+#' 
+#' With even values for all the intervals (i.e. 100 for all), centroid converges
+#' to 12h at more than 1000 intervals per day. With only 48 (half hourly
+#' measurements) centroid converges to 12.25h and with 24 intervals (hourly
+#' measurements) centroid converges to 12.5h. So, using diurnal centroid value
+#' in half hourly datasets or above can have a considerable error associated.
+#' 
+#' @param variable A numeric vector containing the values for a day at a
+#'   regular intervals. Missing values are allowed but not recommended
+#' 
+#' @return A numeric vector with the diurnal centroid value (0 to 24 h)
+#' 
+#' @author Jacob Nelson & Víctor Granda
+
+diurnal_centroid <- function(variable) {
+  
+  steps_by_day = length(variable)
+  raw_c <- sum(variable * 1:steps_by_day, na.rm = TRUE) / 
+    sum(variable, na.rm = TRUE)
+  res_c <- raw_c * (24 / steps_by_day)
+  
+  return(res_c)
+  
+  # TODO examples section in roxygen comments
+}
+
 #' min max
 #'
 #' wrapper for quicky return the max and the min value of a vector to use in
