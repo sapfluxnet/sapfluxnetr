@@ -21,6 +21,11 @@
 #'
 #' @param solar Logical indicating if the solar timestamp must be used instead
 #'   of the site timestamp
+#'   
+#' @param ... bare names of variables to select when type is one of \code{sapf}
+#'   or \code{env}. This way, trees or environmental variables plotted can be
+#'   controlled. It also accepts \code{\link[dplyr]{select}} helper functions
+#'   as \code{\link[dplyr]{ends_with}}
 #'
 #' @examples
 #' # data
@@ -33,6 +38,9 @@
 #' env_plot <- sfn_plot(FOO, type = 'env', solar = FALSE)
 #' env_plot + title('Environmental variables facet plot')
 #' 
+#' # returning only one tree
+#' sfn_plot(FOO, type = 'sapf', dplyr::ends_with('_1'))
+#' 
 #' @return A ggplot object that can be called to see the plot
 #' 
 #' @export
@@ -44,10 +52,17 @@ sfn_plot <- function(
     'ta', 'rh', 'vpd', 'ppfd_in', 'netrad', 'sw_in', 'ext_rad',
     'ws', 'precip', 'swc_shallow', 'swc_deep'
   ),
-  solar = TRUE
+  solar = TRUE,
+  ...
 ) {
   
   type <- match.arg(type)
+  
+  dots <- dplyr::quos(...)
+  
+  if (length(dots) < 1) {
+    dots <- dplyr::quo(dplyr::everything())
+  }
   
   # We need to go type by type checking and plotting if type matchs
   
@@ -63,6 +78,7 @@ sfn_plot <- function(
     
     # actual plot
     res_plot <- data %>%
+      dplyr::select(TIMESTAMP, !!! dots) %>%
       tidyr::gather(Tree, Sapflow, -TIMESTAMP) %>%
       ggplot(aes(x = TIMESTAMP, y = Sapflow, colour = Tree)) +
       geom_point(alpha = 0.2) +
@@ -77,6 +93,7 @@ sfn_plot <- function(
     
     # actual plot
     res_plot <- data %>%
+      dplyr::select(TIMESTAMP, !!! dots) %>%
       tidyr::gather(Variable, Value, -TIMESTAMP) %>%
       ggplot(aes(x = TIMESTAMP, y = Value, colour = Variable)) +
       geom_point(alpha = 0.4) +

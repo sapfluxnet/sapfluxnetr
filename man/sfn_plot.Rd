@@ -6,7 +6,7 @@
 \usage{
 sfn_plot(sfn_data, type = c("sapf", "env", "ta", "rh", "vpd", "ppfd_in",
   "netrad", "sw_in", "ext_rad", "ws", "precip", "swc_shallow", "swc_deep"),
-  solar = TRUE)
+  solar = TRUE, ...)
 }
 \arguments{
 \item{sfn_data}{sfn_data object to plot}
@@ -16,6 +16,11 @@ detailed information about the available values}
 
 \item{solar}{Logical indicating if the solar timestamp must be used instead
 of the site timestamp}
+
+\item{...}{bare names of variables to select when type is one of \code{sapf}
+or \code{env}. This way, trees or environmental variables plotted can be
+controlled. It also accepts \code{\link[dplyr]{select}} helper functions
+as \code{\link[dplyr]{ends_with}}}
 }
 \value{
 A ggplot object that can be called to see the plot
@@ -45,5 +50,8 @@ sfn_plot(FOO, type = 'sapf', solar = FALSE)
 # saving and modifying:
 env_plot <- sfn_plot(FOO, type = 'env', solar = FALSE)
 env_plot + title('Environmental variables facet plot')
+
+# returning only one tree
+sfn_plot(FOO, type = 'sapf', dplyr::ends_with('_1'))
 
 }
