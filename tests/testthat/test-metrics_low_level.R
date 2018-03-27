@@ -623,6 +623,25 @@ test_that('sfn_metrics return the expected object', {
   expect_s3_class(test_expr3[['sapf']][['sapf_night']], 'tbl_time')
   expect_s3_class(test_expr3[['env']][['env_day']], 'tbl_time')
   expect_s3_class(test_expr3[['env']][['env_night']], 'tbl_time')
+  
+  sapf_day_timestamp <- test_expr3[['sapf']][['sapf_day']][['TIMESTAMP_day']]
+  sapf_night_timestamp <- test_expr3[['sapf']][['sapf_night']][['TIMESTAMP_night']]
+  env_day_timestamp <- test_expr3[['env']][['env_day']][['TIMESTAMP_day']]
+  env_night_timestamp <- test_expr3[['env']][['env_night']][['TIMESTAMP_night']]
+  
+  expect_true(
+    all(dplyr::between(lubridate::hour(c(sapf_day_timestamp, env_day_timestamp)),
+                       6, 20))
+  )
+  
+  expect_true(
+    all(
+      dplyr::between(lubridate::hour(c(sapf_night_timestamp, env_night_timestamp)),
+                     20, 24)) | 
+      all(dplyr::between(lubridate::hour(c(sapf_night_timestamp, env_night_timestamp)),
+                         0, 6))
+  )
+  
 
 })
 
