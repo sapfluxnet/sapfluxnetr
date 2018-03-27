@@ -454,14 +454,15 @@ test_that('sfn_metrics return the expected object', {
       FOO,
       period = 'daily',
       .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE, general = TRUE,
+      solar = FALSE,
+      general = TRUE,
       predawn = TRUE,
       md_start = 13,
       md_end = 15,
       midday = TRUE,
       pd_start = 4,
       pd_end = 6,
-      nighttime = FALSE,
+      nighttime = TRUE,
       night_start = 20,
       night_end = 6,
       side = 'start'
@@ -473,24 +474,30 @@ test_that('sfn_metrics return the expected object', {
     FOO,
     period = 'daily',
     .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-    solar = FALSE, general = TRUE,
+    solar = FALSE,
+    general = TRUE,
     predawn = TRUE,
     md_start = 13,
     md_end = 15,
     midday = TRUE,
     pd_start = 4,
     pd_end = 6,
-    nighttime = FALSE,
+    nighttime = TRUE,
     night_start = 20,
     night_end = 6,
     side = 'start'
   )
 
   expect_identical(names(test_expr), c('sapf', 'env'))
-  expect_identical(names(test_expr[['sapf']]), c('sapf_gen', 'sapf_pd', 'sapf_md'))
+  expect_identical(
+    names(test_expr[['sapf']]),
+    c('sapf_gen', 'sapf_pd', 'sapf_md', 'sapf_day', 'sapf_night')
+  )
   expect_s3_class(test_expr[['sapf']][['sapf_gen']], 'tbl_time')
   expect_s3_class(test_expr[['sapf']][['sapf_pd']], 'tbl_time')
   expect_s3_class(test_expr[['sapf']][['sapf_md']], 'tbl_time')
+  expect_s3_class(test_expr[['sapf']][['sapf_day']], 'tbl_time')
+  expect_s3_class(test_expr[['sapf']][['sapf_night']], 'tbl_time')
   expect_match(names(test_expr[['sapf']][['sapf_gen']]), '_mean', all = FALSE)
   expect_match(names(test_expr[['sapf']][['sapf_gen']]), '_sd', all = FALSE)
   expect_match(names(test_expr[['sapf']][['sapf_gen']]), '_n', all = FALSE)
@@ -500,10 +507,21 @@ test_that('sfn_metrics return the expected object', {
   expect_match(names(test_expr[['sapf']][['sapf_md']]), '_mean_md', all = FALSE)
   expect_match(names(test_expr[['sapf']][['sapf_md']]), '_sd_md', all = FALSE)
   expect_match(names(test_expr[['sapf']][['sapf_md']]), '_n_md', all = FALSE)
-  expect_identical(names(test_expr[['env']]), c('env_gen', 'env_pd', 'env_md'))
+  expect_match(names(test_expr[['sapf']][['sapf_day']]), '_mean_day', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_day']]), '_sd_day', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_day']]), '_n_day', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_night']]), '_mean_night', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_night']]), '_sd_night', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_night']]), '_n_night', all = FALSE)
+  expect_identical(
+    names(test_expr[['env']]),
+    c('env_gen', 'env_pd', 'env_md', 'env_day', 'env_night')
+  )
   expect_s3_class(test_expr[['env']][['env_gen']], 'tbl_time')
   expect_s3_class(test_expr[['env']][['env_pd']], 'tbl_time')
   expect_s3_class(test_expr[['env']][['env_md']], 'tbl_time')
+  expect_s3_class(test_expr[['env']][['env_day']], 'tbl_time')
+  expect_s3_class(test_expr[['env']][['env_night']], 'tbl_time')
   expect_match(names(test_expr[['env']][['env_gen']]), '_mean', all = FALSE)
   expect_match(names(test_expr[['env']][['env_gen']]), '_sd', all = FALSE)
   expect_match(names(test_expr[['env']][['env_gen']]), '_n', all = FALSE)
@@ -513,15 +531,22 @@ test_that('sfn_metrics return the expected object', {
   expect_match(names(test_expr[['env']][['env_md']]), '_mean_md', all = FALSE)
   expect_match(names(test_expr[['env']][['env_md']]), '_sd_md', all = FALSE)
   expect_match(names(test_expr[['env']][['env_md']]), '_n_md', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_day']]), '_mean_day', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_day']]), '_sd_day', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_day']]), '_n_day', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_night']]), '_mean_night', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_night']]), '_sd_night', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_night']]), '_n_night', all = FALSE)
 
   # tests for check the structure when some interval is not selected (predawn or
-  # midday)
+  # midday or nighttime)
   expect_is(
     sfn_metrics(
       FOO,
       period = 'daily',
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE, general = TRUE,
+      solar = FALSE,
+      general = TRUE,
       predawn = FALSE,
       midday = FALSE,
       nighttime = FALSE,
@@ -536,7 +561,8 @@ test_that('sfn_metrics return the expected object', {
     FOO,
     period = 'daily',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-    solar = FALSE, general = TRUE,
+    solar = FALSE,
+    general = TRUE,
     predawn = FALSE,
     midday = FALSE,
     nighttime = FALSE,
@@ -551,9 +577,52 @@ test_that('sfn_metrics return the expected object', {
   expect_s3_class(test_expr2[['sapf']][['sapf_gen']], 'tbl_time')
   expect_null(test_expr2[['sapf']][['sapf_pd']])
   expect_null(test_expr2[['sapf']][['sapf_md']])
+  expect_null(test_expr2[['sapf']][['sapf_day']])
+  expect_null(test_expr2[['sapf']][['sapf_night']])
   expect_s3_class(test_expr2[['env']][['env_gen']], 'tbl_time')
   expect_null(test_expr2[['env']][['env_pd']])
   expect_null(test_expr2[['env']][['env_md']])
+  expect_null(test_expr2[['env']][['env_day']])
+  expect_null(test_expr2[['env']][['env_night']])
+  
+  expect_is(
+    sfn_metrics(
+      FOO,
+      period = 'daily',
+      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+      solar = FALSE,
+      general = FALSE,
+      predawn = FALSE,
+      midday = FALSE,
+      nighttime = TRUE,
+      night_start = 20,
+      night_end = 6,
+      side = 'start'
+    ),
+    'list'
+  )
+  
+  test_expr3 <- sfn_metrics(
+    FOO,
+    period = 'daily',
+    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE,
+    general = FALSE,
+    predawn = FALSE,
+    midday = FALSE,
+    nighttime = TRUE,
+    night_start = 20,
+    night_end = 6,
+    side = 'start'
+  )
+  
+  expect_identical(names(test_expr3), c('sapf', 'env'))
+  expect_identical(names(test_expr3[['sapf']]), c('sapf_day', 'sapf_night'))
+  expect_identical(names(test_expr3[['env']]), c('env_day', 'env_night'))
+  expect_s3_class(test_expr3[['sapf']][['sapf_day']], 'tbl_time')
+  expect_s3_class(test_expr3[['sapf']][['sapf_night']], 'tbl_time')
+  expect_s3_class(test_expr3[['env']][['env_day']], 'tbl_time')
+  expect_s3_class(test_expr3[['env']][['env_night']], 'tbl_time')
 
 })
 
