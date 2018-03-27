@@ -4,8 +4,8 @@
 \alias{sfn_metrics}
 \title{Metrics summary function}
 \usage{
-sfn_metrics(sfn_data, period, .funs, solar, predawn, pd_start, pd_end, midday,
-  md_start, md_end, ...)
+sfn_metrics(sfn_data, period, .funs, solar, general, predawn, pd_start, pd_end,
+  midday, md_start, md_end, nighttime, night_start, night_end, ...)
 }
 \arguments{
 \item{sfn_data}{\code{\link{sfn_data}} or \code{\link{sfn_data_multi}} object
@@ -21,24 +21,32 @@ for more info about supplying custom functions.}
 \item{solar}{Logical indicating if the solarTIMESTAMP must be used instead of
 the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
 
+\item{general}{Logical indicating if general metrics (all data) must be
+returned}
+
 \item{predawn}{Logical indicating if metrics for predawn interval must be
-also returned.}
+returned.}
 
 \item{pd_start}{Hour to start the predawn interval}
 
 \item{pd_end}{Hour to end the predawn interval}
 
-\item{midday}{Logical indicating if metrics for midday interval must be also
+\item{midday}{Logical indicating if metrics for midday interval must be
 returned.}
 
 \item{md_start}{Hour to start the midday interval}
 
 \item{md_end}{Hour to end the midday interval}
 
+\item{nighttime}{Logical indicating if division between night and day id
+done and metrics for each subset (day and night) returned.}
+
+\item{night_start}{Hour to start the night interval}
+
+\item{night_end}{Hour to end the night interval}
+
 \item{...}{optional arguments to pass to methods used
 (i.e. tibbletime::collapse_index or summarise funs extra arguments)}
-
-\item{nighttime}{Experimental, not implemented (stats for night time)}
 }
 \value{
 For \code{\link{sfn_data}} objects, a list of tbl_time objects
@@ -51,6 +59,10 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
                   \code{predawn = FALSE} the slot will be empty)}
             \item{$sapf_md: metrics for midday interval (if
                   \code{midday = FALSE} the slot will be empty)}
+            \item{$sapf_day: metrics for diurnal interval (if
+                  \code{nighttime = FALSE} the solot will be empty)}
+            \item{$sapf_night: metrics for diurnal interval (if
+                  \code{nighttime = FALSE} the solot will be empty)}
           }}
     \item{$env: metrics for the environmental data
           \itemize{
@@ -59,6 +71,10 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
                   \code{predawn = FALSE} the slot will be empty)}
             \item{$env_md: metrics for midday interval (if
                   \code{midday = FALSE} the slot will be empty)}
+            \item{$env_day: metrics for diurnal interval (if
+                  \code{nighttime = FALSE} the solot will be empty)}
+            \item{$env_night: metrics for diurnal interval (if
+                  \code{nighttime = FALSE} the solot will be empty)}
           }}
   }
 
@@ -74,6 +90,10 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
                   \code{predawn = FALSE} the slot will be empty)}
             \item{$sapf_md: metrics for midday interval (if
                   \code{midday = FALSE} the slot will be empty)}
+            \item{$sapf_day: metrics for diurnal interval (if
+                  \code{nighttime = FALSE} the solot will be empty)}
+            \item{$sapf_night: metrics for diurnal interval (if
+                  \code{nighttime = FALSE} the solot will be empty)}
           }}
       }
       \itemize{
@@ -84,6 +104,10 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
                   \code{predawn = FALSE} the slot will be empty)}
             \item{$env_md: metrics for midday interval (if
                   \code{midday = FALSE} the slot will be empty)}
+            \item{$env_day: metrics for diurnal interval (if
+                  \code{nighttime = FALSE} the solot will be empty)}
+            \item{$env_night: metrics for diurnal interval (if
+                  \code{nighttime = FALSE} the solot will be empty)}
           }}
       }
     }

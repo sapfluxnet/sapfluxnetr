@@ -4,8 +4,8 @@
 \alias{daily_metrics}
 \title{Complete daily metrics for a site (or multi-site)}
 \usage{
-daily_metrics(sfn_data, solar = TRUE, predawn = TRUE, pd_start = 3,
-  pd_end = 5, midday = TRUE, md_start = 11, md_end = 13,
+daily_metrics(sfn_data, solar = TRUE, general = TRUE, predawn = TRUE,
+  pd_start = 3, pd_end = 5, midday = TRUE, md_start = 11, md_end = 13,
   probs = c(0.95, 0.99), ...)
 }
 \arguments{
@@ -15,14 +15,17 @@ to obtain the metrics from}
 \item{solar}{Logical indicating if the solarTIMESTAMP must be used instead of
 the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
 
+\item{general}{Logical indicating if general metrics (all data) must be
+returned}
+
 \item{predawn}{Logical indicating if metrics for predawn interval must be
-also returned.}
+returned.}
 
 \item{pd_start}{Hour to start the predawn interval}
 
 \item{pd_end}{Hour to end the predawn interval}
 
-\item{midday}{Logical indicating if metrics for midday interval must be also
+\item{midday}{Logical indicating if metrics for midday interval must be
 returned.}
 
 \item{md_start}{Hour to start the midday interval}

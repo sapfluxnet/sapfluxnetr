@@ -32,31 +32,25 @@ test_that('summarise_by_period function example works', {
     ),
     'tbl_time'
   )
+  
+  test_expr <- summarise_by_period(
+    data = get_sapf(FOO),
+    period = '7 days',
+    .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+  )
 
   expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = '7 days',
-      .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
-    )),
+    names(test_expr),
     regexp = '_mean', all = FALSE
   )
 
   expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = '7 days',
-      .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
-    )),
+    names(test_expr),
     regexp = '_sd', all = FALSE
   )
 
   expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = '7 days',
-      .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
-    )),
+    names(test_expr),
     regexp = '_n', all = FALSE
   )
 
@@ -77,28 +71,17 @@ test_that('summarise_by_period dots work as intended', {
     ),
     'tbl_time'
   )
-
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      na.rm = TRUE, # for summarise
-      side = "start" # for collapse_index
-    )),
-    regexp = '_mean', all = FALSE
+  
+  test_expr <- summarise_by_period(
+    data = get_sapf(FOO),
+    period = 'daily',
+    .funs = dplyr::funs(mean, sd),
+    na.rm = TRUE, # for summarise
+    side = "start" # for collapse_index
   )
 
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      na.rm = TRUE, # for summarise
-      side = "start" # for collapse_index
-    )),
-    regexp = '_sd', all = FALSE
-  )
+  expect_match(names(test_expr), regexp = '_mean', all = FALSE)
+  expect_match(names(test_expr), regexp = '_sd', all = FALSE)
 
   expect_s3_class(
     summarise_by_period(
@@ -111,30 +94,18 @@ test_that('summarise_by_period dots work as intended', {
     ),
     'tbl_time'
   )
-
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      na.rm = TRUE, # for summarise
-      side = "start", # for collapse_index
-      clean = TRUE # for collapse_index
-    )),
-    regexp = '_mean', all = FALSE
+  
+  test_expr2 <- summarise_by_period(
+    data = get_sapf(FOO),
+    period = 'daily',
+    .funs = dplyr::funs(mean, sd),
+    na.rm = TRUE, # for summarise
+    side = "start", # for collapse_index
+    clean = TRUE # for collapse_index
   )
 
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      na.rm = TRUE, # for summarise
-      side = "start", # for collapse_index
-      clean = TRUE # for collapse_index
-    )),
-    regexp = '_sd', all = FALSE
-  )
+  expect_match(names(test_expr2), regexp = '_mean', all = FALSE)
+  expect_match(names(test_expr2), regexp = '_sd', all = FALSE)
 
   expect_s3_class(
     summarise_by_period(
@@ -145,26 +116,16 @@ test_that('summarise_by_period dots work as intended', {
     ),
     'tbl_time'
   )
-
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      side = "start" # for collapse_index
-    )),
-    regexp = '_mean', all = FALSE
+  
+  test_expr3 <- summarise_by_period(
+    data = get_sapf(FOO),
+    period = 'daily',
+    .funs = dplyr::funs(mean, sd),
+    side = "start" # for collapse_index
   )
 
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      side = "start" # for collapse_index
-    )),
-    regexp = '_sd', all = FALSE
-  )
+  expect_match(names(test_expr3), regexp = '_mean', all = FALSE)
+  expect_match(names(test_expr3), regexp = '_sd', all = FALSE)
 
   expect_s3_class(
     summarise_by_period(
@@ -176,28 +137,17 @@ test_that('summarise_by_period dots work as intended', {
     ),
     'tbl_time'
   )
-
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      side = "start", # for collapse_index
-      clean = TRUE # for collapse_index
-    )),
-    regexp = '_mean', all = FALSE
+  
+  test_expr4 <- summarise_by_period(
+    data = get_sapf(FOO),
+    period = 'daily',
+    .funs = dplyr::funs(mean, sd),
+    side = "start", # for collapse_index
+    clean = TRUE # for collapse_index
   )
 
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      side = "start", # for collapse_index
-      clean = TRUE # for collapse_index
-    )),
-    regexp = '_sd', all = FALSE
-  )
+  expect_match(names(test_expr4), regexp = '_mean', all = FALSE)
+  expect_match(names(test_expr4), regexp = '_sd', all = FALSE)
 
   expect_s3_class(
     summarise_by_period(
@@ -208,26 +158,17 @@ test_that('summarise_by_period dots work as intended', {
     ),
     'tbl_time'
   )
-
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      na.rm = TRUE # for summarise
-    )),
-    regexp = '_mean', all = FALSE
+  
+  test_expr5 <- summarise_by_period(
+    data = get_sapf(FOO),
+    period = 'daily',
+    .funs = dplyr::funs(mean, sd),
+    na.rm = TRUE # for summarise
   )
 
-  expect_match(
-    names(summarise_by_period(
-      data = get_sapf(FOO),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      na.rm = TRUE # for summarise
-    )),
-    regexp = '_sd', all = FALSE
-  )
+  expect_match(names(test_expr5), regexp = '_mean', all = FALSE)
+
+  expect_match(names(test_expr5), regexp = '_sd', all = FALSE)
 
 })
 
@@ -256,31 +197,36 @@ test_that('data_coverage works as intended', {
 
 })
 
+#### diurnal_centroid tests ####
+test_that('diurnal_centroid function works with even data', {
+  
+  variable <- rep(1, 48)
+  variable_2 <- rep(1000, 48)
+  
+  expect_true(is.numeric(diurnal_centroid(variable)))
+  expect_equal(diurnal_centroid(variable), 12.25)
+  expect_equal(diurnal_centroid(variable_2), 12.25)
+  expect_identical(diurnal_centroid(variable), diurnal_centroid(variable_2))
+  
+  variable_3 <- rep(1, 24)
+  variable_4 <- rep(1000, 24)
+  
+  expect_equal(diurnal_centroid(variable_3), 12.5)
+  expect_equal(diurnal_centroid(variable_4), 12.5)
+  expect_identical(diurnal_centroid(variable_3), diurnal_centroid(variable_4))
+  
+})
+
 #### min_time/max_time tests ####
 test_that('min_time and max_time functions work as intended', {
 
   x <- c(1:50, 49:1)
   time <- seq.POSIXt(as.POSIXct(Sys.Date()), by = 'day', length.out = 99)
 
-  expect_s3_class(
-    max_time(x, time),
-    'POSIXct'
-  )
-
-  expect_equal(
-    max_time(x, time),
-    time[50]
-  )
-
-  expect_s3_class(
-    min_time(x, time),
-    'POSIXct'
-  )
-
-  expect_equal(
-    min_time(x, time),
-    time[1]
-  )
+  expect_s3_class(max_time(x, time), 'POSIXct')
+  expect_equal(max_time(x, time), time[50])
+  expect_s3_class(min_time(x, time), 'POSIXct')
+  expect_equal(min_time(x, time), time[1])
 
 })
 
@@ -339,181 +285,127 @@ test_that('sfn_metrics examples work', {
       FOO,
       period = '7 days',
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
+      solar = FALSE, general = TRUE,
       predawn = TRUE,
       pd_start = 4,
       pd_end = 6,
       midday = TRUE,
       md_start = 12,
       md_end = 14,
+      nighttime = FALSE,
+      night_start = 20,
+      night_end = 6,
       side = 'start'
     ),
     'list'
   )
-
-  expect_identical(
-    names(sfn_metrics(
-      FOO,
-      period = '7 days',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      midday = TRUE,
-      md_start = 12,
-      md_end = 14,
-      side = 'start'
-    )),
-    c('sapf', 'env')
+  
+  test_expr <- sfn_metrics(
+    FOO,
+    period = '7 days',
+    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE, general = TRUE,
+    predawn = TRUE,
+    pd_start = 4,
+    pd_end = 6,
+    midday = TRUE,
+    md_start = 12,
+    md_end = 14,
+    nighttime = FALSE,
+    night_start = 20,
+    night_end = 6,
+    side = 'start'
   )
 
+  expect_identical(names(test_expr), c('sapf', 'env'))
   expect_identical(
-    names(sfn_metrics(
-      FOO,
-      period = '7 days',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      midday = TRUE,
-      md_start = 12,
-      md_end = 14,
-      side = 'start'
-    )[['sapf']]),
-    c('sapf', 'sapf_pd', 'sapf_md')
+    names(test_expr[['sapf']]),
+    c('sapf_gen', 'sapf_pd', 'sapf_md')
   )
-
-  expect_identical(
-    names(sfn_metrics(
-      FOO,
-      period = '7 days',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      midday = TRUE,
-      md_start = 12,
-      md_end = 14,
-      side = 'start'
-    )[['env']]),
-    c('env', 'env_pd', 'env_md')
-  )
+  expect_identical(names(test_expr[['env']]), c('env_gen', 'env_pd', 'env_md'))
 
   expect_is(
     sfn_metrics(
       multi_sfn,
       period = '7 days',
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
+      solar = FALSE, general = TRUE,
       predawn = TRUE,
       pd_start = 4,
       pd_end = 6,
       midday = TRUE,
       md_start = 12,
       md_end = 14,
+      nighttime = FALSE,
+      night_start = 20,
+      night_end = 6,
       side = 'start'
     ),
     'list'
   )
-
-  expect_identical(
-    names(sfn_metrics(
-      multi_sfn,
-      period = '7 days',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      midday = TRUE,
-      md_start = 12,
-      md_end = 14,
-      side = 'start'
-    )),
-    c('FOO', 'BAR', 'BAZ')
+  
+  test_expr2 <- sfn_metrics(
+    multi_sfn,
+    period = '7 days',
+    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE, general = TRUE,
+    predawn = TRUE,
+    pd_start = 4,
+    pd_end = 6,
+    midday = TRUE,
+    md_start = 12,
+    md_end = 14,
+    nighttime = FALSE,
+    night_start = 20,
+    night_end = 6,
+    side = 'start'
   )
+
+  expect_identical(names(test_expr2), c('FOO', 'BAR', 'BAZ'))
 
   expect_is(
     sfn_metrics(
       multi_sfn,
       period = 'daily',
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
+      solar = FALSE, general = TRUE,
       predawn = TRUE,
       md_start = 12,
       md_end = 14,
       midday = TRUE,
       pd_start = 4,
       pd_end = 6,
+      nighttime = FALSE,
+      night_start = 20,
+      night_end = 6,
       side = 'start'
     )[['FOO']],
     'list'
   )
-
-  expect_is(
-    sfn_metrics(
-      multi_sfn,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 12,
-      md_end = 14,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['BAR']],
-    'list'
+  
+  test_expr3 <- sfn_metrics(
+    multi_sfn,
+    period = 'daily',
+    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE, general = TRUE,
+    predawn = TRUE,
+    md_start = 12,
+    md_end = 14,
+    midday = TRUE,
+    pd_start = 4,
+    pd_end = 6,
+    nighttime = FALSE,
+    night_start = 20,
+    night_end = 6,
+    side = 'start'
   )
 
-  expect_is(
-    sfn_metrics(
-      multi_sfn,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 12,
-      md_end = 14,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['BAZ']],
-    'list'
-  )
+  expect_is(test_expr3[['BAR']], 'list')
+  expect_is(test_expr3[['BAZ']], 'list')
 
   expect_equal(
-    sfn_metrics(
-      FOO,
-      period = '7 days',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      midday = TRUE,
-      md_start = 12,
-      md_end = 14,
-      side = 'start'
-    )[['sapf']][['sapf_pd']],
-    sfn_metrics(
-      multi_sfn,
-      period = '7 days',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      midday = TRUE,
-      md_start = 12,
-      md_end = 14,
-      side = 'start'
-    )[['FOO']][['sapf']][['sapf_pd']]
+    test_expr[['sapf']][['sapf_pd']],
+    test_expr2[['FOO']][['sapf']][['sapf_pd']]
   )
 
 })
@@ -562,476 +454,65 @@ test_that('sfn_metrics return the expected object', {
       FOO,
       period = 'daily',
       .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
+      solar = FALSE, general = TRUE,
       predawn = TRUE,
       md_start = 13,
       md_end = 15,
       midday = TRUE,
       pd_start = 4,
       pd_end = 6,
+      nighttime = FALSE,
+      night_start = 20,
+      night_end = 6,
       side = 'start'
     ),
     'list'
   )
-
-  expect_identical(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )),
-    c('sapf', 'env')
+  
+  test_expr <- sfn_metrics(
+    FOO,
+    period = 'daily',
+    .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE, general = TRUE,
+    predawn = TRUE,
+    md_start = 13,
+    md_end = 15,
+    midday = TRUE,
+    pd_start = 4,
+    pd_end = 6,
+    nighttime = FALSE,
+    night_start = 20,
+    night_end = 6,
+    side = 'start'
   )
 
-  expect_identical(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']]),
-    c('sapf', 'sapf_pd', 'sapf_md')
-  )
-
-  expect_s3_class(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf']],
-    'tbl_time'
-  )
-
-  expect_s3_class(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf_pd']],
-    'tbl_time'
-  )
-
-  expect_s3_class(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf_md']],
-    'tbl_time'
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf']]),
-    '_mean', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf']]),
-    '_sd', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf']]),
-    '_n', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf_pd']]),
-    '_mean_pd', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf_pd']]),
-    '_sd_pd', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf_pd']]),
-    '_n_pd', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf_md']]),
-    '_mean_md', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf_md']]),
-    '_sd_md', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['sapf']][['sapf_md']]),
-    '_n_md', all = FALSE
-  )
-
-  expect_identical(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']]),
-    c('env', 'env_pd', 'env_md')
-  )
-
-  expect_s3_class(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env']],
-    'tbl_time'
-  )
-
-  expect_s3_class(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env_pd']],
-    'tbl_time'
-  )
-
-  expect_s3_class(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env_md']],
-    'tbl_time'
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env']]),
-    '_mean', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env']]),
-    '_sd', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env']]),
-    '_n', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env_pd']]),
-    '_mean_pd', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env_pd']]),
-    '_sd_pd', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env_pd']]),
-    '_n_pd', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env_md']]),
-    '_mean_md', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env_md']]),
-    '_sd_md', all = FALSE
-  )
-
-  expect_match(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = TRUE,
-      md_start = 13,
-      md_end = 15,
-      midday = TRUE,
-      pd_start = 4,
-      pd_end = 6,
-      side = 'start'
-    )[['env']][['env_md']]),
-    '_n_md', all = FALSE
-  )
+  expect_identical(names(test_expr), c('sapf', 'env'))
+  expect_identical(names(test_expr[['sapf']]), c('sapf_gen', 'sapf_pd', 'sapf_md'))
+  expect_s3_class(test_expr[['sapf']][['sapf_gen']], 'tbl_time')
+  expect_s3_class(test_expr[['sapf']][['sapf_pd']], 'tbl_time')
+  expect_s3_class(test_expr[['sapf']][['sapf_md']], 'tbl_time')
+  expect_match(names(test_expr[['sapf']][['sapf_gen']]), '_mean', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_gen']]), '_sd', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_gen']]), '_n', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_pd']]), '_mean_pd', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_pd']]), '_sd_pd', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_pd']]), '_n_pd', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_md']]), '_mean_md', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_md']]), '_sd_md', all = FALSE)
+  expect_match(names(test_expr[['sapf']][['sapf_md']]), '_n_md', all = FALSE)
+  expect_identical(names(test_expr[['env']]), c('env_gen', 'env_pd', 'env_md'))
+  expect_s3_class(test_expr[['env']][['env_gen']], 'tbl_time')
+  expect_s3_class(test_expr[['env']][['env_pd']], 'tbl_time')
+  expect_s3_class(test_expr[['env']][['env_md']], 'tbl_time')
+  expect_match(names(test_expr[['env']][['env_gen']]), '_mean', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_gen']]), '_sd', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_gen']]), '_n', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_pd']]), '_mean_pd', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_pd']]), '_sd_pd', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_pd']]), '_n_pd', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_md']]), '_mean_md', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_md']]), '_sd_md', all = FALSE)
+  expect_match(names(test_expr[['env']][['env_md']]), '_n_md', all = FALSE)
 
   # tests for check the structure when some interval is not selected (predawn or
   # midday)
@@ -1040,367 +521,129 @@ test_that('sfn_metrics return the expected object', {
       FOO,
       period = 'daily',
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
+      solar = FALSE, general = TRUE,
       predawn = FALSE,
       midday = FALSE,
+      nighttime = FALSE,
+      night_start = 20,
+      night_end = 6,
       side = 'start'
     ),
     'list'
   )
-
-  expect_identical(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = FALSE,
-      midday = FALSE,
-      side = 'start'
-    )),
-    c('sapf', 'env')
+  
+  test_expr2 <- sfn_metrics(
+    FOO,
+    period = 'daily',
+    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE, general = TRUE,
+    predawn = FALSE,
+    midday = FALSE,
+    nighttime = FALSE,
+    night_start = 20,
+    night_end = 6,
+    side = 'start'
   )
 
-  expect_identical(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = FALSE,
-      midday = FALSE,
-      side = 'start'
-    )[['sapf']]),
-    c('sapf', 'sapf_pd', 'sapf_md')
-  )
-
-  expect_identical(
-    names(sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = FALSE,
-      midday = FALSE,
-      side = 'start'
-    )[['env']]),
-    c('env', 'env_pd', 'env_md')
-  )
-
-  expect_s3_class(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = FALSE,
-      midday = FALSE,
-      side = 'start'
-    )[['sapf']][['sapf']],
-    'tbl_time'
-  )
-
-  expect_null(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = FALSE,
-      midday = FALSE,
-      side = 'start'
-    )[['sapf']][['sapf_pd']]
-  )
-
-  expect_null(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = FALSE,
-      midday = FALSE,
-      side = 'start'
-    )[['sapf']][['sapf_md']]
-  )
-
-  expect_s3_class(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = FALSE,
-      midday = FALSE,
-      side = 'start'
-    )[['env']][['env']],
-    'tbl_time'
-  )
-
-  expect_null(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = FALSE,
-      midday = FALSE,
-      side = 'start'
-    )[['env']][['env_pd']]
-  )
-
-  expect_null(
-    sfn_metrics(
-      FOO,
-      period = 'daily',
-      .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-      solar = FALSE,
-      predawn = FALSE,
-      midday = FALSE,
-      side = 'start'
-    )[['env']][['env_md']]
-  )
+  expect_identical(names(test_expr2), c('sapf', 'env'))
+  expect_identical(names(test_expr2[['sapf']]), c('sapf_gen'))
+  expect_identical(names(test_expr2[['env']]), c('env_gen'))
+  expect_s3_class(test_expr2[['sapf']][['sapf_gen']], 'tbl_time')
+  expect_null(test_expr2[['sapf']][['sapf_pd']])
+  expect_null(test_expr2[['sapf']][['sapf_md']])
+  expect_s3_class(test_expr2[['env']][['env_gen']], 'tbl_time')
+  expect_null(test_expr2[['env']][['env_pd']])
+  expect_null(test_expr2[['env']][['env_md']])
 
 })
 
 test_that('daily metrics examples work', {
 
   expect_is(daily_metrics(FOO, solar = FALSE), 'list')
-  expect_s3_class(daily_metrics(FOO, solar = FALSE)[['env']][['env']], 'tbl_time')
+  expect_s3_class(daily_metrics(FOO, solar = FALSE)[['env']][['env_gen']], 'tbl_time')
 
   expect_is(daily_metrics(
-    FOO, solar = FALSE,
+    FOO, solar = FALSE, general = TRUE,
     pd_start = 5, pd_end = 7,
     md_start = 13, md_end = 15
   ), 'list')
   expect_s3_class(daily_metrics(
-    FOO, solar = FALSE,
+    FOO, solar = FALSE, general = TRUE,
     pd_start = 5, pd_end = 7,
     md_start = 13, md_end = 15
   )[['sapf']][['sapf_pd']], 'tbl_time')
 
-  expect_is(daily_metrics(FOO, solar = FALSE, predawn = FALSE, midday = FALSE), 'list')
-  expect_null(daily_metrics(FOO, solar = FALSE, predawn = FALSE, midday = FALSE)[['env']][['env_md']])
+  expect_is(daily_metrics(FOO, solar = FALSE, general = TRUE, predawn = FALSE, midday = FALSE), 'list')
+  expect_null(daily_metrics(FOO, solar = FALSE, general = TRUE, predawn = FALSE, midday = FALSE)[['env']][['env_md']])
   expect_s3_class(daily_metrics(
-    FOO, solar = FALSE, predawn = FALSE, midday = FALSE
-  )[['env']][['env']], 'tbl_time')
+    FOO, solar = FALSE, general = TRUE, predawn = FALSE, midday = FALSE
+  )[['env']][['env_gen']], 'tbl_time')
 
 })
 
 test_that('daily metrics returns the variables required', {
 
   FOO_daily <- daily_metrics(FOO, solar = FALSE)
+  FOO_sapf_gen <- FOO_daily[['sapf']][['sapf_gen']]
+  FOO_sapf_pd <- FOO_daily[['sapf']][['sapf_pd']]
+  FOO_sapf_md <- FOO_daily[['sapf']][['sapf_md']]
+  FOO_env_gen <- FOO_daily[['env']][['env_gen']]
+  FOO_env_pd <- FOO_daily[['env']][['env_pd']]
+  FOO_env_md <- FOO_daily[['env']][['env_md']]
 
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf']]),
-    '_q_95', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf']]),
-    '_q_99', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf']]),
-    '_coverage', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf']]),
-    '_min_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf']]),
-    '_max_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf']]),
-    '_min', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf']]),
-    '_max', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_pd']]),
-    '_q_95', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_pd']]),
-    '_q_99', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_pd']]),
-    '_coverage', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_pd']]),
-    '_min_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_pd']]),
-    '_max_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_pd']]),
-    '_min', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_pd']]),
-    '_max', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_md']]),
-    '_q_95', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_md']]),
-    '_q_99', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_md']]),
-    '_coverage', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_md']]),
-    '_min_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_md']]),
-    '_max_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_md']]),
-    '_min', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['sapf']][['sapf_md']]),
-    '_max', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env']]),
-    '_q_95', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env']]),
-    '_q_99', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env']]),
-    '_coverage', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env']]),
-    '_min_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env']]),
-    '_max_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env']]),
-    '_min', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env']]),
-    '_max', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_pd']]),
-    '_q_95', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_pd']]),
-    '_q_99', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_pd']]),
-    '_coverage', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_pd']]),
-    '_min_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_pd']]),
-    '_max_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_pd']]),
-    '_min', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_pd']]),
-    '_max', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_md']]),
-    '_q_95', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_md']]),
-    '_q_99', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_md']]),
-    '_coverage', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_md']]),
-    '_min_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_md']]),
-    '_max_time', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_md']]),
-    '_min', all = FALSE
-  )
-
-  expect_match(
-    names(FOO_daily[['env']][['env_md']]),
-    '_max', all = FALSE
-  )
-
+  expect_match(names(FOO_sapf_gen), '_q_95', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_q_99', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_coverage', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_min_time', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_max_time', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_min', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_max', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_centroid', all = FALSE)
+  
+  expect_match(names(FOO_sapf_pd), '_q_95', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_q_99', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_coverage', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_min_time', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_max_time', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_min', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_max', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_centroid', all = FALSE)
+  
+  expect_match(names(FOO_sapf_md), '_q_95', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_q_99', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_coverage', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_min_time', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_max_time', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_min', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_max', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_centroid', all = FALSE)
+  
+  expect_match(names(FOO_env_gen), '_q_95', all = FALSE)
+  expect_match(names(FOO_env_gen), '_q_99', all = FALSE)
+  expect_match(names(FOO_env_gen), '_coverage', all = FALSE)
+  expect_match(names(FOO_env_gen), '_min_time', all = FALSE)
+  expect_match(names(FOO_env_gen), '_max_time', all = FALSE)
+  expect_match(names(FOO_env_gen), '_min', all = FALSE)
+  expect_match(names(FOO_env_gen), '_max', all = FALSE)
+  expect_match(names(FOO_env_gen), '_centroid', all = FALSE)
+  
+  expect_match(names(FOO_env_pd), '_q_95', all = FALSE)
+  expect_match(names(FOO_env_pd), '_q_99', all = FALSE)
+  expect_match(names(FOO_env_pd), '_coverage', all = FALSE)
+  expect_match(names(FOO_env_pd), '_min_time', all = FALSE)
+  expect_match(names(FOO_env_pd), '_max_time', all = FALSE)
+  expect_match(names(FOO_env_pd), '_min', all = FALSE)
+  expect_match(names(FOO_env_pd), '_max', all = FALSE)
+  expect_match(names(FOO_env_pd), '_centroid', all = FALSE)
+  
+  expect_match(names(FOO_env_md), '_q_95', all = FALSE)
+  expect_match(names(FOO_env_md), '_q_99', all = FALSE)
+  expect_match(names(FOO_env_md), '_coverage', all = FALSE)
+  expect_match(names(FOO_env_md), '_min_time', all = FALSE)
+  expect_match(names(FOO_env_md), '_max_time', all = FALSE)
+  expect_match(names(FOO_env_md), '_min', all = FALSE)
+  expect_match(names(FOO_env_md), '_max', all = FALSE)
+  expect_match(names(FOO_env_md), '_centroid', all = FALSE)
 })
 
 test_that('monthly metrics examples work', {
@@ -1408,6 +651,6 @@ test_that('monthly metrics examples work', {
   # we only test the main example, as the previous tests already cover almost
   # all functionality
   expect_is(monthly_metrics(FOO, solar = FALSE), 'list')
-  expect_s3_class(monthly_metrics(FOO, solar = TRUE)[['sapf']][['sapf']], 'tbl_df')
+  expect_s3_class(monthly_metrics(FOO, solar = TRUE)[['sapf']][['sapf_gen']], 'tbl_df')
 
 })
