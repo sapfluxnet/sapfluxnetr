@@ -110,11 +110,32 @@ min_time <- function(x, time) {
 #' @param variable A numeric vector containing the values for a day at a
 #'   regular intervals. Missing values are allowed but not recommended
 #' 
+#' @examples
+#' # check convergence to 12h:
+#' diurnal_centroid(rep(1, 1000)) # 12.012 h
+#' diurnal_centroid(rep(10000, 1000)) # 12.012 h, variable scale not affects calculation
+#' 
+#' # sapflow diurnal centroid
+#' data('FOO', package = 'sapfluxnetr')
+#' 
+#' sfn_metrics(
+#'   FOO,
+#'   period = 'daily',
+#'   .funs = funs(diurnal_centroid(.), data_coverage(.)),
+#'   solar = FALSE,
+#'   predawn = FALSE,
+#'   midday = FALSE
+#' )
+#' 
 #' @return A numeric vector with the diurnal centroid value (0 to 24 h)
 #' 
 #' @author Jacob Nelson & Víctor Granda
 
 diurnal_centroid <- function(variable) {
+  
+  # Hack to work in POSIXct vectors which does not support * operations.
+  # make sure variable is numeric (to avoid errors with POSIXct TIMESTAMP_coll)
+  variable <- as.numeric(variable)
   
   steps_by_day = length(variable)
   raw_c <- sum(variable * 1:steps_by_day, na.rm = TRUE) / 
@@ -122,8 +143,6 @@ diurnal_centroid <- function(variable) {
   res_c <- raw_c * (24 / steps_by_day)
   
   return(res_c)
-  
-  # TODO examples section in roxygen comments
 }
 
 #' min max

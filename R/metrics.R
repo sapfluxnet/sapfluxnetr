@@ -80,7 +80,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
   dots <- list(...)
   dots_collapse_index <- dots[names(dots) %in% methods::formalArgs(tibbletime::collapse_index)]
   dots_summarise_all <- dots[!(names(dots) %in% methods::formalArgs(tibbletime::collapse_index))]
-
+  
   # if we need to pass unknown arguments to collapse_index and summarise_all, then
   # we use the quasiquotation system (!!!args_list), that way we don't need to
   # worry about which arguments are supplied
@@ -90,7 +90,6 @@ summarise_by_period <- function(data, period, .funs, ...) {
     if (length(dots_summarise_all) > 0) {
       data %>%
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
           TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
@@ -107,7 +106,6 @@ summarise_by_period <- function(data, period, .funs, ...) {
     } else {
       data %>%
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
           TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
@@ -126,7 +124,6 @@ summarise_by_period <- function(data, period, .funs, ...) {
     if (length(dots_summarise_all) > 0) {
       data %>%
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
           TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
@@ -142,7 +139,6 @@ summarise_by_period <- function(data, period, .funs, ...) {
     } else {
       data %>%
         tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        # tibbletime::collapse_index(period = period, !!! dots_collapse_index) %>%
         dplyr::mutate(
           TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
@@ -534,7 +530,8 @@ daily_metrics <- function(
       max = max(., na.rm = TRUE),
       max_time = max_time(., .data$TIMESTAMP_coll),
       min = min(., na.rm = TRUE),
-      min_time = min_time(., .data$TIMESTAMP_coll)
+      min_time = min_time(., .data$TIMESTAMP_coll),
+      centroid = diurnal_centroid(.)
     )
   }
 
@@ -631,9 +628,9 @@ monthly_metrics <- function(
       coverage = data_coverage(.),
       !!! quantile_args,
       max = max(., na.rm = TRUE),
-      max_time = max_time(., .data$TIMESTAMP_coll),
+      max_time = max_time(., TIMESTAMP_coll),
       min = min(., na.rm = TRUE),
-      min_time = min_time(., .data$TIMESTAMP_coll)
+      min_time = min_time(., TIMESTAMP_coll)
     )
   }
 
