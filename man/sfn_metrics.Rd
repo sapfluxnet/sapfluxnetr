@@ -140,28 +140,36 @@ for more complex summarising functions declaration.
 }
 
 \examples{
+library(dplyr)
+
 ## sfn_data
-data('FOO', pkg = 'sapfluxnetr')
+data('FOO', package = 'sapfluxnetr')
 FOO_metrics <- sfn_metrics(
   FOO,
   period = '7 days',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
   solar = FALSE,
+  general = TRUE,
   predawn = TRUE,
   pd_start = 4,
   pd_end = 6,
   midday = TRUE,
   md_start = 12,
   md_end = 14,
+  nighttime = TRUE,
+  night_start = 20,
+  night_end = 6,
   side = 'start'
 )
 
 str(FOO_metrics)
 FOO_metrics[['sapf']][['sapf_pd']]
+FOO_metrics[['env']][['env_night']]
 
 ## sfn_data_multi
-data('BAR', pkg = 'sapfluxnetr')
-data('BAZ', pkg = 'sapfluxnetr')
+\dontrun{
+data('BAR', package = 'sapfluxnetr')
+data('BAZ', package = 'sapfluxnetr')
 multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
 
 multi_metrics <- sfn_metrics(
@@ -169,18 +177,21 @@ multi_metrics <- sfn_metrics(
   period = '7 days',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
   solar = FALSE,
+  general = TRUE,
   predawn = TRUE,
   pd_start = 4,
   pd_end = 6,
   midday = TRUE,
   md_start = 12,
   md_end = 14,
+  nighttime = FALSE,
   side = 'start'
 )
 
 str(multi_metrics)
 
 multi_metrics[['FOO']][['sapf']][['sapf_pd']]
+}
 
 }
 \seealso{

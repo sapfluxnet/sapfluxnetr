@@ -36,7 +36,11 @@ metadata class, they are combined as 'and'.
 }
 \examples{
 # simple, want to know which sites are using the Heat Ratio method to measure
-# the sap flow
+# the sap flow.
+
+# For this to work there must be a folder called 'Data' in the working
+# directory containing the sites .RData files
+\dontrun{
 filter_by_var(pl_sens_meth == 'HR', folder = 'Data')
 
 # Both, Heat Ratio and Heat Dissipation
@@ -58,5 +62,6 @@ filter_by_var(
   folder = 'Data',
   join = 'or'
 )
+}
 
 }

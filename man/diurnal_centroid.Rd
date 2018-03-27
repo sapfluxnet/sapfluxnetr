@@ -20,7 +20,7 @@ Calculate the diurnal centroid for sapflow and environmental variables
 The code for this function has been kindly provided by Jacob Nelson in python
 (see https://github.com/jnelson18/FluxnetTools/blob/master/FileS3.py) and has
 been translated to a tidy data phylosophy in R to be used inside a
-\code{\link[dplyr]{summary}} statement.
+\code{\link[dplyr]{summarise}} statement.
 }
 \section{Diurnal centroid algorithm}{
 
@@ -31,7 +31,7 @@ by the sum of the values for the day and finally the value is normalized to
 24h:
 
 \deqn{
-\sum {x_1 * 1, x_2 * 2, ···, x_n * n} / \sum {x_1, x_2, ···, x_n} * (24/n)
+\sum {x_1 * 1, x_2 * 2, ... , x_n * n} / \sum {x_1, x_2, ... , x_n} * (24/n)
 }
 
 With even values for all the intervals (i.e. 100 for all), centroid converges
@@ -42,6 +42,9 @@ in half hourly datasets or above can have a considerable error associated.
 }
 
 \examples{
+# dplyr
+library(dplyr)
+
 # check convergence to 12h:
 diurnal_centroid(rep(1, 1000)) # 12.012 h
 diurnal_centroid(rep(10000, 1000)) # 12.012 h, variable scale not affects calculation
@@ -54,8 +57,10 @@ sfn_metrics(
   period = 'daily',
   .funs = funs(diurnal_centroid(.), data_coverage(.)),
   solar = FALSE,
+  general = TRUE,
   predawn = FALSE,
-  midday = FALSE
+  midday = FALSE,
+  nighttime = FALSE
 )
 
 }

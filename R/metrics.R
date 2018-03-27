@@ -49,7 +49,7 @@
 #'   }
 #'
 #' @param data sapflow or environmental data as obtained by \code{\link{get_sapf}}
-#'   and \code{\link{get_env}}
+#'   and \code{\link{get_env}}. Must have a column named TIMESTAMP
 #' @param period tibbletime::collapse_index period
 #' @param .funs dplyr::summarise_all funs
 #' @param ... optional arguments for tibbletime::collapse_index function and
@@ -60,8 +60,10 @@
 #'   metric calculated (i.e. `vpd_mean`)
 #'
 #' @examples
+#' library(dplyr)
+#' 
 #' # data
-#' load('FOO', package = 'sapfluxnetr')
+#' data('FOO', package = 'sapfluxnetr')
 #'
 #' # simple summary
 #' summarise_by_period(
@@ -89,7 +91,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
   if (length(dots_collapse_index) > 0) {
     if (length(dots_summarise_all) > 0) {
       data %>%
-        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         dplyr::mutate(
           TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
@@ -105,7 +107,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
       return(res)
     } else {
       data %>%
-        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         dplyr::mutate(
           TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
@@ -123,7 +125,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
   } else {
     if (length(dots_summarise_all) > 0) {
       data %>%
-        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         dplyr::mutate(
           TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
@@ -138,7 +140,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
       return(res)
     } else {
       data %>%
-        tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+        # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
         dplyr::mutate(
           TIMESTAMP_coll = .data$TIMESTAMP,
           TIMESTAMP = tibbletime::collapse_index(
@@ -286,28 +288,36 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'   }
 #'
 #' @examples
+#' library(dplyr)
+#' 
 #' ## sfn_data
-#' data('FOO', pkg = 'sapfluxnetr')
+#' data('FOO', package = 'sapfluxnetr')
 #' FOO_metrics <- sfn_metrics(
 #'   FOO,
 #'   period = '7 days',
 #'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
 #'   solar = FALSE,
+#'   general = TRUE,
 #'   predawn = TRUE,
 #'   pd_start = 4,
 #'   pd_end = 6,
 #'   midday = TRUE,
 #'   md_start = 12,
 #'   md_end = 14,
+#'   nighttime = TRUE,
+#'   night_start = 20,
+#'   night_end = 6,
 #'   side = 'start'
 #' )
 #'
 #' str(FOO_metrics)
 #' FOO_metrics[['sapf']][['sapf_pd']]
+#' FOO_metrics[['env']][['env_night']]
 #'
 #' ## sfn_data_multi
-#' data('BAR', pkg = 'sapfluxnetr')
-#' data('BAZ', pkg = 'sapfluxnetr')
+#' \dontrun{
+#' data('BAR', package = 'sapfluxnetr')
+#' data('BAZ', package = 'sapfluxnetr')
 #' multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
 #'
 #' multi_metrics <- sfn_metrics(
@@ -315,18 +325,21 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'   period = '7 days',
 #'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
 #'   solar = FALSE,
+#'   general = TRUE,
 #'   predawn = TRUE,
 #'   pd_start = 4,
 #'   pd_end = 6,
 #'   midday = TRUE,
 #'   md_start = 12,
 #'   md_end = 14,
+#'   nighttime = FALSE,
 #'   side = 'start'
 #' )
 #'
 #' str(multi_metrics)
 #'
 #' multi_metrics[['FOO']][['sapf']][['sapf_pd']]
+#' }
 #'
 #' @export
 
@@ -473,17 +486,17 @@ sfn_metrics <- function(
     night_boundaries <- night_data[['sapf']] %>%
       dplyr::mutate(
         coll = tibbletime::collapse_index(
-          index = TIMESTAMP,
+          index = .data$TIMESTAMP,
           period = 'daily',
           side = 'start'
         )
       ) %>%
-      dplyr::group_by(coll) %>%
+      dplyr::group_by(.data$coll) %>%
       # closest to night start timestamp
       dplyr::summarise(
-        custom_dates = TIMESTAMP[which.min(abs(lubridate::hour(TIMESTAMP) - night_start))]
+        custom_dates = .data$TIMESTAMP[which.min(abs(lubridate::hour(.data$TIMESTAMP) - night_start))]
       ) %>%
-      dplyr::pull(custom_dates)
+      dplyr::pull(.data$custom_dates)
     
     night_sum <- night_data %>%
       purrr::map(summarise_by_period, night_boundaries, .funs, ...)
@@ -577,7 +590,7 @@ sfn_metrics <- function(
 #' FOO_daily <- daily_metrics(FOO)
 #'
 #' str(FOO_daily)
-#' FOO_daily[['env']][['env']]
+#' FOO_daily[['env']][['env_gen']]
 #'
 #' # change the predawn and midday interval
 #' FOO_int_daily <- daily_metrics(
@@ -594,7 +607,7 @@ sfn_metrics <- function(
 #' str(FOO_gen)
 #' # no predawn or midday
 #' FOO_gen[['sapf']][['sapf_pd']] # NULL
-#' FOO_gen[['sapf']][['sapf']] # data
+#' FOO_gen[['sapf']][['sapf_gen']] # data
 #'
 #' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
 #'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
@@ -620,6 +633,9 @@ daily_metrics <- function(
 
   # hardcoded values
   period <- 'daily'
+  
+  # hack to avoid R CMD CHECKS to complain about . not being a global variable
+  . <- NULL
 
   # check if user supplied custom funs (.funs), if not, harcoded values
   dots <- list(...)
@@ -631,7 +647,7 @@ daily_metrics <- function(
     # we need magic to add the quantiles as they return more than one value
     # (usually). So lets play with quasiquotation
     quantile_args <- probs %>%
-      purrr::map(function(x) {dplyr::quo(quantile(., probs = x, na.rm = TRUE))})
+      purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
     names(quantile_args) <- paste0('q_', round(probs*100, 0))
 
     .funs <- dplyr::funs(
@@ -687,7 +703,7 @@ daily_metrics <- function(
 #' FOO_monthly <- monthly_metrics(FOO)
 #'
 #' str(FOO_monthly)
-#' FOO_monthly[['env']][['env']]
+#' FOO_monthly[['env']][['env_gen']]
 #'
 #' # change the predawn and midday interval
 #' FOO_int_monthly <- monthly_metrics(
@@ -704,7 +720,7 @@ daily_metrics <- function(
 #' str(FOO_gen)
 #' # no predawn or midday
 #' FOO_gen[['sapf']][['sapf_pd']] # NULL
-#' FOO_gen[['sapf']][['sapf']] # data
+#' FOO_gen[['sapf']][['sapf_gen']] # data
 #'
 #' @export
 
@@ -719,12 +735,14 @@ monthly_metrics <- function(
   md_start = 11,
   md_end = 13,
   probs = c(0.95, 0.99),
-  na.rm = FALSE,
   ...
 ) {
 
   # hardcoded values
   period <- 'monthly'
+  
+  # hack to avoid R CMD CHECKS to complain about . not being a global variable
+  . <- NULL
 
   # check if user supplied custom funs (.funs), if not, harcoded values
   dots <- list(...)
@@ -736,7 +754,7 @@ monthly_metrics <- function(
     # we need magic to add the quantiles as they return more than one value
     # (usually). So lets play with quasiquotation
     quantile_args <- probs %>%
-      purrr::map(function(x) {dplyr::quo(quantile(., probs = x, na.rm = TRUE))})
+      purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
     names(quantile_args) <- paste0('q_', round(probs*100, 0))
 
     .funs <- dplyr::funs(
@@ -745,9 +763,9 @@ monthly_metrics <- function(
       coverage = data_coverage(.),
       !!! quantile_args,
       max = max(., na.rm = TRUE),
-      max_time = max_time(., TIMESTAMP_coll),
+      max_time = max_time(., .data$TIMESTAMP_coll),
       min = min(., na.rm = TRUE),
-      min_time = min_time(., TIMESTAMP_coll)
+      min_time = min_time(., .data$TIMESTAMP_coll)
     )
   }
 

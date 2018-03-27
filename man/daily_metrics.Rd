@@ -52,7 +52,7 @@ data('FOO', package = 'sapfluxnetr')
 FOO_daily <- daily_metrics(FOO)
 
 str(FOO_daily)
-FOO_daily[['env']][['env']]
+FOO_daily[['env']][['env_gen']]
 
 # change the predawn and midday interval
 FOO_int_daily <- daily_metrics(
@@ -69,7 +69,7 @@ FOO_gen <- daily_metrics(FOO, predawn = FALSE, midday = FALSE)
 str(FOO_gen)
 # no predawn or midday
 FOO_gen[['sapf']][['sapf_pd']] # NULL
-FOO_gen[['sapf']][['sapf']] # data
+FOO_gen[['sapf']][['sapf_gen']] # data
 
 }
 \seealso{

@@ -9,15 +9,25 @@ Authors@R: c(
   )
 Description: Download, aggregate and select data from SAPFLUXNET Project.
 Depends: R (>= 3.4.3)
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
+    dplyr,
+    ggplot2,
     lubridate,
+    methods,
+    purrr,
+    rlang,
+    stats,
+    stringr,
+    tibble,
     tibbletime,
-    tidyverse
+    tidyr,
+    utils
 RoxygenNote: 6.0.1
 Collate: 
+    'data.R'
     'getters.R'
     'helpers.R'
     'metrics.R'

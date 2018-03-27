@@ -68,7 +68,9 @@ containing the site code.
 metadata.
 }
 \examples{
-data('FOO', pkg = 'sapfluxnetr')
+library(dplyr)
+
+data('FOO', package = 'sapfluxnetr')
 sapf_data <- get_sapf(FOO, solar = TRUE)
 env_data_no_solar <- get_env(FOO, solar = FALSE)
 plant_md <- get_plant_md(FOO)
@@ -76,7 +78,7 @@ plant_md <- get_plant_md(FOO)
 # dplyr pipe to get the mean dbh for a site
 FOO \%>\%
   get_plant_md() \%>\%
-  summarise(dbh_mean = mean(dbh, na.rm = TRUE)) \%>\%
+  summarise(dbh_mean = mean(pl_dbh, na.rm = TRUE)) \%>\%
   pull(dbh_mean)
 
 }

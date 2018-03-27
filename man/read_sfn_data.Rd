@@ -22,10 +22,13 @@ Given a site code and a route, \code{read_sfn_data} will return the selected
 sfn_data object
 }
 \examples{
-# load one single site
+# load one single site (it suposes a folder called Data exists and contains
+# a file called FOO.RData)
+\dontrun{
 FOO <- read_sfn_data('FOO', 'Data')
 
 # load several sites
 multi_sfn <- read_sfn_data(c('FOO', 'BAR', 'BAZ'), 'Data')
+}
 
 }

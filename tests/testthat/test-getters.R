@@ -96,7 +96,7 @@ test_that('filter_by_var combines all metadata correctly', {
   
   expect_error(
     filter_by_var(!!!filters, folder = 'Data'),
-    'tururu'
+    'env_nonexistentname'
   )
   
   # TODO tests con los diferentes metadatas por separado, tests con combinaciones

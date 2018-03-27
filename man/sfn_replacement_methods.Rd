@@ -41,6 +41,11 @@
 
 \S4method{get_env_md}{sfn_data}(object) <- value
 }
+\arguments{
+\item{object}{sfn_data containing the slot to replace}
+
+\item{value}{object with the data to replace snf_Data slot with}
+}
 \description{
 Methods to replace the data and metadata from the sfn_data class slots
 }
@@ -59,9 +64,15 @@ Validity is automatically checked before modifing the sfn_data object, and
 an error is raised if not valid
 }
 \examples{
-data('FOO', pkg = 'sapfluxnetr')
+# preparation
+data('FOO', package = 'sapfluxnetr')
 sapf_data <- get_sapf(FOO, solar = TRUE)
+
+# modifying the slot data
 sapf_data[1:10, 2] <- NA
-get_sapf(FOO) <- sapf_data
+
+# replacement. Remember, the sfn_data slot does not contain a TIMESTAMP
+# variable, it must be removed
+get_sapf(FOO) <- sapf_data[,-1]
 
 }

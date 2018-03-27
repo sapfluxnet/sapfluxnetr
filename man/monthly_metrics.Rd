@@ -6,7 +6,7 @@
 \usage{
 monthly_metrics(sfn_data, solar = TRUE, general = TRUE, predawn = TRUE,
   pd_start = 3, pd_end = 5, midday = TRUE, md_start = 11, md_end = 13,
-  probs = c(0.95, 0.99), na.rm = FALSE, ...)
+  probs = c(0.95, 0.99), ...)
 }
 \arguments{
 \item{sfn_data}{\code{\link{sfn_data}} or \code{\link{sfn_data_multi}} object
@@ -52,7 +52,7 @@ data('FOO', package = 'sapfluxnetr')
 FOO_monthly <- monthly_metrics(FOO)
 
 str(FOO_monthly)
-FOO_monthly[['env']][['env']]
+FOO_monthly[['env']][['env_gen']]
 
 # change the predawn and midday interval
 FOO_int_monthly <- monthly_metrics(
@@ -69,7 +69,7 @@ FOO_gen <- monthly_metrics(FOO, predawn = FALSE, midday = FALSE)
 str(FOO_gen)
 # no predawn or midday
 FOO_gen[['sapf']][['sapf_pd']] # NULL
-FOO_gen[['sapf']][['sapf']] # data
+FOO_gen[['sapf']][['sapf_gen']] # data
 
 }
 \seealso{

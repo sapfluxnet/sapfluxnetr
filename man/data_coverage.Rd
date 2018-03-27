@@ -23,7 +23,7 @@ designed to be used inside a dplyr summarise statement.
 \examples{
 library(dplyr)
 iris \%>\%
-  group_by(Species)
-  summarise_all(data_coverage) # 100 for all variables
+  group_by(Species) \%>\%
+  summarise_all(data_coverage) # 100 for all variables and levels
 
 }

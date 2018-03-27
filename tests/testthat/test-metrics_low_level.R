@@ -1,23 +1,7 @@
 context("metrics_low_level")
 
 # data
-load('FOO.RData')
-
-FOO <- sfn_data(
-  sapf_data = FOO_sapf_data,
-  env_data = FOO_env_data,
-  sapf_flags = FOO_sapf_flags,
-  env_flags = FOO_env_flags,
-  si_code = FOO_si_code,
-  timestamp = FOO_timestamp,
-  solar_timestamp = FOO_solar_timestamp,
-  site_md = FOO_site_md,
-  stand_md = FOO_stand_md,
-  species_md = FOO_species_md,
-  plant_md = FOO_plant_md,
-  env_md = FOO_env_md
-)
-
+FOO <- read_sfn_data('FOO', 'Data')
 
 #### summarise_by_period tests ####
 test_that('summarise_by_period function example works', {
@@ -245,39 +229,8 @@ test_that('sfn_metrics examples work', {
 
   library(dplyr)
 
-  load('BAR.RData')
-  load('BAZ.RData')
-
-  BAR <- sfn_data(
-    sapf_data = BAR_sapf_data,
-    env_data = BAR_env_data,
-    sapf_flags = BAR_sapf_flags,
-    env_flags = BAR_env_flags,
-    si_code = BAR_si_code,
-    timestamp = BAR_timestamp,
-    solar_timestamp = BAR_solar_timestamp,
-    site_md = BAR_site_md,
-    stand_md = BAR_stand_md,
-    species_md = BAR_species_md,
-    plant_md = BAR_plant_md,
-    env_md = BAR_env_md
-  )
-
-  BAZ <- sfn_data(
-    sapf_data = BAZ_sapf_data,
-    env_data = BAZ_env_data,
-    sapf_flags = BAZ_sapf_flags,
-    env_flags = BAZ_env_flags,
-    si_code = BAZ_si_code,
-    timestamp = BAZ_timestamp,
-    solar_timestamp = BAZ_solar_timestamp,
-    site_md = BAZ_site_md,
-    stand_md = BAZ_stand_md,
-    species_md = BAZ_species_md,
-    plant_md = BAZ_plant_md,
-    env_md = BAZ_env_md
-  )
-
+  BAR <- read_sfn_data('BAR', 'Data')
+  BAZ <- read_sfn_data('BAZ', 'Data')
   multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
 
   expect_is(

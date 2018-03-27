@@ -8,7 +8,7 @@ summarise_by_period(data, period, .funs, ...)
 }
 \arguments{
 \item{data}{sapflow or environmental data as obtained by \code{\link{get_sapf}}
-and \code{\link{get_env}}}
+and \code{\link{get_env}}. Must have a column named TIMESTAMP}
 
 \item{period}{tibbletime::collapse_index period}
 
@@ -75,8 +75,10 @@ summarise_by_period(
 }
 
 \examples{
+library(dplyr)
+
 # data
-load('FOO', package = 'sapfluxnetr')
+data('FOO', package = 'sapfluxnetr')
 
 # simple summary
 summarise_by_period(

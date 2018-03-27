@@ -13,8 +13,8 @@
 #' @examples
 #' library(dplyr)
 #' iris %>%
-#'   group_by(Species)
-#'   summarise_all(data_coverage) # 100 for all variables
+#'   group_by(Species) %>%
+#'   summarise_all(data_coverage) # 100 for all variables and levels
 #'
 #' @export
 
@@ -88,7 +88,7 @@ min_time <- function(x, time) {
 #' The code for this function has been kindly provided by Jacob Nelson in python
 #' (see https://github.com/jnelson18/FluxnetTools/blob/master/FileS3.py) and has
 #' been translated to a tidy data phylosophy in R to be used inside a
-#' \code{\link[dplyr]{summary}} statement.
+#' \code{\link[dplyr]{summarise}} statement.
 #' 
 #' @section Diurnal centroid algorithm:
 #' Given a continuous subdaily values at regular intervals
@@ -98,7 +98,7 @@ min_time <- function(x, time) {
 #' 24h:
 #' 
 #' \deqn{
-#' \sum {x_1 * 1, x_2 * 2, ···, x_n * n} / \sum {x_1, x_2, ···, x_n} * (24/n)
+#' \sum {x_1 * 1, x_2 * 2, ... , x_n * n} / \sum {x_1, x_2, ... , x_n} * (24/n)
 #' }
 #' 
 #' With even values for all the intervals (i.e. 100 for all), centroid converges
@@ -111,6 +111,9 @@ min_time <- function(x, time) {
 #'   regular intervals. Missing values are allowed but not recommended
 #' 
 #' @examples
+#' # dplyr
+#' library(dplyr)
+#' 
 #' # check convergence to 12h:
 #' diurnal_centroid(rep(1, 1000)) # 12.012 h
 #' diurnal_centroid(rep(10000, 1000)) # 12.012 h, variable scale not affects calculation
@@ -123,8 +126,10 @@ min_time <- function(x, time) {
 #'   period = 'daily',
 #'   .funs = funs(diurnal_centroid(.), data_coverage(.)),
 #'   solar = FALSE,
+#'   general = TRUE,
 #'   predawn = FALSE,
-#'   midday = FALSE
+#'   midday = FALSE,
+#'   nighttime = FALSE
 #' )
 #' 
 #' @return A numeric vector with the diurnal centroid value (0 to 24 h)
@@ -204,45 +209,86 @@ diurnal_centroid <- function(variable) {
   # STEP 1
   # Create the list with the codes
   timezones <- list(
+    # "1UTC-12:00, Y" = "Etc/GMT+12",
+    # "2UTC-11:00, X" = "Etc/GMT+11",
+    # "3UTC-10:00, W" = "Etc/GMT+10",
+    # "4UTC-09:30, V†" = "Pacific/Marquesas",
+    # "5UTC-09:00, V" = "Etc/GMT+9",
+    # "6UTC-08:00, U" = "Etc/GMT+8",
+    # "7UTC-07:00, T" = "Etc/GMT+7",
+    # "8UTC-06:00, S" = "Etc/GMT+6",
+    # "9UTC-05:00, R" = "Etc/GMT+5",
+    # "11UTC-04:00, Q" = "Etc/GMT+4",
+    # "12UTC-03:30, P†" = "Canada/Newfoundland",
+    # "13UTC-03:00, P" = "Etc/GMT+3",
+    # "14UTC-02:00, O" = "Etc/GMT+2",
+    # "15UTC-01:00, N" = "Etc/GMT+1",
+    # "16UTC±00:00, Z" = "Etc/GMT+0",
+    # "17UTC+01:00, A" = "Etc/GMT-1",
+    # "18UTC+02:00, B" = "Etc/GMT-2",
+    # "19UTC+03:00, C" = "Etc/GMT-3",
+    # "20UTC+03:30, C†" = "Asia/Tehran",
+    # "21UTC+04:00, D" = "Etc/GMT-4",
+    # "22UTC+04:30, D†" = "Asia/Kabul",
+    # "23UTC+05:00, E" = "Etc/GMT-5",
+    # "24UTC+05:30, E†" = "Asia/Kolkata",
+    # "25UTC+05:45, E*" = "Asia/Katmandu",
+    # "26UTC+06:00, F" = "Etc/GMT-6",
+    # "27UTC+06:30, F†" = "Indian/Cocos",
+    # "28UTC+07:00, G" = "Etc/GMT-7",
+    # "29UTC+08:00, H" = "Etc/GMT-8",
+    # "30UTC+08:30, H†" = "Asia/Pyongyang",
+    # "31UTC+08:45, H*" = "Australia/Eucla",
+    # "32UTC+09:00, I" = "Etc/GMT-9",
+    # "33UTC+09:30, I†" = "Australia/Adelaide",
+    # "34UTC+10:00, K" = "Etc/GMT-10",
+    # "35UTC+10:30, K†" = "Australia/Lord_Howe",
+    # "36UTC+11:00, L" = "Etc/GMT-11",
+    # "37UTC+12:00, M" = "Etc/GMT-12",
+    # "38UTC+12:45, M*" = "Pacific/Chatham",
+    # "39UTC+13:00, M†" = "Etc/GMT-13",
+    # "40UTC+14:00, M†" = "Etc/GMT-14"
+    
     "1UTC-12:00, Y" = "Etc/GMT+12",
     "2UTC-11:00, X" = "Etc/GMT+11",
     "3UTC-10:00, W" = "Etc/GMT+10",
-    "4UTC-09:30, V†" = "Pacific/Marquesas",
+    "4UTC-09:30, V\\u2020" = "Pacific/Marquesas",
     "5UTC-09:00, V" = "Etc/GMT+9",
     "6UTC-08:00, U" = "Etc/GMT+8",
     "7UTC-07:00, T" = "Etc/GMT+7",
     "8UTC-06:00, S" = "Etc/GMT+6",
     "9UTC-05:00, R" = "Etc/GMT+5",
     "11UTC-04:00, Q" = "Etc/GMT+4",
-    "12UTC-03:30, P†" = "Canada/Newfoundland",
+    "12UTC-03:30, P\\u2020" = "Canada/Newfoundland",
     "13UTC-03:00, P" = "Etc/GMT+3",
     "14UTC-02:00, O" = "Etc/GMT+2",
     "15UTC-01:00, N" = "Etc/GMT+1",
-    "16UTC±00:00, Z" = "Etc/GMT+0",
+    "16UTC\\u00b100:00, Z" = "Etc/GMT+0",
     "17UTC+01:00, A" = "Etc/GMT-1",
     "18UTC+02:00, B" = "Etc/GMT-2",
     "19UTC+03:00, C" = "Etc/GMT-3",
-    "20UTC+03:30, C†" = "Asia/Tehran",
+    "20UTC+03:30, C\\u2020" = "Asia/Tehran",
     "21UTC+04:00, D" = "Etc/GMT-4",
-    "22UTC+04:30, D†" = "Asia/Kabul",
+    "22UTC+04:30, D\\u2020" = "Asia/Kabul",
     "23UTC+05:00, E" = "Etc/GMT-5",
-    "24UTC+05:30, E†" = "Asia/Kolkata",
+    "24UTC+05:30, E\\u2020" = "Asia/Kolkata",
     "25UTC+05:45, E*" = "Asia/Katmandu",
     "26UTC+06:00, F" = "Etc/GMT-6",
-    "27UTC+06:30, F†" = "Indian/Cocos",
+    "27UTC+06:30, F\\u2020" = "Indian/Cocos",
     "28UTC+07:00, G" = "Etc/GMT-7",
     "29UTC+08:00, H" = "Etc/GMT-8",
-    "30UTC+08:30, H†" = "Asia/Pyongyang",
+    "30UTC+08:30, H\\u2020" = "Asia/Pyongyang",
     "31UTC+08:45, H*" = "Australia/Eucla",
     "32UTC+09:00, I" = "Etc/GMT-9",
-    "33UTC+09:30, I†" = "Australia/Adelaide",
+    "33UTC+09:30, I\\u2020" = "Australia/Adelaide",
     "34UTC+10:00, K" = "Etc/GMT-10",
-    "35UTC+10:30, K†" = "Australia/Lord_Howe",
+    "35UTC+10:30, K\\u2020" = "Australia/Lord_Howe",
     "36UTC+11:00, L" = "Etc/GMT-11",
     "37UTC+12:00, M" = "Etc/GMT-12",
     "38UTC+12:45, M*" = "Pacific/Chatham",
-    "39UTC+13:00, M†" = "Etc/GMT-13",
-    "40UTC+14:00, M†" = "Etc/GMT-14"
+    "39UTC+13:00, M\\u2020" = "Etc/GMT-13",
+    "40UTC+14:00, M\\u2020" = "Etc/GMT-14"
+    
   )
 
   # STEP 2
@@ -739,16 +785,16 @@ as_sfn_data_multi <- function(x) {
         description = 'Species-specific calibration used'
       ),
       pl_sap_units = list(
-        values = c('“cm3 cm-2 h-1”', '“cm3 h-1”'),
+        values = c('cm3 cm-2 h-1', 'cm3 h-1'),
         type = 'Character',
         units = 'Fixed values',
         description = 'Uniformized sapfluxnet units for sapwood, leaf and plant level'
       ),
       pl_sap_units_orig = list(
-        values = c('“cm3 cm-2 h-1”', '“cm3 m-2 s-1”', '“dm3 dm-2 h-1”',
-                   '“dm3 dm-2 s-1”', '“mm3 mm-2 s-1”', '“g m-2 s-1”',
-                   '“kg m-2 h-1”', '“kg m-2 s-1”', '“cm3 s-1”',
-                   '“cm3 h-1”', '“dm3 h-1”', '“g h-1”', '“kg h-1”'),
+        values = c('cm3 cm-2 h-1', 'cm3 m-2 s-1', 'dm3 dm-2 h-1',
+                   'dm3 dm-2 s-1', 'mm3 mm-2 s-1', 'g m-2 s-1',
+                   'kg m-2 h-1', 'kg m-2 s-1', 'cm3 s-1',
+                   'cm3 h-1', 'dm3 h-1', 'g h-1', 'kg h-1'),
         type = 'Character',
         units = 'Fixed values',
         description = 'Original contribution units (by sapwood or plant level)'
@@ -805,20 +851,35 @@ as_sfn_data_multi <- function(x) {
     ),
     env_md = list(
       env_time_zone = list(
+        # values = c('1UTC-12:00, Y', '2UTC-11:00, X', '3UTC-10:00, W',
+        #            '4UTC-09:30, V†', '5UTC-09:00, V', '6UTC-08:00, U',
+        #            '7UTC-07:00, T', '8UTC-06:00, S',
+        #            '9UTC-05:00, R', '10UTC-04:30, Q†', '11UTC-04:00, Q',
+        #            '12UTC-03:30, P†', '13UTC-03:00, P', '14UTC-02:00, O',
+        #            '15UTC-01:00, N','16UTC±00:00, Z', '17UTC+01:00, A',
+        #            '18UTC+02:00, B', '19UTC+03:00, C', '20UTC+03:30, C†',
+        #            '21UTC+04:00, D', '22UTC+04:30, D†', '23UTC+05:00, E',
+        #            '24UTC+05:30, E†', '25UTC+05:45, E*', '26UTC+06:00, F',
+        #            '27UTC+06:30, F†', '28UTC+07:00, G', '29UTC+08:00, H',
+        #            '30UTC+08:30, H†', '31UTC+08:45, H*', '32UTC+09:00, I',
+        #            '33UTC+09:30, I†', '34UTC+10:00, K', '35UTC+10:30, K†',
+        #            '36UTC+11:00, L', '37UTC+12:00, M', '38UTC+12:45, M*',
+        #            '39UTC+13:00, M†', '40UTC+14:00, M†'),
         values = c('1UTC-12:00, Y', '2UTC-11:00, X', '3UTC-10:00, W',
-                   '4UTC-09:30, V†', '5UTC-09:00, V', '6UTC-08:00, U',
+                   '4UTC-09:30, V\\u2020', '5UTC-09:00, V', '6UTC-08:00, U',
                    '7UTC-07:00, T', '8UTC-06:00, S',
-                   '9UTC-05:00, R', '10UTC-04:30, Q†', '11UTC-04:00, Q',
-                   '12UTC-03:30, P†', '13UTC-03:00, P', '14UTC-02:00, O',
-                   '15UTC-01:00, N','16UTC±00:00, Z', '17UTC+01:00, A',
-                   '18UTC+02:00, B', '19UTC+03:00, C', '20UTC+03:30, C†',
-                   '21UTC+04:00, D', '22UTC+04:30, D†', '23UTC+05:00, E',
-                   '24UTC+05:30, E†', '25UTC+05:45, E*', '26UTC+06:00, F',
-                   '27UTC+06:30, F†', '28UTC+07:00, G', '29UTC+08:00, H',
-                   '30UTC+08:30, H†', '31UTC+08:45, H*', '32UTC+09:00, I',
-                   '33UTC+09:30, I†', '34UTC+10:00, K', '35UTC+10:30, K†',
+                   '9UTC-05:00, R', '10UTC-04:30, Q\\u2020', '11UTC-04:00, Q',
+                   '12UTC-03:30, P\\u2020', '13UTC-03:00, P', '14UTC-02:00, O',
+                   '15UTC-01:00, N','16UTC\\u00b100:00, Z', '17UTC+01:00, A',
+                   '18UTC+02:00, B', '19UTC+03:00, C', '20UTC+03:30, C\\u2020',
+                   '21UTC+04:00, D', '22UTC+04:30, D\\u2020', '23UTC+05:00, E',
+                   '24UTC+05:30, E\\u2020', '25UTC+05:45, E*', '26UTC+06:00, F',
+                   '27UTC+06:30, F\\u2020', '28UTC+07:00, G', '29UTC+08:00, H',
+                   '30UTC+08:30, H\\u2020', '31UTC+08:45, H*', '32UTC+09:00, I',
+                   '33UTC+09:30, I\\u2020', '34UTC+10:00, K', '35UTC+10:30, K\\u2020',
                    '36UTC+11:00, L', '37UTC+12:00, M', '38UTC+12:45, M*',
-                   '39UTC+13:00, M†', '40UTC+14:00, M†'),
+                   '39UTC+13:00, M\\u2020', '40UTC+14:00, M\\u2020'),
+        
         type = 'Character',
         units = 'Fixed values',
         description = 'Time zone of site used in the TIMESTAMPS'
@@ -892,13 +953,13 @@ as_sfn_data_multi <- function(x) {
         description = 'Location of precipitation sensor'
       ),
       env_swc_shallow_depth = list(
-        values = 'COntributor defined',
+        values = 'Contributor defined',
         type = 'Numeric',
         units = 'cm',
         description = 'Average depth for shallow soil water content measures'
       ),
       env_swc_deep_depth = list(
-        values = 'COntributor defined',
+        values = 'Contributor defined',
         type = 'Numeric',
         units = 'cm',
         description = 'Average depth for deep soil water content measures'

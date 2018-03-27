@@ -41,6 +41,8 @@ Plot the desired data from a site object
 }
 
 \examples{
+library(ggplot2)
+
 # data
 data('FOO', package = 'sapfluxnetr')
 
@@ -49,9 +51,9 @@ sfn_plot(FOO, type = 'sapf', solar = FALSE)
 
 # saving and modifying:
 env_plot <- sfn_plot(FOO, type = 'env', solar = FALSE)
-env_plot + title('Environmental variables facet plot')
+env_plot + labs(title = 'Environmental variables facet plot')
 
 # returning only one tree
-sfn_plot(FOO, type = 'sapf', dplyr::ends_with('_1'))
+sfn_plot(FOO, solar = TRUE, type = 'sapf', dplyr::ends_with('_1'))
 
 }

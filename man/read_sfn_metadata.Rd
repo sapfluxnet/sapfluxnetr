@@ -28,13 +28,15 @@ in the specified folder along the data with all the metadata preloaded. Also
 it return it as an object to use in filtering and selecting sites.
 }
 \examples{
+\dontrun{
 # load the metadata for the first time, it can be a minute ;)
-sites_metadata <- read_metadata(folder = 'Data')
+sites_metadata <- read_metadata(folder = 'Data', .write.cache = TRUE)
 
 # a cached copy must have been written to "folder"
 file.exists('Data/.metadata_cache.RData') # TRUE
 
 # inspect the metadata
 sites_metadata
+}
 
 }

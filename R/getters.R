@@ -16,11 +16,14 @@
 #'   a sfn_data_multi object containing all selected sites.
 #'
 #' @examples
-#' # load one single site
+#' # load one single site (it suposes a folder called Data exists and contains
+#' # a file called FOO.RData)
+#' \dontrun{
 #' FOO <- read_sfn_data('FOO', 'Data')
 #'
 #' # load several sites
 #' multi_sfn <- read_sfn_data(c('FOO', 'BAR', 'BAZ'), 'Data')
+#' }
 #'
 #' @export
 
@@ -66,14 +69,16 @@ read_sfn_data <- function(site_code, folder = '.') {
 #'   be written in \code{folder}.
 #'
 #' @examples
+#' \dontrun{
 #' # load the metadata for the first time, it can be a minute ;)
-#' sites_metadata <- read_metadata(folder = 'Data')
+#' sites_metadata <- read_metadata(folder = 'Data', .write.cache = TRUE)
 #' 
 #' # a cached copy must have been written to "folder"
 #' file.exists('Data/.metadata_cache.RData') # TRUE
 #' 
 #' # inspect the metadata
 #' sites_metadata
+#' }
 #' 
 #' @return A list of tibbles with the five metadata classes (site, stand,
 #'   species, plant and environmental)
@@ -117,7 +122,7 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
     )
     sfn_metadata[['plant_md']] <- dplyr::bind_rows(
       sfn_metadata[['plant_md']], get_plant_md(sfn_data) %>%
-        dplyr::mutate(pl_name = as.character(pl_name)) # TODO remove this when the sites are corrected
+        dplyr::mutate(pl_name = as.character(.data$pl_name)) # TODO remove this when the sites are corrected
     )
     sfn_metadata[['env_md']] <- dplyr::bind_rows(
       sfn_metadata[['env_md']], get_env_md(sfn_data)
@@ -159,7 +164,11 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'
 #' @examples
 #' # simple, want to know which sites are using the Heat Ratio method to measure
-#' # the sap flow
+#' # the sap flow.
+#' 
+#' # For this to work there must be a folder called 'Data' in the working
+#' # directory containing the sites .RData files
+#' \dontrun{
 #' filter_by_var(pl_sens_meth == 'HR', folder = 'Data')
 #'
 #' # Both, Heat Ratio and Heat Dissipation
@@ -181,6 +190,7 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'   folder = 'Data',
 #'   join = 'or'
 #' )
+#' }
 #'
 #' @return A character vector with the sites fullfilling the premises
 #'
@@ -218,12 +228,12 @@ filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache =
   for (md in 1:5) {
     
     # dot dispatcher, distribute the dots in the corresponding metadata
-    md_dots <- dots %>%
+    sel_dots <- dots %>%
       purrr::map(rlang::quo_get_expr) %>%
       purrr::map(as.character) %>%
       purrr::map(stringr::str_detect, pattern = metadata[[md]]) %>%
-      purrr::map_lgl(any) %>%
-      dots[.]
+      purrr::map_lgl(any)
+    md_dots <- dots[sel_dots]
     
     # if there is filters, filter the corresponding metadata, pull the codes
     # and get the unique (in case of plant and species md, that can be repeated)

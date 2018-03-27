@@ -14,7 +14,7 @@
 \alias{get_species_md}
 \alias{get_plant_md}
 \alias{get_env_md}
-\title{SfnData custom get generics}
+\title{sfn_data custom get generics}
 \usage{
 get_sapf(object, ...)
 
@@ -40,9 +40,15 @@ get_plant_md(object, ...)
 
 get_env_md(object, ...)
 }
+\arguments{
+\item{object}{Object to get data from}
+
+\item{...}{Further arguments to pass to the corresponding get method}
+}
 \description{
 Generics for getting the info in the slots of SfnData
 }
 \details{
-see \code{\link{sfn_get_methods}} for more info
+see \code{\link{sfn_get_methods}} for detailed info about using the get
+methods in \code{sfn_data} class objects
 }

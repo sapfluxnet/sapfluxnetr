@@ -14,7 +14,7 @@
 \alias{get_species_md<-}
 \alias{get_plant_md<-}
 \alias{get_env_md<-}
-\title{Replacement generics}
+\title{sfn_data replacement generics}
 \usage{
 get_sapf(object) <- value
 
@@ -40,9 +40,15 @@ get_plant_md(object) <- value
 
 get_env_md(object) <- value
 }
+\arguments{
+\item{object}{Object to replace}
+
+\item{value}{Object to replace with}
+}
 \description{
-Generic functions for replacement functions for SfnData
+Generic functions for replacement functions for sfn_data
 }
 \details{
-see \code{\link{sfn_replacement_methods}} for more info
+see \code{\link{sfn_replacement_methods}} for more info about using the
+replacement methods in sfn_data objects
 }

@@ -342,8 +342,6 @@ setMethod(
 #'
 #' @param object sfn_data object to show
 #'
-#' @name sfn_data_show
-#'
 #' @importFrom dplyr %>%
 #'
 #' @export
@@ -424,8 +422,6 @@ setMethod(
 #'
 #' @param object sfn_data_multi object to show
 #'
-#' @name sfn_data_multi_show
-#'
 #' @export
 
 setMethod(
@@ -451,7 +447,7 @@ setMethod(
       purrr::flatten_chr() %>%
       sort()
     timestamp_span <- lubridate::interval(timestamp_minmax[1],
-                                          tail(timestamp_minmax, 1),
+                                          utils::tail(timestamp_minmax, 1),
                                           tzone = "") %>%
       as.character()
     cat('Time span (UTC) for the combined sites: ', timestamp_span, '\n', sep = '')
@@ -485,7 +481,9 @@ setMethod(
 #'   the solarTIMESTAMP (TRUE) or the contributors provided TIMESTAMP (FALSE)
 #'
 #' @examples
-#' data('FOO', pkg = 'sapfluxnetr')
+#' library(dplyr)
+#' 
+#' data('FOO', package = 'sapfluxnetr')
 #' sapf_data <- get_sapf(FOO, solar = TRUE)
 #' env_data_no_solar <- get_env(FOO, solar = FALSE)
 #' plant_md <- get_plant_md(FOO)
@@ -493,7 +491,7 @@ setMethod(
 #' # dplyr pipe to get the mean dbh for a site
 #' FOO %>%
 #'   get_plant_md() %>%
-#'   summarise(dbh_mean = mean(dbh, na.rm = TRUE)) %>%
+#'   summarise(dbh_mean = mean(pl_dbh, na.rm = TRUE)) %>%
 #'   pull(dbh_mean)
 #'
 #' @name sfn_get_methods
@@ -688,12 +686,22 @@ setMethod(
 #' }
 #' Validity is automatically checked before modifing the sfn_data object, and
 #' an error is raised if not valid
+#' 
+#' @param object sfn_data containing the slot to replace
+#' 
+#' @param value object with the data to replace snf_Data slot with
 #'
 #' @examples
-#' data('FOO', pkg = 'sapfluxnetr')
+#' # preparation
+#' data('FOO', package = 'sapfluxnetr')
 #' sapf_data <- get_sapf(FOO, solar = TRUE)
+#' 
+#' # modifying the slot data
 #' sapf_data[1:10, 2] <- NA
-#' get_sapf(FOO) <- sapf_data
+#' 
+#' # replacement. Remember, the sfn_data slot does not contain a TIMESTAMP
+#' # variable, it must be removed
+#' get_sapf(FOO) <- sapf_data[,-1]
 #'
 #' @name sfn_replacement_methods
 NULL

@@ -1,8 +1,13 @@
-#' SfnData custom get generics
+#' sfn_data custom get generics
 #'
 #' Generics for getting the info in the slots of SfnData
 #'
-#' see \code{\link{sfn_get_methods}} for more info
+#' see \code{\link{sfn_get_methods}} for detailed info about using the get
+#' methods in \code{sfn_data} class objects
+#' 
+#' @param object Object to get data from
+#' 
+#' @param ... Further arguments to pass to the corresponding get method
 #'
 #' @name sfn_get_generics
 #' @include sfn_data_classes.R
@@ -116,11 +121,16 @@ setGeneric(
   }
 )
 
-#' Replacement generics
+#' sfn_data replacement generics
 #'
-#' Generic functions for replacement functions for SfnData
+#' Generic functions for replacement functions for sfn_data
 #'
-#' see \code{\link{sfn_replacement_methods}} for more info
+#' see \code{\link{sfn_replacement_methods}} for more info about using the
+#' replacement methods in sfn_data objects
+#' 
+#' @param object Object to replace
+#' 
+#' @param value Object to replace with
 #'
 #' @name sfn_replacement_generics
 NULL
