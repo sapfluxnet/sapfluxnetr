@@ -130,6 +130,8 @@ min_time <- function(x, time) {
 #' @return A numeric vector with the diurnal centroid value (0 to 24 h)
 #' 
 #' @author Jacob Nelson & Víctor Granda
+#' 
+#' @export
 
 diurnal_centroid <- function(variable) {
   
