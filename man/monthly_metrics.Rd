@@ -15,18 +15,9 @@ to obtain the metrics from}
 \item{solar}{Logical indicating if the solarTIMESTAMP must be used instead of
 the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
 
-\item{general}{Logical indicating if general metrics (all data) must be
-returned}
-
-\item{predawn}{Logical indicating if metrics for predawn interval must be
-returned.}
-
 \item{pd_start}{Hour to start the predawn interval}
 
 \item{pd_end}{Hour to end the predawn interval}
-
-\item{midday}{Logical indicating if metrics for midday interval must be
-returned.}
 
 \item{md_start}{Hour to start the midday interval}
 

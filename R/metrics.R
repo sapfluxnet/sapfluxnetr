@@ -382,7 +382,7 @@ sfn_metrics <- function(
         midday = midday,
         md_start = md_start,
         md_end = md_end,
-        nighttime,
+        nighttime = nighttime,
         night_start = night_start,
         night_end = night_end,
         ...
@@ -487,7 +487,7 @@ sfn_metrics <- function(
       dplyr::mutate(
         coll = tibbletime::collapse_index(
           index = .data$TIMESTAMP,
-          period = 'daily',
+          period = period,
           side = 'start'
         )
       ) %>%
@@ -573,7 +573,29 @@ sfn_metrics <- function(
 #' Complete daily metrics for a site (or multi-site)
 #'
 #' This function returns a complete daily summary for the site/s
-#'
+#' 
+#' @details  
+#' \code{daily_metrics} is a wrapper for \code{\link{sfn_metrics}} with a set
+#' of fixed arguments. It will always return the general metrics (for all data),
+#' the predawn metrics (only data in the predawn period) and the midday metrics
+#' (only data in the midday period).
+#' 
+#' \code{daily_metrics} returns the following statistics:
+#' \itemize{
+#'   \item{mean: daily mean of variable (tree or environmental variable). NAs
+#'         are removed}
+#'   \item{n: Number of measures used for the metrics (NAs included)}
+#'   \item{coverage: Data coverage percentage (percentage of measures without
+#'         NAs)}
+#'   \item{q_XX: XX quantile value for the day}
+#'   \item{max: Maximum value for the day}
+#'   \item{max_time: Time when maximum value was reached}
+#'   \item{min: Minimum value for the day}
+#'   \item{min_time: Time when minimum value was reached}
+#'   \item{centroid: Diurnal centroid value (hours passed until the half of
+#'         the summed daily value was reached)}
+#' }
+#' 
 #' @inheritParams sfn_metrics
 #'
 #' @param probs numeric vector of probabilities for \code{\link[stats]{quantile}}
@@ -601,14 +623,6 @@ sfn_metrics <- function(
 #'
 #' str(FOO_int_daily)
 #'
-#' # get only the general metrics
-#' FOO_gen <- daily_metrics(FOO, predawn = FALSE, midday = FALSE)
-#'
-#' str(FOO_gen)
-#' # no predawn or midday
-#' FOO_gen[['sapf']][['sapf_pd']] # NULL
-#' FOO_gen[['sapf']][['sapf_gen']] # data
-#'
 #' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
 #'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
 #'   for each site.
@@ -620,11 +634,11 @@ sfn_metrics <- function(
 daily_metrics <- function(
   sfn_data,
   solar = TRUE,
-  general = TRUE,
-  predawn = TRUE,
+  # general = TRUE,
+  # predawn = TRUE,
   pd_start = 3,
   pd_end = 5,
-  midday = TRUE,
+  # midday = TRUE,
   md_start = 11,
   md_end = 13,
   probs = c(0.95, 0.99),
@@ -669,16 +683,14 @@ daily_metrics <- function(
     period = period,
     .funs = .funs,
     solar = solar,
-    general = general,
-    predawn = predawn,
+    general = TRUE,
+    predawn = TRUE,
     pd_start = pd_start,
     pd_end = pd_end,
-    midday = midday,
+    midday = TRUE,
     md_start = md_start,
     md_end = md_end,
     nighttime = FALSE,
-    night_start = 20,
-    night_end = 6,
     ...
   )
 }

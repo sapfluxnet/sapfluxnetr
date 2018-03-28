@@ -4,9 +4,8 @@
 \alias{daily_metrics}
 \title{Complete daily metrics for a site (or multi-site)}
 \usage{
-daily_metrics(sfn_data, solar = TRUE, general = TRUE, predawn = TRUE,
-  pd_start = 3, pd_end = 5, midday = TRUE, md_start = 11, md_end = 13,
-  probs = c(0.95, 0.99), ...)
+daily_metrics(sfn_data, solar = TRUE, pd_start = 3, pd_end = 5,
+  md_start = 11, md_end = 13, probs = c(0.95, 0.99), ...)
 }
 \arguments{
 \item{sfn_data}{\code{\link{sfn_data}} or \code{\link{sfn_data_multi}} object
@@ -15,18 +14,9 @@ to obtain the metrics from}
 \item{solar}{Logical indicating if the solarTIMESTAMP must be used instead of
 the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
 
-\item{general}{Logical indicating if general metrics (all data) must be
-returned}
-
-\item{predawn}{Logical indicating if metrics for predawn interval must be
-returned.}
-
 \item{pd_start}{Hour to start the predawn interval}
 
 \item{pd_end}{Hour to end the predawn interval}
-
-\item{midday}{Logical indicating if metrics for midday interval must be
-returned.}
 
 \item{md_start}{Hour to start the midday interval}
 
@@ -43,6 +33,28 @@ For \code{\link{sfn_data}} objects, a tibble with the metrics. For
 }
 \description{
 This function returns a complete daily summary for the site/s
+}
+\details{
+\code{daily_metrics} is a wrapper for \code{\link{sfn_metrics}} with a set
+of fixed arguments. It will always return the general metrics (for all data),
+the predawn metrics (only data in the predawn period) and the midday metrics
+(only data in the midday period).
+
+\code{daily_metrics} returns the following statistics:
+\itemize{
+  \item{mean: daily mean of variable (tree or environmental variable). NAs
+        are removed}
+  \item{n: Number of measures used for the metrics (NAs included)}
+  \item{coverage: Data coverage percentage (percentage of measures without
+        NAs)}
+  \item{q_XX: XX quantile value for the day}
+  \item{max: Maximum value for the day}
+  \item{max_time: Time when maximum value was reached}
+  \item{min: Minimum value for the day}
+  \item{min_time: Time when minimum value was reached}
+  \item{centroid: Diurnal centroid value (hours passed until the half of
+        the summed daily value was reached)}
+}
 }
 \examples{
 # data load
@@ -62,14 +74,6 @@ FOO_int_daily <- daily_metrics(
 )
 
 str(FOO_int_daily)
-
-# get only the general metrics
-FOO_gen <- daily_metrics(FOO, predawn = FALSE, midday = FALSE)
-
-str(FOO_gen)
-# no predawn or midday
-FOO_gen[['sapf']][['sapf_pd']] # NULL
-FOO_gen[['sapf']][['sapf_gen']] # data
 
 }
 \seealso{

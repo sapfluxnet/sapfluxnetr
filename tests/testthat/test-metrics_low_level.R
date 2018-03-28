@@ -604,21 +604,15 @@ test_that('daily metrics examples work', {
   expect_s3_class(daily_metrics(FOO, solar = FALSE)[['env']][['env_gen']], 'tbl_time')
 
   expect_is(daily_metrics(
-    FOO, solar = FALSE, general = TRUE,
+    FOO, solar = FALSE,
     pd_start = 5, pd_end = 7,
     md_start = 13, md_end = 15
   ), 'list')
   expect_s3_class(daily_metrics(
-    FOO, solar = FALSE, general = TRUE,
+    FOO, solar = FALSE,
     pd_start = 5, pd_end = 7,
     md_start = 13, md_end = 15
   )[['sapf']][['sapf_pd']], 'tbl_time')
-
-  expect_is(daily_metrics(FOO, solar = FALSE, general = TRUE, predawn = FALSE, midday = FALSE), 'list')
-  expect_null(daily_metrics(FOO, solar = FALSE, general = TRUE, predawn = FALSE, midday = FALSE)[['env']][['env_md']])
-  expect_s3_class(daily_metrics(
-    FOO, solar = FALSE, general = TRUE, predawn = FALSE, midday = FALSE
-  )[['env']][['env_gen']], 'tbl_time')
 
 })
 
