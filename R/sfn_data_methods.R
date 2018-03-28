@@ -349,16 +349,65 @@ setMethod(
 setMethod(
   "show", "sfn_data",
   definition = function(object) {
+    
+    si_code <- slot(object, 'si_code')
+    site_md <- slot(object, 'site_md')
+    stand_md <- slot(object, 'stand_md')
+    species_md <- slot(object, 'species_md')
+    plant_md <- slot(object, 'plant_md')
+    env_md <- slot(object, 'env_md')
+    sapf_data <- slot(object, 'sapf_data')
+    env_data <- slot(object, 'env_data')
+    sapf_flags <- slot(object, 'sapf_flags')
+    env_flags <- slot(object, 'env_flags')
+    
     # object class
     cat(class(object), " object\n", sep = "")
+    
     # site code
-    cat("Data from ", unique(slot(object, 'si_code')), " site/s\n\n", sep = "")
+    cat("Data from ", si_code, " site\n\n", sep = "")
+    
+    # main contributor
+    cat(
+      "Data kindly provided by ",
+      paste0(c(site_md[['si_contact_firstname']], site_md[['si_contact_lastname']]),
+             collapse = ' '),
+      " from ", site_md[['si_contact_institution']],
+      fill = 80
+    )
+    
+    # additional
+    if (!is.na(site_md[['si_addcontr_firstname']])) {
+      cat("and ",
+          paste0(c(site_md[['si_addcontr_firstname']], site_md[['si_addcontr_lastname']]),
+                 collapse = ' '),
+          " from ", site_md[['si_addcontr_institution']], '\n',
+          fill = 80)
+    } else {
+      cat('\n')
+    }
+    
     # number of trees
-    cat("Sapflow data: ", nrow(slot(object, "sapf_data")), " observations of ",
-        length(names(slot(object, "sapf_data"))), " trees/plants\n\n")
+    cat("Sapflow data: ", nrow(sapf_data), " observations of ",
+        length(names(sapf_data)), " trees/plants\n")
+    
+    # species
+    cat("Species present: ",
+        paste0(species_md[["sp_name"]], collapse = ', '),
+        '\n',
+        fill = TRUE)
+    
     # env_vars
-    cat("Environmental data: ", nrow(slot(object, "env_data")), " observations.\n",
-        "Env vars: ", paste(names(slot(object, "env_data"))), "\n\n")
+    cat("Environmental data: ", nrow(env_data), " observations.\n")
+    
+    cat(
+      "Variables present:\n ", paste(names(env_data)), "\n",
+      fill = 80
+    )
+    
+    # biome
+    cat("Biome: ", site_md[['si_biome']], '\n\n')
+    
     # timestamp span
     timestamp_minmax <- .min_max(slot(object, 'timestamp'))
     timestamp_span <- lubridate::interval(timestamp_minmax[1],
@@ -367,7 +416,7 @@ setMethod(
       as.character()
     cat("TIMESTAMP span: ", timestamp_span, "\n\n")
     # solar_timestamp
-    solar_timestamp_minmax <- .min_max(slot(object, 'timestamp'))
+    solar_timestamp_minmax <- .min_max(slot(object, 'solar_timestamp'))
     solar_timestamp_span <- lubridate::interval(solar_timestamp_minmax[1],
                                                 solar_timestamp_minmax[2],
                                                 tzone = get_timezone(object)) %>%
@@ -375,14 +424,15 @@ setMethod(
     cat("Solar TIMESTAMP span: ", solar_timestamp_span, "\n\n")
 
     # sapf_flags
-    unique_sapf_flags <- slot(object, 'sapf_flags') %>%
+    unique_sapf_flags <- sapf_flags %>%
       purrr::map(~ stringr::str_split(.x, '; ')) %>%
       purrr::map(purrr::flatten_chr) %>%
       purrr::flatten_chr() %>%
+      stringr::str_trim('both') %>%
       unique()
 
     sapf_flags_table <- unique_sapf_flags[unique_sapf_flags != ''] %>%
-      purrr::map(~ stringr::str_count(as.matrix(slot(object, "sapf_flags")), .x)) %>%
+      purrr::map(~ stringr::str_count(as.matrix(sapf_flags), .x)) %>%
       purrr::map(sum) %>%
       purrr::flatten_int()
     names(sapf_flags_table) <- unique_sapf_flags[unique_sapf_flags != '']
@@ -390,18 +440,19 @@ setMethod(
     cat("Sapflow data flags:\n")
     if (length(sapf_flags_table)) {
       print(sort(sapf_flags_table))
-    } else {cat("No flags present")}
+    } else {cat("No flags present\n")}
     cat("\n")
 
     # env_flags
-    unique_env_flags <- slot(object, 'env_flags') %>%
+    unique_env_flags <- env_flags %>%
       purrr::map(~ stringr::str_split(.x, '; ')) %>%
       purrr::map(purrr::flatten_chr) %>%
       purrr::flatten_chr() %>%
+      stringr::str_trim('both') %>%
       unique()
 
     env_flags_table <- unique_env_flags[unique_env_flags != ''] %>%
-      purrr::map(~ stringr::str_count(as.matrix(slot(object, "env_flags")), .x)) %>%
+      purrr::map(~ stringr::str_count(as.matrix(env_flags), .x)) %>%
       purrr::map(sum) %>%
       purrr::flatten_int()
     names(env_flags_table) <- unique_env_flags[unique_env_flags != '']
@@ -409,7 +460,7 @@ setMethod(
     cat("Environmental data flags:\n")
     if (length(env_flags_table)) {
       print(sort(env_flags_table))
-    } else {cat("No flags present")}
+    } else {cat("No flags present\n")}
     cat("\n")
 
   }
