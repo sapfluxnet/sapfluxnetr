@@ -2,8 +2,8 @@
 % Please edit documentation in R/sfn_data_generics.R
 \name{sfn_get_generics}
 \alias{sfn_get_generics}
-\alias{get_sapf}
-\alias{get_env}
+\alias{get_sapf_data}
+\alias{get_env_data}
 \alias{get_sapf_flags}
 \alias{get_env_flags}
 \alias{get_timestamp}
@@ -16,9 +16,9 @@
 \alias{get_env_md}
 \title{sfn_data custom get generics}
 \usage{
-get_sapf(object, ...)
+get_sapf_data(object, ...)
 
-get_env(object, ...)
+get_env_data(object, ...)
 
 get_sapf_flags(object, ...)
 

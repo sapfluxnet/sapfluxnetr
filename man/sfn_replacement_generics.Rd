@@ -2,8 +2,8 @@
 % Please edit documentation in R/sfn_data_generics.R
 \name{sfn_replacement_generics}
 \alias{sfn_replacement_generics}
-\alias{get_sapf<-}
-\alias{get_env<-}
+\alias{get_sapf_data<-}
+\alias{get_env_data<-}
 \alias{get_sapf_flags<-}
 \alias{get_env_flags<-}
 \alias{get_timestamp<-}
@@ -16,9 +16,9 @@
 \alias{get_env_md<-}
 \title{sfn_data replacement generics}
 \usage{
-get_sapf(object) <- value
+get_sapf_data(object) <- value
 
-get_env(object) <- value
+get_env_data(object) <- value
 
 get_sapf_flags(object) <- value
 

@@ -16,18 +16,18 @@ NULL
 #' @rdname sfn_get_generics
 #' @export
 setGeneric(
-  "get_sapf",
+  "get_sapf_data",
   function(object, ...) {
-    standardGeneric("get_sapf")
+    standardGeneric("get_sapf_data")
   }
 )
 
 #' @rdname sfn_get_generics
 #' @export
 setGeneric(
-  "get_env",
+  "get_env_data",
   function(object, ...) {
-    standardGeneric("get_env")
+    standardGeneric("get_env_data")
   }
 )
 
@@ -138,18 +138,18 @@ NULL
 #' @rdname sfn_replacement_generics
 #' @export
 setGeneric(
-  "get_sapf<-",
+  "get_sapf_data<-",
   function(object, value) {
-    standardGeneric("get_sapf<-")
+    standardGeneric("get_sapf_data<-")
   }
 )
 
 #' @rdname sfn_replacement_generics
 #' @export
 setGeneric(
-  "get_env<-",
+  "get_env_data<-",
   function(object, value) {
-    standardGeneric("get_env<-")
+    standardGeneric("get_env_data<-")
   }
 )
 

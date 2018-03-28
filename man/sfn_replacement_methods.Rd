@@ -3,8 +3,8 @@
 \docType{methods}
 \name{sfn_replacement_methods}
 \alias{sfn_replacement_methods}
-\alias{get_sapf<-,sfn_data-method}
-\alias{get_env<-,sfn_data-method}
+\alias{get_sapf_data<-,sfn_data-method}
+\alias{get_env_data<-,sfn_data-method}
 \alias{get_sapf_flags<-,sfn_data-method}
 \alias{get_env_flags<-,sfn_data-method}
 \alias{get_timestamp<-,sfn_data-method}
@@ -17,9 +17,9 @@
 \alias{get_env_md<-,sfn_data-method}
 \title{sfn_data replacement methods}
 \usage{
-\S4method{get_sapf}{sfn_data}(object) <- value
+\S4method{get_sapf_data}{sfn_data}(object) <- value
 
-\S4method{get_env}{sfn_data}(object) <- value
+\S4method{get_env_data}{sfn_data}(object) <- value
 
 \S4method{get_sapf_flags}{sfn_data}(object) <- value
 
@@ -52,7 +52,7 @@ Methods to replace the data and metadata from the sfn_data class slots
 \details{
 The replacement object must be a valid object for that slot:
 \itemize{
-  \item{For \code{get_sapf}, \code{get_env}, \code{get_sapf_flags} and
+  \item{For \code{get_sapf_data}, \code{get_env_data}, \code{get_sapf_flags} and
         \code{get_env_flags} a data.frame or tibble without the TIMESTAMP
         variable}
   \item{For \code{get_*_md} a data.frame or tibble}
@@ -66,13 +66,13 @@ an error is raised if not valid
 \examples{
 # preparation
 data('FOO', package = 'sapfluxnetr')
-sapf_data <- get_sapf(FOO, solar = TRUE)
+sapf_data <- get_sapf_data(FOO, solar = TRUE)
 
 # modifying the slot data
 sapf_data[1:10, 2] <- NA
 
 # replacement. Remember, the sfn_data slot does not contain a TIMESTAMP
 # variable, it must be removed
-get_sapf(FOO) <- sapf_data[,-1]
+get_sapf_data(FOO) <- sapf_data[,-1]
 
 }

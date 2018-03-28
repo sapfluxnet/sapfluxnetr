@@ -10,7 +10,16 @@ test_that('summarise_by_period function example works', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf(FOO),
+      data = get_sapf_data(FOO),
+      period = '7 days',
+      .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+    ),
+    'tbl_time'
+  )
+  
+  expect_s3_class(
+    summarise_by_period(
+      data = get_env_data(FOO),
       period = '7 days',
       .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
     ),
@@ -18,7 +27,7 @@ test_that('summarise_by_period function example works', {
   )
   
   test_expr <- summarise_by_period(
-    data = get_sapf(FOO),
+    data = get_sapf_data(FOO),
     period = '7 days',
     .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
   )
@@ -47,7 +56,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf(FOO),
+      data = get_sapf_data(FOO),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       na.rm = TRUE, # for summarise
@@ -57,7 +66,7 @@ test_that('summarise_by_period dots work as intended', {
   )
   
   test_expr <- summarise_by_period(
-    data = get_sapf(FOO),
+    data = get_sapf_data(FOO),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     na.rm = TRUE, # for summarise
@@ -69,7 +78,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf(FOO),
+      data = get_sapf_data(FOO),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       na.rm = TRUE, # for summarise
@@ -80,7 +89,7 @@ test_that('summarise_by_period dots work as intended', {
   )
   
   test_expr2 <- summarise_by_period(
-    data = get_sapf(FOO),
+    data = get_sapf_data(FOO),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     na.rm = TRUE, # for summarise
@@ -93,7 +102,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf(FOO),
+      data = get_sapf_data(FOO),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       side = "start" # for collapse_index
@@ -102,7 +111,7 @@ test_that('summarise_by_period dots work as intended', {
   )
   
   test_expr3 <- summarise_by_period(
-    data = get_sapf(FOO),
+    data = get_sapf_data(FOO),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     side = "start" # for collapse_index
@@ -113,7 +122,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf(FOO),
+      data = get_sapf_data(FOO),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       side = "start", # for collapse_index
@@ -123,7 +132,7 @@ test_that('summarise_by_period dots work as intended', {
   )
   
   test_expr4 <- summarise_by_period(
-    data = get_sapf(FOO),
+    data = get_sapf_data(FOO),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     side = "start", # for collapse_index
@@ -135,7 +144,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf(FOO),
+      data = get_sapf_data(FOO),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       na.rm = TRUE # for summarise
@@ -144,7 +153,7 @@ test_that('summarise_by_period dots work as intended', {
   )
   
   test_expr5 <- summarise_by_period(
-    data = get_sapf(FOO),
+    data = get_sapf_data(FOO),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     na.rm = TRUE # for summarise

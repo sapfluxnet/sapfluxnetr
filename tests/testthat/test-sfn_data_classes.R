@@ -261,13 +261,13 @@ test_that('constructors_work', {
 
 test_that('get methods returns the correct object', {
 
-  foo_sapf_data <- get_sapf(FOO)
-  foo_sapf_data_solar <- get_sapf(FOO, solar = TRUE)
+  foo_sapf_data <- get_sapf_data(FOO)
+  foo_sapf_data_solar <- get_sapf_data(FOO, solar = TRUE)
   foo_sapf_flags <- get_sapf_flags(FOO)
   foo_sapf_flags_solar <- get_sapf_flags(FOO, solar = TRUE)
 
-  foo_env_data <- get_env(FOO)
-  foo_env_data_solar <- get_env(FOO, solar = TRUE)
+  foo_env_data <- get_env_data(FOO)
+  foo_env_data_solar <- get_env_data(FOO, solar = TRUE)
   foo_env_flags <- get_env_flags(FOO)
   foo_env_flags_solar <- get_env_flags(FOO, solar = TRUE)
 
@@ -331,13 +331,13 @@ test_that('get methods returns the correct object', {
 test_that('replacement methods work as intended', {
 
   # data preparation
-  foo_sapf_data <- get_sapf(FOO)
-  foo_sapf_data_solar <- get_sapf(FOO, solar = TRUE)
+  foo_sapf_data <- get_sapf_data(FOO)
+  foo_sapf_data_solar <- get_sapf_data(FOO, solar = TRUE)
   foo_sapf_flags <- get_sapf_flags(FOO)
   foo_sapf_flags_solar <- get_sapf_flags(FOO, solar = TRUE)
 
-  foo_env_data <- get_env(FOO)
-  foo_env_data_solar <- get_env(FOO, solar = TRUE)
+  foo_env_data <- get_env_data(FOO)
+  foo_env_data_solar <- get_env_data(FOO, solar = TRUE)
   foo_env_flags <- get_env_flags(FOO)
   foo_env_flags_solar <- get_env_flags(FOO, solar = TRUE)
 
@@ -412,12 +412,12 @@ test_that('replacement methods work as intended', {
   # tests
   # errors due to dimensions
   expect_error(
-    get_sapf(FOO) <- foo_sapf_data_row[,-1],
+    get_sapf_data(FOO) <- foo_sapf_data_row[,-1],
     'new data is not valid'
   )
 
   expect_error(
-    get_env(FOO) <- foo_env_data_row[,-1],
+    get_env_data(FOO) <- foo_env_data_row[,-1],
     'new data is not valid'
   )
 
@@ -454,11 +454,11 @@ test_that('replacement methods work as intended', {
   )
 
   # works when substituting with correct data
-  get_sapf(FOO) <- foo_sapf_data_NA[,-1]
+  get_sapf_data(FOO) <- foo_sapf_data_NA[,-1]
   expect_s4_class(FOO, 'sfn_data')
   get_sapf_flags(FOO) <- foo_sapf_flags_NA[,-1]
   expect_s4_class(FOO, 'sfn_data')
-  get_env(FOO) <- foo_env_data_NA[,-1]
+  get_env_data(FOO) <- foo_env_data_NA[,-1]
   expect_s4_class(FOO, 'sfn_data')
   get_env_flags(FOO) <- foo_env_flags_NA[,-1]
   expect_s4_class(FOO, 'sfn_data')
@@ -483,11 +483,11 @@ test_that('replacement methods work as intended', {
 
 # tests para show methods
 test_that('show methods works', {
-  expect_output(print(FOO), 'Data from FOO site/s')
+  expect_output(print(FOO), 'Data from FOO site')
   expect_output(print(FOO), 'Environmental data flags:')
-  expect_output(print(BAR), 'Data from BAR site/s')
+  expect_output(print(BAR), 'Data from BAR site')
   expect_output(print(BAR), 'Environmental data flags:')
-  expect_output(print(BAZ), 'Data from BAZ site/s')
+  expect_output(print(BAZ), 'Data from BAZ site')
   expect_output(print(BAZ), 'Environmental data flags:')
   expect_output(print(multi_sfn), 'FOO BAR BAZ')
   expect_output(print(multi_sfn), 'for the combined sites:')

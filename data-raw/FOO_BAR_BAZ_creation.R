@@ -6,13 +6,13 @@ load(file = 'tests/testthat/big_test/plant/ARG_TRE.RData')
 FOO <- ARG_TRE
 
 # sapf
-FOO_sapf_data <- get_sapf(FOO)[,-1]
+FOO_sapf_data <- get_sapf_data(FOO)[,-1]
 
 # sapf_flags
 FOO_sapf_flags <- get_sapf_flags(FOO)[,-1]
 
 # env_data
-FOO_env_data <- get_env(FOO)[,-1]
+FOO_env_data <- get_env_data(FOO)[,-1]
 
 # env_flags
 FOO_env_flags <- get_env_flags(FOO)[,-1]
@@ -72,13 +72,13 @@ load(file = 'tests/testthat/big_test/plant/ARG_MAZ.RData')
 BAR <- ARG_MAZ
 
 # sapf
-BAR_sapf_data <- get_sapf(BAR)[,-1]
+BAR_sapf_data <- get_sapf_data(BAR)[,-1]
 
 # sapf_flags
 BAR_sapf_flags <- get_sapf_flags(BAR)[,-1]
 
 # env_data
-BAR_env_data <- get_env(BAR)[,-1]
+BAR_env_data <- get_env_data(BAR)[,-1]
 
 # env_flags
 BAR_env_flags <- get_env_flags(BAR)[,-1]
@@ -138,13 +138,13 @@ load(file = 'tests/testthat/big_test/plant/AUS_CAN_ST2_MIX.RData')
 BAZ <- AUS_CAN_ST2_MIX
 
 # sapf
-BAZ_sapf_data <- get_sapf(BAZ)[,-1]
+BAZ_sapf_data <- get_sapf_data(BAZ)[,-1]
 
 # sapf_flags
 BAZ_sapf_flags <- get_sapf_flags(BAZ)[,-1]
 
 # env_data
-BAZ_env_data <- get_env(BAZ)[,-1]
+BAZ_env_data <- get_env_data(BAZ)[,-1]
 
 # env_flags
 BAZ_env_flags <- get_env_flags(BAZ)[,-1]

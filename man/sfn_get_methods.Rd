@@ -3,8 +3,8 @@
 \docType{methods}
 \name{sfn_get_methods}
 \alias{sfn_get_methods}
-\alias{get_sapf,sfn_data-method}
-\alias{get_env,sfn_data-method}
+\alias{get_sapf_data,sfn_data-method}
+\alias{get_env_data,sfn_data-method}
 \alias{get_sapf_flags,sfn_data-method}
 \alias{get_env_flags,sfn_data-method}
 \alias{get_timestamp,sfn_data-method}
@@ -17,9 +17,9 @@
 \alias{get_env_md,sfn_data-method}
 \title{sfn_data get methods}
 \usage{
-\S4method{get_sapf}{sfn_data}(object, solar = FALSE)
+\S4method{get_sapf_data}{sfn_data}(object, solar = FALSE)
 
-\S4method{get_env}{sfn_data}(object, solar = FALSE)
+\S4method{get_env_data}{sfn_data}(object, solar = FALSE)
 
 \S4method{get_sapf_flags}{sfn_data}(object, solar = FALSE)
 
@@ -44,15 +44,15 @@
 \arguments{
 \item{object}{Object of class sfn_data from which data is retrieved}
 
-\item{solar}{Logical indicating if the timestamp to return in the \code{get_sapf},
-\code{get_env}, \code{get_sapf_flags} and \code{get_env_flags} methods is
+\item{solar}{Logical indicating if the timestamp to return in the \code{get_sapf_data},
+\code{get_env_data}, \code{get_sapf_flags} and \code{get_env_flags} methods is
 the solarTIMESTAMP (TRUE) or the contributors provided TIMESTAMP (FALSE)}
 }
 \description{
 Methods to get the data and metadata from the sfn_data class slots
 }
 \details{
-\code{get_sapf} and \code{get_env} methods retrieve sapflow or environmental
+\code{get_sapf_data} and \code{get_env_data} methods retrieve sapflow or environmental
 tibbletime object to create a functional dataset to work with.
 
 \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
@@ -71,8 +71,8 @@ metadata.
 library(dplyr)
 
 data('FOO', package = 'sapfluxnetr')
-sapf_data <- get_sapf(FOO, solar = TRUE)
-env_data_no_solar <- get_env(FOO, solar = FALSE)
+sapf_data <- get_sapf_data(FOO, solar = TRUE)
+env_data_no_solar <- get_env_data(FOO, solar = FALSE)
 plant_md <- get_plant_md(FOO)
 
 # dplyr pipe to get the mean dbh for a site

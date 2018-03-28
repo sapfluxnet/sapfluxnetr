@@ -7,8 +7,8 @@
 summarise_by_period(data, period, .funs, ...)
 }
 \arguments{
-\item{data}{sapflow or environmental data as obtained by \code{\link{get_sapf}}
-and \code{\link{get_env}}. Must have a column named TIMESTAMP}
+\item{data}{sapflow or environmental data as obtained by \code{\link{get_sapf_data}}
+and \code{\link{get_env_data}}. Must have a column named TIMESTAMP}
 
 \item{period}{tibbletime::collapse_index period}
 
@@ -40,7 +40,7 @@ argument with \code{\link[dplyr]{funs}}:
 # This will fail beacuse na.rm argument will be also passed to the n function,
 # which does not accept any argument:
 summarise_by_period(
-  data = get_sapf(FOO),
+  data = get_sapf_data(FOO),
   period = '7 days',
   .funs = funs(mean, sd, n),
   na.rm = TRUE
@@ -48,7 +48,7 @@ summarise_by_period(
 
 # to solve this is better to use the .funs argument:
 summarise_by_period(
-  data = get_sapf(FOO),
+  data = get_sapf_data(FOO),
   period = '7 days',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
 )
@@ -67,7 +67,7 @@ summarise_by_period(
     }
 
     summarise_by_period(
-      data = get_sapf(FOO),
+      data = get_sapf_data(FOO),
       period = 'daily',
       .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
     )
@@ -82,7 +82,7 @@ data('FOO', package = 'sapfluxnetr')
 
 # simple summary
 summarise_by_period(
-  data = get_sapf(FOO),
+  data = get_sapf_data(FOO),
   period = '7 days',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
 )

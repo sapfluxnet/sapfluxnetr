@@ -510,7 +510,7 @@ setMethod(
 #'
 #' Methods to get the data and metadata from the sfn_data class slots
 #'
-#' \code{get_sapf} and \code{get_env} methods retrieve sapflow or environmental
+#' \code{get_sapf_data} and \code{get_env_data} methods retrieve sapflow or environmental
 #' tibbletime object to create a functional dataset to work with.
 #'
 #' \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
@@ -527,16 +527,16 @@ setMethod(
 #'
 #' @param object Object of class sfn_data from which data is retrieved
 #'
-#' @param solar Logical indicating if the timestamp to return in the \code{get_sapf},
-#'   \code{get_env}, \code{get_sapf_flags} and \code{get_env_flags} methods is
+#' @param solar Logical indicating if the timestamp to return in the \code{get_sapf_data},
+#'   \code{get_env_data}, \code{get_sapf_flags} and \code{get_env_flags} methods is
 #'   the solarTIMESTAMP (TRUE) or the contributors provided TIMESTAMP (FALSE)
 #'
 #' @examples
 #' library(dplyr)
 #' 
 #' data('FOO', package = 'sapfluxnetr')
-#' sapf_data <- get_sapf(FOO, solar = TRUE)
-#' env_data_no_solar <- get_env(FOO, solar = FALSE)
+#' sapf_data <- get_sapf_data(FOO, solar = TRUE)
+#' env_data_no_solar <- get_env_data(FOO, solar = FALSE)
 #' plant_md <- get_plant_md(FOO)
 #'
 #' # dplyr pipe to get the mean dbh for a site
@@ -552,7 +552,7 @@ NULL
 #' @rdname sfn_get_methods
 #' @export
 setMethod(
-  "get_sapf", "sfn_data",
+  "get_sapf_data", "sfn_data",
   function(object, solar = FALSE) {
     # data
     .sapf <- slot(object, "sapf_data")
@@ -576,7 +576,7 @@ setMethod(
 #' @rdname sfn_get_methods
 #' @export
 setMethod(
-  "get_env", "sfn_data",
+  "get_env_data", "sfn_data",
   function(object, solar = FALSE) {
     # data
     .env <- slot(object, "env_data")
@@ -727,7 +727,7 @@ setMethod(
 #'
 #' The replacement object must be a valid object for that slot:
 #' \itemize{
-#'   \item{For \code{get_sapf}, \code{get_env}, \code{get_sapf_flags} and
+#'   \item{For \code{get_sapf_data}, \code{get_env_data}, \code{get_sapf_flags} and
 #'         \code{get_env_flags} a data.frame or tibble without the TIMESTAMP
 #'         variable}
 #'   \item{For \code{get_*_md} a data.frame or tibble}
@@ -745,21 +745,21 @@ setMethod(
 #' @examples
 #' # preparation
 #' data('FOO', package = 'sapfluxnetr')
-#' sapf_data <- get_sapf(FOO, solar = TRUE)
+#' sapf_data <- get_sapf_data(FOO, solar = TRUE)
 #' 
 #' # modifying the slot data
 #' sapf_data[1:10, 2] <- NA
 #' 
 #' # replacement. Remember, the sfn_data slot does not contain a TIMESTAMP
 #' # variable, it must be removed
-#' get_sapf(FOO) <- sapf_data[,-1]
+#' get_sapf_data(FOO) <- sapf_data[,-1]
 #'
 #' @name sfn_replacement_methods
 NULL
 
 #' @rdname sfn_replacement_methods
 setReplaceMethod(
-  "get_sapf", "sfn_data",
+  "get_sapf_data", "sfn_data",
   function(object, value) {
     slot(object, "sapf_data") <- value
 
@@ -776,7 +776,7 @@ setReplaceMethod(
 #' @export
 #' @rdname sfn_replacement_methods
 setReplaceMethod(
-  "get_env", "sfn_data",
+  "get_env_data", "sfn_data",
   function(object, value) {
     slot(object, "env_data") <- value
 

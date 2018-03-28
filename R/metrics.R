@@ -16,7 +16,7 @@
 #' # This will fail beacuse na.rm argument will be also passed to the n function,
 #' # which does not accept any argument:
 #' summarise_by_period(
-#'   data = get_sapf(FOO),
+#'   data = get_sapf_data(FOO),
 #'   period = '7 days',
 #'   .funs = funs(mean, sd, n),
 #'   na.rm = TRUE
@@ -24,7 +24,7 @@
 #'
 #' # to solve this is better to use the .funs argument:
 #' summarise_by_period(
-#'   data = get_sapf(FOO),
+#'   data = get_sapf_data(FOO),
 #'   period = '7 days',
 #'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
 #' )
@@ -42,14 +42,14 @@
 #'     }
 #'
 #'     summarise_by_period(
-#'       data = get_sapf(FOO),
+#'       data = get_sapf_data(FOO),
 #'       period = 'daily',
 #'       .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
 #'     )
 #'   }
 #'
-#' @param data sapflow or environmental data as obtained by \code{\link{get_sapf}}
-#'   and \code{\link{get_env}}. Must have a column named TIMESTAMP
+#' @param data sapflow or environmental data as obtained by \code{\link{get_sapf_data}}
+#'   and \code{\link{get_env_data}}. Must have a column named TIMESTAMP
 #' @param period tibbletime::collapse_index period
 #' @param .funs dplyr::summarise_all funs
 #' @param ... optional arguments for tibbletime::collapse_index function and
@@ -67,7 +67,7 @@
 #'
 #' # simple summary
 #' summarise_by_period(
-#'   data = get_sapf(FOO),
+#'   data = get_sapf_data(FOO),
 #'   period = '7 days',
 #'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
 #' )
@@ -392,8 +392,8 @@ sfn_metrics <- function(
   }
   
   # if sfn_data then we have to calculate the desired metrics from the data
-  sapf_data <- get_sapf(sfn_data, solar = solar)
-  env_data <- get_env(sfn_data, solar = solar)
+  sapf_data <- get_sapf_data(sfn_data, solar = solar)
+  env_data <- get_env_data(sfn_data, solar = solar)
 
   whole_data <- list(sapf = sapf_data, env = env_data)
   

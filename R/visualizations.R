@@ -82,9 +82,9 @@ sfn_plot <- function(
   
   # if formula, lets do that plot
   if (rlang::is_formula(formula_env)) {
-    data <- get_env(sfn_data, solar = solar) %>%
+    data <- get_env_data(sfn_data, solar = solar) %>%
       dplyr::select(.data$TIMESTAMP, !!rlang::get_expr(formula_env)) %>%
-      dplyr::inner_join(get_sapf(sfn_data, solar = solar), by = 'TIMESTAMP')
+      dplyr::inner_join(get_sapf_data(sfn_data, solar = solar), by = 'TIMESTAMP')
     
     units_char <- paste0(
       unique(
@@ -110,7 +110,7 @@ sfn_plot <- function(
     
     # sapf
     if (type == 'sapf') {
-      data <- get_sapf(sfn_data, solar = solar)
+      data <- get_sapf_data(sfn_data, solar = solar)
       units_char <- paste0(
         unique(
           get_plant_md(sfn_data)[['pl_sap_units']]
@@ -129,7 +129,7 @@ sfn_plot <- function(
     
     # env
     if (type == 'env') {
-      data <- get_env(sfn_data, solar = solar)
+      data <- get_env_data(sfn_data, solar = solar)
       
       # actual plot
       res_plot <- data %>%
@@ -141,7 +141,7 @@ sfn_plot <- function(
     
     # ta
     if (type == 'ta') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       # we need to check if environmental variable exists
       if (is.null(data[['ta']])) {
@@ -158,7 +158,7 @@ sfn_plot <- function(
     
     # rh
     if (type == 'rh') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['rh']])) {
         stop('Site has not rh data')
@@ -174,7 +174,7 @@ sfn_plot <- function(
     
     # vpd
     if (type == 'vpd') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['vpd']])) {
         stop('Site has not vpd data')
@@ -190,7 +190,7 @@ sfn_plot <- function(
     
     # ppfd_in
     if (type == 'ppfd_in') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['ppfd_in']])) {
         stop('Site has not ppfd_in data')
@@ -206,7 +206,7 @@ sfn_plot <- function(
     
     # sw_in
     if (type == 'sw_in') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['sw_in']])) {
         stop('Site has not sw_in data')
@@ -222,7 +222,7 @@ sfn_plot <- function(
     
     # netrad
     if (type == 'netrad') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['netrad']])) {
         stop('Site has not netrad data')
@@ -238,7 +238,7 @@ sfn_plot <- function(
     
     # ext_rad
     if (type == 'ext_rad') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['ext_rad']])) {
         stop('Site has not ext_rad data')
@@ -254,7 +254,7 @@ sfn_plot <- function(
     
     # ws
     if (type == 'ws') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['ws']])) {
         stop('Site has not ws data')
@@ -270,7 +270,7 @@ sfn_plot <- function(
     
     # precip
     if (type == 'precip') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['precip']])) {
         stop('Site has not precip data')
@@ -286,7 +286,7 @@ sfn_plot <- function(
     
     # swc_shallow
     if (type == 'swc_shallow') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['swc_shallow']])) {
         stop('Site has not swc_shallow data')
@@ -302,7 +302,7 @@ sfn_plot <- function(
     
     # swc_deep
     if (type == 'swc_deep') {
-      data <- get_env(sfn_data, solar)
+      data <- get_env_data(sfn_data, solar)
       
       if (is.null(data[['swc_deep']])) {
         stop('Site has not swc_deep data')
