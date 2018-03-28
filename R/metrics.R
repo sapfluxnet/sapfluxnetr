@@ -468,7 +468,7 @@ sfn_metrics <- function(
     
     # progress to not scare seeming like freezed in large datasets
     print(paste0(
-      'Crunching midday data for ', get_si_code(sfn_data),
+      'Crunching nighttime data for ', get_si_code(sfn_data),
       '. In large datasets this could take a while'
     ))
     
