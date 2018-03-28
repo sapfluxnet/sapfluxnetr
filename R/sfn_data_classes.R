@@ -1,6 +1,10 @@
 #### sfn_data classes definitions ####
 
 ##### sfn_data #################################################################
+# set old class for S$ to recognize tbl as data.frames
+setOldClass(c("tbl_time", "tbl_df", "tbl", "data.frame"))
+
+
 #' S4 class for sapfluxnet site data
 #'
 #' Main class for storing sapfluxnet project site data and metadata

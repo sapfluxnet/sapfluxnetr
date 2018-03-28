@@ -9,7 +9,7 @@
 FOO
 }
 \description{
-Example site for package usage demonstration
+Example site for package usage demonstration based on ARG_TRE
 }
 \examples{
 data('FOO', package = 'sapfluxnetr')

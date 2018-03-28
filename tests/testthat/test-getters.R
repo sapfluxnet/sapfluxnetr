@@ -63,7 +63,11 @@ test_that('filter_by_var combines all metadata correctly', {
   )
   
   expect_length(
-    filter_by_var(!!!filters, folder = 'Data'), 3
+    filter_by_var(!!!filters, folder = 'Data'), 2
+  )
+  
+  expect_identical(
+    filter_by_var(!!!filters, folder = 'Data'), c('BAR', 'FOO')
   )
   
   filters <- list(
