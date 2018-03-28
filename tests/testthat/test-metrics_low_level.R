@@ -689,3 +689,13 @@ test_that('monthly metrics examples work', {
   expect_s3_class(monthly_metrics(FOO, solar = TRUE)[['sapf']][['sapf_gen']], 'tbl_df')
 
 })
+
+test_that('nighttime metrics work', {
+  
+  data('BAZ', package = 'sapfluxnetr')
+  
+  expect_is(nighttime_metrics(BAZ, 'monthly'), 'list')
+  expect_length(
+    nighttime_metrics(BAZ, 'monthly')[['env']][['env_day']][['TIMESTAMP_day']], 13
+  )
+})

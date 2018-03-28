@@ -391,12 +391,6 @@ sfn_metrics <- function(
     return(res_multi)
   }
   
-  # progress to not scare seeming like freezed
-  print(paste0(
-    'Crunching data for ', get_si_code(sfn_data), '. In large datasets this ',
-    'could take a while'
-  ))
-
   # if sfn_data then we have to calculate the desired metrics from the data
   sapf_data <- get_sapf(sfn_data, solar = solar)
   env_data <- get_env(sfn_data, solar = solar)
@@ -404,6 +398,12 @@ sfn_metrics <- function(
   whole_data <- list(sapf = sapf_data, env = env_data)
   
   if (general) {
+    # progress to not scare seeming like freezed
+    print(paste0(
+      'Crunching general data for ', get_si_code(sfn_data), '. In large datasets this ',
+      'could take a while'
+    ))
+    
     # period summaries: we want to know period means, maximum, minimum, quantiles...
     whole_data %>%
       purrr::map(summarise_by_period, period, .funs, ...) -> period_summary
@@ -794,6 +794,100 @@ monthly_metrics <- function(
     md_start = md_start,
     md_end = md_end,
     nighttime = FALSE,
+    ...
+  )
+}
+
+#' @rdname metrics
+#' 
+#' @section nighttime_metrics:
+#' \code{nighttime_metrics} will always return the metrics for day and night
+#' periods, summarised daily or monthly
+#' 
+#' Night for daily period starts in DOY x and ends in DOY x+1 (i.e. if
+#' \code{night_start = 20, night_end = 6} values for 2018-03-28 20:00:00 means
+#' values for the night starting at 2018-03-28 20:00:00 and ending at
+#' 2018-03-29 06:00:00).
+#' 
+#' Night for monthly period summarises all night in the month (including that
+#' starting the last day of the month and ending the first day of the next).
+#' 
+#' @inheritParams sfn_metrics
+#'
+#' @examples
+#' ## nighttime_metrics
+#' # data load
+#' data('BAZ', package = 'sapfluxnetr')
+#'
+#' # default complete daily metrics
+#' BAZ_monthly <- nighttime_metrics(BAR, period = 'monthly')
+#'
+#' str(BAZ_monthly)
+#' BAZ_monthly[['env']][['env_day']]
+#' BAZ_monthly[['env']][['env_night']]
+#'
+#' # change the night interval
+#' BAZ_monthly_short <- nighttime_metrics(
+#'   BAR,
+#'   night_start = 21, night_end = 4 # night starting and ending hour
+#' )
+#' 
+#' BAZ_monthly_short[['env']][['env_night']]
+#'
+#' @export
+
+nighttime_metrics <- function(
+  sfn_data,
+  period = c('daily', 'monthly'),
+  solar = TRUE,
+  night_start = 20,
+  night_end = 6,
+  probs = c(0.95, 0.99),
+  ...
+) {
+  
+  period <- match.arg(period)
+  
+  # hack to avoid R CMD CHECKS to complain about . not being a global variable
+  . <- NULL
+  
+  # check if user supplied custom funs (.funs), if not, harcoded values
+  dots <- list(...)
+  if ('.funs' %in% names(dots)) {
+    .funs <- dots[['.funs']]
+    dots <- dots[names(dots) != '.funs']
+  } else {
+    
+    # we need magic to add the quantiles as they return more than one value
+    # (usually). So lets play with quasiquotation
+    quantile_args <- probs %>%
+      purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
+    names(quantile_args) <- paste0('q_', round(probs*100, 0))
+    
+    .funs <- dplyr::funs(
+      mean = mean(., na.rm = TRUE),
+      n = n(),
+      coverage = data_coverage(.),
+      !!! quantile_args,
+      max = max(., na.rm = TRUE),
+      max_time = max_time(., .data$TIMESTAMP_coll),
+      min = min(., na.rm = TRUE),
+      min_time = min_time(., .data$TIMESTAMP_coll)
+    )
+  }
+  
+  # just input all in the sfn_metrics function
+  sfn_metrics(
+    sfn_data,
+    period = period,
+    .funs = .funs,
+    solar = solar,
+    general = FALSE,
+    predawn = FALSE,
+    midday = FALSE,
+    nighttime = TRUE,
+    night_start = night_start,
+    night_end = night_end,
     ...
   )
 }
