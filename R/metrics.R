@@ -570,41 +570,58 @@ sfn_metrics <- function(
 
 ####### shorthand functions for sfn_metrics ####################################
 
-#' Complete daily metrics for a site (or multi-site)
-#'
-#' This function returns a complete daily summary for the site/s
+#' Complete metrics wrappers
+#' 
+#' This set of functions returns a complete set of statistics for a site or
+#' several sites (using \code{\link{sfn_data_multi}})
 #' 
 #' @details  
-#' \code{daily_metrics} is a wrapper for \code{\link{sfn_metrics}} with a set
-#' of fixed arguments. It will always return the general metrics (for all data),
-#' the predawn metrics (only data in the predawn period) and the midday metrics
-#' (only data in the midday period).
+#' \code{*_metrics} functions are wrappers for \code{\link{sfn_metrics}} with a
+#' set of fixed arguments.
 #' 
-#' \code{daily_metrics} returns the following statistics:
+#' \code{*_metrics} functions return all or some of the following statistics:
 #' \itemize{
-#'   \item{mean: daily mean of variable (tree or environmental variable). NAs
-#'         are removed}
-#'   \item{n: Number of measures used for the metrics (NAs included)}
+#'   \item{mean: mean of variable (tree or environmental variable) for the
+#'         given period. NAs are removed}
+#'   \item{n: Number of measures in the give period used for the metrics (NAs included)}
 #'   \item{coverage: Data coverage percentage (percentage of measures without
 #'         NAs)}
-#'   \item{q_XX: XX quantile value for the day}
-#'   \item{max: Maximum value for the day}
+#'   \item{q_XX: XX quantile value for the period}
+#'   \item{max: Maximum value for the period}
 #'   \item{max_time: Time when maximum value was reached}
-#'   \item{min: Minimum value for the day}
+#'   \item{min: Minimum value for the period}
 #'   \item{min_time: Time when minimum value was reached}
 #'   \item{centroid: Diurnal centroid value (hours passed until the half of
-#'         the summed daily value was reached)}
+#'         the summed daily value was reached). Only returned when period
+#'         is 'daily'}
 #' }
 #' 
-#' @inheritParams sfn_metrics
-#'
 #' @param probs numeric vector of probabilities for \code{\link[stats]{quantile}}
 #'
 #' @param ... optional arguments passed to \code{\link{sfn_metrics}}
-#'
+#' 
 #' @family metrics
+#' 
+#' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
+#'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
+#'   for each site.
+#'
+#' @importFrom dplyr n
+#' 
+#' @name metrics
+NULL
+
+#' @rdname metrics
+#' 
+#' @section daily_metrics:
+#' \code{daily_metrics} will always return the general metrics (for all data),
+#' the predawn metrics (only data in the predawn period) and the midday metrics
+#' (only data in the midday period).
+#' 
+#' @inheritParams sfn_metrics
 #'
 #' @examples
+#' ## daily_metrics
 #' # data load
 #' data('FOO', package = 'sapfluxnetr')
 #'
@@ -622,12 +639,6 @@ sfn_metrics <- function(
 #' )
 #'
 #' str(FOO_int_daily)
-#'
-#' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
-#'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
-#'   for each site.
-#'
-#' @importFrom dplyr n
 #'
 #' @export
 
@@ -695,55 +706,43 @@ daily_metrics <- function(
   )
 }
 
-#' Complete monthly metrics for a site (or multi-site)
-#'
-#' This function returns a complete monthly summary for the site/s
-#'
-#' @inheritParams daily_metrics
-#'
-#' @family metrics
-#'
-#' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
-#'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
-#'   for each site.
+#' @rdname metrics
+#' 
+#' @section monthly_metrics:
+#' \code{monthly_metrics} will always return the general metrics (for all data),
+#' the predawn metrics (only data in the predawn period) and the midday metrics
+#' (only data in the midday period).
+#' 
+#' @inheritParams sfn_metrics
 #'
 #' @examples
+#' ## monthly_metrics
 #' # data load
-#' data('FOO', package = 'sapfluxnetr')
+#' data('BAR', package = 'sapfluxnetr')
 #'
 #' # default complete daily metrics
-#' FOO_monthly <- monthly_metrics(FOO)
+#' BAR_monthly <- monthly_metrics(BAR)
 #'
-#' str(FOO_monthly)
-#' FOO_monthly[['env']][['env_gen']]
+#' str(BAR_monthly)
+#' BAR_monthly[['env']][['env_gen']]
 #'
 #' # change the predawn and midday interval
-#' FOO_int_monthly <- monthly_metrics(
-#'   FOO,
+#' BAR_int_monthly <- monthly_metrics(
+#'   BAR,
 #'   pd_start = 5, pd_end = 7, # predawn starting and ending hour
 #'   md_start = 13, md_end = 15 # midday starting and ending hour
 #' )
-#'
-#' str(FOO_int_monthly)
-#'
-#' # get only the general metrics
-#' FOO_gen <- monthly_metrics(FOO, predawn = FALSE, midday = FALSE)
-#'
-#' str(FOO_gen)
-#' # no predawn or midday
-#' FOO_gen[['sapf']][['sapf_pd']] # NULL
-#' FOO_gen[['sapf']][['sapf_gen']] # data
 #'
 #' @export
 
 monthly_metrics <- function(
   sfn_data,
   solar = TRUE,
-  general = TRUE,
-  predawn = TRUE,
+  # general = TRUE,
+  # predawn = TRUE,
   pd_start = 3,
   pd_end = 5,
-  midday = TRUE,
+  # midday = TRUE,
   md_start = 11,
   md_end = 13,
   probs = c(0.95, 0.99),
@@ -787,16 +786,14 @@ monthly_metrics <- function(
     period = period,
     .funs = .funs,
     solar = solar,
-    general = general,
-    predawn = predawn,
+    general = TRUE,
+    predawn = TRUE,
     pd_start = pd_start,
     pd_end = pd_end,
-    midday = midday,
+    midday = TRUE,
     md_start = md_start,
     md_end = md_end,
     nighttime = FALSE,
-    night_start = 20,
-    night_end = 6,
     ...
   )
 }

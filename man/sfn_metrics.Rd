@@ -195,6 +195,5 @@ multi_metrics[['FOO']][['sapf']][['sapf_pd']]
 
 }
 \seealso{
-Other metrics: \code{\link{daily_metrics}},
-  \code{\link{monthly_metrics}}
+Other metrics: \code{\link{metrics}}
 }
