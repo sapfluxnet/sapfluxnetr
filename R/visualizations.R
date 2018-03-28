@@ -83,7 +83,7 @@ sfn_plot <- function(
   # if formula, lets do that plot
   if (rlang::is_formula(formula_env)) {
     data <- get_env(sfn_data, solar = solar) %>%
-      dplyr::select(TIMESTAMP, !!rlang::get_expr(formula_env)) %>%
+      dplyr::select(.data$TIMESTAMP, !!rlang::get_expr(formula_env)) %>%
       dplyr::inner_join(get_sapf(sfn_data, solar = solar), by = 'TIMESTAMP')
     
     units_char <- paste0(
