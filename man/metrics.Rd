@@ -142,14 +142,14 @@ BAR_int_monthly <- monthly_metrics(
 data('BAZ', package = 'sapfluxnetr')
 
 # default complete daily metrics
-BAZ_monthly <- monthly_metrics(BAR, period = 'monthly')
+BAZ_monthly <- nighttime_metrics(BAR, period = 'monthly')
 
 str(BAZ_monthly)
 BAZ_monthly[['env']][['env_day']]
 BAZ_monthly[['env']][['env_night']]
 
 # change the night interval
-BAZ_monthly_short <- monthly_metrics(
+BAZ_monthly_short <- nighttime_metrics(
   BAR,
   night_start = 21, night_end = 4 # night starting and ending hour
 )

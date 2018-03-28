@@ -6,21 +6,21 @@
 \usage{
 sfn_plot(sfn_data, type = c("sapf", "env", "ta", "rh", "vpd", "ppfd_in",
   "netrad", "sw_in", "ext_rad", "ws", "precip", "swc_shallow", "swc_deep"),
-  solar = TRUE, ...)
+  formula_env = NULL, solar = TRUE)
 }
 \arguments{
 \item{sfn_data}{sfn_data object to plot}
 
 \item{type}{Character indicating which data to plot. See Type section for
-detailed information about the available values}
+detailed information about the available values. Ignored if formula is
+provided}
+
+\item{formula_env}{Right side formula indicating an environmental variable to
+plot vs. the sapflow values. If NULL (default) function will use "type"
+to guess which plot show.}
 
 \item{solar}{Logical indicating if the solar timestamp must be used instead
 of the site timestamp}
-
-\item{...}{bare names of variables to select when type is one of \code{sapf}
-or \code{env}. This way, trees or environmental variables plotted can be
-controlled. It also accepts \code{\link[dplyr]{select}} helper functions
-as \code{\link[dplyr]{ends_with}}}
 }
 \value{
 A ggplot object that can be called to see the plot
@@ -40,6 +40,19 @@ Plot the desired data from a site object
   general usage). So, instead, we offer this function, \code{sfn_plot}.
 }
 
+\section{Type}{
+
+  \code{type} argument controls what is going to be plotted. It accepts
+  the following:
+  \itemize{
+    \item{"sapf": It will plot sapflow data vs. TIMESTAMP}
+    \item{"env": It will plot environmental variables vs. TIMESTMAP}
+    \item{"ta", "rh", "vpd", "ppfd_in", "netrad", "sw_in", "ext_rad",
+          "ws", "precip", "swc_shallow" and "swc_deep": They will plot
+          the corresponding variable vs. TIMESTAMP}
+  }
+}
+
 \examples{
 library(ggplot2)
 
@@ -47,13 +60,22 @@ library(ggplot2)
 data('FOO', package = 'sapfluxnetr')
 
 # plotting directly
-sfn_plot(FOO, type = 'sapf', solar = FALSE)
+sfn_plot(FOO, type = 'sapf')
+
+# this could be noisy, you can facet by "Tree" (for sapflow) or by
+# "Variable" (for environmental data):
+sfn_plot(FOO, type = 'sapf') +
+  facet_wrap(~ Tree)
+
+sfn_plot(FOO, type = 'env') +
+  facet_wrap(~ Variable, scales = 'free_y')
 
 # saving and modifying:
-env_plot <- sfn_plot(FOO, type = 'env', solar = FALSE)
+env_plot <- sfn_plot(FOO, type = 'env', solar = FALSE) +
+  facet_wrap(~ Variable, scales = 'free_y')
 env_plot + labs(title = 'Environmental variables facet plot')
 
-# returning only one tree
-sfn_plot(FOO, solar = TRUE, type = 'sapf', dplyr::ends_with('_1'))
+# formula
+sfn_plot(FOO, formula_env = ~ vpd)
 
 }
