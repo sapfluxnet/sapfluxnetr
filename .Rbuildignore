@@ -3,3 +3,4 @@
 
 tests/testthat/Data/.metadata_cache.RData
 tests/testthat/big_test/
+^data-raw$
