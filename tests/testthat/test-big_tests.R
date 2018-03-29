@@ -4,6 +4,84 @@ skip_big <- function() {
   skip('Not run big_test')
 }
 
+test_that('each site can be loaded, completly summarised and plotted', {
+  
+  skip_big()
+  
+  # sites for each unit level
+  sites_names_plant <- stringr::str_remove(
+    list.files('big_test/plant', pattern = '.RData'), '.RData'
+  )
+  
+  sites_names_sapwood <- stringr::str_remove(
+    list.files('big_test/plant', pattern = '.RData'), '.RData'
+  )
+  
+  sites_names_leaf <- stringr::str_remove(
+    list.files('big_test/plant', pattern = '.RData'), '.RData'
+  )
+  
+  # outer loop
+  for (unit_level in list(
+    plant = sites_names_plant,
+    sapwood = sites_names_sapwood,
+    leaf = sites_names_leaf
+  )) {
+    
+    # inner loop
+    for (site in unit_level) {
+      
+      sfn_data <- read_sfn_data(site, folder = 'big_test/plant')
+      
+      metrics <- sfn_metrics(
+        sfn_data, period = 'daily',
+        .funs = dplyr::funs(
+          mean = mean(., na.rm = TRUE),
+          n = n(),
+          coverage = data_coverage(.),
+          q_95 = stats::quantile(., 0.95, na.rm = TRUE),
+          q_99 = stats::quantile(., 0.99, na.rm = TRUE),
+          max = max(., na.rm = TRUE),
+          max_time = max_time(., .data$TIMESTAMP_coll),
+          min = min(., na.rm = TRUE),
+          min_time = min_time(., .data$TIMESTAMP_coll),
+          centroid = diurnal_centroid(.)
+        ),
+        solar = TRUE, general = TRUE,
+        predawn = TRUE, midday = TRUE, nighttime = TRUE,
+        pd_start = 4, pd_end = 6, md_start = 13, md_end = 15,
+        night_start = 21, night_end = 6
+      )
+      
+      sapf_names <- c('sapf_gen', 'sapf_pd', 'sapf_md', 'sapf_day', 'sapf_night')
+      env_names <- c('env_gen', 'env_pd', 'env_md', 'env_day', 'env_night')
+      
+      # test if load
+      expect_s4_class(sfn_data, 'sfn_data')
+      
+      # test if plot
+      expect_s3_class(sfn_plot(sfn_data), 'gg')
+      expect_s3_class(sfn_plot(sfn_data, type = 'sapf', solar = FALSE), 'gg')
+      expect_s3_class(sfn_plot(sfn_data, formula_env = ~ta), 'gg')
+      
+      # test if summarise
+      expect_true(is.list(metrics))
+      expect_length(metrics, 2)
+      expect_length(metrics[['sapf']], 5)
+      expect_length(metrics[['env']], 5)
+      expect_identical(names(metrics[['sapf']]), sapf_names)
+      expect_identical(names(metrics[['env']]), env_names)
+      expect_s3_class(metrics[['sapf']][['sapf_day']], 'tbl')
+      expect_s3_class(metrics[['env']][['env_day']], 'tbl')
+      
+    }
+    
+  }
+  
+  
+  
+})
+
 test_that('processes works in a more complex environment', {
   
   skip_big()
