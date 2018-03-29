@@ -37,7 +37,8 @@ branch of the [github repository](https://github.com/sapfluxnet/sapfluxnetr)
 with the `devtools` package:
 
 ```{r github_inst, eval=FALSE}
-devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'devel')
+devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'devel',
+                         build_vignettes = TRUE)
 ```
 
 Now you can load the package, and also the `tidyverse` package, as it will be
