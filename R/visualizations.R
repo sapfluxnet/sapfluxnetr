@@ -150,7 +150,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$ta)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~ta)) +
         geom_point(alpha = 0.4, colour = '#C0392B') +
         labs(y = 'Air Temperature [C]') +
         scale_x_datetime()
@@ -166,7 +166,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$rh)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~rh)) +
         geom_point(alpha = 0.4, colour = '#6BB9F0') +
         labs(y = 'Relative Humidity [%]') +
         scale_x_datetime()
@@ -182,7 +182,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$vpd)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~vpd)) +
         geom_point(alpha = 0.4, colour = '#6BB9F0') +
         labs(y = 'VPD [kPa]') +
         scale_x_datetime()
@@ -198,7 +198,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$ppfd_in)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~ppfd_in)) +
         geom_point(alpha = 0.4, colour = '#D35400') +
         labs(y = 'PPFD [?]') +
         scale_x_datetime()
@@ -214,7 +214,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$sw_in)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~sw_in)) +
         geom_point(alpha = 0.4, colour = '#E87E04') +
         labs(y = 'sw [?]') +
         scale_x_datetime()
@@ -230,7 +230,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$netrad)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~netrad)) +
         geom_point(alpha = 0.4, colour = '#EB9532') +
         labs(y = 'Net Radiation [?]') +
         scale_x_datetime()
@@ -246,7 +246,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$ext_rad)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~ext_rad)) +
         geom_point(alpha = 0.4, colour = '#F89406') +
         labs(y = 'Extraterrestrial Radiation [?]') +
         scale_x_datetime()
@@ -262,7 +262,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$ws)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~ws)) +
         geom_col(alpha = 0.4, fill = '#674172') +
         labs(y = 'Wind Speed [m/s]') +
         scale_x_datetime()
@@ -278,7 +278,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$precip)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~precip)) +
         geom_col(alpha = 0.4, fill = '#67809F') +
         labs(y = 'Precipitation [?]') +
         scale_x_datetime()
@@ -294,7 +294,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$swc_shallow)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~swc_shallow)) +
         geom_point(alpha = 0.4, colour = '#26A65B') +
         labs(y = 'SWC Shallow [cm3/cm3]') +
         scale_x_datetime()
@@ -310,7 +310,7 @@ sfn_plot <- function(
       
       # actual plot
       res_plot <- data %>%
-        ggplot(aes(x = .data$TIMESTAMP, y = .data$swc_deep)) +
+        ggplot(aes_(x = ~TIMESTAMP, y = ~swc_deep)) +
         geom_point(alpha = 0.4, colour = '#019875') +
         labs(y = 'SWC Deep [cm3/cm3]') +
         scale_x_datetime()
