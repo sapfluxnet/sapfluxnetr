@@ -321,3 +321,5 @@ sfn_plot <- function(
   return(res_plot)
   
 }
+
+# TODO add explanation for the formula argument in the function doc

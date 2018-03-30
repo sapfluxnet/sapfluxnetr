@@ -60,13 +60,15 @@ the moment, after one embargo year, the data will be available for anyone):
 
 ## Inspecting a site
 
-We have downloaded the data, *and now, what?*.  
 First, let's get used to the data structure that Sapfluxnet Data provides, and
-for that we will choose a site and start playing with it. In this example we
-will use the `ARG_MAZ` site, as it is small and it will be fast to see the
-package capabilities. There are sites like `FRA_PUE` 20 times bigger than this,
-but as you can imagine, the time is also increasing when analising those
-bigger datasets.  
+for that we will choose a site and start playing with it.
+
+### Loading a site
+
+In this example we will use the `ARG_MAZ` site, as it is small and it will be
+fast to see the package capabilities. There are sites like `FRA_PUE` 20 times
+bigger than this, but as you can imagine, the time is also increasing when
+analising those bigger datasets.  
 So, let's read the data in the environment:
 
 ```{r read_and_inspect, eval=FALSE}
@@ -94,7 +96,8 @@ measured (`ta`, `rh`, `vpd`, `sw_in`, `ws`, `precip`, `swc_shallow`, `ppfd_in`
 and `ext_rad`) and the biome classification. Finally, we can see that the
 environmental data has some flags (more on that later).
 
-That's nice, *but where is the data?*.  
+### Accesing the data and the metadata
+
 `sfn_class` objects have different slots containing the different data, each of
 one has an accesor function (see `?sfn_get_methods` for detailed info):
 
@@ -133,9 +136,44 @@ description can be obtained from `describe_md_variable` function:
 ```{r describe}
 # what is env_ta?
 describe_md_variable('env_ta')
+
+
 # or pl_species?
 describe_md_variable('pl_species')
 ```
+
+There is also some accesors that can come in handy sometimes. `get_timestamp` and
+`get_solar_timestamp` access to the original timestamp and the apparent solar
+time timestamp. `get_si_code` access to the site code.
+
+#### Flags
+
+`sfn_data` objects also have two more slots, accesed with `get_sapf_flags` and
+`get_env_flags`.
+
+```{r get_flags}
+arg_maz_sapf_flags <- get_sapf_flags(arg_maz, solar = TRUE)
+arg_maz_sapf_flags
+
+arg_maz_env_flags <- get_env_flags(arg_maz, solar = TRUE)
+arg_maz_env_flags
+```
+
+This datsets store any flag that each data point may have (possible outlier,
+data removed in the Quality Check of the data...). For a complete list of
+flags possible values see `vignette('03_data_flags', package = 'sapfluxnetr')`.
+As an example, let's see which values are marked as "RANGE_WARN" (a warning
+indicating that the value may be out of normal variable range):
+
+```{r out_range}
+arg_maz_env_flags %>%
+  filter_all(any_vars(stringr::str_detect(., 'OUT_WARN')))
+```
+
+We see that the out og range warnings refer to precipitation variable, as it is
+above the "usual" maximum value.
+
+### Plotting an object
 
 We can also plot the different data with the help of `sfn_plot` function. It will
 return `ggplot` objects that can be modified afterwards:
@@ -150,8 +188,10 @@ sfn_plot(arg_maz, type = 'env', solar = TRUE) +
   facet_wrap(~ Variable, scales = 'free_y') + theme(legend.position = 'none')
 ```
 
-We can also plot environmental variables individually, or an environmental
-variable *versus* the sap flow measurements
+We can also plot environmental variables individually (with the `type` argument),
+or an environmental variable *versus* the sap flow measurements (with the
+`formula` argument). See `?sfn_plot` for a complete description of the
+available plots.
 
 ```{r vpd_and_vs, fig.show='hold'}
 # vpd individually
@@ -161,8 +201,201 @@ sfn_plot(arg_maz, formula = ~vpd, solar = TRUE) +
   theme(legend.position = 'none')
 ```
 
+### Aggregate metrics
 
-## Preparing the metadata
+Sapfluxnet data is stored as subdaily measures, being the timestep different
+among sites (it can be from 10 minutes in some sites to 1 hour in others).  
+`sapfluxnetr` offers some simple, yet complete aggregation functions returning
+some pre-defined metrics: `daily_metrics`, `monthly_metrics` and
+`nighttime_metrics`.
 
-Sapfluxnet metadata is stored along the 
+`daily_metrics` and `monthly_metrics` returns a list containing the sapflow and
+environmental data aggregated by day and month, respectively, in three different
+flavours, *general* (all data summarised), *pd* (only predawn period summarised)
+and *md* (only midday period summarised).  
+`nighttime_metrics` divides the data in *day* and *night* and returns the metrics
+for each subset in the period declared (daily or monthly).  
+All three funtions return the same metrics, *mean*, *sd*, *n*, *data coverage*,
+*quantiles* (0.95 and 0.99 by default), *diurnal centroid*, *min value*,
+*time at min value*, *max value* and *time at max value*.  
+Let's see some examples:
+
+```{r daily}
+arg_maz_daily <- daily_metrics(arg_maz, solar = TRUE)
+```
+
+We can see that results are divided in `sapf` and `env` and inside each of them
+there are the `gen`, `pd` and `md` results. So if we want to inspect the
+general aggregation for sap flow measures:
+
+```{r daily_sapf_gen}
+arg_maz_daily[['sapf']][['sapf_gen']]
+```
+
+or more especifically, the 0.99 quantiles:
+
+```{r daily_sapf_gen_q99}
+arg_maz_daily[['sapf']][['sapf_gen']] %>%
+  select(TIMESTAMP, ends_with('q_99'))
+```
+
+Or maybe we are interested in the mean values of the midday periods for
+environmental variables:
+
+```{r daily_sapf_md_mean}
+arg_maz_daily[['env']][['env_md']] %>%
+  select(TIMESTAMP_md, ends_with('mean_md')) # note that midday variables ends with "_md"
+```
+
+If interested in custom metrics or custom aggregations, there is a generic
+function, `sfn_metrics` that allows for customization of the statistics to
+calculate and the periods to aggregate. See `?sfn_metrics` and
+`vignette('04_custom_aggregation'. package = 'sapfluxnetr')` for more details
+about it.
+
+
+## Working with multiple sites
+
+Getting the insights about one site is interesting, but getting the insights
+of a common group of sites could be even more interesting. `sapfluxnetr` allows
+filtering sites by metadata values (biomes, countries, species...) and work
+with them as a unique set.
+
+### Building the metadata database
+
+First thing we have to do is creating a metadata database. It is not mandatory,
+but filtering sites by metadata can be a very time and resources consuming step
+if we have to temporary build the database each time we want filter sites. So,
+let's create a cached metadata database. This will take some minutes, so maybe
+it is a good moment to prepare a hot beverage ;)
+
+```{r metadata_database, eval = FALSE}
+sfn_metadata <- read_sfn_metadata(folder = 'data/plant', .write_cache = TRUE)
+```
+
+```{r metadata_database_real, echo=FALSE}
+load('../tests/testthat/big_test/plant/.metadata_cache.RData')
+```
+
+
+The important bit here is `.write_cache = TRUE`. This will write a file called
+`.metadata_cache.RData` containing all the metadata for all sites present in
+`folder`. This file will be used any time we will filter the metadata, so there
+is no need of accessing all the data again.  
+If we take a look at `sfn_metadata` we can see a list with 5 data frames, one for
+each metadata class (site, stand, species, plant and environmental metadata).
+
+```{r md_db_str}
+# access plant metadata
+sfn_metadata[['plant_md']]
+```
+
+### Filtering sites
+
+Now that we have our metadata database built, we can start filtering sites by
+metadata, with the `filter_by_var` function. As a first try, let's list all
+sites belonging to temperate forest biome (mediterranean included):
+
+```{r filtering_by_md, eval=FALSE}
+filter_by_var(
+  si_biome %in% c('Mediterranean', 'Temperate forest'),
+  folder = 'data/plant',
+  .use_cache = TRUE
+)
+```
+
+```{r filtering_by_md_real, echo=FALSE}
+filter_by_var(
+  si_biome %in% c('Mediterranean', 'Temperate forest'),
+  folder = '../tests/testthat/big_test/plant',
+  .use_cache = TRUE
+)
+```
+
+You can combine all filters you want:
+
+```{r filters_combined, eval=FALSE}
+temp_hr <- filter_by_var(
+  si_biome %in% c('Mediterranean', 'Temperate forest'),
+  pl_sap_meth == 'HR',
+  folder = 'data/plant',
+  .use_cache = TRUE
+)
+temp_hr
+```
+
+```{r filters_combined_real, echo=FALSE}
+temp_hr <- filter_by_var(
+  si_biome %in% c('Mediterranean', 'Temperate forest'),
+  pl_sens_meth == 'HR',
+  folder = '../tests/testthat/big_test/plant',
+  .use_cache = TRUE
+)
+temp_hr
+```
+
+### sfn_data_multi objects
+
+We can load all filtered sites with a simple pipe
+
+```{r multi, eval=FALSE}
+temp_hr_sites <- temp_hr %>%
+  read_sfn_data(folder = 'data/plant')
+temp_hr_sites
+```
+
+```{r multi_real, echo=FALSE}
+temp_hr_sites <- temp_hr %>%
+  read_sfn_data(folder = '../tests/testthat/big_test/plant')
+temp_hr_sites
+```
+
+We have created a `sfn_data_multi` object, which is just a list, but adapted to
+contain `sfn_data` objects. Main functions of `sapfluxnetr` are adapted to work
+with this lists. As any list, we can access the sites:
+
+```{r mutil_site}
+temp_hr_sites[['AUS_BRI_BRI']] # same as temp_hr_sites[[3]]
+```
+
+### Multi aggregation
+
+Now we can aggregate all sites at once
+
+```{r multi_aggregation}
+temp_hr_aggregated <- temp_hr_sites %>%
+  daily_metrics()
+```
+
+and *voilà*, all sites aggregated, so we can start working with the data
+
+### Working with multiple sites data
+
+The structure of `daily_metrics` results allows for easy data subsetting and
+is fast to create a data frame with the desired data. In this example we will
+join all general metrics of all sites and try to see if there is site effect in
+the relationship between sapflow and vpd, using the 0.95 quantiles as maximum
+values of sapflow:
+
+```{r exmaple_1}
+multi_full_join <- function(data_list, by) {
+  first <- data_list[[1]]
+  
+  for (i in 2:length(data_list)) {
+    first <- dplyr::full_join(first, data_list[[i]], by = by)
+  }
+  
+  return(first)
+}
+
+
+sapf_data <- temp_hr_aggregated %>%
+  map(c('sapf', 'sapf_gen')) %>%
+  multi_full_join(by = 'TIMESTAMP') %>%
+  select(TIMESTAMP, ends_with('_q_95'), ends_with('_n'), ends_with('_coverage')) %>%
+  arrange(TIMESTAMP)
+
+# TODO multifulljoin function. Also standarise the timestamp for daily and 
+# monthly to be able to join correctly
+```
 
