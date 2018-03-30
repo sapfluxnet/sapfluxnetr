@@ -392,6 +392,12 @@ sfn_metrics <- function(
   }
   
   # if sfn_data then we have to calculate the desired metrics from the data
+  
+  print(paste0(
+    'Crunching data for ', get_si_code(sfn_data), '. In large datasets this ',
+    'could take a while'
+  ))
+  
   sapf_data <- get_sapf_data(sfn_data, solar = solar)
   env_data <- get_env_data(sfn_data, solar = solar)
 
@@ -399,10 +405,7 @@ sfn_metrics <- function(
   
   if (general) {
     # progress to not scare seeming like freezed
-    print(paste0(
-      'Crunching general data for ', get_si_code(sfn_data), '. In large datasets this ',
-      'could take a while'
-    ))
+    print(paste0('General data for ', get_si_code(sfn_data)))
     
     # period summaries: we want to know period means, maximum, minimum, quantiles...
     whole_data %>%
@@ -419,10 +422,7 @@ sfn_metrics <- function(
   if (predawn) {
     
     # progress to not scare seeming like freezed
-    print(paste0(
-      'Crunching predawn data for ', get_si_code(sfn_data),
-      '. In large datasets this could take a while'
-    ))
+    print(paste0('Predawn data for ', get_si_code(sfn_data)))
     
     whole_data %>%
       purrr::map(
@@ -443,10 +443,7 @@ sfn_metrics <- function(
   if (midday) {
     
     # progress to not scare seeming like freezed
-    print(paste0(
-      'Crunching midday data for ', get_si_code(sfn_data),
-      '. In large datasets this could take a while'
-    ))
+    print(paste0('Midday data for ', get_si_code(sfn_data)))
     
     whole_data %>%
       purrr::map(
@@ -467,10 +464,7 @@ sfn_metrics <- function(
   if(nighttime) {
     
     # progress to not scare seeming like freezed in large datasets
-    print(paste0(
-      'Crunching nighttime data for ', get_si_code(sfn_data),
-      '. In large datasets this could take a while'
-    ))
+    print(paste0('Nighttime data for ', get_si_code(sfn_data)))
     
     night_data <- whole_data %>%
       purrr::map(
