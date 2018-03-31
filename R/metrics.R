@@ -416,9 +416,6 @@ sfn_metrics <- function(
   #### night time ####
   if(nighttime) {
     
-    dots <- rlang::quos(...)
-    dots_summ <- dots[names(dots) != 'clean']
-    
     # progress to not scare seeming like freezed in large datasets
     print(paste0('Nighttime data for ', get_si_code(sfn_data)))
     
@@ -433,23 +430,81 @@ sfn_metrics <- function(
           )
       )
     
-    night_boundaries <- night_data[['sapf']] %>%
-      dplyr::mutate(
-        coll = tibbletime::collapse_index(
-          index = .data$TIMESTAMP,
-          period = period,
-          side = 'start'
-        )
-      ) %>%
-      dplyr::group_by(.data$coll) %>%
-      # closest to night start timestamp
-      dplyr::summarise(
-        custom_dates = .data$TIMESTAMP[which.min(abs(lubridate::hour(.data$TIMESTAMP) - night_start))]
-      ) %>%
-      dplyr::pull(.data$custom_dates)
     
-    night_sum <- night_data %>%
-      purrr::map(summarise_by_period, night_boundaries, .funs, clean = FALSE, !!! dots_summ)
+    
+    if (period == 'daily') {
+      
+      night_boundaries <- night_data[['sapf']] %>%
+        dplyr::mutate(
+          coll = tibbletime::collapse_index(
+            index = .data$TIMESTAMP,
+            period = period,
+            side = 'start'
+          )
+        ) %>%
+        dplyr::group_by(.data$coll) %>%
+        # closest to night start timestamp
+        dplyr::summarise(
+          custom_dates = .data$TIMESTAMP[which.min(
+            abs(lubridate::hour(.data$TIMESTAMP) - night_start)
+          )]
+        ) %>%
+        dplyr::pull(.data$custom_dates)
+      
+      night_boundaries <- night_boundaries %>%
+        lubridate::floor_date(unit = 'hours')
+      
+      # workaround the two nights in one day problem (sites that start at
+      # 00:00:00 have two nights in the same day, the first one corresponds to
+      # the previous day and we have to fix it)
+      margins <- 60*60*24
+      extra_start_boundary <- night_boundaries[[1]] - margins
+      extra_end_boundary <- night_boundaries[[length(night_boundaries)]] + margins
+      night_boundaries <- as.POSIXct(
+        c(
+          as.character(extra_start_boundary),
+          as.character(night_boundaries),
+          as.character(extra_end_boundary)
+        ),
+        tz = attr(extra_start_boundary, 'tz')
+      )
+      
+      night_sum <- night_data %>%
+        purrr::map(
+          summarise_by_period, night_boundaries, .funs,
+          # clean = FALSE, !!! dots_summ,
+          ...
+        )
+      
+    } else {
+      
+      # night_boundaries <- night_boundaries %>%
+      #   lubridate::floor_date(unit = 'hourly')
+      # 
+      # # workaround the two nights in one month problem (sites that start at
+      # # XXXX-XX-01 00:00:00 have two nights in the same month, the first one
+      # # corresponds to the previous month and we have to fix it)
+      # margins <- 60*60*24
+      # extra_start_boundary <- night_boundaries[[1]] - margins
+      # extra_end_boundary <- night_boundaries[[length(night_boundaries)]] + margins
+      # night_boundaries <- as.POSIXct(
+      #   c(
+      #     as.character(extra_start_boundary),
+      #     as.character(night_boundaries),
+      #     as.character(extra_end_boundary)
+      #   ),
+      #   tz = attr(extra_start_boundary, 'tz')
+      # )
+      
+      
+      night_sum <- night_data %>%
+        purrr::map(
+          summarise_by_period, period, .funs,
+          # clean = FALSE, !!! dots_summ,
+          ...
+        )
+      
+    }
     
     names(night_sum[['sapf']]) <- paste0(names(night_sum[['sapf']]), '_night')
     names(night_sum[['env']]) <- paste0(names(night_sum[['env']]), '_night')
@@ -787,8 +842,12 @@ monthly_metrics <- function(
 #' values for the night starting at 2018-03-28 20:00:00 and ending at
 #' 2018-03-29 06:00:00).
 #' 
-#' Night for monthly period summarises all night in the month (including that
-#' starting the last day of the month and ending the first day of the next).
+#' Night for monthly period summarises all night periods in the month starting from
+#' the first complete night of the month (i.e. from night starting at 2018-01-01 20:00:00)
+#' to the last night of the month (i.e. night starting at 2018-01-31 20:00:00
+#' and ending at 2018-02-01), except if the TIMESTAMP start at XXXX-01-01 00:00:00,
+#' then period from XXXX-XX-01 00:00:00 to XXXX-XX-01 \code{night_end} is also
+#' aggregated in the first night.
 #' 
 #' @inheritParams sfn_metrics
 #'

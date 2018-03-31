@@ -97,8 +97,12 @@ Night for daily period starts in DOY x and ends in DOY x+1 (i.e. if
 values for the night starting at 2018-03-28 20:00:00 and ending at
 2018-03-29 06:00:00).
 
-Night for monthly period summarises all night in the month (including that
-starting the last day of the month and ending the first day of the next).
+Night for monthly period summarises all night periods in the month starting from
+the first complete night of the month (i.e. from night starting at 2018-01-01 20:00:00)
+to the last night of the month (i.e. night starting at 2018-01-31 20:00:00
+and ending at 2018-02-01), except if the TIMESTAMP start at XXXX-01-01 00:00:00,
+then period from XXXX-XX-01 00:00:00 to XXXX-XX-01 \code{night_end} is also
+aggregated in the first night.
 }
 
 \examples{

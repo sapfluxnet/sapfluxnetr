@@ -590,11 +590,11 @@ test_that('sfn_metrics return the expected object', {
   env_day_timestamp <- test_expr3[['env']][['env_day']][['TIMESTAMP_day']]
   env_night_timestamp <- test_expr3[['env']][['env_night']][['TIMESTAMP_night']]
   
-  good_sapf_night_first <- "2009-11-18"
+  good_sapf_night_first <- "2009-11-17 20:00:00"
   good_sapf_night_second <- "2009-11-18 20:00:00"
   good_sapf_night_last <- "2009-11-30 20:00:00"
   
-  good_env_night_first <- "2009-11-18"
+  good_env_night_first <- "2009-11-17 20:00:00"
   good_env_night_second <- "2009-11-18 20:00:00"
   good_env_night_last <- "2009-11-30 20:00:00"
   
@@ -678,6 +678,177 @@ test_that('sfn_metrics return the expected object', {
   expect_equal(as.character(env_day_timestamp_4[1]), good_env_day_first_4)
   expect_equal(as.character(env_day_timestamp_4[2]), good_env_day_second_4)
   expect_equal(as.character(env_day_timestamp_4[13]), good_env_day_last_4)
+  
+  test_expr5 <- sfn_metrics(
+    FOO,
+    period = 'daily',
+    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE,
+    general = FALSE,
+    predawn = FALSE,
+    midday = FALSE,
+    nighttime = TRUE,
+    night_start = 20,
+    night_end = 6,
+    side = 'end'
+  )
+  
+  expect_identical(names(test_expr5), c('sapf', 'env'))
+  expect_identical(names(test_expr5[['sapf']]), c('sapf_day', 'sapf_night'))
+  expect_identical(names(test_expr5[['env']]), c('env_day', 'env_night'))
+  expect_s3_class(test_expr5[['sapf']][['sapf_day']], 'tbl_time')
+  expect_s3_class(test_expr5[['sapf']][['sapf_night']], 'tbl_time')
+  expect_s3_class(test_expr5[['env']][['env_day']], 'tbl_time')
+  expect_s3_class(test_expr5[['env']][['env_night']], 'tbl_time')
+  
+  sapf_day_timestamp_5 <- test_expr5[['sapf']][['sapf_day']][['TIMESTAMP_day']]
+  sapf_night_timestamp_5 <- test_expr5[['sapf']][['sapf_night']][['TIMESTAMP_night']]
+  env_day_timestamp_5 <- test_expr5[['env']][['env_day']][['TIMESTAMP_day']]
+  env_night_timestamp_5 <- test_expr5[['env']][['env_night']][['TIMESTAMP_night']]
+  
+  good_sapf_night_first_5 <- "2009-11-18 20:00:00"
+  good_sapf_night_second_5 <- "2009-11-19 20:00:00"
+  good_sapf_night_last_5 <- "2009-12-01 20:00:00"
+  
+  good_env_night_first_5 <- "2009-11-18 20:00:00"
+  good_env_night_second_5 <- "2009-11-19 20:00:00"
+  good_env_night_last_5 <- "2009-12-01 20:00:00"
+  
+  good_sapf_day_first_5 <- "2009-11-19"
+  good_sapf_day_second_5 <- "2009-11-20"
+  good_sapf_day_last_5 <- "2009-12-01"
+  
+  good_env_day_first_5 <- "2009-11-19"
+  good_env_day_second_5 <- "2009-11-20"
+  good_env_day_last_5 <- "2009-12-01"
+  
+  expect_equal(as.character(sapf_night_timestamp_5[1]), good_sapf_night_first_5)
+  expect_equal(as.character(sapf_night_timestamp_5[2]), good_sapf_night_second_5)
+  expect_equal(as.character(sapf_night_timestamp_5[14]), good_sapf_night_last_5)
+  expect_equal(as.character(env_night_timestamp_5[1]), good_env_night_first_5)
+  expect_equal(as.character(env_night_timestamp_5[2]), good_env_night_second_5)
+  expect_equal(as.character(env_night_timestamp_5[14]), good_env_night_last_5)
+  
+  expect_equal(as.character(sapf_day_timestamp_5[1]), good_sapf_day_first_5)
+  expect_equal(as.character(sapf_day_timestamp_5[2]), good_sapf_day_second_5)
+  expect_equal(as.character(sapf_day_timestamp_5[13]), good_sapf_day_last_5)
+  expect_equal(as.character(env_day_timestamp_5[1]), good_env_day_first_5)
+  expect_equal(as.character(env_day_timestamp_5[2]), good_env_day_second_5)
+  expect_equal(as.character(env_day_timestamp_5[13]), good_env_day_last_5)
+  
+  test_expr6 <- sfn_metrics(
+    FOO,
+    period = 'daily',
+    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE,
+    general = FALSE,
+    predawn = FALSE,
+    midday = FALSE,
+    nighttime = TRUE,
+    night_start = 20,
+    night_end = 6,
+    clean = FALSE,
+    side = 'end'
+  )
+  
+  expect_identical(names(test_expr6), c('sapf', 'env'))
+  expect_identical(names(test_expr6[['sapf']]), c('sapf_day', 'sapf_night'))
+  expect_identical(names(test_expr6[['env']]), c('env_day', 'env_night'))
+  expect_s3_class(test_expr6[['sapf']][['sapf_day']], 'tbl_time')
+  expect_s3_class(test_expr6[['sapf']][['sapf_night']], 'tbl_time')
+  expect_s3_class(test_expr6[['env']][['env_day']], 'tbl_time')
+  expect_s3_class(test_expr6[['env']][['env_night']], 'tbl_time')
+  
+  sapf_day_timestamp_6 <- test_expr6[['sapf']][['sapf_day']][['TIMESTAMP_day']]
+  sapf_night_timestamp_6 <- test_expr6[['sapf']][['sapf_night']][['TIMESTAMP_night']]
+  env_day_timestamp_6 <- test_expr6[['env']][['env_day']][['TIMESTAMP_day']]
+  env_night_timestamp_6 <- test_expr6[['env']][['env_night']][['TIMESTAMP_night']]
+  
+  good_sapf_night_first_6 <- "2009-11-18 05:00:00"
+  good_sapf_night_second_6 <- "2009-11-19 05:00:00"
+  good_sapf_night_last_6 <- "2009-11-30 23:00:00"
+  
+  good_env_night_first_6 <- "2009-11-18 05:00:00"
+  good_env_night_second_6 <- "2009-11-19 05:00:00"
+  good_env_night_last_6 <- "2009-11-30 23:00:00"
+  
+  good_sapf_day_first_6 <- "2009-11-18 19:00:00"
+  good_sapf_day_second_6 <- "2009-11-19 19:00:00"
+  good_sapf_day_last_6 <- "2009-11-30 19:00:00"
+  
+  good_env_day_first_6 <- "2009-11-18 19:00:00"
+  good_env_day_second_6 <- "2009-11-19 19:00:00"
+  good_env_day_last_6 <- "2009-11-30 19:00:00"
+  
+  expect_equal(as.character(sapf_night_timestamp_6[1]), good_sapf_night_first_6)
+  expect_equal(as.character(sapf_night_timestamp_6[2]), good_sapf_night_second_6)
+  expect_equal(as.character(sapf_night_timestamp_6[14]), good_sapf_night_last_6)
+  expect_equal(as.character(env_night_timestamp_6[1]), good_env_night_first_6)
+  expect_equal(as.character(env_night_timestamp_6[2]), good_env_night_second_6)
+  expect_equal(as.character(env_night_timestamp_6[14]), good_env_night_last_6)
+  
+  expect_equal(as.character(sapf_day_timestamp_6[1]), good_sapf_day_first_6)
+  expect_equal(as.character(sapf_day_timestamp_6[2]), good_sapf_day_second_6)
+  expect_equal(as.character(sapf_day_timestamp_6[13]), good_sapf_day_last_6)
+  expect_equal(as.character(env_day_timestamp_6[1]), good_env_day_first_6)
+  expect_equal(as.character(env_day_timestamp_6[2]), good_env_day_second_6)
+  expect_equal(as.character(env_day_timestamp_6[13]), good_env_day_last_6)
+  
+  test_expr7 <- sfn_metrics(
+    BAZ,
+    period = 'monthly',
+    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE,
+    general = FALSE,
+    predawn = FALSE,
+    midday = FALSE,
+    nighttime = TRUE,
+    night_start = 20,
+    night_end = 6
+  )
+  
+  expect_identical(names(test_expr7), c('sapf', 'env'))
+  expect_identical(names(test_expr7[['sapf']]), c('sapf_day', 'sapf_night'))
+  expect_identical(names(test_expr7[['env']]), c('env_day', 'env_night'))
+  expect_s3_class(test_expr7[['sapf']][['sapf_day']], 'tbl_time')
+  expect_s3_class(test_expr7[['sapf']][['sapf_night']], 'tbl_time')
+  expect_s3_class(test_expr7[['env']][['env_day']], 'tbl_time')
+  expect_s3_class(test_expr7[['env']][['env_night']], 'tbl_time')
+  
+  sapf_day_timestamp_7 <- test_expr7[['sapf']][['sapf_day']][['TIMESTAMP_day']]
+  sapf_night_timestamp_7 <- test_expr7[['sapf']][['sapf_night']][['TIMESTAMP_night']]
+  env_day_timestamp_7 <- test_expr7[['env']][['env_day']][['TIMESTAMP_day']]
+  env_night_timestamp_7 <- test_expr7[['env']][['env_night']][['TIMESTAMP_night']]
+  
+  good_sapf_night_first_7 <- "2006-06-01"
+  good_sapf_night_second_7 <- "2006-07-01"
+  good_sapf_night_last_7 <- "2007-06-01"
+  
+  good_env_night_first_7 <- "2006-06-01"
+  good_env_night_second_7 <- "2006-07-01"
+  good_env_night_last_7 <- "2007-06-01"
+  
+  good_sapf_day_first_7 <- "2006-06-01"
+  good_sapf_day_second_7 <- "2006-07-01"
+  good_sapf_day_last_7 <- "2007-06-01"
+  
+  good_env_day_first_7 <- "2006-06-01"
+  good_env_day_second_7 <- "2006-07-01"
+  good_env_day_last_7 <- "2007-06-01"
+  
+  expect_equal(as.character(sapf_night_timestamp_7[1]), good_sapf_night_first_7)
+  expect_equal(as.character(sapf_night_timestamp_7[2]), good_sapf_night_second_7)
+  expect_equal(as.character(sapf_night_timestamp_7[13]), good_sapf_night_last_7)
+  expect_equal(as.character(env_night_timestamp_7[1]), good_env_night_first_7)
+  expect_equal(as.character(env_night_timestamp_7[2]), good_env_night_second_7)
+  expect_equal(as.character(env_night_timestamp_7[13]), good_env_night_last_7)
+  
+  expect_equal(as.character(sapf_day_timestamp_6[1]), good_sapf_day_first_6)
+  expect_equal(as.character(sapf_day_timestamp_6[2]), good_sapf_day_second_6)
+  expect_equal(as.character(sapf_day_timestamp_6[13]), good_sapf_day_last_6)
+  expect_equal(as.character(env_day_timestamp_6[1]), good_env_day_first_6)
+  expect_equal(as.character(env_day_timestamp_6[2]), good_env_day_second_6)
+  expect_equal(as.character(env_day_timestamp_6[13]), good_env_day_last_6)
 
 })
 
