@@ -83,78 +83,103 @@ summarise_by_period <- function(data, period, .funs, ...) {
   dots_collapse_index <- dots[names(dots) %in% methods::formalArgs(tibbletime::collapse_index)]
   dots_summarise_all <- dots[!(names(dots) %in% methods::formalArgs(tibbletime::collapse_index))]
   
+  # TODO set clean = TRUE and side "start" for the collapse, except if they are
+  # setted by the user.
+  if (is.null(dots_collapse_index[['side']])) {
+    dots_collapse_index[['side']] <- 'start'
+  }
+  
+  if (is.null(dots_collapse_index[['clean']])) {
+    dots_collapse_index[['clean']] <- TRUE
+  }
+  
+  data %>%
+    # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+    dplyr::mutate(
+      TIMESTAMP_coll = .data$TIMESTAMP,
+      TIMESTAMP = tibbletime::collapse_index(
+        index = .data$TIMESTAMP,
+        period = period,
+        !!! dots_collapse_index
+      )
+    ) %>%
+    dplyr::group_by(.data$TIMESTAMP) %>%
+    dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
+    dplyr::select(-dplyr::contains('_coll_')) -> res
+  
+  return(res)
   # if we need to pass unknown arguments to collapse_index and summarise_all, then
   # we use the quasiquotation system (!!!args_list), that way we don't need to
   # worry about which arguments are supplied
   # But there is a problem, if no extra arguments provided, !!! fails, so we need
   # to cover all possible scenarios
-  if (length(dots_collapse_index) > 0) {
-    if (length(dots_summarise_all) > 0) {
-      data %>%
-        # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        dplyr::mutate(
-          TIMESTAMP_coll = .data$TIMESTAMP,
-          TIMESTAMP = tibbletime::collapse_index(
-            index = .data$TIMESTAMP,
-            period = period,
-            !!! dots_collapse_index
-          )
-        ) %>%
-        dplyr::group_by(.data$TIMESTAMP) %>%
-        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
-        dplyr::select(-dplyr::contains('_coll_')) -> res
-
-      return(res)
-    } else {
-      data %>%
-        # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        dplyr::mutate(
-          TIMESTAMP_coll = .data$TIMESTAMP,
-          TIMESTAMP = tibbletime::collapse_index(
-            index = .data$TIMESTAMP,
-            period = period,
-            !!! dots_collapse_index
-          )
-        ) %>%
-        dplyr::group_by(.data$TIMESTAMP) %>%
-        dplyr::summarise_all(.funs = .funs) %>%
-        dplyr::select(-dplyr::contains('_coll_')) -> res
-
-      return(res)
-    }
-  } else {
-    if (length(dots_summarise_all) > 0) {
-      data %>%
-        # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        dplyr::mutate(
-          TIMESTAMP_coll = .data$TIMESTAMP,
-          TIMESTAMP = tibbletime::collapse_index(
-            index = .data$TIMESTAMP,
-            period = period
-          )
-        ) %>%
-        dplyr::group_by(.data$TIMESTAMP) %>%
-        dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
-        dplyr::select(-dplyr::contains('_coll_')) -> res
-
-      return(res)
-    } else {
-      data %>%
-        # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-        dplyr::mutate(
-          TIMESTAMP_coll = .data$TIMESTAMP,
-          TIMESTAMP = tibbletime::collapse_index(
-            index = .data$TIMESTAMP,
-            period = period
-          )
-        ) %>%
-        dplyr::group_by(.data$TIMESTAMP) %>%
-        dplyr::summarise_all(.funs = .funs) %>%
-        dplyr::select(-dplyr::contains('_coll_')) -> res
-
-      return(res)
-    }
-  }
+  # if (length(dots_collapse_index) > 0) {
+  #   if (length(dots_summarise_all) > 0) {
+  #     data %>%
+  #       # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+  #       dplyr::mutate(
+  #         TIMESTAMP_coll = .data$TIMESTAMP,
+  #         TIMESTAMP = tibbletime::collapse_index(
+  #           index = .data$TIMESTAMP,
+  #           period = period,
+  #           !!! dots_collapse_index
+  #         )
+  #       ) %>%
+  #       dplyr::group_by(.data$TIMESTAMP) %>%
+  #       dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
+  #       dplyr::select(-dplyr::contains('_coll_')) -> res
+  # 
+  #     return(res)
+  #   } else {
+  #     data %>%
+  #       # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+  #       dplyr::mutate(
+  #         TIMESTAMP_coll = .data$TIMESTAMP,
+  #         TIMESTAMP = tibbletime::collapse_index(
+  #           index = .data$TIMESTAMP,
+  #           period = period,
+  #           !!! dots_collapse_index
+  #         )
+  #       ) %>%
+  #       dplyr::group_by(.data$TIMESTAMP) %>%
+  #       dplyr::summarise_all(.funs = .funs) %>%
+  #       dplyr::select(-dplyr::contains('_coll_')) -> res
+  # 
+  #     return(res)
+  #   }
+  # } else {
+  #   if (length(dots_summarise_all) > 0) {
+  #     data %>%
+  #       # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+  #       dplyr::mutate(
+  #         TIMESTAMP_coll = .data$TIMESTAMP,
+  #         TIMESTAMP = tibbletime::collapse_index(
+  #           index = .data$TIMESTAMP,
+  #           period = period
+  #         )
+  #       ) %>%
+  #       dplyr::group_by(.data$TIMESTAMP) %>%
+  #       dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
+  #       dplyr::select(-dplyr::contains('_coll_')) -> res
+  # 
+  #     return(res)
+  #   } else {
+  #     data %>%
+  #       # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+  #       dplyr::mutate(
+  #         TIMESTAMP_coll = .data$TIMESTAMP,
+  #         TIMESTAMP = tibbletime::collapse_index(
+  #           index = .data$TIMESTAMP,
+  #           period = period
+  #         )
+  #       ) %>%
+  #       dplyr::group_by(.data$TIMESTAMP) %>%
+  #       dplyr::summarise_all(.funs = .funs) %>%
+  #       dplyr::select(-dplyr::contains('_coll_')) -> res
+  # 
+  #     return(res)
+  #   }
+  # }
 }
 
 
@@ -564,6 +589,61 @@ sfn_metrics <- function(
 
 ####### shorthand functions for sfn_metrics ####################################
 
+#' helper function to generate the fixed metrics
+#' 
+#' generates a call to dplyr::funs to capture the fixed metrics
+#' 
+#' @param probs probs vector for quantile
+#' 
+#' @param centroid logical indicating if centroid calculation must be made.
+#'   (i.e. in monthly metrics, the centroid calculation is not needed)
+
+.fixed_metrics_funs <- function(probs, centroid) {
+  
+  # hack to avoid R CMD CHECKS to complain about . not being a global variable
+  . <- NULL
+  
+  # we need magic to add the quantiles as they return more than one value
+  # (usually). So lets play with quasiquotation
+  quantile_args <- probs %>%
+    purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
+  names(quantile_args) <- paste0('q_', round(probs*100, 0))
+  
+  if (centroid) {
+    
+    .funs <- dplyr::funs(
+      mean = mean(., na.rm = TRUE),
+      sd = sd(., na.rm = TRUE),
+      n = n(),
+      coverage = data_coverage(.),
+      !!! quantile_args,
+      max = max(., na.rm = TRUE),
+      max_time = max_time(., .data$TIMESTAMP_coll),
+      min = min(., na.rm = TRUE),
+      min_time = min_time(., .data$TIMESTAMP_coll),
+      centroid = diurnal_centroid(.)
+    )
+    
+  } else {
+    
+    .funs <- dplyr::funs(
+      mean = mean(., na.rm = TRUE),
+      sd = sd(., na.rm = TRUE),
+      n = n(),
+      coverage = data_coverage(.),
+      !!! quantile_args,
+      max = max(., na.rm = TRUE),
+      max_time = max_time(., .data$TIMESTAMP_coll),
+      min = min(., na.rm = TRUE),
+      min_time = min_time(., .data$TIMESTAMP_coll)
+    )
+    
+  }
+  
+  return(.funs)
+  
+}
+
 #' Complete metrics wrappers
 #' 
 #' This set of functions returns a complete set of statistics for a site or
@@ -592,7 +672,7 @@ sfn_metrics <- function(
 #' 
 #' @param probs numeric vector of probabilities for \code{\link[stats]{quantile}}
 #'
-#' @param ... optional arguments passed to \code{\link{sfn_metrics}}
+#' @param ... Not implemented
 #' 
 #' @family metrics
 #' 
@@ -653,35 +733,29 @@ daily_metrics <- function(
   # hardcoded values
   period <- 'daily'
   
-  # hack to avoid R CMD CHECKS to complain about . not being a global variable
-  . <- NULL
-
-  # check if user supplied custom funs (.funs), if not, harcoded values
-  dots <- list(...)
-  if ('.funs' %in% names(dots)) {
-    .funs <- dots[['.funs']]
-    dots <- dots[names(dots) != '.funs']
-  } else {
-
-    # we need magic to add the quantiles as they return more than one value
-    # (usually). So lets play with quasiquotation
-    quantile_args <- probs %>%
-      purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
-    names(quantile_args) <- paste0('q_', round(probs*100, 0))
-
-    .funs <- dplyr::funs(
-      mean = mean(., na.rm = TRUE),
-      n = n(),
-      coverage = data_coverage(.),
-      !!! quantile_args,
-      max = max(., na.rm = TRUE),
-      max_time = max_time(., .data$TIMESTAMP_coll),
-      min = min(., na.rm = TRUE),
-      min_time = min_time(., .data$TIMESTAMP_coll),
-      centroid = diurnal_centroid(.)
-    )
-  }
-
+  # # hack to avoid R CMD CHECKS to complain about . not being a global variable
+  # . <- NULL
+  # 
+  # # we need magic to add the quantiles as they return more than one value
+  # # (usually). So lets play with quasiquotation
+  # quantile_args <- probs %>%
+  #   purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
+  # names(quantile_args) <- paste0('q_', round(probs*100, 0))
+  # 
+  # .funs <- dplyr::funs(
+  #   mean = mean(., na.rm = TRUE),
+  #   sd = sd(., na.rm = TRUE),
+  #   n = n(),
+  #   coverage = data_coverage(.),
+  #   !!! quantile_args,
+  #   max = max(., na.rm = TRUE),
+  #   max_time = max_time(., .data$TIMESTAMP_coll),
+  #   min = min(., na.rm = TRUE),
+  #   min_time = min_time(., .data$TIMESTAMP_coll),
+  #   centroid = diurnal_centroid(.)
+  # )
+  .funs <- .fixed_metrics_funs(probs, TRUE)
+  
   # just input all in the sfn_function
   sfn_metrics(
     sfn_data,
@@ -746,35 +820,30 @@ monthly_metrics <- function(
   # hardcoded values
   period <- 'monthly'
   
-  # hack to avoid R CMD CHECKS to complain about . not being a global variable
-  . <- NULL
-
-  # check if user supplied custom funs (.funs), if not, harcoded values
-  dots <- list(...)
-  if ('.funs' %in% names(dots)) {
-    .funs <- dots[['.funs']]
-    dots <- dots[names(dots) != '.funs']
-  } else {
-
-    # we need magic to add the quantiles as they return more than one value
-    # (usually). So lets play with quasiquotation
-    quantile_args <- probs %>%
-      purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
-    names(quantile_args) <- paste0('q_', round(probs*100, 0))
-
-    .funs <- dplyr::funs(
-      mean = mean(., na.rm = TRUE),
-      n = n(),
-      coverage = data_coverage(.),
-      !!! quantile_args,
-      max = max(., na.rm = TRUE),
-      max_time = max_time(., .data$TIMESTAMP_coll),
-      min = min(., na.rm = TRUE),
-      min_time = min_time(., .data$TIMESTAMP_coll)
-    )
-  }
-
-  # just input all in the sfn_metrics function
+  # # hack to avoid R CMD CHECKS to complain about . not being a global variable
+  # . <- NULL
+  # 
+  # # we need magic to add the quantiles as they return more than one value
+  # # (usually). So lets play with quasiquotation
+  # quantile_args <- probs %>%
+  #   purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
+  # names(quantile_args) <- paste0('q_', round(probs*100, 0))
+  # 
+  # .funs <- dplyr::funs(
+  #   mean = mean(., na.rm = TRUE),
+  #   sd = sd(., na.rm = TRUE),
+  #   n = n(),
+  #   coverage = data_coverage(.),
+  #   !!! quantile_args,
+  #   max = max(., na.rm = TRUE),
+  #   max_time = max_time(., .data$TIMESTAMP_coll),
+  #   min = min(., na.rm = TRUE),
+  #   min_time = min_time(., .data$TIMESTAMP_coll),
+  #   centroid = diurnal_centroid(.)
+  # )
+  .funs <- .fixed_metrics_funs(probs, FALSE)
+  
+  # just input all in the sfn_function
   sfn_metrics(
     sfn_data,
     period = period,
@@ -842,32 +911,31 @@ nighttime_metrics <- function(
   
   period <- match.arg(period)
   
-  # hack to avoid R CMD CHECKS to complain about . not being a global variable
-  . <- NULL
-  
-  # check if user supplied custom funs (.funs), if not, harcoded values
-  dots <- list(...)
-  if ('.funs' %in% names(dots)) {
-    .funs <- dots[['.funs']]
-    dots <- dots[names(dots) != '.funs']
+  # # hack to avoid R CMD CHECKS to complain about . not being a global variable
+  # . <- NULL
+  # 
+  # # we need magic to add the quantiles as they return more than one value
+  # # (usually). So lets play with quasiquotation
+  # quantile_args <- probs %>%
+  #   purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
+  # names(quantile_args) <- paste0('q_', round(probs*100, 0))
+  # 
+  # .funs <- dplyr::funs(
+  #   mean = mean(., na.rm = TRUE),
+  #   sd = sd(., na.rm = TRUE),
+  #   n = n(),
+  #   coverage = data_coverage(.),
+  #   !!! quantile_args,
+  #   max = max(., na.rm = TRUE),
+  #   max_time = max_time(., .data$TIMESTAMP_coll),
+  #   min = min(., na.rm = TRUE),
+  #   min_time = min_time(., .data$TIMESTAMP_coll),
+  #   centroid = diurnal_centroid(.)
+  # )
+  if (period == 'daily') {
+    .funs <- .fixed_metrics_funs(probs, TRUE)
   } else {
-    
-    # we need magic to add the quantiles as they return more than one value
-    # (usually). So lets play with quasiquotation
-    quantile_args <- probs %>%
-      purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
-    names(quantile_args) <- paste0('q_', round(probs*100, 0))
-    
-    .funs <- dplyr::funs(
-      mean = mean(., na.rm = TRUE),
-      n = n(),
-      coverage = data_coverage(.),
-      !!! quantile_args,
-      max = max(., na.rm = TRUE),
-      max_time = max_time(., .data$TIMESTAMP_coll),
-      min = min(., na.rm = TRUE),
-      min_time = min_time(., .data$TIMESTAMP_coll)
-    )
+    .funs <- .fixed_metrics_funs(probs, FALSE)
   }
   
   # just input all in the sfn_metrics function

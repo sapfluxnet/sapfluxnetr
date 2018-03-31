@@ -708,3 +708,17 @@ test_that('nighttime metrics work', {
     nighttime_metrics(BAZ, 'monthly')[['env']][['env_day']][['TIMESTAMP_day']], 13
   )
 })
+
+# test_that('*_metrics functions with custom .funs work', {
+#   expect_true(
+#     is.list(daily_metrics(FOO, .funs = dplyr::funs(mean = mean(., na.rm = TRUE))))
+#   )
+#   
+#   expect_true(
+#     is.list(monthly_metrics(FOO, .funs = dplyr::funs(mean = mean(., na.rm = TRUE))))
+#   )
+#   
+#   expect_true(
+#     is.list(nighttime_metrics(FOO, .funs = dplyr::funs(mean = mean(., na.rm = TRUE))))
+#   )
+# })
