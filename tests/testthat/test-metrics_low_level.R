@@ -574,8 +574,7 @@ test_that('sfn_metrics return the expected object', {
     midday = FALSE,
     nighttime = TRUE,
     night_start = 20,
-    night_end = 6,
-    side = 'start'
+    night_end = 6
   )
   
   expect_identical(names(test_expr3), c('sapf', 'env'))
@@ -591,22 +590,98 @@ test_that('sfn_metrics return the expected object', {
   env_day_timestamp <- test_expr3[['env']][['env_day']][['TIMESTAMP_day']]
   env_night_timestamp <- test_expr3[['env']][['env_night']][['TIMESTAMP_night']]
   
-  expect_true(
-    all(dplyr::between(lubridate::hour(c(sapf_day_timestamp, env_day_timestamp)),
-                       6, 20))
+  good_sapf_night_first <- "2009-11-18"
+  good_sapf_night_second <- "2009-11-18 20:00:00"
+  good_sapf_night_last <- "2009-11-30 20:00:00"
+  
+  good_env_night_first <- "2009-11-18"
+  good_env_night_second <- "2009-11-18 20:00:00"
+  good_env_night_last <- "2009-11-30 20:00:00"
+  
+  good_sapf_day_first <- "2009-11-18"
+  good_sapf_day_second <- "2009-11-19"
+  good_sapf_day_last <- "2009-11-30"
+  
+  good_env_day_first <- "2009-11-18"
+  good_env_day_second <- "2009-11-19"
+  good_env_day_last <- "2009-11-30"
+  
+  expect_equal(as.character(sapf_night_timestamp[1]), good_sapf_night_first)
+  expect_equal(as.character(sapf_night_timestamp[2]), good_sapf_night_second)
+  expect_equal(as.character(sapf_night_timestamp[14]), good_sapf_night_last)
+  expect_equal(as.character(env_night_timestamp[1]), good_env_night_first)
+  expect_equal(as.character(env_night_timestamp[2]), good_env_night_second)
+  expect_equal(as.character(env_night_timestamp[14]), good_env_night_last)
+  
+  expect_equal(as.character(sapf_day_timestamp[1]), good_sapf_day_first)
+  expect_equal(as.character(sapf_day_timestamp[2]), good_sapf_day_second)
+  expect_equal(as.character(sapf_day_timestamp[13]), good_sapf_day_last)
+  expect_equal(as.character(env_day_timestamp[1]), good_env_day_first)
+  expect_equal(as.character(env_day_timestamp[2]), good_env_day_second)
+  expect_equal(as.character(env_day_timestamp[13]), good_env_day_last)
+  
+  # lets be sure that without clean the hours are cutted where they must be
+  # cutted
+  test_expr4 <- sfn_metrics(
+    FOO,
+    period = 'daily',
+    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    solar = FALSE,
+    general = FALSE,
+    predawn = FALSE,
+    midday = FALSE,
+    nighttime = TRUE,
+    night_start = 20,
+    night_end = 6,
+    clean = FALSE
   )
   
-  expect_true(
-    all(
-      dplyr::between(lubridate::hour(c(sapf_night_timestamp, env_night_timestamp)),
-                     20, 24)) | 
-      all(dplyr::between(lubridate::hour(c(sapf_night_timestamp, env_night_timestamp)),
-                         0, 6))
-  )
+  expect_identical(names(test_expr4), c('sapf', 'env'))
+  expect_identical(names(test_expr4[['sapf']]), c('sapf_day', 'sapf_night'))
+  expect_identical(names(test_expr4[['env']]), c('env_day', 'env_night'))
+  expect_s3_class(test_expr4[['sapf']][['sapf_day']], 'tbl_time')
+  expect_s3_class(test_expr4[['sapf']][['sapf_night']], 'tbl_time')
+  expect_s3_class(test_expr4[['env']][['env_day']], 'tbl_time')
+  expect_s3_class(test_expr4[['env']][['env_night']], 'tbl_time')
   
+  sapf_day_timestamp_4 <- test_expr4[['sapf']][['sapf_day']][['TIMESTAMP_day']]
+  sapf_night_timestamp_4 <- test_expr4[['sapf']][['sapf_night']][['TIMESTAMP_night']]
+  env_day_timestamp_4 <- test_expr4[['env']][['env_day']][['TIMESTAMP_day']]
+  env_night_timestamp_4 <- test_expr4[['env']][['env_night']][['TIMESTAMP_night']]
+  
+  good_sapf_night_first_4 <- "2009-11-18"
+  good_sapf_night_second_4 <- "2009-11-18 20:00:00"
+  good_sapf_night_last_4 <- "2009-11-30 20:00:00"
+  
+  good_env_night_first_4 <- "2009-11-18"
+  good_env_night_second_4 <- "2009-11-18 20:00:00"
+  good_env_night_last_4 <- "2009-11-30 20:00:00"
+  
+  good_sapf_day_first_4 <- "2009-11-18 06:00:00"
+  good_sapf_day_second_4 <- "2009-11-19 06:00:00"
+  good_sapf_day_last_4 <- "2009-11-30 06:00:00"
+  
+  good_env_day_first_4 <- "2009-11-18 06:00:00"
+  good_env_day_second_4 <- "2009-11-19 06:00:00"
+  good_env_day_last_4 <- "2009-11-30 06:00:00"
+  
+  expect_equal(as.character(sapf_night_timestamp_4[1]), good_sapf_night_first_4)
+  expect_equal(as.character(sapf_night_timestamp_4[2]), good_sapf_night_second_4)
+  expect_equal(as.character(sapf_night_timestamp_4[14]), good_sapf_night_last_4)
+  expect_equal(as.character(env_night_timestamp_4[1]), good_env_night_first_4)
+  expect_equal(as.character(env_night_timestamp_4[2]), good_env_night_second_4)
+  expect_equal(as.character(env_night_timestamp_4[14]), good_env_night_last_4)
+  
+  expect_equal(as.character(sapf_day_timestamp_4[1]), good_sapf_day_first_4)
+  expect_equal(as.character(sapf_day_timestamp_4[2]), good_sapf_day_second_4)
+  expect_equal(as.character(sapf_day_timestamp_4[13]), good_sapf_day_last_4)
+  expect_equal(as.character(env_day_timestamp_4[1]), good_env_day_first_4)
+  expect_equal(as.character(env_day_timestamp_4[2]), good_env_day_second_4)
+  expect_equal(as.character(env_day_timestamp_4[13]), good_env_day_last_4)
 
 })
 
+#### daily_metrics ####
 test_that('daily metrics examples work', {
 
   expect_is(daily_metrics(FOO, solar = FALSE), 'list')
@@ -690,6 +765,71 @@ test_that('daily metrics returns the variables required', {
   expect_match(names(FOO_env_md), '_centroid', all = FALSE)
 })
 
+test_that('monthly metrics returns the variables required', {
+  
+  FOO_monthly <- monthly_metrics(FOO, solar = FALSE)
+  FOO_sapf_gen <- FOO_monthly[['sapf']][['sapf_gen']]
+  FOO_sapf_pd <- FOO_monthly[['sapf']][['sapf_pd']]
+  FOO_sapf_md <- FOO_monthly[['sapf']][['sapf_md']]
+  FOO_env_gen <- FOO_monthly[['env']][['env_gen']]
+  FOO_env_pd <- FOO_monthly[['env']][['env_pd']]
+  FOO_env_md <- FOO_monthly[['env']][['env_md']]
+  
+  expect_match(names(FOO_sapf_gen), '_q_95', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_q_99', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_coverage', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_min_time', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_max_time', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_min', all = FALSE)
+  expect_match(names(FOO_sapf_gen), '_max', all = FALSE)
+  expect_failure(expect_match(names(FOO_sapf_gen), '_centroid', all = FALSE))
+  
+  expect_match(names(FOO_sapf_pd), '_q_95', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_q_99', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_coverage', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_min_time', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_max_time', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_min', all = FALSE)
+  expect_match(names(FOO_sapf_pd), '_max', all = FALSE)
+  expect_failure(expect_match(names(FOO_sapf_pd), '_centroid', all = FALSE))
+  
+  expect_match(names(FOO_sapf_md), '_q_95', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_q_99', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_coverage', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_min_time', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_max_time', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_min', all = FALSE)
+  expect_match(names(FOO_sapf_md), '_max', all = FALSE)
+  expect_failure(expect_match(names(FOO_sapf_md), '_centroid', all = FALSE))
+  
+  expect_match(names(FOO_env_gen), '_q_95', all = FALSE)
+  expect_match(names(FOO_env_gen), '_q_99', all = FALSE)
+  expect_match(names(FOO_env_gen), '_coverage', all = FALSE)
+  expect_match(names(FOO_env_gen), '_min_time', all = FALSE)
+  expect_match(names(FOO_env_gen), '_max_time', all = FALSE)
+  expect_match(names(FOO_env_gen), '_min', all = FALSE)
+  expect_match(names(FOO_env_gen), '_max', all = FALSE)
+  expect_failure(expect_match(names(FOO_env_gen), '_centroid', all = FALSE))
+  
+  expect_match(names(FOO_env_pd), '_q_95', all = FALSE)
+  expect_match(names(FOO_env_pd), '_q_99', all = FALSE)
+  expect_match(names(FOO_env_pd), '_coverage', all = FALSE)
+  expect_match(names(FOO_env_pd), '_min_time', all = FALSE)
+  expect_match(names(FOO_env_pd), '_max_time', all = FALSE)
+  expect_match(names(FOO_env_pd), '_min', all = FALSE)
+  expect_match(names(FOO_env_pd), '_max', all = FALSE)
+  expect_failure(expect_match(names(FOO_env_pd), '_centroid', all = FALSE))
+  
+  expect_match(names(FOO_env_md), '_q_95', all = FALSE)
+  expect_match(names(FOO_env_md), '_q_99', all = FALSE)
+  expect_match(names(FOO_env_md), '_coverage', all = FALSE)
+  expect_match(names(FOO_env_md), '_min_time', all = FALSE)
+  expect_match(names(FOO_env_md), '_max_time', all = FALSE)
+  expect_match(names(FOO_env_md), '_min', all = FALSE)
+  expect_match(names(FOO_env_md), '_max', all = FALSE)
+  expect_failure(expect_match(names(FOO_env_md), '_centroid', all = FALSE))
+})
+
 test_that('monthly metrics examples work', {
 
   # we only test the main example, as the previous tests already cover almost
@@ -709,16 +849,36 @@ test_that('nighttime metrics work', {
   )
 })
 
-# test_that('*_metrics functions with custom .funs work', {
-#   expect_true(
-#     is.list(daily_metrics(FOO, .funs = dplyr::funs(mean = mean(., na.rm = TRUE))))
-#   )
-#   
-#   expect_true(
-#     is.list(monthly_metrics(FOO, .funs = dplyr::funs(mean = mean(., na.rm = TRUE))))
-#   )
-#   
-#   expect_true(
-#     is.list(nighttime_metrics(FOO, .funs = dplyr::funs(mean = mean(., na.rm = TRUE))))
-#   )
-# })
+test_that('*_metrics functions with ... work', {
+  
+  expect_true(is.list(daily_metrics(FOO, clean = FALSE)))
+  expect_true(is.list(monthly_metrics(FOO, clean = FALSE)))
+  expect_true(is.list(nighttime_metrics(FOO, clean = FALSE)))
+  expect_true(is.list(daily_metrics(FOO, side = 'end')))
+  expect_true(is.list(monthly_metrics(FOO, side = 'end')))
+  expect_true(is.list(nighttime_metrics(FOO, side = 'end')))
+  # expect_error(nighttime_metrics(FOO, clean = TRUE))
+  
+})
+
+test_that('.fixed_metrics_funs works', {
+  
+  .funs <- .fixed_metrics_funs(probs = c(0.95, 0.99), TRUE)
+  
+  expect_s3_class(.funs, 'fun_list')
+  expect_identical(
+    names(.funs),
+    c('mean', 'sd', 'n', 'coverage', 'q_95', 'q_99', 'max',
+      'max_time', 'min', 'min_time', 'centroid')
+  )
+  
+  .funs_no_centroid <- .fixed_metrics_funs(probs = c(0.1, 0.01), FALSE)
+  
+  expect_s3_class(.funs_no_centroid, 'fun_list')
+  expect_identical(
+    names(.funs_no_centroid),
+    c('mean', 'sd', 'n', 'coverage', 'q_10', 'q_1', 'max',
+      'max_time', 'min', 'min_time')
+  )
+  
+})

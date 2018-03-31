@@ -33,7 +33,8 @@ the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
 
 \item{probs}{numeric vector of probabilities for \code{\link[stats]{quantile}}}
 
-\item{...}{Not implemented}
+\item{...}{optional arguments to pass to methods used
+(i.e. tibbletime::collapse_index or summarise funs extra arguments)}
 
 \item{period}{Time period to aggregate data by. See period section for an explanation
 about the periods ('daily', 'monthly', 'yearly', ...)}

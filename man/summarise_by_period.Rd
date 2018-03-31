@@ -14,8 +14,7 @@ and \code{\link{get_env_data}}. Must have a column named TIMESTAMP}
 
 \item{.funs}{dplyr::summarise_all funs}
 
-\item{...}{optional arguments for tibbletime::collapse_index function and
-dplyr::summarise_all function}
+\item{...}{optional arguments for \code{link{summarise_by_period}}}
 }
 \value{
 A `tbl_time` object with the metrics results. The names of the columns
