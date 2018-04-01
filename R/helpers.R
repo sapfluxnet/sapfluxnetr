@@ -1075,3 +1075,122 @@ describe_md_variable <- function(variable) {
     purrr::flatten_chr() %>%
     cat('\n', sep = '')
 }
+
+#' Subsetting function for sfn_data objects
+#' 
+#' Subset an \code{\link{sfn_data}} object by matching values
+#' 
+#' If \code{sfn_data} is an sfn_data_multi object, all sites are subsetted in
+#' the same way.
+#' 
+#' @param sfn_data \code{sfn_data} or \code{sfn_data_multi} object to subset
+#' 
+#' @param ... filter expressions to subset the data
+#' 
+#' @param solar Logical indicating if solar timestamp must used to subset
+#' 
+#' @return An \code{sfn_data} or \code{sfn_data_multi} object subsetted as per
+#'   \code{...}
+#' 
+#' @examples 
+#' library(dplyr)
+#' library(lubridate)
+#' 
+#' # data
+#' data('FOO', package = 'sapfluxnetr')
+#' 
+#' # by timestamp
+#' foo_timestamp <- get_timestmap(FOO)
+#' 
+#' foo_timestamp_trimmed <- foo_timestamp[1:100]
+#' 
+#' sfn_subset(
+#'   FOO,
+#'   TIMESTAMP %in% foo_timestamp_trimmed
+#' )
+#' 
+#' # by wind speed value
+#' ws_threshold <- 25
+#' 
+#' sfn_subset(
+#'   FOO,
+#'   ws <= ws_threshold
+#' )
+#' 
+#' ## multi
+#' data('BAR', package = 'sapfluxnetr')
+#' multi_sfn <- sfn_data_multi(FOO, BAR)
+#' 
+#' # by timestamp
+#' sfn_subset(
+#'   multi_sfn,
+#'   between(day(TIMESTAMP), 18, 22)
+#' )
+#' 
+#' # by wind speed value
+#' sfn_subset(
+#'   multi_sfn,
+#'   ws <= ws_threshold
+#' )
+#' 
+#' @export
+
+sfn_subset <- function(sfn_data, ..., solar = FALSE) {
+  
+  if (is(sfn_data, 'sfn_data_multi')) {
+    res_multi <- purrr::map(sfn_data, sfn_subset, ..., solar = solar) %>%
+      as_sfn_data_multi()
+    return(res_multi)
+  }
+  
+  sapf_data <- get_sapf_data(sfn_data, solar = solar)
+  env_data <- get_env_data(sfn_data, solar = solar)
+  
+  whole_data <- dplyr::inner_join(sapf_data, env_data, by = 'TIMESTAMP')
+  
+  filtered_data <- dplyr::filter(whole_data, ...)
+  
+  sapf_data_mod <- dplyr::select(filtered_data, names(sapf_data))
+  env_data_mod <- dplyr::select(filtered_data, names(env_data))
+  
+  sapf_flags_mod <- dplyr::semi_join(
+    get_sapf_flags(sfn_data, solar = solar), sapf_data_mod, by = 'TIMESTAMP'
+  )
+  
+  env_flags_mod <- dplyr::semi_join(
+    get_env_flags(sfn_data, solar = solar), env_data_mod, by = 'TIMESTAMP'
+  )
+  
+  if (solar) {
+    solar_timestamp_mod <- dplyr::pull(sapf_data_mod, .data$TIMESTAMP)
+    index_timestamp <- which(
+      get_solar_timestamp(sfn_data) %in% solar_timestamp_mod, arr.ind = TRUE
+    )
+    timestamp_mod <- get_timestamp(sfn_data)[index_timestamp]
+  } else {
+    timestamp_mod <- dplyr::pull(sapf_data_mod, .data$TIMESTAMP)
+    index_timestamp <- which(
+      get_timestamp(sfn_data) %in% timestamp_mod, arr.ind = TRUE
+    )
+    solar_timestamp_mod <- get_solar_timestamp(sfn_data)[index_timestamp]
+  }
+    
+  # build the trimmed sfn_data
+  res <- sfn_data(
+    sapf_data = sapf_data_mod[,-1],
+    env_data = env_data_mod[,-1],
+    sapf_flags = sapf_flags_mod[,-1],
+    env_flags = env_flags_mod[,-1],
+    si_code = get_si_code(sfn_data),
+    timestamp = timestamp_mod,
+    solar_timestamp = solar_timestamp_mod,
+    site_md = get_site_md(sfn_data),
+    stand_md = get_stand_md(sfn_data),
+    species_md = get_species_md(sfn_data),
+    plant_md = get_plant_md(sfn_data),
+    env_md = get_env_md(sfn_data)
+  )
+  
+  return(res)
+  
+}
