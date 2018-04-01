@@ -4,7 +4,7 @@
 \alias{metrics}
 \alias{daily_metrics}
 \alias{monthly_metrics}
-\alias{nighttime_metrics}
+\alias{nightly_metrics}
 \title{Complete metrics wrappers}
 \usage{
 daily_metrics(sfn_data, solar = TRUE, pd_start = 3, pd_end = 5,
@@ -13,7 +13,7 @@ daily_metrics(sfn_data, solar = TRUE, pd_start = 3, pd_end = 5,
 monthly_metrics(sfn_data, solar = TRUE, pd_start = 3, pd_end = 5,
   md_start = 11, md_end = 13, probs = c(0.95, 0.99), ...)
 
-nighttime_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
+nightly_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
   night_start = 20, night_end = 6, probs = c(0.95, 0.99), ...)
 }
 \arguments{
@@ -87,9 +87,9 @@ the predawn metrics (only data in the predawn period) and the midday metrics
 (only data in the midday period).
 }
 
-\section{nighttime_metrics}{
+\section{nightly_metrics}{
 
-\code{nighttime_metrics} will always return the metrics for day and night
+\code{nightly_metrics} will always return the metrics for day and night
 periods, summarised daily or monthly
 
 Night for daily period starts in DOY x and ends in DOY x+1 (i.e. if
@@ -139,19 +139,19 @@ BAR_int_monthly <- monthly_metrics(
   md_start = 13, md_end = 15 # midday starting and ending hour
 )
 
-## nighttime_metrics
+## nightly_metrics
 # data load
 data('BAZ', package = 'sapfluxnetr')
 
 # default complete daily metrics
-BAZ_monthly <- nighttime_metrics(BAR, period = 'monthly')
+BAZ_monthly <- nightly_metrics(BAR, period = 'monthly')
 
 str(BAZ_monthly)
 BAZ_monthly[['env']][['env_day']]
 BAZ_monthly[['env']][['env_night']]
 
 # change the night interval
-BAZ_monthly_short <- nighttime_metrics(
+BAZ_monthly_short <- nightly_metrics(
   BAR,
   night_start = 21, night_end = 4 # night starting and ending hour
 )

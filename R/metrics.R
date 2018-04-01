@@ -833,8 +833,8 @@ monthly_metrics <- function(
 
 #' @rdname metrics
 #' 
-#' @section nighttime_metrics:
-#' \code{nighttime_metrics} will always return the metrics for day and night
+#' @section nightly_metrics:
+#' \code{nightly_metrics} will always return the metrics for day and night
 #' periods, summarised daily or monthly
 #' 
 #' Night for daily period starts in DOY x and ends in DOY x+1 (i.e. if
@@ -849,19 +849,19 @@ monthly_metrics <- function(
 #' @inheritParams sfn_metrics
 #'
 #' @examples
-#' ## nighttime_metrics
+#' ## nightly_metrics
 #' # data load
 #' data('BAZ', package = 'sapfluxnetr')
 #'
 #' # default complete daily metrics
-#' BAZ_monthly <- nighttime_metrics(BAR, period = 'monthly')
+#' BAZ_monthly <- nightly_metrics(BAR, period = 'monthly')
 #'
 #' str(BAZ_monthly)
 #' BAZ_monthly[['env']][['env_day']]
 #' BAZ_monthly[['env']][['env_night']]
 #'
 #' # change the night interval
-#' BAZ_monthly_short <- nighttime_metrics(
+#' BAZ_monthly_short <- nightly_metrics(
 #'   BAR,
 #'   night_start = 21, night_end = 4 # night starting and ending hour
 #' )
@@ -870,7 +870,7 @@ monthly_metrics <- function(
 #'
 #' @export
 
-nighttime_metrics <- function(
+nightly_metrics <- function(
   sfn_data,
   period = c('daily', 'monthly'),
   solar = TRUE,

@@ -1014,9 +1014,9 @@ test_that('nighttime metrics work', {
   
   data('BAZ', package = 'sapfluxnetr')
   
-  expect_is(nighttime_metrics(BAZ, 'monthly'), 'list')
+  expect_is(nightly_metrics(BAZ, 'monthly'), 'list')
   expect_length(
-    nighttime_metrics(BAZ, 'monthly')[['env']][['env_day']][['TIMESTAMP_day']], 13
+    nightly_metrics(BAZ, 'monthly')[['env']][['env_day']][['TIMESTAMP_day']], 13
   )
 })
 
@@ -1024,11 +1024,11 @@ test_that('*_metrics functions with ... work', {
   
   expect_true(is.list(daily_metrics(FOO, clean = FALSE)))
   expect_true(is.list(monthly_metrics(FOO, clean = FALSE)))
-  expect_true(is.list(nighttime_metrics(FOO, clean = FALSE)))
+  expect_true(is.list(nightly_metrics(FOO, clean = FALSE)))
   expect_true(is.list(daily_metrics(FOO, side = 'end')))
   expect_true(is.list(monthly_metrics(FOO, side = 'end')))
-  expect_true(is.list(nighttime_metrics(FOO, side = 'end')))
-  # expect_error(nighttime_metrics(FOO, clean = TRUE))
+  expect_true(is.list(nightly_metrics(FOO, side = 'end')))
+  # expect_error(nightly_metrics(FOO, clean = TRUE))
   
 })
 
