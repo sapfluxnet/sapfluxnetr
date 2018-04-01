@@ -1028,33 +1028,6 @@ sfn_vars_to_filter <- function() {
 
 }
 
-#' List all possible values for a filtering metadata variable
-#'
-#' \code{sfn_values_for} function returns a vector with the accepted values for
-#' the required metadata variable, and can be used to filter the sites with
-#' \code{\link{filter_by_var}}
-#'
-#' @param variable Character indicating the metadata variable to look for
-#'   accepted values
-#'
-#' @examples
-#' # accepted values for plant sensor method (pl_sens_meth)
-#' sfn_values_for('pl_sens_meth')
-#'
-#' @return A character vector with the accepted values for the desired variable
-#'
-#' @export
-
-sfn_values_for <- function(variable = 'pl_sens_meth') {
-
-  # we create a nested list with the metadata, the variable and the values and
-  # we call purrr::modify_depth to extract the desired value
-  .metadata_architecture() %>%
-    purrr::modify(c(variable, 'values')) %>%
-    purrr::flatten_chr()
-
-}
-
 #' Detailed description of metadata variables
 #' 
 #' \code{describe_md_variable} prints in console a detailed description for the

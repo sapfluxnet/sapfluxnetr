@@ -346,6 +346,18 @@ temp_hr <- filter_by_var(
 temp_hr
 ```
 
+Remember that you can get all the info from a metadata variable with
+`describe_md_variable`, and also you can get a complete list of metadata
+variables for filtering with `sfn_vars_to_filter`:
+
+```{r vars_to_filter}
+sfn_vars_to_filter()
+
+# and see what values we must use for filtering by pl_sens_meth
+describe_md_variable('pl_sens_meth')
+```
+
+
 ### sfn_data_multi objects
 
 We can load all filtered sites with a simple pipe
