@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{sapfluxnetr Quick Guide}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -377,12 +379,12 @@ join all general metrics of all sites and try to see if there is site effect in
 the relationship between sapflow and vpd, using the 0.95 quantiles as maximum
 values of sapflow:
 
-```{r exmaple_1}
-multi_full_join <- function(data_list, by) {
+```{r exmaple_1, fig.width=7, fig.height=4.3}
+multi_union <- function(data_list) {
   first <- data_list[[1]]
   
   for (i in 2:length(data_list)) {
-    first <- dplyr::full_join(first, data_list[[i]], by = by)
+    first <- dplyr::union(first, data_list[[i]])
   }
   
   return(first)
@@ -391,11 +393,30 @@ multi_full_join <- function(data_list, by) {
 
 sapf_data <- temp_hr_aggregated %>%
   map(c('sapf', 'sapf_gen')) %>%
-  multi_full_join(by = 'TIMESTAMP') %>%
-  select(TIMESTAMP, ends_with('_q_95'), ends_with('_n'), ends_with('_coverage')) %>%
-  arrange(TIMESTAMP)
+  map(~ select(., TIMESTAMP, ends_with('_q_95')))
 
-# TODO multifulljoin function. Also standarise the timestamp for daily and 
-# monthly to be able to join correctly
+env_data <- temp_hr_aggregated %>%
+  map(c('env', 'env_gen')) %>%
+  map(~ select(., TIMESTAMP, ends_with('_mean'))) %>%
+  map(~ select(., TIMESTAMP, starts_with('vpd_')))
+
+plant_md <- sfn_metadata[['plant_md']] %>%
+  filter(si_code %in% names(temp_hr_aggregated))
+
+whole_data <- sapf_data %>%
+  map2(env_data, ~ full_join(.x, .y, by = 'TIMESTAMP')) %>%
+  map(~ gather(., Tree, Value, -TIMESTAMP, -starts_with('vpd_'))) %>%
+  map(as_tibble) %>%
+  multi_union() %>%
+  mutate(pl_code = str_remove_all(Tree, '_q_95')) %>%
+  arrange(TIMESTAMP) %>%
+  left_join(plant_md, by = 'pl_code')
+
+
+ggplot(whole_data, aes(x = vpd_mean, y = Value, colour = si_code,
+                       size = pl_sapw_area)) +
+  geom_point(alpha = 0.2)
+  
+# TODO multifulljoin o multi_union function.
 ```
 
