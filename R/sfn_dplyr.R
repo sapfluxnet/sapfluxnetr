@@ -86,8 +86,10 @@ sfn_filter <- function(sfn_data, ..., solar = FALSE) {
     return(as_sfn_data_multi(res_multi))
   }
   
-  sapf_data <- get_sapf_data(sfn_data, solar = solar)
-  env_data <- get_env_data(sfn_data, solar = solar)
+  sapf_data <- get_sapf_data(sfn_data, solar = solar) %>%
+    tibble::as_tibble()
+  env_data <- get_env_data(sfn_data, solar = solar) %>%
+    tibble::as_tibble()
   
   whole_data <- dplyr::inner_join(sapf_data, env_data, by = 'TIMESTAMP')
   
@@ -105,11 +107,13 @@ sfn_filter <- function(sfn_data, ..., solar = FALSE) {
   
   sapf_flags_mod <- dplyr::semi_join(
     get_sapf_flags(sfn_data, solar = solar), sapf_data_mod, by = 'TIMESTAMP'
-  )
+  ) %>%
+    tibble::as_tibble()
   
   env_flags_mod <- dplyr::semi_join(
     get_env_flags(sfn_data, solar = solar), env_data_mod, by = 'TIMESTAMP'
-  )
+  ) %>%
+    tibble::as_tibble()
   
   if (solar) {
     solar_timestamp_mod <- dplyr::pull(sapf_data_mod, .data$TIMESTAMP)
@@ -186,8 +190,10 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
     return(res_multi)
   }
   
-  sapf_data <- get_sapf_data(sfn_data, solar = solar)
-  env_data <- get_env_data(sfn_data, solar = solar)
+  sapf_data <- get_sapf_data(sfn_data, solar = solar) %>%
+    tibble::as_tibble()
+  env_data <- get_env_data(sfn_data, solar = solar) %>%
+    tibble::as_tibble()
   
   whole_data <- dplyr::inner_join(sapf_data, env_data, by = 'TIMESTAMP')
   
@@ -214,13 +220,16 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
   
   if (length(sapf_data_vars_mod) > 0) {
     sapf_flags_mod <- get_sapf_flags(sfn_data) %>%
+      tibble::as_tibble() %>%
       dplyr::mutate_at(sapf_data_vars_mod, .flag)
   } else {
-    sapf_flags_mod <- get_sapf_flags(sfn_data)
+    sapf_flags_mod <- get_sapf_flags(sfn_data) %>%
+      tibble::as_tibble()
   }
   
   if (length(env_data_vars_mod) > 0) {
     env_flags_mod <- get_env_flags(sfn_data) %>%
+      tibble::as_tibble() %>%
       dplyr::mutate_at(env_data_vars_mod, .flag)
   } else {
     env_flags_mod <- get_env_flags(sfn_data)
