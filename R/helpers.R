@@ -1076,21 +1076,25 @@ describe_md_variable <- function(variable) {
     cat('\n', sep = '')
 }
 
-#' Subsetting function for sfn_data objects
+#' Filtering function for sfn_data objects
 #' 
-#' Subset an \code{\link{sfn_data}} object by matching values
+#' Filter an \code{\link{sfn_data}} object by matching values
 #' 
 #' If \code{sfn_data} is an sfn_data_multi object, all sites are subsetted in
-#' the same way.
+#' the same way. This is a convenient way of filtering sites that are
+#' concurrent in time (i.e. selecting sites for a metadata variable)
 #' 
 #' @param sfn_data \code{sfn_data} or \code{sfn_data_multi} object to subset
 #' 
-#' @param ... filter expressions to subset the data
+#' @param ... filter expressions to subset the data, as in
+#'   \code{\link[dplyr]{filter}}
 #' 
 #' @param solar Logical indicating if solar timestamp must used to subset
 #' 
-#' @return An \code{sfn_data} or \code{sfn_data_multi} object subsetted as per
-#'   \code{...}
+#' @return For \code{sfn_data} objects, a filtered \code{sfn_data} or NULL if
+#'   no data meet the criteria. For \code{sfn_data_multi} another
+#'   \code{sfn_data_multi} with the sites filtered, and an empty
+#'   \code{sfn_data_multi} if any sites met the criteria
 #' 
 #' @examples 
 #' library(dplyr)
@@ -1104,7 +1108,7 @@ describe_md_variable <- function(variable) {
 #' 
 #' foo_timestamp_trimmed <- foo_timestamp[1:100]
 #' 
-#' sfn_subset(
+#' sfn_filter(
 #'   FOO,
 #'   TIMESTAMP %in% foo_timestamp_trimmed
 #' )
@@ -1112,7 +1116,7 @@ describe_md_variable <- function(variable) {
 #' # by wind speed value
 #' ws_threshold <- 25
 #' 
-#' sfn_subset(
+#' sfn_filter(
 #'   FOO,
 #'   ws <= ws_threshold
 #' )
@@ -1122,25 +1126,31 @@ describe_md_variable <- function(variable) {
 #' multi_sfn <- sfn_data_multi(FOO, BAR)
 #' 
 #' # by timestamp
-#' sfn_subset(
+#' sfn_filter(
 #'   multi_sfn,
 #'   between(day(TIMESTAMP), 18, 22)
 #' )
 #' 
 #' # by wind speed value
-#' sfn_subset(
+#' sfn_filter(
 #'   multi_sfn,
 #'   ws <= ws_threshold
 #' )
 #' 
 #' @export
 
-sfn_subset <- function(sfn_data, ..., solar = FALSE) {
+sfn_filter <- function(sfn_data, ..., solar = FALSE) {
   
   if (is(sfn_data, 'sfn_data_multi')) {
-    res_multi <- purrr::map(sfn_data, sfn_subset, ..., solar = solar) %>%
-      as_sfn_data_multi()
-    return(res_multi)
+    res_multi <- purrr::map(sfn_data, sfn_filter, ..., solar = solar) %>%
+      purrr::discard(is.null)
+    
+    if (length(res_multi) < 1) {
+      warning('Any sites met the criteria, returning empty results')
+      return(sfn_data_multi())
+    }
+    
+    return(as_sfn_data_multi(res_multi))
   }
   
   sapf_data <- get_sapf_data(sfn_data, solar = solar)
@@ -1149,6 +1159,15 @@ sfn_subset <- function(sfn_data, ..., solar = FALSE) {
   whole_data <- dplyr::inner_join(sapf_data, env_data, by = 'TIMESTAMP')
   
   filtered_data <- dplyr::filter(whole_data, ...)
+  
+  ## TODO if filtered data is 0 rows sfn_data will not build, so return null or something
+  ## WARN site_code didn't meet the subset criteria, removing it from results
+  if (nrow(filtered_data) < 1) {
+    warning(get_si_code(sfn_data), " didn't met the subset criteria, removing",
+            " it from results and returning NULL.")
+    return(NULL)
+  }
+  
   
   sapf_data_mod <- dplyr::select(filtered_data, names(sapf_data))
   env_data_mod <- dplyr::select(filtered_data, names(env_data))
