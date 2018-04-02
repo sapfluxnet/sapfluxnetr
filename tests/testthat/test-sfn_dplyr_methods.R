@@ -1,10 +1,11 @@
 context("sfn_dplyr_methods")
 
+data('FOO', package = 'sapfluxnetr')
+data('BAR', package = 'sapfluxnetr')
+data('BAZ', package = 'sapfluxnetr')
+
 #### filter #####
-test_that("sfn_filter examples work", {
-  data('FOO', package = 'sapfluxnetr')
-  data('BAR', package = 'sapfluxnetr')
-  data('BAZ', package = 'sapfluxnetr')
+test_that("sfn_filter returns correct results", {
   foo_timestamp <- get_timestamp(FOO)
   foo_timestamp_trimmed <- foo_timestamp[1:100]
   foo_solar_timestamp <- get_solar_timestamp(FOO)
@@ -86,4 +87,19 @@ test_that("sfn_filter examples work", {
     ), 'FOO'
   )
   
+})
+
+#### mutate ####
+test_that('sfn_mutate returns correct results', {
+  
+  foo_mutated <- sfn_mutate(FOO, ws = dplyr::if_else(ws > 25, NA_real_, ws))
+  
+  expect_s4_class(foo_mutated, 'sfn_data')
+  expect_equal(sum(is.na(get_env_data(foo_mutated)[['ws']])), 100)
+  expect_match(get_env_flags(foo_mutated)[['ws']], 'USER_MODF', all = TRUE)
+  expect_match(get_env_flags(foo_mutated)[['ws']], 'RANGE_WARN', all = FALSE)
+  expect_equal(sum(is.na(get_env_data(foo_mutated)[['ta']])), 0)
+  expect_failure(
+    expect_match(get_env_flags(foo_mutated)[['ta']], 'USER_MODF', all = TRUE)
+  )
 })

@@ -26,7 +26,7 @@ Imports:
     tidyr,
     utils
 RoxygenNote: 6.0.1
-Collate:
+Collate: 
     'data.R'
     'getters.R'
     'helpers.R'
@@ -34,6 +34,7 @@ Collate:
     'sfn_data_classes.R'
     'sfn_data_generics.R'
     'sfn_data_methods.R'
+    'sfn_dplyr.R'
     'visualizations.R'
 Suggests: testthat,
     knitr,
