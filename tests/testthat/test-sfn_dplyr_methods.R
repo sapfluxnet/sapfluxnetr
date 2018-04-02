@@ -93,6 +93,10 @@ test_that("sfn_filter returns correct results", {
 test_that('sfn_mutate returns correct results', {
   
   foo_mutated <- sfn_mutate(FOO, ws = dplyr::if_else(ws > 25, NA_real_, ws))
+  multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+  multi_mutated <- sfn_mutate(
+    multi_sfn, ws = dplyr::if_else(ws > 25, NA_real_, ws)
+  )
   
   expect_s4_class(foo_mutated, 'sfn_data')
   expect_equal(sum(is.na(get_env_data(foo_mutated)[['ws']])), 100)
@@ -102,4 +106,29 @@ test_that('sfn_mutate returns correct results', {
   expect_failure(
     expect_match(get_env_flags(foo_mutated)[['ta']], 'USER_MODF', all = TRUE)
   )
+  expect_identical(attr(get_timestamp(foo_mutated), 'tz'), 'Etc/GMT+3')
+  expect_identical(attr(get_solar_timestamp(foo_mutated), 'tz'), 'UTC')
+  
+  expect_s4_class(multi_mutated, 'sfn_data_multi')
+  expect_length(multi_mutated, 3)
+  expect_s4_class(multi_mutated[[1]], 'sfn_data')
+  expect_s4_class(multi_mutated[[2]], 'sfn_data')
+  expect_s4_class(multi_mutated[[3]], 'sfn_data')
+  expect_identical(attr(get_timestamp(multi_mutated[[1]]), 'tz'), 'Etc/GMT+3')
+  expect_identical(attr(get_solar_timestamp(multi_mutated[[1]]), 'tz'), 'UTC')
+  expect_identical(attr(get_timestamp(multi_mutated[[2]]), 'tz'), 'Etc/GMT+3')
+  expect_identical(attr(get_solar_timestamp(multi_mutated[[2]]), 'tz'), 'UTC')
+  expect_identical(attr(get_timestamp(multi_mutated[[3]]), 'tz'), 'Etc/GMT-10')
+  expect_identical(attr(get_solar_timestamp(multi_mutated[[3]]), 'tz'), 'UTC')
+  expect_equal(sum(is.na(get_env_data(multi_mutated[[1]])[['ws']])), 100)
+  expect_match(get_env_flags(multi_mutated[[1]])[['ws']], 'USER_MODF', all = TRUE)
+  expect_match(get_env_flags(multi_mutated[[1]])[['ws']], 'RANGE_WARN', all = FALSE)
+  expect_equal(sum(is.na(get_env_data(multi_mutated[[2]])[['ws']])), 78)
+  expect_match(get_env_flags(multi_mutated[[2]])[['ws']], 'USER_MODF', all = TRUE)
+  expect_match(get_env_flags(multi_mutated[[2]])[['ws']], 'RANGE_WARN', all = FALSE)
+  expect_failure(
+    expect_match(get_env_flags(multi_mutated[[3]])[['ws']], 'USER_MODF', all = TRUE)
+  )
+  expect_match(get_env_flags(multi_mutated[[3]])[['ws']], 'OUT_WARN', all = FALSE)
+  expect_identical(multi_sfn[['BAZ']], multi_mutated[['BAZ']])
 })

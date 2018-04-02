@@ -165,6 +165,17 @@ sfn_filter <- function(sfn_data, ..., solar = FALSE) {
 #' ws_threshold <- 25
 #' sfn_mutate(FOO, ws = if_else(ws > 25, NA_real_, ws))
 #' 
+#' ## multi
+#' data(BAR, package = 'sapfluxnetr')
+#' data(BAZ, package = 'sapfluxnetr')
+#' multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+#' 
+#' multi_sfn_mutated <- sfn_mutate(
+#'   multi_sfn, ws = if_else(ws > 25, NA_real_, ws)
+#' )
+#' 
+#' multi_sfn_mutated[['FOO']]
+#' 
 #' @export
 
 sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
@@ -212,7 +223,7 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
     env_flags_mod <- get_env_flags(sfn_data) %>%
       dplyr::mutate_at(env_data_vars_mod, .flag)
   } else {
-    env_flags_mod <- get_sapf_flags(sfn_data)
+    env_flags_mod <- get_env_flags(sfn_data)
   }
   
   if (solar) {

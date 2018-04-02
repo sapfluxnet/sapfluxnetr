@@ -96,4 +96,15 @@ data('FOO', package = 'sapfluxnetr')
 ws_threshold <- 25
 sfn_mutate(FOO, ws = if_else(ws > 25, NA_real_, ws))
 
+## multi
+data(BAR, package = 'sapfluxnetr')
+data(BAZ, package = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+
+multi_sfn_mutated <- sfn_mutate(
+  multi_sfn, ws = if_else(ws > 25, NA_real_, ws)
+)
+
+multi_sfn_mutated[['FOO']]
+
 }

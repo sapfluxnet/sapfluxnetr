@@ -499,7 +499,7 @@ setMethod(
       sort()
     timestamp_span <- lubridate::interval(timestamp_minmax[1],
                                           utils::tail(timestamp_minmax, 1),
-                                          tzone = "") %>%
+                                          tzone = "UTC") %>%
       as.character()
     cat('Time span (UTC) for the combined sites: ', timestamp_span, '\n', sep = '')
   }
