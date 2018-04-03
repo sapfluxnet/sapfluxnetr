@@ -1075,3 +1075,18 @@ describe_md_variable <- function(variable) {
     purrr::flatten_chr() %>%
     cat('\n', sep = '')
 }
+
+#' helper function to flag the mutated data in sfn_mutate and sfn_mutate_at
+#' 
+#' This function will add the "USER_MODF" flag to the data point flags
+#' 
+#' @param x variable to flag
+#'
+#' @return A vector of the same length than x with the variable flags modified
+
+.flag <- function(x) {
+  dplyr::case_when(
+    x == '' ~ 'USER_MODF',
+    TRUE ~ paste0(x, '; USER_MODF')
+  )
+}

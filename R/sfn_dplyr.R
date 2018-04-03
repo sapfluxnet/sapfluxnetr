@@ -214,13 +214,6 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
     as.data.frame(env_data)
   ))
 
-  .flag <- function(x) {
-    dplyr::case_when(
-      x == '' ~ 'USER_MODF',
-      TRUE ~ paste0(x, '; USER_MODF')
-    )
-  }
-
   if (length(sapf_data_vars_mod) > 0) {
     sapf_flags_mod <- get_sapf_flags(sfn_data) %>%
       tibble::as_tibble() %>%
@@ -364,14 +357,7 @@ sfn_mutate_at <- function(sfn_data, .vars, .funs, ..., solar = FALSE) {
     as.data.frame(env_data)
   ))
 
-  .flag <- function(x) {
-    dplyr::case_when(
-      x == '' ~ 'USER_MODF',
-      TRUE ~ paste0(x, '; USER_MODF')
-    )
-  }
-
-  # flag the variables mutated (all values)
+  # flag the variables mutated (all values) (.flag is documented in helpers.R)
   if (length(sapf_data_vars_mod) > 0) {
     sapf_flags_mod <- get_sapf_flags(sfn_data) %>%
       tibble::as_tibble() %>%
