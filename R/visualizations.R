@@ -1,9 +1,9 @@
 #### Visualization functions ####
 
 #' plot method for sfn_data class
-#' 
+#'
 #' Plot the desired data from a site object
-#' 
+#'
 #' @section ggplot plotting system:
 #'   \code{\link{plot}} is a base R function which uses the base R plotting system
 #'   to show the plot. We prefer the ggplot plotting system, which allow for
@@ -25,28 +25,34 @@
 #'           the corresponding variable vs. TIMESTAMP}
 #'   }
 #'
-#' @param sfn_data sfn_data object to plot
-#' 
+#' @section Formula:
+#'   \code{formula} argument can be used to select an environmental variable to
+#'   plot versus all the sapflow measurements. Any envirinmental variable is
+#'   allowed, if it exist in the site provided.
+#'
+#' @param sfn_data sfn_data object to plot. It can be also an sfn_data_multi
+#'   object.
+#'
 #' @param type Character indicating which data to plot. See Type section for
 #'   detailed information about the available values. Ignored if formula is
 #'   provided
-#' 
+#'
 #' @param formula_env Right side formula indicating an environmental variable to
-#'   plot vs. the sapflow values. If NULL (default) function will use "type"
-#'   to guess which plot show. 
+#'   plot vs. the sapflow values. If NULL (default), \code{sfn_plot} will use
+#'   "type" to guess which plot show.
 #'
 #' @param solar Logical indicating if the solar timestamp must be used instead
 #'   of the site timestamp
 #'
 #' @examples
 #' library(ggplot2)
-#' 
+#'
 #' # data
 #' data('FOO', package = 'sapfluxnetr')
-#' 
+#'
 #' # plotting directly
 #' sfn_plot(FOO, type = 'sapf')
-#' 
+#'
 #' # this could be noisy, you can facet by "Tree" (for sapflow) or by
 #' # "Variable" (for environmental data):
 #' sfn_plot(FOO, type = 'sapf') +
@@ -54,19 +60,20 @@
 #'
 #' sfn_plot(FOO, type = 'env') +
 #'   facet_wrap(~ Variable, scales = 'free_y')
-#' 
+#'
 #' # saving and modifying:
 #' env_plot <- sfn_plot(FOO, type = 'env', solar = FALSE) +
 #'   facet_wrap(~ Variable, scales = 'free_y')
 #' env_plot + labs(title = 'Environmental variables facet plot')
-#' 
+#'
 #' # formula
 #' sfn_plot(FOO, formula_env = ~ vpd)
-#' 
-#' @return A ggplot object that can be called to see the plot
-#' 
+#'
+#' @return A ggplot object that can be called to see the plot. If input is an
+#'   sfn_data_multi object, a list with the plots
+#'
 #' @import ggplot2
-#' 
+#'
 #' @export
 
 sfn_plot <- function(
@@ -79,20 +86,32 @@ sfn_plot <- function(
   formula_env = NULL,
   solar = TRUE
 ) {
-  
+
+  # if sfn_data_multi, iterate over the elements
+  if (class(sfn_data) == 'sfn_data_multi') {
+    plot_list <- purrr::map(
+      sfn_data,
+      ~ sfn_plot(
+        .x, type = type, formula_env = formula_env, solar = solar
+      )
+    )
+
+    return(plot_list)
+  }
+
   # if formula, lets do that plot
   if (rlang::is_formula(formula_env)) {
     data <- get_env_data(sfn_data, solar = solar) %>%
       dplyr::select(.data$TIMESTAMP, !!rlang::get_expr(formula_env)) %>%
       dplyr::inner_join(get_sapf_data(sfn_data, solar = solar), by = 'TIMESTAMP')
-    
+
     units_char <- paste0(
       unique(
         get_plant_md(sfn_data)[['pl_sap_units']]
       ),
       sep = ' '
     )
-    
+
     res_plot <- data %>%
       tidyr::gather(
         key = 'Tree', value = 'Sapflow',
@@ -104,10 +123,10 @@ sfn_plot <- function(
            subtitle = paste0('Sap flow vs. ', rlang::get_expr(formula_env)),
            title = get_si_code(sfn_data))
   } else {
-    
+
     # We need to go type by type checking and plotting if type matchs
     type <- match.arg(type)
-    
+
     # sapf
     if (type == 'sapf') {
       data <- get_sapf_data(sfn_data, solar = solar)
@@ -117,7 +136,7 @@ sfn_plot <- function(
         ),
         sep = ' '
       )
-      
+
       # actual plot
       res_plot <- data %>%
         tidyr::gather(key = 'Tree', value = 'Sapflow', -.data$TIMESTAMP) %>%
@@ -126,11 +145,11 @@ sfn_plot <- function(
         labs(y = paste0('Sapflow [', units_char, ']')) +
         scale_x_datetime()
     }
-    
+
     # env
     if (type == 'env') {
       data <- get_env_data(sfn_data, solar = solar)
-      
+
       # actual plot
       res_plot <- data %>%
         tidyr::gather(key = 'Variable', value = 'Value', -.data$TIMESTAMP) %>%
@@ -138,16 +157,16 @@ sfn_plot <- function(
         geom_point(alpha = 0.4) +
         scale_x_datetime()
     }
-    
+
     # ta
     if (type == 'ta') {
       data <- get_env_data(sfn_data, solar)
-      
+
       # we need to check if environmental variable exists
       if (is.null(data[['ta']])) {
         stop('Site has not ta data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ta)) +
@@ -155,15 +174,15 @@ sfn_plot <- function(
         labs(y = 'Air Temperature [C]') +
         scale_x_datetime()
     }
-    
+
     # rh
     if (type == 'rh') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['rh']])) {
         stop('Site has not rh data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~rh)) +
@@ -171,15 +190,15 @@ sfn_plot <- function(
         labs(y = 'Relative Humidity [%]') +
         scale_x_datetime()
     }
-    
+
     # vpd
     if (type == 'vpd') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['vpd']])) {
         stop('Site has not vpd data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~vpd)) +
@@ -187,15 +206,15 @@ sfn_plot <- function(
         labs(y = 'VPD [kPa]') +
         scale_x_datetime()
     }
-    
+
     # ppfd_in
     if (type == 'ppfd_in') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['ppfd_in']])) {
         stop('Site has not ppfd_in data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ppfd_in)) +
@@ -203,15 +222,15 @@ sfn_plot <- function(
         labs(y = 'PPFD [?]') +
         scale_x_datetime()
     }
-    
+
     # sw_in
     if (type == 'sw_in') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['sw_in']])) {
         stop('Site has not sw_in data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~sw_in)) +
@@ -219,15 +238,15 @@ sfn_plot <- function(
         labs(y = 'sw [?]') +
         scale_x_datetime()
     }
-    
+
     # netrad
     if (type == 'netrad') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['netrad']])) {
         stop('Site has not netrad data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~netrad)) +
@@ -235,15 +254,15 @@ sfn_plot <- function(
         labs(y = 'Net Radiation [?]') +
         scale_x_datetime()
     }
-    
+
     # ext_rad
     if (type == 'ext_rad') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['ext_rad']])) {
         stop('Site has not ext_rad data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ext_rad)) +
@@ -251,15 +270,15 @@ sfn_plot <- function(
         labs(y = 'Extraterrestrial Radiation [?]') +
         scale_x_datetime()
     }
-    
+
     # ws
     if (type == 'ws') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['ws']])) {
         stop('Site has not ws data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ws)) +
@@ -267,15 +286,15 @@ sfn_plot <- function(
         labs(y = 'Wind Speed [m/s]') +
         scale_x_datetime()
     }
-    
+
     # precip
     if (type == 'precip') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['precip']])) {
         stop('Site has not precip data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~precip)) +
@@ -283,15 +302,15 @@ sfn_plot <- function(
         labs(y = 'Precipitation [?]') +
         scale_x_datetime()
     }
-    
+
     # swc_shallow
     if (type == 'swc_shallow') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['swc_shallow']])) {
         stop('Site has not swc_shallow data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~swc_shallow)) +
@@ -299,15 +318,15 @@ sfn_plot <- function(
         labs(y = 'SWC Shallow [cm3/cm3]') +
         scale_x_datetime()
     }
-    
+
     # swc_deep
     if (type == 'swc_deep') {
       data <- get_env_data(sfn_data, solar)
-      
+
       if (is.null(data[['swc_deep']])) {
         stop('Site has not swc_deep data')
       }
-      
+
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~swc_deep)) +
@@ -315,11 +334,11 @@ sfn_plot <- function(
         labs(y = 'SWC Deep [cm3/cm3]') +
         scale_x_datetime()
     }
-    
+
   }
-  
+
   return(res_plot)
-  
+
 }
 
 # TODO add explanation for the formula argument in the function doc

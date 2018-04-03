@@ -9,21 +9,23 @@ sfn_plot(sfn_data, type = c("sapf", "env", "ta", "rh", "vpd", "ppfd_in",
   formula_env = NULL, solar = TRUE)
 }
 \arguments{
-\item{sfn_data}{sfn_data object to plot}
+\item{sfn_data}{sfn_data object to plot. It can be also an sfn_data_multi
+object.}
 
 \item{type}{Character indicating which data to plot. See Type section for
 detailed information about the available values. Ignored if formula is
 provided}
 
 \item{formula_env}{Right side formula indicating an environmental variable to
-plot vs. the sapflow values. If NULL (default) function will use "type"
-to guess which plot show.}
+plot vs. the sapflow values. If NULL (default), \code{sfn_plot} will use
+"type" to guess which plot show.}
 
 \item{solar}{Logical indicating if the solar timestamp must be used instead
 of the site timestamp}
 }
 \value{
-A ggplot object that can be called to see the plot
+A ggplot object that can be called to see the plot. If input is an
+  sfn_data_multi object, a list with the plots
 }
 \description{
 Plot the desired data from a site object
@@ -51,6 +53,13 @@ Plot the desired data from a site object
           "ws", "precip", "swc_shallow" and "swc_deep": They will plot
           the corresponding variable vs. TIMESTAMP}
   }
+}
+
+\section{Formula}{
+
+  \code{formula} argument can be used to select an environmental variable to
+  plot versus all the sapflow measurements. Any envirinmental variable is
+  allowed, if it exist in the site provided.
 }
 
 \examples{

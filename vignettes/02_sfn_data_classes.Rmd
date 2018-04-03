@@ -173,7 +173,7 @@ sfn_plot(FOO, type = 'env') +
   facet_wrap(~ Variable, ncol = 3, scales = 'free_y') +
   theme(legend.position = 'none')
 
-sfn_plot(FOO, formula = ~ vpd) +
+sfn_plot(FOO, formula_env = ~ vpd) +
   theme(legend.position = 'none')
 ```
   
@@ -252,6 +252,15 @@ multi_sfn
 All the utilities that exists for `sfn_data` work for `sfn_data_multi` objects,
 executing the function for all the sites contained in the `sfn_data_multi`
 object:
+
+  + `sfn_plot`
+
+```{r plot_multi, fig.show='hold', fig.width=3.4}
+multi_plot <- sfn_plot(multi_sfn, formula = ~ vpd)
+multi_plot[['FOO']] + theme(legend.position = 'none')
+multi_plot[['BAZ']] + theme(legend.position = 'none')
+```
+
 
   + `sfn_filter`
 
