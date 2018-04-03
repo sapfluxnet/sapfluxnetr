@@ -196,7 +196,7 @@ sfn_filter(FOO, month(TIMESTAMP) == 11)
 ```{r sfn_mutate}
 # transform ws from m/s to km/h
 foo_mutated <- sfn_mutate(FOO, ws = ws*3600/1000)
-get_env_data(foo_mutated)[['ws']]
+get_env_data(foo_mutated)[['ws']][1:10]
 ```
   
   + `sfn_mutate_at`. This function mutates all variables declared with the
@@ -223,5 +223,73 @@ get_sapf_data(foo_mutated_2)
     site data. See `?metrics` for detailed info.
     
 ```{r metrics}
-daily_metrics(FOO)
+foo_daily <- daily_metrics(FOO)
+foo_daily[['sapf']][['sapf_gen']]
+```
+
+# `sfn_data_multi`
+
+`sfn_data_multi` is an S4 class designed to store multiple `sfn_data` objects.
+It inherits from list, so, in a nutshell, `sfn_data_multi` is a list of
+`sfn_data` objects.
+
+## Methods
+
+`sfn_data_multi` has only one custom method declared.
+  
+  + show
+  
+```{r show_multi}
+data(BAR, package = 'sapfluxnetr')
+data(BAZ, package = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+
+multi_sfn
+```
+
+## Utilities
+
+All the utilities that exists for `sfn_data` work for `sfn_data_multi` objects,
+executing the function for all the sites contained in the `sfn_data_multi`
+object:
+
+  + `sfn_filter`
+
+```{r sfn_filter_multi}
+multi_filtered <- sfn_filter(multi_sfn, month(TIMESTAMP) == 11)
+get_timestamp(multi_filtered[['BAZ']])[1:10]
+```
+
+  + `sfn_mutate`
+  
+```{r sfn_mutate_multi}
+multi_mutated <- sfn_mutate(multi_sfn, ws = ws * 3600/1000)
+get_env_data(multi_mutated[['BAZ']])[['ws']][1:10]
+```
+
+  + `sfn_mutate_at`
+
+```{r sfn_mutate_at_multi}
+vars_to_not_mutate <- c(
+  "TIMESTAMP", "ta", "rh", "vpd", "sw_in", "ws",
+  "precip", "swc_shallow", "ppfd_in", "ext_rad"
+)
+
+multi_mutated_2 <- sfn_mutate_at(
+  multi_sfn,
+  vars(-one_of(vars_to_not_mutate)),
+  funs(case_when(
+    ws > 25 ~ NA_real_,
+    TRUE ~ .
+  ))
+)
+
+multi_mutated_2[['FOO']]
+```
+
+  + `*_metrics`
+
+```{r metrics_multi}
+multi_metrics <- daily_metrics(multi_sfn)
+multi_metrics[['FOO']][['sapf']][['sapf_gen']]
 ```
