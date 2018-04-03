@@ -1,28 +1,21 @@
-# Functions to emulate dplyr verbs (filter, mutate)
-# summarise is not included because is already in sfn_metrics ;)
-
-#' dplyr_like functions to work with sfn_data objects
-#'
-#' Family of functions to simulate dplyr verbs in sfn_data objects
-#'
-#' This functions accepts also sfn_data_multi objects. In this case the
-#' function arguments (filters or mutations) are applied to each sfn_data (site)
-#' present in the object provided.
-#'
+#' Filter sfn_data by variable/s value
+#' 
+#' Port of \code{\link[dplyr]{filter}} for \code{sfn_data} and
+#' \code{sfn_data_multi} objects
+#' 
+#' `sfn_filter` will remove the rows not matching the logical expression/s
+#' provided. So, it will remove cases and will create TIMESTAMP gaps, so its use
+#' is not recommended except in the case of filtering by TIMESTAMP (i.e. to
+#' set several sites (sfn_data_multi) in the same time frame). For other
+#' scenarios (removing extreme environmental conditions values or strange
+#' sapflow measures patterns) see \code{\link{sfn_mutate}} and
+#' \code{\link{sfn_mutate_at}}
+#' 
 #' @param sfn_data \code{sfn_data} or \code{sfn_data_multi} object to subset
 #'
-#' @param ... expressions to pass to the relevant dplyr function,
-#'   \code{\link[dplyr]{filter}} or \code{\link[dplyr]{mutate}}
+#' @param ... expressions to pass to the \code{\link[dplyr]{filter}} function
 #'
 #' @param solar Logical indicating if solar timestamp must used to subset
-#'
-#' @name sfn_dplyr_functions
-NULL
-
-#' @describeIn sfn_dplyr_functions \code{sfn_filter}: filtering rows by value
-#'   (i.e. filtering by TIMESTAMP).
-#'
-#' @inheritParams sfn_dplyr_functions
 #'
 #' @return For \code{sfn_data} objects, a filtered \code{sfn_data} or NULL if
 #'   no data meet the criteria. For \code{sfn_data_multi} another
@@ -37,7 +30,7 @@ NULL
 #' data('FOO', package = 'sapfluxnetr')
 #'
 #' # by timestamp
-#' foo_timestamp <- get_timestmap(FOO)
+#' foo_timestamp <- get_timestamp(FOO)
 #'
 #' foo_timestamp_trimmed <- foo_timestamp[1:100]
 #'
@@ -149,9 +142,28 @@ sfn_filter <- function(sfn_data, ..., solar = FALSE) {
 
 }
 
-#' @describeIn sfn_dplyr_functions \code{sfn_mutate}: transform columns by function.
+#' Mutate variables by function
+#' 
+#' Port of \code{\link[dplyr]{mutate}} for \code{sfn_data} and
+#' \code{sfn_data_multi} objects
+#' 
+#' `sfn_mutate` function will maintain the same number of rows before and after
+#' the modification, so it is well suited to modify variables without creating
+#' TIMESTAMP gaps (i.e. to change variable units). For mutating groups of
+#' variables at the same time see \code{\link{sfn_mutate_at}}.
+#' 
+#' @section Sapflow and environmental variables:
+#' `sfn_mutate` internally joins the sapflow and environmental datasets by the
+#' TIMESTAMP, so it is possible to mutate variables conditionally between
+#' sapflow and environmental measures (i.e. mutate sapflow when wind is high or
+#' radiation is zero).
+#' 
+#' @param sfn_data \code{sfn_data} or \code{sfn_data_multi} object to subset
 #'
-#' @inheritParams sfn_dplyr_functions
+#' @param ... Name-value pairs of expressions to pass to the
+#'   \code{\link[dplyr]{mutate}} function.
+#'
+#' @param solar Logical indicating if solar timestamp must used to subset
 #'
 #' @return For \code{sfn_data} objects, a mutated \code{sfn_data}. For
 #'   \code{sfn_data_multi} another \code{sfn_data_multi} with the sites mutated
@@ -266,10 +278,26 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
 
 }
 
-#' @describeIn sfn_dplyr_functions \code{sfn_mutate_at}: transform selected
-#' columns by function.
+#' Mutate selected columns by function
+#' 
+#' Port of \code{\link[dplyr]{mutate_at}} for \code{sfn_data} and
+#' \code{sfn_data_multi} objects
+#' 
+#' `sfn_mutate_at` function will maintain the same number of rows before and
+#' after the modification, so it is well suited to modify variables without
+#' creating TIMESTAMP gaps (i.e. to change variable units). For mutating 
+#' indiviudal variables see \code{\link{sfn_mutate}}.
 #'
-#' @inheritParams sfn_dplyr_functions
+#' @param sfn_data \code{sfn_data} or \code{sfn_data_multi} object to subset
+#'
+#' @param .vars Variables to mutate. Passed to \code{\link[dplyr]{mutate_at}}
+#' 
+#' @param .funs Function/s for mutate, passed to \code{\link[dplyr]{mutate_at}}
+#' 
+#' @param ... Extra arguments to pass to the functions in \code{.funs}, passed
+#'   to \code{\link[dplyr]{mutate_at}}.
+#'
+#' @param solar Logical indicating if solar timestamp must used to subset
 #'
 #' @return For \code{sfn_data} objects, a mutated \code{sfn_data}. For
 #'   \code{sfn_data_multi} another \code{sfn_data_multi} with the sites mutated
