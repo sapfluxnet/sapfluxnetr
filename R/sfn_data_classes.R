@@ -11,7 +11,7 @@ setOldClass(c("tbl_time", "tbl_df", "tbl", "data.frame"))
 #'
 #' This class allows to store all the data and metadata for a sapfluxnet site
 #' in one single object, to easily work with it. See
-#' \code{vignette('sfn_data_classes', package = 'sapfluxnetr')} for more info.
+#' \code{vignette('02_sfn_data_classes', package = 'sapfluxnetr')} for more info.
 #'
 #' @slot sapf_data A data frame with the sapf data
 #'

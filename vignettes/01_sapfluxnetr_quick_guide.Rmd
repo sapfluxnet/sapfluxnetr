@@ -101,7 +101,8 @@ environmental data has some flags (more on that later).
 ### Accesing the data and the metadata
 
 `sfn_class` objects have different slots containing the different data, each of
-one has an accesor function (see `?sfn_get_methods` for detailed info):
+one has an accesor function (see `?sfn_get_methods` and
+`vignette('02_sfn_data_classes', package = 'sapfluxnetr'` for detailed info):
 
 ```{r accesors_data}
 # sapf data with original site timestamp
@@ -139,14 +140,14 @@ description can be obtained from `describe_md_variable` function:
 # what is env_ta?
 describe_md_variable('env_ta')
 
-
 # or pl_species?
 describe_md_variable('pl_species')
 ```
 
-There is also some accesors that can come in handy sometimes. `get_timestamp` and
+There is also some accessors that can come in handy sometimes. `get_timestamp` and
 `get_solar_timestamp` access to the original timestamp and the apparent solar
-time timestamp. `get_si_code` access to the site code.
+time timestamp. `get_si_code` access to the site code. See
+`vignette('02_sfn_data_classes', package = 'sapfluxnetr'` for more info.
 
 #### Flags
 
@@ -438,7 +439,5 @@ whole_data <- sapf_data %>%
 ggplot(whole_data, aes(x = vpd_mean, y = Value, colour = si_code,
                        size = pl_sapw_area)) +
   geom_point(alpha = 0.2)
-  
-# TODO multifulljoin o multi_union function.
 ```
 

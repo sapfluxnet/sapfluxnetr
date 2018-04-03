@@ -99,7 +99,8 @@ FOO
   
   + `get methods`: methods to get any slot outside the object. In the case
     of sapf and env data, TIMESTAMP is added (based on the `solar` argument) in
-    order to obtain fully functional datasets.
+    order to obtain fully functional datasets. See `?sfn_get_methods` for more
+    details.
     
 ```{r get_methods}
 get_sapf_data(FOO, solar = FALSE)
@@ -118,7 +119,8 @@ get_env_md(FOO)
 ```
     
   + `assignation`: methods for `"<-"` are implemented, allowing transformation
-    of the slots, i.e. when tranforming units.
+    of the slots, i.e. when tranforming units. See `?sfn_replacement_methods`
+    for more details.
     
 ```{r assignation}
 # extraction and modification
@@ -164,9 +166,10 @@ sfn_data(
 `sapfluxnetr` package offers some utilities to work and visualize sfn_data
 objects:
 
-  + `sfn_plot`. This function allows to plot `sfn_data` objects:
+  + `sfn_plot`. This function allows to plot `sfn_data` objects. See `?sfn_plot`
+    for more details.
   
-```{r sfn_plot, fig.show='hold', fig.width=3.4}
+```{r sfn_plot, fig.width=6}
 library(ggplot2)
 
 sfn_plot(FOO, type = 'env') +
@@ -178,7 +181,8 @@ sfn_plot(FOO, formula_env = ~ vpd) +
 ```
   
   + `sfn_filter`. This function emulates `filter` function from `dplyr` package
-    for `sfn_data` objects. Useful to filter by some especific timestamp:
+    for `sfn_data` objects. Useful to filter by some especific timestamp.
+    See `sfn_filter` for more details.
     
 ```{r sfn_filter}
 library(lubridate)
@@ -191,7 +195,7 @@ sfn_filter(FOO, month(TIMESTAMP) == 11)
   + `sfn_mutate`. This function allows mutation of data variables inside the
     `sfn_data` object. Useful when you need to transform a variable to another
     units or similar. A flag ('USER_MODF') will be added to all values in the
-    mutated variable.
+    mutated variable. See `sfn_mutate` for more details.
     
 ```{r sfn_mutate}
 # transform ws from m/s to km/h
@@ -202,7 +206,7 @@ get_env_data(foo_mutated)[['ws']][1:10]
   + `sfn_mutate_at`. This function mutates all variables declared with the
     function provided. Useful when you need to conditionally transform the data,
     i.e. converting to NA sapflow values when an environmental variable exceeds
-    some threshold.
+    some threshold. See `sfn_mutate_at` for more details.
     
 ```{r sfn_mutate_at}
 foo_mutated_2 <- sfn_mutate_at(
@@ -220,7 +224,7 @@ get_sapf_data(foo_mutated_2)
 ```
 
   + `*_metrics` functions. Family of functions to aggregate and summarise the
-    site data. See `?metrics` for detailed info.
+    site data. See `?metrics` for more details.
     
 ```{r metrics}
 foo_daily <- daily_metrics(FOO)

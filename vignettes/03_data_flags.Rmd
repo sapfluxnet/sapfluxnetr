@@ -1,0 +1,49 @@
+---
+title: "Data Flags"
+author: "Victor Granda (Sapfluxnet Team)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data Flags}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Data flags indicate comments on individual data points raised in the quality
+control assesment of site data. They are useful to understand the original
+data and to track analysis problems to their origins.  
+
+Possible values for flags are as follow:
+
+  + **'OUT_WARN'** Indicates that the value could be an outlier based on hampel
+    filter algorithm. Not removed nor substituted
+  
+  + **'RANGE_WARN'** Indicates that the value could be out of "usual" maximum
+    value for the variable. Not removed.
+  
+  + **'RANGE_REMOVED'** Indicates values that were clearly out of the range of
+    variable. Removed and converted to NA
+  
+  + **'NA_ADDED'** Indicates that the value was originally missing and it was
+    created and filled with NA. Usually the result of equalising the sap flow
+    and environmental TIMESTAMPS.
+  
+  + **'MANUAL_REMOVED'** Indicates that the value was manually removed in the
+    quality control step, due to curator decision.
+  
+  + **'CALCULATED'** Indicates that the value was originally missing and was
+    calculated in the quality check step.
+  
+  + **'OUT_REMOVED'** Indicates that the value was clearly an outlier and was
+    removed and substituted by NA
+  
+  + **'NA_PRESENT'** Indicates that the value was originally an NA
+
+  + **''** Indicates...

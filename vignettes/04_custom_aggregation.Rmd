@@ -1,0 +1,120 @@
+---
+title: "Custom aggregation"
+author: "Victor Granda (Sapfluxnet Team)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Custom aggregation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+`sapfluxnetr` package offers a very flexible system based on `tidyverse` and
+`tibbletime` packages to aggregate and summarise the site/s data in the form
+of the `sfn_metrics` functions. All the metrics family of functions (`?metrics`)
+make use of `sfn_metrics` under the hood. If you want full control to the
+metrics returned and temporal periods to aggregate we recommend you to use this
+function. This vignette will show you how.
+
+## Custom summarising functions
+
+`daily_metrics` and related functions return a complete set of metrics ready for
+use, but if you want simpler metrics and/or avoid the computational burden of
+returning all the pre-fixed metrics you can supply your own summarising metrics:
+
+```{r}
+# libraries
+library(sapfluxnetr)
+library(dplyr)
+
+### only mean and sd at a daily scale
+# data
+data('FOO', package = 'sapfluxnetr')
+# summarising funs (built with funs function in dplyr package)
+custom_funs <- funs(mean = mean(., na.rm = TRUE), std_dev = sd(., na.rm = TRUE))
+# metrics
+foo_simpler_metrics <- sfn_metrics(
+  FOO,
+  period = 'daily',
+  .funs = custom_funs,
+  solar = TRUE,
+  general = TRUE,
+  predawn = TRUE, pd_start = 5, pd_end = 7,
+  midday = TRUE, md_start = 11, md_end = 13,
+  nighttime = FALSE
+)
+
+foo_simpler_metrics[['sapf']][['sapf_gen']]
+```
+
+You can also select if the "special interest" intervals (predawn, midday or
+nighttime) are calculated or not. For example, if you are only interested in the
+midday interval you can use:
+
+```{r}
+foo_simpler_metrics_midday <- sfn_metrics(
+  FOO,
+  period = 'daily',
+  .funs = custom_funs,
+  solar = TRUE,
+  general = FALSE,
+  predawn = FALSE,
+  midday = TRUE, md_start = 11, md_end = 13,
+  nighttime = FALSE
+)
+
+foo_simpler_metrics_midday[['sapf']][['sapf_md']]
+```
+
+## Custom aggregation periods
+
+`period` argument in `sfn_metrics` is passed to `collapse_index` function in the
+`tibbletime` package, and so, it can use the same input:
+
+  + "frequency period" format, where frequency is a number and period is an
+    interval as character (i.e. "1 year" same as "yearly", "7 days")
+
+```{r}
+# weekly
+foo_weekly <- sfn_metrics(
+  FOO,
+  period = '7 days',
+  .funs = custom_funs,
+  solar = TRUE,
+  general = FALSE,
+  predawn = FALSE,
+  midday = TRUE, md_start = 11, md_end = 13,
+  nighttime = FALSE
+)
+
+foo_weekly[['env']][['env_md']]
+```
+
+ + A vector of dates as period boundaries. This way you can build irregular
+   periods
+
+```{r}
+# custom
+foo_custom <- sfn_metrics(
+  FOO,
+  period = as.POSIXct(
+    c('2009-11-17 00:00:00', '2009-11-22 14:00:00', '2009-11-30 23:59:00'),
+                      tz = 'UTC'
+  ),
+  .funs = custom_funs,
+  solar = TRUE,
+  general = FALSE,
+  predawn = FALSE,
+  midday = TRUE, md_start = 11, md_end = 13,
+  nighttime = FALSE
+)
+foo_custom[['sapf']][['sapf_md']]
+```
+
