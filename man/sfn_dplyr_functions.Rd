@@ -4,11 +4,14 @@
 \alias{sfn_dplyr_functions}
 \alias{sfn_filter}
 \alias{sfn_mutate}
+\alias{sfn_mutate_at}
 \title{dplyr_like functions to work with sfn_data objects}
 \usage{
 sfn_filter(sfn_data, ..., solar = FALSE)
 
 sfn_mutate(sfn_data, ..., solar = FALSE)
+
+sfn_mutate_at(sfn_data, .vars, .funs, ..., solar = FALSE)
 }
 \arguments{
 \item{sfn_data}{\code{sfn_data} or \code{sfn_data_multi} object to subset}
@@ -24,10 +27,11 @@ For \code{sfn_data} objects, a filtered \code{sfn_data} or NULL if
   \code{sfn_data_multi} with the sites filtered, and an empty
   \code{sfn_data_multi} if any sites met the criteria
 
-For \code{sfn_data} objects, a filtered \code{sfn_data} or NULL if
-  no data meet the criteria. For \code{sfn_data_multi} another
-  \code{sfn_data_multi} with the sites filtered, and an empty
-  \code{sfn_data_multi} if any sites met the criteria
+For \code{sfn_data} objects, a mutated \code{sfn_data}. For
+  \code{sfn_data_multi} another \code{sfn_data_multi} with the sites mutated
+
+For \code{sfn_data} objects, a mutated \code{sfn_data}. For
+  \code{sfn_data_multi} another \code{sfn_data_multi} with the sites mutated
 }
 \description{
 Family of functions to simulate dplyr verbs in sfn_data objects
@@ -43,6 +47,9 @@ present in the object provided.
 (i.e. filtering by TIMESTAMP).
 
 \item \code{sfn_mutate}: \code{sfn_mutate}: transform columns by function.
+
+\item \code{sfn_mutate_at}: \code{sfn_mutate_at}: transform selected
+columns by function.
 }}
 
 \examples{
@@ -103,6 +110,49 @@ multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
 
 multi_sfn_mutated <- sfn_mutate(
   multi_sfn, ws = if_else(ws > 25, NA_real_, ws)
+)
+
+multi_sfn_mutated[['FOO']]
+
+library(dplyr)
+library(lubridate)
+
+# data
+data('FOO', package = 'sapfluxnetr')
+
+# transform to NAs any sapflow value occured with wind speed above 25
+ws_threshold <- 25
+# get the names of the variables to mutate (tree names)
+vars_to_mutate <- names(get_sapf_data(FOO)[,-1]) # no TIMESTAMP
+
+sfn_mutate_at(
+  FOO,
+  .vars = vars(one_of(vars_to_mutate)),
+  .funs = funs(
+    case_when(
+      ws > ws_threshold ~ NA_real_,
+      TRUE ~ .
+    )
+  )
+)
+
+## multi
+data(BAR, package = 'sapfluxnetr')
+data(BAZ, package = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+
+## in multi it's better to discard the variables to not mutate:
+vars_to_not_mutate <- names(get_env_data(FOO)) # all the environmental
+
+sfn_mutate_at(
+  multi_sfn,
+  .vars = vars(-one_of(vars_to_not_mutate)), # we use -
+  .funs = funs(
+    case_when(
+      ws > ws_threshold ~ NA_real_,
+      TRUE ~ .
+    )
+  )
 )
 
 multi_sfn_mutated[['FOO']]

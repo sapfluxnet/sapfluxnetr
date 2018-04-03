@@ -32,37 +32,37 @@ test_that("sfn_filter returns correct results", {
   suppressWarnings(multi_sfn_filter_5 <- sfn_filter(
     multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 2006, 2007)
   ))
-  
-  
+
+
   expect_s4_class(foo_subset, 'sfn_data')
   # only check one because the constructor checks the others
   expect_length(get_solar_timestamp(foo_subset), 100)
-  
+
   expect_s4_class(foo_subset_2, 'sfn_data')
   expect_true(all(get_env_data(foo_subset_2)[['ws']] <= 25))
   # only check one because the constructor checks the others
   expect_length(get_solar_timestamp(foo_subset_2), 212)
-  
+
   expect_s4_class(foo_subset_3, 'sfn_data')
   # only check one because the constructor checks the others
   expect_length(get_solar_timestamp(foo_subset_3), 100)
-  
+
   expect_identical(foo_subset, foo_subset_3)
-  
+
   expect_s4_class(multi_sfn_filter, 'sfn_data_multi')
   expect_length(multi_sfn_filter, 2)
   expect_s4_class(multi_sfn_filter[[1]], 'sfn_data')
   expect_s4_class(multi_sfn_filter[[2]], 'sfn_data')
   expect_length(get_timestamp(multi_sfn_filter[[1]]), 24*5)
   expect_length(get_timestamp(multi_sfn_filter[[2]]), 24*5)
-  
+
   expect_s4_class(multi_sfn_filter_2, 'sfn_data_multi')
   expect_length(multi_sfn_filter_2, 2)
   expect_s4_class(multi_sfn_filter_2[[1]], 'sfn_data')
   expect_s4_class(multi_sfn_filter_2[[2]], 'sfn_data')
   expect_length(get_solar_timestamp(multi_sfn_filter_2[[1]]), 212)
   expect_length(get_solar_timestamp(multi_sfn_filter_2[[2]]), 210)
-  
+
   expect_s4_class(multi_sfn_filter_3, 'sfn_data_multi')
   expect_length(multi_sfn_filter_3, 0)
   expect_warning(
@@ -70,7 +70,7 @@ test_that("sfn_filter returns correct results", {
       multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 1998, 1999)
     ), 'Any sites met the criteria, returning empty results'
   )
-  
+
   expect_s4_class(multi_sfn_filter_4, 'sfn_data_multi')
   expect_length(multi_sfn_filter_4, 2)
   expect_warning(
@@ -78,7 +78,7 @@ test_that("sfn_filter returns correct results", {
       multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 2008, 2009)
     ), 'BAZ'
   )
-  
+
   expect_s4_class(multi_sfn_filter_5, 'sfn_data_multi')
   expect_length(multi_sfn_filter_5, 1)
   expect_warning(
@@ -86,18 +86,18 @@ test_that("sfn_filter returns correct results", {
       multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 2006, 2007)
     ), 'FOO'
   )
-  
+
 })
 
 #### mutate ####
 test_that('sfn_mutate returns correct results', {
-  
+
   foo_mutated <- sfn_mutate(FOO, ws = dplyr::if_else(ws > 25, NA_real_, ws))
   multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
   multi_mutated <- sfn_mutate(
     multi_sfn, ws = dplyr::if_else(ws > 25, NA_real_, ws)
   )
-  
+
   expect_s4_class(foo_mutated, 'sfn_data')
   expect_equal(sum(is.na(get_env_data(foo_mutated)[['ws']])), 100)
   expect_match(get_env_flags(foo_mutated)[['ws']], 'USER_MODF', all = TRUE)
@@ -108,7 +108,7 @@ test_that('sfn_mutate returns correct results', {
   )
   expect_identical(attr(get_timestamp(foo_mutated), 'tz'), 'Etc/GMT+3')
   expect_identical(attr(get_solar_timestamp(foo_mutated), 'tz'), 'UTC')
-  
+
   expect_s4_class(multi_mutated, 'sfn_data_multi')
   expect_length(multi_mutated, 3)
   expect_s4_class(multi_mutated[[1]], 'sfn_data')
@@ -131,4 +131,79 @@ test_that('sfn_mutate returns correct results', {
   )
   expect_match(get_env_flags(multi_mutated[[3]])[['ws']], 'OUT_WARN', all = FALSE)
   expect_identical(multi_sfn[['BAZ']], multi_mutated[['BAZ']])
+})
+
+#### mutate_at ####
+test_that('sfn_mutate_at returns correct results', {
+
+  vars_to_mutate <- names(get_sapf_data(FOO)[,-1])
+  foo_mutated <- sfn_mutate_at(
+    FOO,
+    .vars = dplyr::vars(dplyr::one_of(vars_to_mutate)),
+    .funs = dplyr::funs(
+      dplyr::case_when(
+        ws > 25 ~ NA_real_,
+        TRUE ~ .
+      )
+    )
+  )
+
+  vars_to_not_mutate <- names(get_env_data(FOO))
+  multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+  multi_mutated <- suppressWarnings(sfn_mutate_at(
+    multi_sfn,
+    .vars = dplyr::vars(-dplyr::one_of(vars_to_not_mutate)), # we use -
+    .funs = dplyr::funs(
+      dplyr::case_when(
+        ws > 25 ~ NA_real_,
+        TRUE ~ .
+      )
+    )
+  ))
+
+  expect_s4_class(foo_mutated, 'sfn_data')
+  expect_equal(sum(is.na(get_sapf_data(foo_mutated)[[2]])), 100)
+  expect_equal(sum(is.na(get_sapf_data(foo_mutated)[[3]])), 100)
+  expect_equal(sum(is.na(get_sapf_data(foo_mutated)[[4]])), 100)
+  expect_equal(sum(is.na(get_sapf_data(foo_mutated)[[5]])), 100)
+  expect_match(get_sapf_flags(foo_mutated)[[2]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(foo_mutated)[[3]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(foo_mutated)[[4]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(foo_mutated)[[5]], 'USER_MODF', all = TRUE)
+
+  expect_s4_class(multi_mutated, 'sfn_data_multi')
+  expect_length(multi_mutated, 3)
+  expect_s4_class(multi_mutated[[1]], 'sfn_data')
+  expect_s4_class(multi_mutated[[2]], 'sfn_data')
+  expect_s4_class(multi_mutated[[3]], 'sfn_data')
+  expect_equal(sum(is.na(get_sapf_data(multi_mutated[[1]])[[2]])), 100)
+  expect_equal(sum(is.na(get_sapf_data(multi_mutated[[1]])[[3]])), 100)
+  expect_equal(sum(is.na(get_sapf_data(multi_mutated[[1]])[[4]])), 100)
+  expect_equal(sum(is.na(get_sapf_data(multi_mutated[[1]])[[5]])), 100)
+  expect_equal(sum(is.na(get_sapf_data(multi_mutated[[2]])[[2]])), 78)
+  expect_equal(sum(is.na(get_sapf_data(multi_mutated[[2]])[[3]])), 78)
+  expect_equal(sum(is.na(get_sapf_data(multi_mutated[[2]])[[4]])), 78)
+  expect_equal(sum(is.na(get_sapf_data(multi_mutated[[2]])[[5]])), 78)
+  expect_match(get_sapf_flags(multi_mutated[[1]])[[2]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(multi_mutated[[1]])[[3]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(multi_mutated[[1]])[[4]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(multi_mutated[[1]])[[5]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(multi_mutated[[2]])[[2]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(multi_mutated[[2]])[[3]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(multi_mutated[[2]])[[4]], 'USER_MODF', all = TRUE)
+  expect_match(get_sapf_flags(multi_mutated[[2]])[[5]], 'USER_MODF', all = TRUE)
+  expect_failure(
+    expect_match(get_sapf_flags(multi_mutated[[3]])[[2]], 'USER_MODF', all = TRUE)
+  )
+  expect_failure(
+    expect_match(get_sapf_flags(multi_mutated[[3]])[[3]], 'USER_MODF', all = TRUE)
+  )
+  expect_failure(
+    expect_match(get_sapf_flags(multi_mutated[[3]])[[4]], 'USER_MODF', all = TRUE)
+  )
+  expect_failure(
+    expect_match(get_sapf_flags(multi_mutated[[3]])[[5]], 'USER_MODF', all = TRUE)
+  )
+  expect_identical(multi_sfn[['BAZ']], multi_mutated[['BAZ']])
+
 })
