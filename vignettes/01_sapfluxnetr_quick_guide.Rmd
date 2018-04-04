@@ -287,7 +287,10 @@ sfn_metadata <- read_sfn_metadata(folder = 'data/plant', .write_cache = TRUE)
 ```
 
 ```{r metadata_database_real, echo=FALSE}
-load('../tests/testthat/big_test/plant/.metadata_cache.RData')
+sfn_metadata <- read_sfn_metadata(
+  folder = '../tests/testthat/big_test/plant/',
+  .write_cache = FALSE
+)
 ```
 
 

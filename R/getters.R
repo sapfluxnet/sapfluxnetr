@@ -52,41 +52,25 @@ read_sfn_data <- function(site_code, folder = '.') {
 
 }
 
-#' Read and combine all metadata
-#' 
-#' Read metadata from all sites in folder and write it to disk to cache the
+#' Write metadata cache file to disk
+#'
+#' Load all sites, read the metadata and write it to disk to cache the
 #' info for easy and fast access
-#' 
+#'
 #' Load all data in memory to collect metadata info can be resource limiting.
 #' For easy and quick access to metadata, this function stores an .RData file
-#' in the specified folder along the data with all the metadata preloaded. Also
-#' it return it as an object to use in filtering and selecting sites.
-#' 
+#' in the specified folder along the data with all the metadata preloaded.
+#'
 #' @param folder Route to the folder containing the data. Default to working
 #'   directory
-#' 
-#' @param .write_cache Logical indicating if a cached copy of the metadata must
-#'   be written in \code{folder}.
 #'
-#' @examples
-#' \dontrun{
-#' # load the metadata for the first time, it can be a minute ;)
-#' sites_metadata <- read_metadata(folder = 'Data', .write.cache = TRUE)
-#' 
-#' # a cached copy must have been written to "folder"
-#' file.exists('Data/.metadata_cache.RData') # TRUE
-#' 
-#' # inspect the metadata
-#' sites_metadata
-#' }
-#' 
+#' @param .dry Dry run. Metadata is loaded and readed, but no cache is written
+#'
 #' @return A list of tibbles with the five metadata classes (site, stand,
 #'   species, plant and environmental)
-#'
-#' @export
 
-read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
-  
+.write_metadata_cache <- function(folder, .dry = FALSE) {
+
   # In order to avoid loading all data objects at one time in memory (it could be
   # too much in a normal system we think), lets only store the metadata. To do
   # that, we load one site and store the metadata before to pass to the next.
@@ -94,7 +78,7 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
   # result in all objects in memory, so NO GOOD, we nned to circumvent that.
   sites_codes <- list.files(folder, recursive = TRUE, pattern = '.RData') %>%
     stringr::str_remove('.RData')
-  
+
   sfn_metadata <- list(
     site_md = tibble::tibble(),
     stand_md = tibble::tibble(),
@@ -102,15 +86,15 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
     plant_md = tibble::tibble(),
     env_md = tibble::tibble()
   )
-  
+
   for (i in 1:length(sites_codes)) {
-    
+
     print(paste0(
-      'processing site ', sites_codes[i], ' (', i, ' of ', length(sites_codes), ')' 
+      'processing site ', sites_codes[i], ' (', i, ' of ', length(sites_codes), ')'
     ), width = 80)
-    
+
     sfn_data <- read_sfn_data(sites_codes[i], folder)
-    
+
     sfn_metadata[['site_md']] <- dplyr::bind_rows(
       sfn_metadata[['site_md']], get_site_md(sfn_data)
     )
@@ -128,14 +112,66 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
       sfn_metadata[['env_md']], get_env_md(sfn_data)
     )
   }
-  
+
   # cache thing
-  if (.write_cache) {
+  if (!.dry) {
     save(sfn_metadata, file = file.path(folder, '.metadata_cache.RData'))
   }
-  
+
   return(sfn_metadata)
-  
+
+}
+
+#' Read and combine all metadata
+#'
+#' Read metadata from all sites in folder and write it to disk to cache the
+#' info for easy and fast access
+#'
+#' Load all data in memory to collect metadata info can be resource limiting.
+#' For easy and quick access to metadata, this function stores an .RData file
+#' in the specified folder along the data with all the metadata preloaded. Also
+#' it return it as an object to use in filtering and selecting sites.
+#'
+#' @param folder Route to the folder containing the data. Default to working
+#'   directory
+#'
+#' @param .write_cache Logical indicating if a cached copy of the metadata must
+#'   be written in \code{folder}.
+#'
+#' @examples
+#' \dontrun{
+#' # load the metadata for the first time, it can be a minute ;)
+#' sites_metadata <- read_metadata(folder = 'Data', .write.cache = TRUE)
+#'
+#' # a cached copy must have been written to "folder"
+#' file.exists('Data/.metadata_cache.RData') # TRUE
+#'
+#' # inspect the metadata
+#' sites_metadata
+#' }
+#'
+#' @return A list of tibbles with the five metadata classes (site, stand,
+#'   species, plant and environmental)
+#'
+#' @export
+
+read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
+
+  if (.write_cache) {
+    sfn_metadata <- .write_metadata_cache(folder = folder, .dry = FALSE)
+  } else {
+    file_name <- file.path(folder, '.metadata_cache.RData')
+
+    if (!file.exists(file_name)) {
+      stop('metadata cache file not found at ', folder,
+            ' If you want to create one, please set .write_cache to TRUE')
+    } else {
+      load(file_name)
+    }
+  }
+
+  return(sfn_metadata)
+
 }
 
 
@@ -144,7 +180,7 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #' \code{filter_by_var} function takes logical expressions for the metadata
 #' variables (i.e. \code{pl_sens_meth == 'HR'}), and list the sites that meet
 #' the expressions.
-#' 
+#'
 #' \code{join} argument indicates how sites must be filtered between metadata
 #' classes. \code{'and'} indicates only sites meeting all conditions for all
 #' metadata classes are returned. \code{'or'}cindicates all sites meeting any
@@ -155,7 +191,7 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'   \code{\link[dplyr]{filter}}.
 #'
 #' @param folder Route to the folder containing the data files (*.RData)
-#' 
+#'
 #' @param join Character indicating how to filter the sites, see details.
 #'
 #' @param .use_cache Experimental, not implemented yet. Searches can be time
@@ -165,7 +201,7 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #' @examples
 #' # simple, want to know which sites are using the Heat Ratio method to measure
 #' # the sap flow.
-#' 
+#'
 #' # For this to work there must be a folder called 'Data' in the working
 #' # directory containing the sites .RData files
 #' \dontrun{
@@ -182,7 +218,7 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'   folder = 'Data',
 #'   join = 'and' # default
 #' )
-#' 
+#'
 #' # join = 'or' returns sites that meet any condition
 #' filter_by_var(
 #'   pl_sens_meth == 'HR',
@@ -197,12 +233,12 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #' @export
 
 filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache = FALSE) {
-  
+
   # Don't waste resources, if cache, read metadata from disk directly
   if (.use_cache) {
-    
+
     cache_file <- file.path(folder, '.metadata_cache.RData')
-    
+
     if (file.exists(cache_file)) {
       load(cache_file) # loads and object called sfn_metadata
     } else {
@@ -214,19 +250,19 @@ filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache =
   } else {
     message('.use_cache is set to FALSE, creating a temporal metadata db. ',
             'This can take a while...')
-    sfn_metadata <- read_sfn_metadata(folder, .write_cache = FALSE)
+    sfn_metadata <- .write_metadata_cache(folder, .dry = TRUE)
   }
-  
+
   # if we accept ... (expressions with logical result) we need to enquo them
   dots <- dplyr::quos(...)
-  
+
   metadata <- c(site_md = 'si_', stand_md = 'st_',
                 species_md = 'sp_', plant_md = 'pl_', env_md = 'env_')
   res_list <- vector(mode = 'list')
-  
+
   # loop along all metadata classes to check if there is filters and apply them
   for (md in 1:5) {
-    
+
     # dot dispatcher, distribute the dots in the corresponding metadata
     sel_dots <- dots %>%
       purrr::map(rlang::quo_get_expr) %>%
@@ -234,7 +270,7 @@ filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache =
       purrr::map(stringr::str_detect, pattern = metadata[[md]]) %>%
       purrr::map_lgl(any)
     md_dots <- dots[sel_dots]
-    
+
     # if there is filters, filter the corresponding metadata, pull the codes
     # and get the unique (in case of plant and species md, that can be repeated)
     if (length(md_dots) > 0) {
@@ -245,37 +281,37 @@ filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache =
         # pull the si_code variable
         dplyr::pull(.data$si_code) %>%
         unique()
-      
+
       res_list[[md]] <- md_sites_selected
       names(res_list)[md] <- names(metadata)[md]
-      
+
     } else {
       # if there is no filter, return NULL to the list, we will remove it after
       res_list[[md]] <- NULL
     }
   }
-  
+
   # remove the NULL elements, this way we can check for values in all elements
   # We do it with purrr::keep (compact removes also empty vectors, which is not
   # desirable in this situation)
   names_sites <- res_list %>%
     purrr::keep(~ !is.null(.x))
-  
+
   # get the join argument
   join <- match.arg(join)
   if (join == 'or') {
-    
+
     # 'or' indicates any site that meet any condition
     res_names <- purrr::flatten_chr(names_sites) %>%
       unique()
     return(res_names)
-    
+
   } else {
-    
+
     # 'and' indicates only sites that meet all conditions, we will do that with
     # Reduce and intersect
     res_names <- Reduce(intersect, names_sites)
     return(res_names)
-    
+
   }
 }
