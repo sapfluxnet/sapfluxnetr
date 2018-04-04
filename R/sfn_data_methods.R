@@ -349,7 +349,7 @@ setMethod(
 setMethod(
   "show", "sfn_data",
   definition = function(object) {
-    
+
     si_code <- slot(object, 'si_code')
     site_md <- slot(object, 'site_md')
     stand_md <- slot(object, 'stand_md')
@@ -360,13 +360,13 @@ setMethod(
     env_data <- slot(object, 'env_data')
     sapf_flags <- slot(object, 'sapf_flags')
     env_flags <- slot(object, 'env_flags')
-    
+
     # object class
     cat(class(object), " object\n", sep = "")
-    
+
     # site code
     cat("Data from ", si_code, " site\n\n", sep = "")
-    
+
     # main contributor
     cat(
       "Data kindly provided by ",
@@ -375,7 +375,7 @@ setMethod(
       " from ", site_md[['si_contact_institution']],
       fill = 80
     )
-    
+
     # additional
     if (!is.na(site_md[['si_addcontr_firstname']])) {
       cat("and ",
@@ -386,28 +386,33 @@ setMethod(
     } else {
       cat('\n')
     }
-    
+
+    # paper
+    paper <- site_md[['si_paper']]
+
+    cat('Site related literature: ', paper, '\n\n')
+
     # number of trees
     cat("Sapflow data: ", nrow(sapf_data), " observations of ",
         length(names(sapf_data)), " trees/plants\n")
-    
+
     # species
     cat("Species present: ",
         paste0(species_md[["sp_name"]], collapse = ', '),
         '\n',
         fill = TRUE)
-    
+
     # env_vars
     cat("Environmental data: ", nrow(env_data), " observations.\n")
-    
+
     cat(
       "Variables present:\n ", paste(names(env_data)), "\n",
       fill = 80
     )
-    
+
     # biome
     cat("Biome: ", site_md[['si_biome']], '\n\n')
-    
+
     # timestamp span
     timestamp_minmax <- .min_max(slot(object, 'timestamp'))
     timestamp_span <- lubridate::interval(timestamp_minmax[1],
@@ -533,7 +538,7 @@ setMethod(
 #'
 #' @examples
 #' library(dplyr)
-#' 
+#'
 #' data('FOO', package = 'sapfluxnetr')
 #' sapf_data <- get_sapf_data(FOO, solar = TRUE)
 #' env_data_no_solar <- get_env_data(FOO, solar = FALSE)
@@ -737,19 +742,19 @@ setMethod(
 #' }
 #' Validity is automatically checked before modifing the sfn_data object, and
 #' an error is raised if not valid
-#' 
+#'
 #' @param object sfn_data containing the slot to replace
-#' 
+#'
 #' @param value object with the data to replace snf_Data slot with
 #'
 #' @examples
 #' # preparation
 #' data('FOO', package = 'sapfluxnetr')
 #' sapf_data <- get_sapf_data(FOO, solar = TRUE)
-#' 
+#'
 #' # modifying the slot data
 #' sapf_data[1:10, 2] <- NA
-#' 
+#'
 #' # replacement. Remember, the sfn_data slot does not contain a TIMESTAMP
 #' # variable, it must be removed
 #' get_sapf_data(FOO) <- sapf_data[,-1]
