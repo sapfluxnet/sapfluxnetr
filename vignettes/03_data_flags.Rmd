@@ -45,6 +45,9 @@ Possible values for flags are as follow:
   
   + **"RANGE_WARN"** Indicates that the value could be out of "usual" maximum
     value for the variable. Not removed.
+  
+  + **"USER_MODF"** Modified by the user. Added when sfn_mutate or sfn_mutate_at
+    functions are used.
 
 Data points can have more than one flag. In that case flags are separated by
 `"; "` (i.e. `"OUT_WARN; OUT_REMOVED"`)

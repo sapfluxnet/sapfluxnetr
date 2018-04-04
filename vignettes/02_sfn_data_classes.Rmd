@@ -23,7 +23,7 @@ data and metadata.
 
 ## Slots
 
-`sfn_data` has eleven slots:
+`sfn_data` class has twelve different slots:
 
   1. **sapf_data**: Tibble containing sapflow data, without TIMESTAMP variable.
   
@@ -63,26 +63,31 @@ The schematics of the class are summarised in Fig 1.
 
 This design have some characteristics:
 
-  + **Dimensions**:  
-    `nrow(sapf_data) == nrow(env_data) == length(timestamp) == length(solar_timestamp)`  
+  + **Dimensions**: Dimensions must comply:  
+  
+    `nrow(sapf_data) == nrow(env_data) == nrow(sapf_flags) == nrow(env_flags) == length(timestamp) == length(solar_timestamp)`  
     
-    `sapf_data` and `env_data` must have the same number of rows,
-    equal to `length(timestamp)` and `length(solar_timestamp)`. In the case of
-    differences in the dimensions of between both datasets, NAs must be added
-    to the dataset lacking the data (i.e. if env data is longer than sapf data,
-    rows are added to the later with NAs to make them equal, and flags are raised
-    to indicate the adding).
+    `ncol(sapf_data) == ncol(sapf_flags)`  
+    
+    `ncol(env_data) == ncol(env_flags)`  
+    
+    In the case of differences in the dimensions of between environmental and
+    sap flow data, NAs must be added when equalising both TIMESTAMPs (i.e. if
+    env data is longer than sapf data, rows are added to the later with NAs to
+    make them equal, and flags ("NA_ADDED") are raised to indicate the adding).
 
   + **si_code slot**: This slot indicates the site. This is useful for
     identifying the site in the metrics functions results.
   
-  + **Compartmentalization**: `timestamp` and `solar_timestamp` are isolated
+  + **Compartimentalization**: `timestamp` and `solar_timestamp` are isolated
     from data (sapf and env) in their own slot. This made easier subsetting the
     object and open the possibility of working with the timestamps only.
   
   + **Flags**: Two slots are used for storing data flags. As the flag slots
     have the same dimensions as the corresponding dataset slot, selection of
-    flagged data is straightforward: `sapf_data[flag_data == "flag", ]`
+    flagged data is straightforward:  
+    
+    `sapf_data[flag_data == "flag", ]`
 
 
 ## Methods
@@ -119,8 +124,11 @@ get_env_md(FOO)
 ```
     
   + `assignation`: methods for `"<-"` are implemented, allowing transformation
-    of the slots, i.e. when tranforming units. See `?sfn_replacement_methods`
-    for more details.
+    of the slots. This is used internally in some functions but is not
+    recommended except for updating metadata slots. In data slots this
+    changes are not reflected in the flags, so the reproducibility and
+    traceability will be lost if used without care.
+    See `?sfn_replacement_methods` for more details.
     
 ```{r assignation}
 # extraction and modification
@@ -163,11 +171,13 @@ sfn_data(
 
 ## Utilities
 
-`sapfluxnetr` package offers some utilities to work and visualize sfn_data
+`sapfluxnetr` package offers some utilities to visulaize and work with sfn_data
 objects:
 
-  + `sfn_plot`. This function allows to plot `sfn_data` objects. See `?sfn_plot`
-    for more details.
+### `sfn_plot`
+
+This function allows to plot `sfn_data` objects. See `?sfn_plot` for more
+details.
   
 ```{r sfn_plot, fig.width=6}
 library(ggplot2)
@@ -180,9 +190,12 @@ sfn_plot(FOO, formula_env = ~ vpd) +
   theme(legend.position = 'none')
 ```
   
-  + `sfn_filter`. This function emulates `filter` function from `dplyr` package
-    for `sfn_data` objects. Useful to filter by some especific timestamp.
-    See `sfn_filter` for more details.
+### `sfn_filter`
+
+This function emulates `filter` function from `dplyr` package for `sfn_data`
+objects. Useful to filter by some especific timestamp. Be advised, using this
+funcion to filter by sapflow or environmental variables can create TIMESTAMP
+gaps. See `sfn_filter` for more details.
     
 ```{r sfn_filter}
 library(lubridate)
@@ -192,21 +205,28 @@ library(dplyr)
 sfn_filter(FOO, month(TIMESTAMP) == 11)
 ```
     
-  + `sfn_mutate`. This function allows mutation of data variables inside the
-    `sfn_data` object. Useful when you need to transform a variable to another
-    units or similar. A flag ('USER_MODF') will be added to all values in the
-    mutated variable. See `sfn_mutate` for more details.
+### `sfn_mutate`
+
+This function allows mutation of data variables inside the `sfn_data` object.
+Useful when you need to transform a variable to another units or similar. A flag
+('USER_MODF') will be added to all values in the mutated variable. See
+`sfn_mutate` for more details.
+
+  > At this moment, mutate does not allows creating new variables, only mutate
+    existing variables
     
 ```{r sfn_mutate}
 # transform ws from m/s to km/h
-foo_mutated <- sfn_mutate(FOO, ws = ws*3600/1000)
+foo_mutated <- sfn_mutate(FOO, ws = ws * 3600/1000)
 get_env_data(foo_mutated)[['ws']][1:10]
 ```
   
-  + `sfn_mutate_at`. This function mutates all variables declared with the
-    function provided. Useful when you need to conditionally transform the data,
-    i.e. converting to NA sapflow values when an environmental variable exceeds
-    some threshold. See `sfn_mutate_at` for more details.
+### `sfn_mutate_at`
+
+This function mutates all variables declared with the function provided. Useful
+when you need to conditionally transform the data, i.e. converting to NA sapflow
+values when an environmental variable exceeds some threshold. See
+`sfn_mutate_at` for more details.
     
 ```{r sfn_mutate_at}
 foo_mutated_2 <- sfn_mutate_at(
@@ -223,18 +243,23 @@ get_sapf_data(FOO)
 get_sapf_data(foo_mutated_2)
 ```
 
-  + `*_metrics` functions. Family of functions to aggregate and summarise the
-    site data. See `?metrics` for more details.
+### `*_metrics` functions
+
+Family of functions to aggregate and summarise the site data. See `?metrics` for
+more details.
     
 ```{r metrics}
 foo_daily <- daily_metrics(FOO)
 foo_daily[['sapf']][['sapf_gen']]
 ```
 
+For full control of metrics and custom aggregations see
+`vignette('04_custom_aggregation', package = 'sapfluxnetr')`
+
 # `sfn_data_multi`
 
 `sfn_data_multi` is an S4 class designed to store multiple `sfn_data` objects.
-It inherits from list, so, in a nutshell, `sfn_data_multi` is a list of
+It inherits from list so, in a nutshell, `sfn_data_multi` is a list of
 `sfn_data` objects.
 
 ## Methods
@@ -251,13 +276,16 @@ multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
 multi_sfn
 ```
 
+It shows the number and codes of site composing the multi object and the
+combined timestamp span of all the sites contained.
+
 ## Utilities
 
 All the utilities that exists for `sfn_data` work for `sfn_data_multi` objects,
 executing the function for all the sites contained in the `sfn_data_multi`
 object:
 
-  + `sfn_plot`
+### `sfn_plot`
 
 ```{r plot_multi, fig.show='hold', fig.width=3.4}
 multi_plot <- sfn_plot(multi_sfn, formula = ~ vpd)
@@ -266,21 +294,21 @@ multi_plot[['BAZ']] + theme(legend.position = 'none')
 ```
 
 
-  + `sfn_filter`
+### `sfn_filter`
 
 ```{r sfn_filter_multi}
 multi_filtered <- sfn_filter(multi_sfn, month(TIMESTAMP) == 11)
 get_timestamp(multi_filtered[['BAZ']])[1:10]
 ```
 
-  + `sfn_mutate`
+### `sfn_mutate`
   
 ```{r sfn_mutate_multi}
 multi_mutated <- sfn_mutate(multi_sfn, ws = ws * 3600/1000)
 get_env_data(multi_mutated[['BAZ']])[['ws']][1:10]
 ```
 
-  + `sfn_mutate_at`
+### `sfn_mutate_at`
 
 ```{r sfn_mutate_at_multi}
 vars_to_not_mutate <- c(
@@ -300,7 +328,7 @@ multi_mutated_2 <- sfn_mutate_at(
 multi_mutated_2[['FOO']]
 ```
 
-  + `*_metrics`
+### `*_metrics`
 
 ```{r metrics_multi}
 multi_metrics <- daily_metrics(multi_sfn)
