@@ -54,7 +54,7 @@ NULL
 #' @export
 
 max_time <- function(x, time) {
-  
+
   # if all the values in x are NAs (a daily summmarise of no measures day for
   # example) this will return a length 0 POSIXct vector, which will crash
   # dplyr summarise step. So, check if all NA and if true return NA
@@ -70,7 +70,7 @@ max_time <- function(x, time) {
 #' @export
 
 min_time <- function(x, time) {
-  
+
   # if all the values in x are NAs (a daily summmarise of no measures day for
   # example) this will return a length 0 POSIXct vector, which will crash
   # dplyr summarise step. So, check if all NA and if true return NA
@@ -82,45 +82,45 @@ min_time <- function(x, time) {
 }
 
 #' Diurnal centroid calculation
-#' 
+#'
 #' Calculate the diurnal centroid for sapflow and environmental variables
-#' 
+#'
 #' The code for this function has been kindly provided by Jacob Nelson in python
 #' (see https://github.com/jnelson18/FluxnetTools/blob/master/FileS3.py) and has
 #' been translated to a tidy data phylosophy in R to be used inside a
 #' \code{\link[dplyr]{summarise}} statement.
-#' 
+#'
 #' @section Diurnal centroid algorithm:
 #' Given a continuous subdaily values at regular intervals
 #' \eqn{V = {x_1, ..., x_n}} to obtain the diurnal centroid each value is
 #' multiplied by its interval index and summed up and divided
 #' by the sum of the values for the day and finally the value is normalized to
 #' 24h:
-#' 
+#'
 #' \deqn{
 #' \sum {x_1 * 1, x_2 * 2, ... , x_n * n} / \sum {x_1, x_2, ... , x_n} * (24/n)
 #' }
-#' 
+#'
 #' With even values for all the intervals (i.e. 100 for all), centroid converges
 #' to 12h at more than 1000 intervals per day. With only 48 (half hourly
 #' measurements) centroid converges to 12.25h and with 24 intervals (hourly
 #' measurements) centroid converges to 12.5h. So, using diurnal centroid value
 #' in half hourly datasets or above can have a considerable error associated.
-#' 
+#'
 #' @param variable A numeric vector containing the values for a day at a
 #'   regular intervals. Missing values are allowed but not recommended
-#' 
+#'
 #' @examples
 #' # dplyr
 #' library(dplyr)
-#' 
+#'
 #' # check convergence to 12h:
 #' diurnal_centroid(rep(1, 1000)) # 12.012 h
 #' diurnal_centroid(rep(10000, 1000)) # 12.012 h, variable scale not affects calculation
-#' 
+#'
 #' # sapflow diurnal centroid
 #' data('FOO', package = 'sapfluxnetr')
-#' 
+#'
 #' sfn_metrics(
 #'   FOO,
 #'   period = 'daily',
@@ -131,24 +131,24 @@ min_time <- function(x, time) {
 #'   midday = FALSE,
 #'   nighttime = FALSE
 #' )
-#' 
+#'
 #' @return A numeric vector with the diurnal centroid value (0 to 24 h)
-#' 
+#'
 #' @author Jacob Nelson & Víctor Granda
-#' 
+#'
 #' @export
 
 diurnal_centroid <- function(variable) {
-  
+
   # Hack to work in POSIXct vectors which does not support * operations.
   # make sure variable is numeric (to avoid errors with POSIXct TIMESTAMP_coll)
   variable <- as.numeric(variable)
-  
+
   steps_by_day = length(variable)
-  raw_c <- sum(variable * 1:steps_by_day, na.rm = TRUE) / 
+  raw_c <- sum(variable * 1:steps_by_day, na.rm = TRUE) /
     sum(variable, na.rm = TRUE)
   res_c <- raw_c * (24 / steps_by_day)
-  
+
   return(res_c)
 }
 
@@ -248,7 +248,7 @@ diurnal_centroid <- function(variable) {
     # "38UTC+12:45, M*" = "Pacific/Chatham",
     # "39UTC+13:00, M†" = "Etc/GMT-13",
     # "40UTC+14:00, M†" = "Etc/GMT-14"
-    
+
     "1UTC-12:00, Y" = "Etc/GMT+12",
     "2UTC-11:00, X" = "Etc/GMT+11",
     "3UTC-10:00, W" = "Etc/GMT+10",
@@ -288,7 +288,7 @@ diurnal_centroid <- function(variable) {
     "38UTC+12:45, M*" = "Pacific/Chatham",
     "39UTC+13:00, M\\u2020" = "Etc/GMT-13",
     "40UTC+14:00, M\\u2020" = "Etc/GMT-14"
-    
+
   )
 
   # STEP 2
@@ -432,13 +432,13 @@ as_sfn_data_multi <- function(x) {
       si_lat = list(
         values = 'Contributor defined',
         type = 'Numeric',
-        units = 'Latitude, decimal format',
+        units = 'Latitude, decimal format (WGS84)',
         description = 'Site latitude (i.e. 42.36)'
       ),
       si_long = list(
         values = 'Contributor defined',
         type = 'Numeric',
-        units = 'Longitude, decimal format',
+        units = 'Longitude, decimal format (WGS84)',
         description = 'Site longitude (i.e. -8.23)'
       ),
       si_elev = list(
@@ -472,7 +472,7 @@ as_sfn_data_multi <- function(x) {
                    'ENF', 'MF', 'OSH', 'SAV', 'URB', 'WET', 'WSA'),
         type = 'Character',
         units = "Fixed values",
-        description = "Vegetation type based on IGBP definition"
+        description = "Vegetation type based on IGBP classification"
       ),
       si_flux_network = list(
         values = c(TRUE, FALSE),
@@ -519,11 +519,15 @@ as_sfn_data_multi <- function(x) {
         description = 'Site annual mean precipitation, as obtained from WorldClim'
       ),
       si_biome = list(
-        values = '',
+        values = c(
+          'Subtropical desert', 'Temperate grassland desert', 'Mediterranean',
+          'Temperate forest', 'Boreal forest', 'Temperate rain forest',
+          'Tropical rain forest', 'Tropical forest savanna', 'Tundra'
+        ),
         type = 'Character',
         units = 'sapfluxnet calculated',
         description = paste0(
-          'Biome classification as per Whitaker diagram, based on mat and',
+          'Biome classification as per Whittaker diagram, based on mat and',
           ' map obtained from WorldClim'
         )
       )
@@ -577,7 +581,7 @@ as_sfn_data_multi <- function(x) {
       st_lai = list(
         values = 'Coontributor defined',
         type = 'Numeric',
-        units = '',
+        units = 'm2/m2',
         description = 'Total maximum stand leaf area (one-sided, projected)'
       ),
       st_aspect = list(
@@ -604,7 +608,7 @@ as_sfn_data_multi <- function(x) {
         values = c('SAND', 'LOAM', 'SILT', 'CLAY'),
         type = 'Character',
         units = 'Fixed values',
-        description = 'Soil texture class, based on USDA classification'
+        description = 'Soil texture class, based on simplified USDA classification'
       ),
       st_sand_perc = list(
         values = 'Contributor defined',
@@ -634,7 +638,11 @@ as_sfn_data_multi <- function(x) {
         )
       ),
       st_USDA_soil_texture = list(
-        values = '',
+        values = sort(c(
+          'clay', 'silty clay', 'sandy clay', 'clay loam', 'silty clay loam',
+          'sandy clay loam', 'loam', 'silty loam', 'sandy loam', 'silt',
+          'loamy sand', 'sand'
+        )),
         type = 'Character',
         units = 'sapfluxnet calculated',
         description = paste0(
@@ -737,13 +745,13 @@ as_sfn_data_multi <- function(x) {
       pl_bark_thick = list(
         values = 'Contributor defined',
         type = 'Numeric',
-        units = 'cm',
+        units = 'mm',
         description = 'Plant bark thickness'
       ),
       pl_leaf_area = list(
         values = 'Contributor defined',
         type = 'Numeric',
-        units = 'cm2',
+        units = 'm2',
         description = 'Leaf area of eachvvmeasured plant'
       ),
       pl_sens_meth = list(
@@ -779,10 +787,10 @@ as_sfn_data_multi <- function(x) {
         description = 'Zero flow determination method'
       ),
       pl_sens_calib = list(
-        values = '',
-        type = 'Character',
+        values = c(TRUE, FALSE),
+        type = 'Logical',
         units = 'Fixed values',
-        description = 'Species-specific calibration used'
+        description = 'Was species-specific calibration used?'
       ),
       pl_sap_units = list(
         values = c('cm3 cm-2 h-1', 'cm3 h-1'),
@@ -797,7 +805,7 @@ as_sfn_data_multi <- function(x) {
                    'cm3 h-1', 'dm3 h-1', 'g h-1', 'kg h-1'),
         type = 'Character',
         units = 'Fixed values',
-        description = 'Original contribution units (by sapwood or plant level)'
+        description = 'Original contribution units (at sapwood or plant level)'
       ),
       pl_sens_length = list(
         values = 'Contributor defined',
@@ -879,7 +887,7 @@ as_sfn_data_multi <- function(x) {
                    '33UTC+09:30, I\\u2020', '34UTC+10:00, K', '35UTC+10:30, K\\u2020',
                    '36UTC+11:00, L', '37UTC+12:00, M', '38UTC+12:45, M*',
                    '39UTC+13:00, M\\u2020', '40UTC+14:00, M\\u2020'),
-        
+
         type = 'Character',
         units = 'Fixed values',
         description = 'Time zone of site used in the TIMESTAMPS'
@@ -996,10 +1004,6 @@ as_sfn_data_multi <- function(x) {
 
   return(arch_list)
 
-  # TODO fill the metadata_arch list wth values for biome, pl_sens_calib, st_USDA*
-  # and check the units for all numeric variables, as I'm sure they are wrong in
-  # some cases
-  
 }
 
 #' List all variables that can be used to filter sites
@@ -1029,12 +1033,12 @@ sfn_vars_to_filter <- function() {
 }
 
 #' Detailed description of metadata variables
-#' 
+#'
 #' \code{describe_md_variable} prints in console a detailed description for the
 #' requested variable. Useful to know which values to filter or in which units
 #' the variables are.
-#' 
-#' @param variable A character with the name of the variable 
+#'
+#' @param variable A character with the name of the variable
 #'
 #' @return Nothing, prints information to console
 #' @export
@@ -1044,30 +1048,30 @@ sfn_vars_to_filter <- function() {
 #' describe_md_variable('pl_sens_meth')
 
 describe_md_variable <- function(variable) {
-  
+
   arch_list <- .metadata_architecture()
-  
+
   # description
   cat('Description:\n')
   arch_list %>%
     purrr::modify(c(variable, 'description')) %>%
     purrr::flatten_chr() %>%
     cat('\n', sep = '', fill = 80)
-  
+
   # values
   cat('Values:\n')
   arch_list %>%
     purrr::modify(c(variable, 'values')) %>%
     purrr::flatten_chr() %>%
     cat('\n', sep = ' | ', fill = 80)
-  
+
   # units
   cat('Units:\n')
   arch_list %>%
     purrr::modify(c(variable, 'units')) %>%
     purrr::flatten_chr() %>%
     cat('\n\n', sep = '')
-  
+
   # type
   cat('Type:\n')
   arch_list %>%
@@ -1077,9 +1081,9 @@ describe_md_variable <- function(variable) {
 }
 
 #' helper function to flag the mutated data in sfn_mutate and sfn_mutate_at
-#' 
+#'
 #' This function will add the "USER_MODF" flag to the data point flags
-#' 
+#'
 #' @param x variable to flag
 #'
 #' @return A vector of the same length than x with the variable flags modified

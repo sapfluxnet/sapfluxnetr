@@ -33,7 +33,9 @@ variables at the same time see \code{\link{sfn_mutate_at}}.
 `sfn_mutate` internally joins the sapflow and environmental datasets by the
 TIMESTAMP, so it is possible to mutate variables conditionally between
 sapflow and environmental measures (i.e. mutate sapflow when wind is high or
-radiation is zero).
+radiation is zero). Due to this, at the moment any new variable is dropped
+when building the final results, so this is ONLY intended to mutate
+exisiting variables without changing the names.
 }
 
 \examples{
