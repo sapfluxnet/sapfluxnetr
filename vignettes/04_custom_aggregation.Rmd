@@ -27,7 +27,8 @@ function. This vignette will show you how.
 
 `daily_metrics` and related functions return a complete set of metrics ready for
 use, but if you want simpler metrics and/or avoid the computational burden of
-returning all the pre-fixed metrics you can supply your own summarising metrics:
+returning all the pre-fixed metrics you can supply your own summarising metrics
+using the `funs` function located in the `dplyr` package:
 
 ```{r}
 # libraries
@@ -37,8 +38,10 @@ library(dplyr)
 ### only mean and sd at a daily scale
 # data
 data('FOO', package = 'sapfluxnetr')
+
 # summarising funs (built with funs function in dplyr package)
 custom_funs <- funs(mean = mean(., na.rm = TRUE), std_dev = sd(., na.rm = TRUE))
+
 # metrics
 foo_simpler_metrics <- sfn_metrics(
   FOO,
@@ -98,7 +101,7 @@ foo_weekly[['env']][['env_md']]
 ```
 
  + A vector of dates as period boundaries. This way you can build irregular
-   periods
+   or custom periods.
 
 ```{r}
 # custom
@@ -118,3 +121,43 @@ foo_custom <- sfn_metrics(
 foo_custom[['sapf']][['sapf_md']]
 ```
 
+## Extra parameters
+
+`sfn_metrics` has a `...` parameter intended to supply additional parameters to
+the internal functions used:
+
+  1. `tibbletime::collapse_index` accepts the following extra arguments:
+     
+     - `start_date`  
+        NULL by default in the sfn_metrics implementation
+     - `side`  
+        "start" by default in the sfn_metrics implementation
+     - `clean`  
+        TRUE by default in the sfn_metrics implementation
+  
+  1. `dplyr::summarise_all` accepts extra arguments intended to be applied to
+     summarising functions provided (to all, so they must have the argument
+     provided or an error will be raised)
+
+For example, if we want the TIMESTAMPs after aggregation to show the end of the
+period instead the beggining (default) we can do the following:
+
+```{r}
+foo_simpler_metrics_end <- sfn_metrics(
+  FOO,
+  period = 'daily',
+  .funs = custom_funs,
+  solar = TRUE,
+  general = TRUE,
+  predawn = FALSE,
+  midday = FALSE,
+  nighttime = FALSE,
+  side = "end"
+)
+
+foo_simpler_metrics_end[['sapf']][['sapf_gen']]
+```
+
+If it is compared with the `foo_simpler_metrics` calculated before, now the
+period is identified in the TIMESTAMP by the ending of the period (daily in this
+case).

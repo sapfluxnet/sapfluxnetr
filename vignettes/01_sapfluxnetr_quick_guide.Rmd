@@ -228,32 +228,41 @@ flavours, *general* (all data summarised), *pd* (only predawn period summarised)
 and *md* (only midday period summarised).  
 `nightly_metrics` divides the data in *day* and *night* and returns the metrics
 for each subset in the period declared (daily or monthly).  
-All three funtions return the same metrics, *mean*, *sd*, *n*, *data coverage*,
-*quantiles* (0.95 and 0.99 by default), *diurnal centroid*, *min value*,
-*time at min value*, *max value* and *time at max value*.  
+All three funtions return the same metrics, *mean*, *standard deviation*, *n*,
+*data coverage*, *quantiles* (0.95 and 0.99 by default), *diurnal centroid*,
+*min value*, *time at min value*, *max value* and *time at max value*.
+
 Let's see some examples:
 
 ```{r daily}
 arg_maz_daily <- daily_metrics(arg_maz, solar = TRUE)
+
+names(arg_maz_daily)
+names(arg_maz_daily[['sapf']])
+names(arg_maz_daily[['env']])
 ```
 
 We can see that results are divided in `sapf` and `env` and inside each of them
 there are the `gen`, `pd` and `md` results. So if we want to inspect the
-general aggregation for sap flow measures:
+general aggregation for sap flow measures we can do it as follows:
 
 ```{r daily_sapf_gen}
 arg_maz_daily[['sapf']][['sapf_gen']]
 ```
 
-or more especifically, the 0.99 quantiles:
+We can also select specific variables, for example the 0.99 quantiles of sap
+flow measures:
 
 ```{r daily_sapf_gen_q99}
 arg_maz_daily[['sapf']][['sapf_gen']] %>%
   select(TIMESTAMP, ends_with('q_99'))
 ```
 
-Or maybe we are interested in the mean values of the midday periods for
-environmental variables:
+The same is applicable to the environmental data, in this case we can select
+mean values of the midday interval for environmental variables:
+
+  > Note that in the midday and predawn intervals metrics, the variable names
+    end with `_md` and `_pd` respectively
 
 ```{r daily_sapf_md_mean}
 arg_maz_daily[['env']][['env_md']] %>%
@@ -266,6 +275,12 @@ calculate and the periods to aggregate. See `?sfn_metrics` and
 `vignette('04_custom_aggregation'. package = 'sapfluxnetr')` for more details
 about it.
 
+#### Agregation TIMESTAMP format
+
+It's worth to mention that aggregated TIMESTAMPS are fixed to the **beginning**
+of the period aggregated, meaning that data from `2018-01-01 00:00:00` to
+`2018-01-01 23:59:59` are aggregated as `2018-01-01 00:00:00`.  
+You can change this using the `side` parameter (see `?sfn_metrics`)
 
 ## Working with multiple sites
 

@@ -60,7 +60,7 @@
 #'
 #' @examples
 #' library(dplyr)
-#' 
+#'
 #' # data
 #' data('FOO', package = 'sapfluxnetr')
 #'
@@ -81,17 +81,17 @@ summarise_by_period <- function(data, period, .funs, ...) {
   dots <- rlang::quos(...)
   dots_collapse_index <- dots[names(dots) %in% methods::formalArgs(tibbletime::collapse_index)]
   dots_summarise_all <- dots[!(names(dots) %in% methods::formalArgs(tibbletime::collapse_index))]
-  
+
   # TODO set clean = TRUE and side "start" for the collapse, except if they are
   # setted by the user.
   if (is.null(dots_collapse_index[['side']])) {
     dots_collapse_index[['side']] <- rlang::quo('start')
   }
-  
+
   if (is.null(dots_collapse_index[['clean']])) {
     dots_collapse_index[['clean']] <- rlang::quo(TRUE)
   }
-  
+
   data %>%
     # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
     dplyr::mutate(
@@ -105,9 +105,9 @@ summarise_by_period <- function(data, period, .funs, ...) {
     dplyr::group_by(.data$TIMESTAMP) %>%
     dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
     dplyr::select(-dplyr::contains('_coll_')) -> res
-  
+
   return(res)
-  
+
 }
 
 
@@ -116,14 +116,17 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' Generate daily or above metrics from a site data for the period indicated
 #'
 #' @section period:
-#' \code{period} argument is piped to \code{tibbletime::collapse_index} function.
-#' See \code{\link[tibbletime]{collapse_index}} for a detailed explanation but in
+#' \code{period} argument is piped to \code{tibbletime::collapse_index} function
+#' with \code{side = 'end', clean = FALSE} options. See
+#' \code{\link[tibbletime]{collapse_index}} for a detailed explanation but in
 #' short:
 #' \itemize{
 #'   \item{\emph{frequency period} format: "1 day", "7 day", "1 month", "1 year"}
 #'   \item{\emph{shorthand} format: "hourly", "daily", "monthly", "yearly"}
 #'   \item{\emph{custom} format: a vector of dates to use as custom and more flexible boundaries}
 #' }
+#' Also, you can override the default behaviour of \code{sfn_metrics}, providing
+#' \code{side = 'end'} or \code{clean = FALSE}.
 #'
 #' @section .funs:
 #' \code{.funs} argument uses the same method as the \code{.funs} argument in the
@@ -165,9 +168,9 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'
 #' @param nighttime Logical indicating if division between night and day id
 #'   done and metrics for each subset (day and night) returned.
-#' 
+#'
 #' @param night_start Hour to start the night interval
-#' 
+#'
 #' @param night_end Hour to end the night interval
 #'
 #' @param ... optional arguments to pass to methods used
@@ -242,7 +245,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'
 #' @examples
 #' library(dplyr)
-#' 
+#'
 #' ## sfn_data
 #' data('FOO', package = 'sapfluxnetr')
 #' FOO_metrics <- sfn_metrics(
@@ -343,40 +346,40 @@ sfn_metrics <- function(
 
     return(res_multi)
   }
-  
+
   # if sfn_data then we have to calculate the desired metrics from the data
-  
+
   print(paste0(
     'Crunching data for ', get_si_code(sfn_data), '. In large datasets this ',
     'could take a while'
   ))
-  
+
   sapf_data <- get_sapf_data(sfn_data, solar = solar)
   env_data <- get_env_data(sfn_data, solar = solar)
 
   whole_data <- list(sapf = sapf_data, env = env_data)
-  
+
   if (general) {
     # progress to not scare seeming like freezed
     print(paste0('General data for ', get_si_code(sfn_data)))
-    
+
     # period summaries: we want to know period means, maximum, minimum, quantiles...
     whole_data %>%
       purrr::map(summarise_by_period, period, .funs, ...) -> period_summary
   } else {
     period_summary <- NULL
   }
-  
+
   # filtering summaries we want to know filtered period (predawn, midday) means,
   # maximum, minimum, quantiles...
   # `summarise_by_period` is a helper function documented in helpers.R
 
   # predawn
   if (predawn) {
-    
+
     # progress to not scare seeming like freezed
     print(paste0('Predawn data for ', get_si_code(sfn_data)))
-    
+
     whole_data %>%
       purrr::map(
         dplyr::filter,
@@ -394,10 +397,10 @@ sfn_metrics <- function(
 
   # midday
   if (midday) {
-    
+
     # progress to not scare seeming like freezed
     print(paste0('Midday data for ', get_si_code(sfn_data)))
-    
+
     whole_data %>%
       purrr::map(
         dplyr::filter,
@@ -412,13 +415,13 @@ sfn_metrics <- function(
   } else {
     midday_summary <- NULL
   }
-  
+
   #### night time ####
   if(nighttime) {
-    
+
     # progress to not scare seeming like freezed in large datasets
     print(paste0('Nighttime data for ', get_si_code(sfn_data)))
-    
+
     night_data <- whole_data %>%
       purrr::map(
         dplyr::filter,
@@ -429,11 +432,11 @@ sfn_metrics <- function(
             lubridate::hour(.data$TIMESTAMP), 0, night_end - 1
           )
       )
-    
-    
-    
+
+
+
     if (period == 'daily') {
-      
+
       night_boundaries <- night_data[['sapf']] %>%
         dplyr::mutate(
           coll = tibbletime::collapse_index(
@@ -450,10 +453,10 @@ sfn_metrics <- function(
           )]
         ) %>%
         dplyr::pull(.data$custom_dates)
-      
+
       night_boundaries <- night_boundaries %>%
         lubridate::floor_date(unit = 'hours')
-      
+
       # workaround the two nights in one day problem (sites that start at
       # 00:00:00 have two nights in the same day, the first one corresponds to
       # the previous day and we have to fix it)
@@ -468,19 +471,19 @@ sfn_metrics <- function(
         ),
         tz = attr(extra_start_boundary, 'tz')
       )
-      
+
       night_sum <- night_data %>%
         purrr::map(
           summarise_by_period, night_boundaries, .funs,
           # clean = FALSE, !!! dots_summ,
           ...
         )
-      
+
     } else {
-      
+
       # night_boundaries <- night_boundaries %>%
       #   lubridate::floor_date(unit = 'hourly')
-      # 
+      #
       # # workaround the two nights in one month problem (sites that start at
       # # XXXX-XX-01 00:00:00 have two nights in the same month, the first one
       # # corresponds to the previous month and we have to fix it)
@@ -495,30 +498,30 @@ sfn_metrics <- function(
       #   ),
       #   tz = attr(extra_start_boundary, 'tz')
       # )
-      
-      
+
+
       night_sum <- night_data %>%
         purrr::map(
           summarise_by_period, period, .funs,
           # clean = FALSE, !!! dots_summ,
           ...
         )
-      
+
     }
-    
+
     names(night_sum[['sapf']]) <- paste0(names(night_sum[['sapf']]), '_night')
     names(night_sum[['env']]) <- paste0(names(night_sum[['env']]), '_night')
-    
+
     day_sum <- whole_data %>%
       purrr::map2(
         night_data,
         ~ dplyr::anti_join(.x, .y, by = 'TIMESTAMP')
       ) %>%
       purrr::map(summarise_by_period, period, .funs, ...)
-    
+
     names(day_sum[['sapf']]) <- paste0(names(day_sum[['sapf']]), '_day')
     names(day_sum[['env']]) <- paste0(names(day_sum[['env']]), '_day')
-    
+
     nighttime_summary <- list(
       sapf = list(
         sapf_day = day_sum[['sapf']],
@@ -564,7 +567,7 @@ sfn_metrics <- function(
       env_night = nighttime_summary[['env']][['env_night']]
     )
   )
-  
+
   # remove the NULLs
   return(
     res %>%
@@ -576,25 +579,25 @@ sfn_metrics <- function(
 ####### shorthand functions for sfn_metrics ####################################
 
 #' helper function to generate the fixed metrics
-#' 
+#'
 #' generates a call to dplyr::funs to capture the fixed metrics
-#' 
+#'
 #' @param probs probs vector for quantile
-#' 
+#'
 #' @param centroid logical indicating if centroid calculation must be made.
 #'   (i.e. in monthly metrics, the centroid calculation is not needed)
 
 .fixed_metrics_funs <- function(probs, centroid) {
-  
+
   # hack to avoid R CMD CHECKS to complain about . not being a global variable
   . <- NULL
-  
+
   # we need magic to add the quantiles as they return more than one value
   # (usually). So lets play with quasiquotation
   quantile_args <- probs %>%
     purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
   names(quantile_args) <- paste0('q_', round(probs*100, 0))
-  
+
   .funs <- dplyr::funs(
     mean = mean(., na.rm = TRUE),
     sd = sd(., na.rm = TRUE),
@@ -607,24 +610,24 @@ sfn_metrics <- function(
     min_time = min_time(., .data$TIMESTAMP_coll),
     centroid = diurnal_centroid(.)
   )
-  
+
   if (!centroid) {
     .funs[['centroid']] <- NULL
     }
-  
+
   return(.funs)
-  
+
 }
 
 #' Complete metrics wrappers
-#' 
+#'
 #' This set of functions returns a complete set of statistics for a site or
 #' several sites (using \code{\link{sfn_data_multi}})
-#' 
-#' @details  
+#'
+#' @details
 #' \code{*_metrics} functions are wrappers for \code{\link{sfn_metrics}} with a
 #' set of fixed arguments.
-#' 
+#'
 #' \code{*_metrics} functions return all or some of the following statistics:
 #' \itemize{
 #'   \item{mean: mean of variable (tree or environmental variable) for the
@@ -641,27 +644,27 @@ sfn_metrics <- function(
 #'         the summed daily value was reached). Only returned when period
 #'         is 'daily'}
 #' }
-#' 
+#'
 #' @param probs numeric vector of probabilities for \code{\link[stats]{quantile}}
 #'
 #' @family metrics
-#' 
+#'
 #' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
 #'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
 #'   for each site.
 #'
 #' @importFrom dplyr n
-#' 
+#'
 #' @name metrics
 NULL
 
 #' @rdname metrics
-#' 
+#'
 #' @section daily_metrics:
 #' \code{daily_metrics} will always return the general metrics (for all data),
 #' the predawn metrics (only data in the predawn period) and the midday metrics
 #' (only data in the midday period).
-#' 
+#'
 #' @inheritParams sfn_metrics
 #'
 #' @examples
@@ -702,16 +705,16 @@ daily_metrics <- function(
 
   # hardcoded values
   period <- 'daily'
-  
+
   # # hack to avoid R CMD CHECKS to complain about . not being a global variable
   # . <- NULL
-  # 
+  #
   # # we need magic to add the quantiles as they return more than one value
   # # (usually). So lets play with quasiquotation
   # quantile_args <- probs %>%
   #   purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
   # names(quantile_args) <- paste0('q_', round(probs*100, 0))
-  # 
+  #
   # .funs <- dplyr::funs(
   #   mean = mean(., na.rm = TRUE),
   #   sd = sd(., na.rm = TRUE),
@@ -725,7 +728,7 @@ daily_metrics <- function(
   #   centroid = diurnal_centroid(.)
   # )
   .funs <- .fixed_metrics_funs(probs, TRUE)
-  
+
   # just input all in the sfn_function
   sfn_metrics(
     sfn_data,
@@ -745,12 +748,12 @@ daily_metrics <- function(
 }
 
 #' @rdname metrics
-#' 
+#'
 #' @section monthly_metrics:
 #' \code{monthly_metrics} will always return the general metrics (for all data),
 #' the predawn metrics (only data in the predawn period) and the midday metrics
 #' (only data in the midday period).
-#' 
+#'
 #' @inheritParams sfn_metrics
 #'
 #' @examples
@@ -789,16 +792,16 @@ monthly_metrics <- function(
 
   # hardcoded values
   period <- 'monthly'
-  
+
   # # hack to avoid R CMD CHECKS to complain about . not being a global variable
   # . <- NULL
-  # 
+  #
   # # we need magic to add the quantiles as they return more than one value
   # # (usually). So lets play with quasiquotation
   # quantile_args <- probs %>%
   #   purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
   # names(quantile_args) <- paste0('q_', round(probs*100, 0))
-  # 
+  #
   # .funs <- dplyr::funs(
   #   mean = mean(., na.rm = TRUE),
   #   sd = sd(., na.rm = TRUE),
@@ -812,7 +815,7 @@ monthly_metrics <- function(
   #   centroid = diurnal_centroid(.)
   # )
   .funs <- .fixed_metrics_funs(probs, FALSE)
-  
+
   # just input all in the sfn_function
   sfn_metrics(
     sfn_data,
@@ -832,20 +835,20 @@ monthly_metrics <- function(
 }
 
 #' @rdname metrics
-#' 
+#'
 #' @section nightly_metrics:
 #' \code{nightly_metrics} will always return the metrics for day and night
 #' periods, summarised daily or monthly
-#' 
+#'
 #' Night for daily period starts in DOY x and ends in DOY x+1 (i.e. if
 #' \code{night_start = 20, night_end = 6} values for 2018-03-28 20:00:00 means
 #' values for the night starting at 2018-03-28 20:00:00 and ending at
 #' 2018-03-29 06:00:00).
-#' 
+#'
 #' Night for monthly period summarises all night periods in the month, that
 #' includes from 00:00:00 of the first month night to 23:59:59 of the last
 #' month night
-#' 
+#'
 #' @inheritParams sfn_metrics
 #'
 #' @examples
@@ -865,7 +868,7 @@ monthly_metrics <- function(
 #'   BAR,
 #'   night_start = 21, night_end = 4 # night starting and ending hour
 #' )
-#' 
+#'
 #' BAZ_monthly_short[['env']][['env_night']]
 #'
 #' @export
@@ -879,18 +882,18 @@ nightly_metrics <- function(
   probs = c(0.95, 0.99),
   ...
 ) {
-  
+
   period <- match.arg(period)
-  
+
   # # hack to avoid R CMD CHECKS to complain about . not being a global variable
   # . <- NULL
-  # 
+  #
   # # we need magic to add the quantiles as they return more than one value
   # # (usually). So lets play with quasiquotation
   # quantile_args <- probs %>%
   #   purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
   # names(quantile_args) <- paste0('q_', round(probs*100, 0))
-  # 
+  #
   # .funs <- dplyr::funs(
   #   mean = mean(., na.rm = TRUE),
   #   sd = sd(., na.rm = TRUE),
@@ -908,7 +911,7 @@ nightly_metrics <- function(
   } else {
     .funs <- .fixed_metrics_funs(probs, FALSE)
   }
-  
+
   # just input all in the sfn_metrics function
   sfn_metrics(
     sfn_data,

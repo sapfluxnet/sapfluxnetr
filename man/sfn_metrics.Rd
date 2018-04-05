@@ -119,14 +119,17 @@ Generate daily or above metrics from a site data for the period indicated
 }
 \section{period}{
 
-\code{period} argument is piped to \code{tibbletime::collapse_index} function.
-See \code{\link[tibbletime]{collapse_index}} for a detailed explanation but in
+\code{period} argument is piped to \code{tibbletime::collapse_index} function
+with \code{side = 'end', clean = FALSE} options. See
+\code{\link[tibbletime]{collapse_index}} for a detailed explanation but in
 short:
 \itemize{
   \item{\emph{frequency period} format: "1 day", "7 day", "1 month", "1 year"}
   \item{\emph{shorthand} format: "hourly", "daily", "monthly", "yearly"}
   \item{\emph{custom} format: a vector of dates to use as custom and more flexible boundaries}
 }
+Also, you can override the default behaviour of \code{sfn_metrics}, providing
+\code{side = 'end'} or \code{clean = FALSE}.
 }
 
 \section{.funs}{
