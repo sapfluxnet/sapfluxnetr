@@ -600,7 +600,7 @@ sfn_metrics <- function(
 
   .funs <- dplyr::funs(
     mean = mean(., na.rm = TRUE),
-    sd = sd(., na.rm = TRUE),
+    sd = stats::sd(., na.rm = TRUE),
     n = n(),
     coverage = data_coverage(.),
     !!! quantile_args,

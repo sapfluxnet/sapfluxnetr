@@ -145,7 +145,7 @@ get_site_md(FOO)[['si_biome']]
     of invalid sfn_data objects (i.e objects with different data dimensions,
     objects without metadata...)
     
-```{r validation, error=TRUE, collapse=FALSE}
+```{r validation, error=TRUE, purl=FALSE, collapse=FALSE}
 # get sapflow data
 foo_bad_sapf <- get_sapf_data(FOO)
 # pull a row, now it has diferent dimensions than
@@ -254,7 +254,7 @@ foo_daily[['sapf']][['sapf_gen']]
 ```
 
 For full control of metrics and custom aggregations see
-`vignette('04_custom_aggregation', package = 'sapfluxnetr')`
+`vignette('custom-aggregation', package = 'sapfluxnetr')`
 
 # `sfn_data_multi`
 

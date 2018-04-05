@@ -36,7 +36,9 @@ Collate:
     'sfn_data_methods.R'
     'sfn_dplyr.R'
     'visualizations.R'
-Suggests: testthat,
+Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat,
+    tidyverse
 VignetteBuilder: knitr

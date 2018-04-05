@@ -102,7 +102,7 @@ environmental data has some flags (more on that later).
 
 `sfn_class` objects have different slots containing the different data, each of
 one has an accesor function (see `?sfn_get_methods` and
-`vignette('02_sfn_data_classes', package = 'sapfluxnetr'` for detailed info):
+`vignette('sfn-data-classes', package = 'sapfluxnetr'` for detailed info):
 
 ```{r accesors_data}
 # sapf data with original site timestamp
@@ -147,7 +147,7 @@ describe_md_variable('pl_species')
 There is also some accessors that can come in handy sometimes. `get_timestamp` and
 `get_solar_timestamp` access to the original timestamp and the apparent solar
 time timestamp. `get_si_code` access to the site code. See
-`vignette('02_sfn_data_classes', package = 'sapfluxnetr'` for more info.
+`vignette('sfn-data-classes', package = 'sapfluxnetr'` for more info.
 
 #### Flags
 
@@ -164,7 +164,7 @@ arg_maz_env_flags
 
 This datsets store any flag that each data point may have (possible outlier,
 data removed in the Quality Check of the data...). For a complete list of
-flags possible values see `vignette('03_data_flags', package = 'sapfluxnetr')`.
+flags possible values see `vignette('data-flags', package = 'sapfluxnetr')`.
 As an example, let's see which values are marked as "RANGE_WARN" (a warning
 indicating that the value may be out of normal variable range):
 
@@ -272,7 +272,7 @@ arg_maz_daily[['env']][['env_md']] %>%
 If interested in custom metrics or custom aggregations, there is a generic
 function, `sfn_metrics` that allows for customization of the statistics to
 calculate and the periods to aggregate. See `?sfn_metrics` and
-`vignette('04_custom_aggregation'. package = 'sapfluxnetr')` for more details
+`vignette('custom-aggregation'. package = 'sapfluxnetr')` for more details
 about it.
 
 #### Agregation TIMESTAMP format

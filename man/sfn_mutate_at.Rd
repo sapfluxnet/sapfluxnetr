@@ -63,7 +63,7 @@ multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
 ## in multi it's better to discard the variables to not mutate:
 vars_to_not_mutate <- names(get_env_data(FOO)) # all the environmental
 
-sfn_mutate_at(
+multi_sfn_mutated <- sfn_mutate_at(
   multi_sfn,
   .vars = vars(-one_of(vars_to_not_mutate)), # we use -
   .funs = funs(

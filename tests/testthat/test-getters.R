@@ -56,6 +56,8 @@ test_that('as_sfn_data_multi helper works as intended', {
 #### read_sfn_metadata tests ####
 test_that('.write_sfn_metadata writes correctly the file', {
 
+  skip_on_cran()
+
   folder <- 'Data'
   sfn_metadata <- sapfluxnetr:::.write_metadata_cache(folder, .dry = TRUE)
 
