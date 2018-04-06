@@ -7,14 +7,14 @@
 diurnal_centroid(variable)
 }
 \arguments{
-\item{variable}{A numeric vector containing the values for a day at a
+\item{variable}{A numeric vector containing the sapflow values for a day at a
 regular intervals. Missing values are allowed but not recommended}
 }
 \value{
 A numeric vector with the diurnal centroid value (0 to 24 h)
 }
 \description{
-Calculate the diurnal centroid for sapflow and environmental variables
+Calculate the diurnal centroid for sapflow variables
 }
 \details{
 The code for this function has been kindly provided by Jacob Nelson in python
@@ -24,7 +24,7 @@ been translated to a tidy data phylosophy in R to be used inside a
 }
 \section{Diurnal centroid algorithm}{
 
-Given a continuous subdaily values at regular intervals
+Given a continuous subdaily sapflow values at regular intervals
 \eqn{V = {x_1, ..., x_n}} to obtain the diurnal centroid each value is
 multiplied by its interval index and summed up and divided
 by the sum of the values for the day and finally the value is normalized to

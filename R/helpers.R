@@ -83,7 +83,7 @@ min_time <- function(x, time) {
 
 #' Diurnal centroid calculation
 #'
-#' Calculate the diurnal centroid for sapflow and environmental variables
+#' Calculate the diurnal centroid for sapflow variables
 #'
 #' The code for this function has been kindly provided by Jacob Nelson in python
 #' (see https://github.com/jnelson18/FluxnetTools/blob/master/FileS3.py) and has
@@ -91,7 +91,7 @@ min_time <- function(x, time) {
 #' \code{\link[dplyr]{summarise}} statement.
 #'
 #' @section Diurnal centroid algorithm:
-#' Given a continuous subdaily values at regular intervals
+#' Given a continuous subdaily sapflow values at regular intervals
 #' \eqn{V = {x_1, ..., x_n}} to obtain the diurnal centroid each value is
 #' multiplied by its interval index and summed up and divided
 #' by the sum of the values for the day and finally the value is normalized to
@@ -107,7 +107,7 @@ min_time <- function(x, time) {
 #' measurements) centroid converges to 12.5h. So, using diurnal centroid value
 #' in half hourly datasets or above can have a considerable error associated.
 #'
-#' @param variable A numeric vector containing the values for a day at a
+#' @param variable A numeric vector containing the sapflow values for a day at a
 #'   regular intervals. Missing values are allowed but not recommended
 #'
 #' @examples
@@ -150,6 +150,48 @@ diurnal_centroid <- function(variable) {
   res_c <- raw_c * (24 / steps_by_day)
 
   return(res_c)
+}
+
+#' Normalized diurnal centroid calculation
+#'
+#' Calculate the normalized diurnal centroid for sapflow variables
+#'
+#' The code for this function has been kindly provided by Jacob Nelson in python
+#' (see https://github.com/jnelson18/FluxnetTools/blob/master/FileS3.py) and has
+#' been translated to a tidy data phylosophy in R to be used inside a
+#' \code{\link[dplyr]{summarise}} statement.
+#'
+#' @section Normalized diurnal centroid algorithm:
+#' This function calculates the diurnal centroid of sapflow measures
+#' \emph{relative} to the diurnal centroid of incoming radiation (in any units).
+#' For that the incoming radiation diurnal centroid is substracted from the
+#' sapflow diurnal centroid:
+#'
+#' \deqn{
+#' Sapf_cent - IncomingRad_cent
+#' }
+#'
+#' @param sapf_var A numeric vector containing the sapflow values for a day at a
+#'   regular intervals. Missing values are allowed but not recommended.
+#'
+#' @param rad_var A numeric vector containing the incoming radiation for a day
+#'   at a regular intervals. Missing values are allowed but not recommended.
+#'   Must be the same length as sapf_var.
+#'
+#' @return A numeric vector with the normalized diurnal centroid value (0 to 24 h)
+#'
+#' @author Jacob Nelson & Víctor Granda
+#'
+#' @export
+
+norm_diurnal_centroid <- function(sapf_var, rad_var) {
+
+  sapf_dc <- diurnal_centroid(sapf_var)
+  rad_dc <- diurnal_centroid(rad_var)
+
+  norm_dc <- sapf_dc - rad_dc
+
+  return(norm_dc)
 }
 
 #' min max
