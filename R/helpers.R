@@ -132,7 +132,7 @@ min_time <- function(x, time) {
 #'   nighttime = FALSE
 #' )
 #'
-#' @return A numeric vector with the diurnal centroid value (0 to 24 h)
+#' @return A numeric value with the diurnal centroid value (0 to 24 h)
 #'
 #' @author Jacob Nelson & Víctor Granda
 #'
@@ -178,7 +178,7 @@ diurnal_centroid <- function(variable) {
 #'   at a regular intervals. Missing values are allowed but not recommended.
 #'   Must be the same length as sapf_var.
 #'
-#' @return A numeric vector with the normalized diurnal centroid value (0 to 24 h)
+#' @return A numeric value with the normalized diurnal centroid value
 #'
 #' @author Jacob Nelson & Víctor Granda
 #'
