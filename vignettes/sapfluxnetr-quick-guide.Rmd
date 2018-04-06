@@ -425,6 +425,20 @@ multi_union <- function(data_list) {
   first <- data_list[[1]]
   
   for (i in 2:length(data_list)) {
+    
+    first_vars <- names(first)
+    next_vars <- names(data_list[[i]])
+    
+    if (length(first_vars) > length(next_vars)) {
+      var_to_add <- first_vars[which(!(first_vars %in% next_vars))]
+      data_list[[i]][var_to_add] <- NA_real_
+    }
+    
+    if (length(first_vars) < length(next_vars)) {
+      var_to_add <- next_vars[which(!(next_vars %in% first_vars))]
+      first[var_to_add] <- NA_real_
+    }
+    
     first <- dplyr::union(first, data_list[[i]])
   }
   
