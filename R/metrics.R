@@ -77,6 +77,19 @@
 
 summarise_by_period <- function(data, period, .funs, ...) {
 
+  # modificate .funs if data is environmental (no centroids).
+  env_vars_names <- .env_vars_names()
+
+  if (any(names(data) %in% env_vars_names)) {
+
+    # only in daily, but as daily can be stated in many ways, we check if
+    # .funs[['centroid']] is NULL, and if not, we make it.
+    if (!is.null(.funs[['centroid']])) {
+      .funs[['centroid']] <- NULL
+    }
+
+  }
+
   # we will need the extra arguments (...) if any, just in case
   dots <- rlang::quos(...)
   dots_collapse_index <- dots[names(dots) %in% methods::formalArgs(tibbletime::collapse_index)]
@@ -642,7 +655,7 @@ sfn_metrics <- function(
 #'   \item{min_time: Time when minimum value was reached}
 #'   \item{centroid: Diurnal centroid value (hours passed until the half of
 #'         the summed daily value was reached). Only returned when period
-#'         is 'daily'}
+#'         is 'daily' and data is from sapflow}
 #' }
 #'
 #' @param probs numeric vector of probabilities for \code{\link[stats]{quantile}}

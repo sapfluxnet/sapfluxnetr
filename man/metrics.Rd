@@ -70,7 +70,7 @@ set of fixed arguments.
   \item{min_time: Time when minimum value was reached}
   \item{centroid: Diurnal centroid value (hours passed until the half of
         the summed daily value was reached). Only returned when period
-        is 'daily'}
+        is 'daily' and data is from sapflow}
 }
 }
 \section{daily_metrics}{

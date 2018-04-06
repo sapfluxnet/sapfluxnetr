@@ -1094,3 +1094,14 @@ describe_md_variable <- function(variable) {
     TRUE ~ paste0(x, '; USER_MODF')
   )
 }
+
+#' helper to return all environmental variable names
+#'
+#' @return a character vector with env vars names
+
+.env_vars_names <- function() {
+
+  c('ta', 'rh', 'vpd', 'sw_in', 'ppfd_in', 'netrad', 'ext_rad',
+    'swc_shallow', 'swc_deep', 'ws', 'precip')
+
+}
