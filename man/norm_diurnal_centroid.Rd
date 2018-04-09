@@ -15,7 +15,7 @@ at a regular intervals. Missing values are allowed but not recommended.
 Must be the same length as sapf_var.}
 }
 \value{
-A numeric vector with the normalized diurnal centroid value (0 to 24 h)
+A numeric value with the normalized diurnal centroid value
 }
 \description{
 Calculate the normalized diurnal centroid for sapflow variables

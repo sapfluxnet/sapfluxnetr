@@ -11,7 +11,7 @@ diurnal_centroid(variable)
 regular intervals. Missing values are allowed but not recommended}
 }
 \value{
-A numeric vector with the diurnal centroid value (0 to 24 h)
+A numeric value with the diurnal centroid value (0 to 24 h)
 }
 \description{
 Calculate the diurnal centroid for sapflow variables

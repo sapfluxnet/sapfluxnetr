@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+folder <- 'resources'
 ```
 
 `sapfluxnetr` R package provides tools for a tidy data analysis for the first
@@ -39,7 +41,7 @@ branch of the [github repository](https://github.com/sapfluxnet/sapfluxnetr)
 with the `devtools` package:
 
 ```{r github_inst, eval=FALSE}
-devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'devel',
+devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'master',
                          build_vignettes = TRUE)
 ```
 
@@ -52,13 +54,38 @@ library(tidyverse)
 ```
 
 
-## Download the data from Zenodo
+## Download the data
 
-Sapfluxnet data is hosted in Zenodo, and `sapfluxnetr` provides functions
-for downloading the data directly from R (for sapfluxnet data contributors at
-the moment, after one embargo year, the data will be available for anyone):
+### Zenodo
 
->TODO: zenodo's part is still in development, nothing to see here, please continue
+To be written as the data is not yet in Zenodo
+
+### Sapfluxnet Data test suite
+
+Download the test suite data from [here](). Unzip the file maintaining the
+folder structure:
+
+```
+sapfluxnet_db
+  |
+  |-- test_suite
+       |
+       |-- plant
+       |-- sapwood
+       |-- leaf
+```
+
+`plant` folder contains the sites with sap flow plant level units available.  
+`sapwood` folder contains the sites with sap flow sapwood level units available.  
+`leaf` folder contains the sites with sap flow leaf level units available.
+
+To start working with the data simply create an RStudio project in the
+`sapfluxnet_db` folder and follow the following examples.
+
+>DISCLAIMER: In order to be able to build the vignette in the CRAN tests
+ the following examples will be based on a small subset of Sapfluxnet Data,
+ composed by `ARG_TRE`, `ARG_MAZ` and `AUS_CAN_ST2_MIX` sites.
+ Outputs may vary if you follow the vignette examples with the complete database.
 
 ## Inspecting a site
 
@@ -75,7 +102,7 @@ So, let's read the data in the environment:
 
 ```{r read_and_inspect, eval=FALSE}
 # read the data
-arg_maz <- read_sfn_data('ARG_MAZ', folder = 'data/plant')
+arg_maz <- read_sfn_data('ARG_MAZ', folder = 'test_suite/plant')
 
 # see a brief summary of the site:
 arg_maz
@@ -83,7 +110,7 @@ arg_maz
 
 ```{r read_internals, echo=FALSE}
 # read the data
-arg_maz <- read_sfn_data('ARG_MAZ', folder = '../tests/testthat/big_test/plant')
+arg_maz <- read_sfn_data('ARG_MAZ', folder = folder)
 
 # see a brief summary of the site:
 arg_maz
@@ -298,14 +325,12 @@ let's create a cached metadata database. This will take some minutes, so maybe
 it is a good moment to prepare a hot beverage ;)
 
 ```{r metadata_database, eval = FALSE}
-sfn_metadata <- read_sfn_metadata(folder = 'data/plant', .write_cache = TRUE)
+sfn_metadata <- read_sfn_metadata(folder = 'test_suite/plant', .write_cache = TRUE)
 ```
 
-```{r metadata_database_real, echo=FALSE}
-sfn_metadata <- read_sfn_metadata(
-  folder = '../tests/testthat/big_test/plant/',
-  .write_cache = FALSE
-)
+```{r metadata_database_real, echo=FALSE, warning=FALSE}
+# sfn_metadata <- read_sfn_metadata(folder = folder, .write_cache = TRUE)
+sfn_metadata <- sapfluxnetr:::.write_metadata_cache(folder = folder, .dry = TRUE)
 ```
 
 
@@ -328,41 +353,35 @@ metadata, with the `filter_by_var` function. As a first try, let's list all
 sites belonging to temperate forest biome (mediterranean included):
 
 ```{r filtering_by_md, eval=FALSE}
-filter_by_var(
+temperate <- filter_by_var(
   si_biome %in% c('Mediterranean', 'Temperate forest'),
-  folder = 'data/plant',
+  folder = 'test_suite/plant',
   .use_cache = TRUE
 )
+
+temperate
 ```
 
-```{r filtering_by_md_real, echo=FALSE}
-filter_by_var(
-  si_biome %in% c('Mediterranean', 'Temperate forest'),
-  folder = '../tests/testthat/big_test/plant',
-  .use_cache = TRUE
-)
+```{r filtering_by_md_real, echo=FALSE, warning=FALSE}
+temperate <- c("ARG_MAZ", "ARG_TRE", "AUS_CAN_ST2_MIX")
+temperate
 ```
 
 You can combine all filters you want:
 
 ```{r filters_combined, eval=FALSE}
-temp_hr <- filter_by_var(
+temperate_hr <- filter_by_var(
   si_biome %in% c('Mediterranean', 'Temperate forest'),
   pl_sap_meth == 'HR',
-  folder = 'data/plant',
+  folder = 'test_suite/plant',
   .use_cache = TRUE
 )
-temp_hr
+temperate_hr
 ```
 
-```{r filters_combined_real, echo=FALSE}
-temp_hr <- filter_by_var(
-  si_biome %in% c('Mediterranean', 'Temperate forest'),
-  pl_sens_meth == 'HR',
-  folder = '../tests/testthat/big_test/plant',
-  .use_cache = TRUE
-)
-temp_hr
+```{r filters_combined_real, echo=FALSE, warning=FALSE}
+temperate_hr <- c("ARG_MAZ", "ARG_TRE")
+temperate_hr
 ```
 
 Remember that you can get all the info from a metadata variable with
@@ -379,18 +398,18 @@ describe_md_variable('pl_sens_meth')
 
 ### sfn_data_multi objects
 
-We can load all filtered sites with a simple pipe
+We can load all temperate sites with a simple pipe
 
 ```{r multi, eval=FALSE}
-temp_hr_sites <- temp_hr %>%
-  read_sfn_data(folder = 'data/plant')
-temp_hr_sites
+temperate_sites <- temperate %>%
+  read_sfn_data(folder = 'test_suite/plant')
+temperate_sites
 ```
 
 ```{r multi_real, echo=FALSE}
-temp_hr_sites <- temp_hr %>%
-  read_sfn_data(folder = '../tests/testthat/big_test/plant')
-temp_hr_sites
+temperate_sites <- temperate %>%
+  read_sfn_data(folder = folder)
+temperate_sites
 ```
 
 We have created a `sfn_data_multi` object, which is just a list, but adapted to
@@ -398,7 +417,7 @@ contain `sfn_data` objects. Main functions of `sapfluxnetr` are adapted to work
 with this lists. As any list, we can access the sites:
 
 ```{r mutil_site}
-temp_hr_sites[['AUS_BRI_BRI']] # same as temp_hr_sites[[3]]
+temperate_sites[['AUS_CAN_ST2_MIX']] # same as temp_hr_sites[[3]]
 ```
 
 ### Multi aggregation
@@ -406,7 +425,7 @@ temp_hr_sites[['AUS_BRI_BRI']] # same as temp_hr_sites[[3]]
 Now we can aggregate all sites at once
 
 ```{r multi_aggregation}
-temp_hr_aggregated <- temp_hr_sites %>%
+temperate_aggregated <- temperate_sites %>%
   daily_metrics()
 ```
 
@@ -446,17 +465,17 @@ multi_union <- function(data_list) {
 }
 
 
-sapf_data <- temp_hr_aggregated %>%
+sapf_data <- temperate_aggregated %>%
   map(c('sapf', 'sapf_gen')) %>%
   map(~ select(., TIMESTAMP, ends_with('_q_95')))
 
-env_data <- temp_hr_aggregated %>%
+env_data <- temperate_aggregated %>%
   map(c('env', 'env_gen')) %>%
   map(~ select(., TIMESTAMP, ends_with('_mean'))) %>%
   map(~ select(., TIMESTAMP, starts_with('vpd_')))
 
 plant_md <- sfn_metadata[['plant_md']] %>%
-  filter(si_code %in% names(temp_hr_aggregated))
+  filter(si_code %in% names(temperate_aggregated))
 
 whole_data <- sapf_data %>%
   map2(env_data, ~ full_join(.x, .y, by = 'TIMESTAMP')) %>%
