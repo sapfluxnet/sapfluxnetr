@@ -76,6 +76,10 @@ foo_simpler_metrics_midday <- sfn_metrics(
 foo_simpler_metrics_midday[['sapf']][['sapf_md']]
 ```
 
+> When supplying only one function names of variables are not changed to
+  contain the metric name at the end, as the summary function returns the
+  same columns as the original data
+
 ## Custom aggregation periods
 
 `period` argument in `sfn_metrics` is passed to `collapse_index` function in the
