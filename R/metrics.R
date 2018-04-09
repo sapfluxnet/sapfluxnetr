@@ -430,7 +430,7 @@ sfn_metrics <- function(
   }
 
   #### night time ####
-  if(nighttime) {
+  if (nighttime) {
 
     # progress to not scare seeming like freezed in large datasets
     print(paste0('Nighttime data for ', get_si_code(sfn_data)))
@@ -645,7 +645,8 @@ sfn_metrics <- function(
 #' \itemize{
 #'   \item{mean: mean of variable (tree or environmental variable) for the
 #'         given period. NAs are removed}
-#'   \item{n: Number of measures in the give period used for the metrics (NAs included)}
+#'   \item{n: Number of measures in the give period used for the metrics
+#'         (NAs included)}
 #'   \item{coverage: Data coverage percentage (percentage of measures without
 #'         NAs)}
 #'   \item{q_XX: XX quantile value for the period}
@@ -658,7 +659,8 @@ sfn_metrics <- function(
 #'         is 'daily' and data is from sapflow}
 #' }
 #'
-#' @param probs numeric vector of probabilities for \code{\link[stats]{quantile}}
+#' @param probs numeric vector of probabilities for
+#'   \code{\link[stats]{quantile}}
 #'
 #' @family metrics
 #'
@@ -719,27 +721,7 @@ daily_metrics <- function(
   # hardcoded values
   period <- 'daily'
 
-  # # hack to avoid R CMD CHECKS to complain about . not being a global variable
-  # . <- NULL
-  #
-  # # we need magic to add the quantiles as they return more than one value
-  # # (usually). So lets play with quasiquotation
-  # quantile_args <- probs %>%
-  #   purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
-  # names(quantile_args) <- paste0('q_', round(probs*100, 0))
-  #
-  # .funs <- dplyr::funs(
-  #   mean = mean(., na.rm = TRUE),
-  #   sd = sd(., na.rm = TRUE),
-  #   n = n(),
-  #   coverage = data_coverage(.),
-  #   !!! quantile_args,
-  #   max = max(., na.rm = TRUE),
-  #   max_time = max_time(., .data$TIMESTAMP_coll),
-  #   min = min(., na.rm = TRUE),
-  #   min_time = min_time(., .data$TIMESTAMP_coll),
-  #   centroid = diurnal_centroid(.)
-  # )
+  # default funs
   .funs <- .fixed_metrics_funs(probs, TRUE)
 
   # just input all in the sfn_function
@@ -806,27 +788,7 @@ monthly_metrics <- function(
   # hardcoded values
   period <- 'monthly'
 
-  # # hack to avoid R CMD CHECKS to complain about . not being a global variable
-  # . <- NULL
-  #
-  # # we need magic to add the quantiles as they return more than one value
-  # # (usually). So lets play with quasiquotation
-  # quantile_args <- probs %>%
-  #   purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
-  # names(quantile_args) <- paste0('q_', round(probs*100, 0))
-  #
-  # .funs <- dplyr::funs(
-  #   mean = mean(., na.rm = TRUE),
-  #   sd = sd(., na.rm = TRUE),
-  #   n = n(),
-  #   coverage = data_coverage(.),
-  #   !!! quantile_args,
-  #   max = max(., na.rm = TRUE),
-  #   max_time = max_time(., .data$TIMESTAMP_coll),
-  #   min = min(., na.rm = TRUE),
-  #   min_time = min_time(., .data$TIMESTAMP_coll),
-  #   centroid = diurnal_centroid(.)
-  # )
+  # default funs
   .funs <- .fixed_metrics_funs(probs, FALSE)
 
   # just input all in the sfn_function
@@ -898,29 +860,11 @@ nightly_metrics <- function(
 
   period <- match.arg(period)
 
-  # # hack to avoid R CMD CHECKS to complain about . not being a global variable
-  # . <- NULL
-  #
-  # # we need magic to add the quantiles as they return more than one value
-  # # (usually). So lets play with quasiquotation
-  # quantile_args <- probs %>%
-  #   purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
-  # names(quantile_args) <- paste0('q_', round(probs*100, 0))
-  #
-  # .funs <- dplyr::funs(
-  #   mean = mean(., na.rm = TRUE),
-  #   sd = sd(., na.rm = TRUE),
-  #   n = n(),
-  #   coverage = data_coverage(.),
-  #   !!! quantile_args,
-  #   max = max(., na.rm = TRUE),
-  #   max_time = max_time(., .data$TIMESTAMP_coll),
-  #   min = min(., na.rm = TRUE),
-  #   min_time = min_time(., .data$TIMESTAMP_coll),
-  #   centroid = diurnal_centroid(.)
-  # )
+  # default funs
   if (period == 'daily') {
+
     .funs <- .fixed_metrics_funs(probs, TRUE)
+
   } else {
     .funs <- .fixed_metrics_funs(probs, FALSE)
   }

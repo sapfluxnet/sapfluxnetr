@@ -31,7 +31,8 @@ the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
 
 \item{md_end}{Hour to end the midday interval}
 
-\item{probs}{numeric vector of probabilities for \code{\link[stats]{quantile}}}
+\item{probs}{numeric vector of probabilities for
+\code{\link[stats]{quantile}}}
 
 \item{...}{optional arguments to pass to methods used
 (i.e. tibbletime::collapse_index or summarise funs extra arguments)}
@@ -60,7 +61,8 @@ set of fixed arguments.
 \itemize{
   \item{mean: mean of variable (tree or environmental variable) for the
         given period. NAs are removed}
-  \item{n: Number of measures in the give period used for the metrics (NAs included)}
+  \item{n: Number of measures in the give period used for the metrics
+        (NAs included)}
   \item{coverage: Data coverage percentage (percentage of measures without
         NAs)}
   \item{q_XX: XX quantile value for the period}
