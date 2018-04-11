@@ -479,19 +479,21 @@ metrics_tidyfier <- function(metrics_res, metadata, interval = 'gen') {
     purrr::map(c('env', paste0('env_', interval)))
 
   plant_md <- metadata[['plant_md']] %>%
-    filter(si_code %in% names(metrics_res))
+    dplyr::filter(.data$si_code %in% names(metrics_res))
 
   site_md <- metadata[['site_md']] %>%
-    filter(si_code %in% names(metrics_res))
+    dplyr::filter(.data$si_code %in% names(metrics_res))
 
   stand_md <- metadata[['stand_md']] %>%
-    filter(si_code %in% names(metrics_res))
+    dplyr::filter(.data$si_code %in% names(metrics_res))
 
   species_md <- metadata[['species_md']] %>%
-    filter(si_code %in% names(metrics_res))
+    dplyr::filter(.data$si_code %in% names(metrics_res)) %>%
+    group_by(.data$si_code) %>%
+    summarise_all(function(x) { list(x) })
 
   env_md <- metadata[['env_md']] %>%
-    filter(si_code %in% names(metrics_res))
+    dplyr::filter(.data$si_code %in% names(metrics_res))
 
   # whole data object
 
@@ -511,30 +513,54 @@ metrics_tidyfier <- function(metrics_res, metadata, interval = 'gen') {
     -dplyr::starts_with(env_vars_names[11])
   )
 
-  sapf_data %>%
-    purrr::map2(env_data, ~ full_join(.x, .y, by = 'TIMESTAMP')) %>%
+  whole_data <- sapf_data %>%
+    
+    # join sapf and env for all sites
+    purrr::map2(env_data, ~ dplyr::full_join(.x, .y, by = 'TIMESTAMP')) %>%
+    
+    # wide to long for sapflow measures
     purrr::map(
       ~ tidyr::gather(
-        .x, Tree, Sapflow, -TIMESTAMP, !!!env_vars_to_exclude_from_gather
+        .x, tree, value, -TIMESTAMP, !!!env_vars_to_exclude_from_gather
       )
     ) %>%
+    # converting to toble to get rid of tibbletime corrupted index after gather
     purrr::map(tibble::as.tibble) %>%
+    
+    # union all sites, creating the variables needed as NA for those sites that
+    # lack some env variable
     .multi_union() %>%
+    
+    # arrange by timestamp
     dplyr::arrange(.data$TIMESTAMP) %>%
+    
     # mutate to get the plant code. Is tricky as we have to separate the metric
-    # and interval labels at the end of the Tree column
+    # and interval labels at the end of the tree column
     dplyr::mutate(
-      Metric = stringr::str_sub(
-        .data$Tree, stringr::str_locate(.data$Tree, "(Js|Jt)_[0-9]*")[,2] + 2, -1
+      sapflow = stringr::str_sub(
+        .data$tree, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2] + 2, -1
       ),
-      pl_code = stringr::str_sub(
-        .data$Tree, 1, stringr::str_locate(.data$Tree, "(Js|Jt)_[0-9]*")[,2]
+      tree = stringr::str_sub(
+        .data$tree, 1, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2]
       )
     ) %>%
+    dplyr::rename(pl_code = .data$tree) %>%
+    
+    # from long to wide, as each sapflow metric is a variable
+    tidyr::spread(sapflow, value, sep = '_') %>%
+    
+    # join all the metadata, always first the plant_md to join by pl_code
+    # and after that by site code as the rest of metadata is one row only
     dplyr::left_join(plant_md, by = 'pl_code') %>%
     dplyr::left_join(site_md, by = 'si_code') %>%
     dplyr::left_join(stand_md, by = 'si_code') %>%
-    dplyr::left_join(plant_md, by = 'si_code') %>%
+    dplyr::left_join(species_md, by = 'si_code') %>%
     dplyr::left_join(env_md, by = 'si_code') %>%
+    dplyr::select(
+      .data$TIMESTAMP, .data$si_code, .data$pl_code, starts_with('sapflow_'),
+      everything()
+    )
+  
+  return(whole_data)
 
 }

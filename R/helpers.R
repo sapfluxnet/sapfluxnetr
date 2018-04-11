@@ -1161,8 +1161,8 @@ describe_md_variable <- function(variable) {
       var_to_add <- first_vars[which(!(first_vars %in% next_vars))]
 
       for (var in var_to_add) {
-        if (class(first[[var]]) == 'POSIXct') {
-          data_list[[i]][var] <- as.POSIXct(NA)
+        if (class(first[[var]])[1] == 'POSIXct') {
+          data_list[[i]][var] <- as.POSIXct(NA, tz = 'UTC')
         } else {
           data_list[[i]][var] <- NA_real_
         }
@@ -1173,8 +1173,8 @@ describe_md_variable <- function(variable) {
       var_to_add <- next_vars[which(!(next_vars %in% first_vars))]
 
       for (var in var_to_add) {
-        if (class(data_list[[i]][[var]]) == 'POSIXct') {
-          first[[var]] <- as.POSIXct(NA)
+        if (class(data_list[[i]][[var]])[1] == 'POSIXct') {
+          first[[var]] <- as.POSIXct(NA, tz = 'UTC')
         } else {
           first[[var]] <- NA_real_
         }
