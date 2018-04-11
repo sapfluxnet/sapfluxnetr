@@ -441,3 +441,100 @@ sfn_mutate_at <- function(sfn_data, .vars, .funs, ..., solar = FALSE) {
   return(res)
 
 }
+
+#' Build a tidy data frame from the metrics results nested list
+#'
+#' Transform the nested list of metrics in a tidy tibble where each observation
+#' has its own row
+#'
+#' @param metrics_res Nested list containing the metrics results as obtained
+#'   from \code{\link{metrics}}
+#'
+#' @param metadata List containing the metadata nested list, as obtained from
+#'   \code{\link{read_sfn_metadata}}
+#'
+#' @param interval Interval to return, it depends on the \code{metrics_res} and
+#'   can be \code{"gen"} for the general metrics, \code{"md"} for midday metrics,
+#'   \code{"pd"} for predawn metrics, \code{"night"} for night metrics or
+#'   \code{"day"} for diurnal metrics.
+#'
+#' @return a tibble with the following columns:
+#'   \itemize{
+#'     \item{TIMESTAMP: POSIXct vector with the date-time of the observation}
+#'     \item{Tree}
+#'   }
+#'
+#' @examples
+#' # not yet
+#'
+#' @export
+
+metrics_tidyfier <- function(metrics_res, metadata, interval = 'gen') {
+
+  # individual data objects
+  sapf_data <- metrics_res %>%
+    purrr::map(c('sapf', paste0('sapf_', interval)))
+
+  env_data <- metrics_res %>%
+    purrr::map(c('env', paste0('env_', interval)))
+
+  plant_md <- metadata[['plant_md']] %>%
+    filter(si_code %in% names(metrics_res))
+
+  site_md <- metadata[['site_md']] %>%
+    filter(si_code %in% names(metrics_res))
+
+  stand_md <- metadata[['stand_md']] %>%
+    filter(si_code %in% names(metrics_res))
+
+  species_md <- metadata[['species_md']] %>%
+    filter(si_code %in% names(metrics_res))
+
+  env_md <- metadata[['env_md']] %>%
+    filter(si_code %in% names(metrics_res))
+
+  # whole data object
+
+  env_vars_names <- .env_vars_names()
+
+  env_vars_to_exclude_from_gather <- dplyr::vars(
+    -dplyr::starts_with(env_vars_names[1]),
+    -dplyr::starts_with(env_vars_names[2]),
+    -dplyr::starts_with(env_vars_names[3]),
+    -dplyr::starts_with(env_vars_names[4]),
+    -dplyr::starts_with(env_vars_names[5]),
+    -dplyr::starts_with(env_vars_names[6]),
+    -dplyr::starts_with(env_vars_names[7]),
+    -dplyr::starts_with(env_vars_names[8]),
+    -dplyr::starts_with(env_vars_names[9]),
+    -dplyr::starts_with(env_vars_names[10]),
+    -dplyr::starts_with(env_vars_names[11])
+  )
+
+  sapf_data %>%
+    purrr::map2(env_data, ~ full_join(.x, .y, by = 'TIMESTAMP')) %>%
+    purrr::map(
+      ~ tidyr::gather(
+        .x, Tree, Sapflow, -TIMESTAMP, !!!env_vars_to_exclude_from_gather
+      )
+    ) %>%
+    purrr::map(tibble::as.tibble) %>%
+    .multi_union() %>%
+    dplyr::arrange(.data$TIMESTAMP) %>%
+    # mutate to get the plant code. Is tricky as we have to separate the metric
+    # and interval labels at the end of the Tree column
+    dplyr::mutate(
+      Metric = stringr::str_sub(
+        .data$Tree, stringr::str_locate(.data$Tree, "(Js|Jt)_[0-9]*")[,2] + 2, -1
+      ),
+      pl_code = stringr::str_sub(
+        .data$Tree, 1, stringr::str_locate(.data$Tree, "(Js|Jt)_[0-9]*")[,2]
+      )
+    ) %>%
+    dplyr::left_join(plant_md, by = 'pl_code') %>%
+    dplyr::left_join(site_md, by = 'si_code') %>%
+    dplyr::left_join(stand_md, by = 'si_code') %>%
+    dplyr::left_join(plant_md, by = 'si_code') %>%
+    dplyr::left_join(env_md, by = 'si_code') %>%
+
+}

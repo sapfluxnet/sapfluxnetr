@@ -1147,3 +1147,42 @@ describe_md_variable <- function(variable) {
     'swc_shallow', 'swc_deep', 'ws', 'precip')
 
 }
+
+#' helper for using dplyr::union in multiple sites
+.multi_union <- function(data_list) {
+  first <- data_list[[1]]
+
+  for (i in 2:length(data_list)) {
+
+    first_vars <- names(first)
+    next_vars <- names(data_list[[i]])
+
+    if (!all(first_vars %in% next_vars)) {
+      var_to_add <- first_vars[which(!(first_vars %in% next_vars))]
+
+      for (var in var_to_add) {
+        if (class(first[[var]]) == 'POSIXct') {
+          data_list[[i]][var] <- as.POSIXct(NA)
+        } else {
+          data_list[[i]][var] <- NA_real_
+        }
+      }
+    }
+
+    if (!all(next_vars %in% first_vars)) {
+      var_to_add <- next_vars[which(!(next_vars %in% first_vars))]
+
+      for (var in var_to_add) {
+        if (class(data_list[[i]][[var]]) == 'POSIXct') {
+          first[[var]] <- as.POSIXct(NA)
+        } else {
+          first[[var]] <- NA_real_
+        }
+      }
+    }
+
+    first <- dplyr::union(first, data_list[[i]])
+  }
+
+  return(first)
+}
