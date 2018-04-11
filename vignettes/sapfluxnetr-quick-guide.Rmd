@@ -1,10 +1,10 @@
 ---
-title: "sapfluxnetr Quick Guide"
+title: "sapfluxnetr Not So Quick Guide"
 author: "Víctor Granda (Sapfluxnet Team)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{sapfluxnetr Quick Guide}
+  %\VignetteIndexEntry{sapfluxnetr Not So Quick Guide}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
