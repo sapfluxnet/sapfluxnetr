@@ -28,6 +28,9 @@ some data metrics.
 
 ## Installing the package
 
+>DISCLAIMER: Not yet in CRAN really, use the devtools::install_github method
+ instead
+
 `sapfluxnetr` stable versions are in the CRAN repository, so the installation of
 the package is as per usual:
 
@@ -36,7 +39,7 @@ install.packages('sapfluxnetr')
 ```
 
 Development versions of the package reside in github. If you want the lastest
-updates (and also the latests bugs, be advised ;) ), please install the devel
+updates, and also the latests bugs, ( be advised ;) ), please install the master
 branch of the [github repository](https://github.com/sapfluxnet/sapfluxnetr)
 with the `devtools` package:
 
