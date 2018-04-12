@@ -435,81 +435,33 @@ temperate_aggregated <- temperate_sites %>%
 and *voilà*, all sites aggregated, so we can start working with the data.
 
 The structure of `daily_metrics` results allows for easy data subsetting and
-is fast to create a data frame with the desired data. In this example we will
-join all general metrics of all sites and try to see if there is site effect in
-the relationship between sapflow and vpd, using the 0.95 quantiles as maximum
-values of sapflow.
+is fast to create a data frame with the desired data. In order to make things
+easier, `sapfluxnetr` offers a way to *tidyfy* the metrics results generating
+an unique, yet complete data frame containing all metrics and metadata. This can
+be done using the `metrics_tidyfier` function. We will need the metrics results
+object, the metadata cache and also indicating which interval (general, midday,
+predawn, night or day) we want to transform to tidy (see `?metrics_tidyfier` for
+more details):
 
-First we join all the sap flow measurements. As we need to acces to a nested
-list we can use the `map` function from `purrr` package (included in `tidyverse`).
-`map` maps a function to all elements in a list-like structure. In this case we
-provide a character vector to extract all nested elements called `'sapf_gen'`.
-And after that we apply to all extracted elements the `select` function to
-retrieve only the TIMESTAMP and all variables ending in `'_q_95'`.
+```{r tidyfing}
+# tidyfing the metrics
+temperate_tidy_metrics <- metrics_tidyfier(
+  temperate_aggregated, sfn_metadata, interval = 'gen'
+)
 
-```{r ex_1_sapf}
-sapf_data <- temperate_aggregated %>%
-  map(c('sapf', 'sapf_gen')) %>%
-  map(~ select(., TIMESTAMP, ends_with('_q_95')))
-
-sapf_data
+temperate_tidy_metrics
 ```
 
-We do the same for the environmental data, in this case extracting the mean
-metric and selecting only the vpd variable
-
-```{r ex_1_env}
-env_data <- temperate_aggregated %>%
-  map(c('env', 'env_gen')) %>%
-  map(~ select(., TIMESTAMP, ends_with('_mean'))) %>%
-  map(~ select(., TIMESTAMP, starts_with('vpd_')))
-
-env_data
-```
-
-We will need the plant metadata to access the sapwood area data for each tree
-of temperate sites
-
-```{r ex_1_plant_md}
-plant_md <- sfn_metadata[['plant_md']] %>%
-  filter(si_code %in% names(temperate_aggregated))
-
-plant_md
-```
-
-And now we are ready to put all together, again mostly using the `map` function
-to apply to all sites the same functions. This will be done in steps:
-
-1. Join sapf_data and env_data by TIMESTAMP values
-1. Gather all sap flow measurements in one column to be able to color/fill/group
-   by individual tree and also join all sites in one data set
-1. Convert to tibble (to bind the rows)
-1. Bind rows from all sites in one data set
-1. Create the plant code (`pl_code`) based on the Tree column (tree name without
-   the metric ending, `_q_95` in this case)
-1. Order by TIMESTAMP
-1. Join the plant metadata
-
-```{r ex_1_whole_data}
-whole_data <- sapf_data %>%
-  map2(env_data, ~ full_join(.x, .y, by = 'TIMESTAMP')) %>% # step 1
-  map(~ gather(., Tree, Sapflow, -TIMESTAMP, -starts_with('vpd_'))) %>% # step 2
-  map(as_tibble) %>% # step 3
-  bind_rows() %>% # step 4
-  mutate(pl_code = str_remove_all(Tree, '_q_95')) %>% # step 5
-  arrange(TIMESTAMP) %>% # step 6
-  left_join(plant_md, by = 'pl_code') # step 7
-
-whole_data
-```
-
-
-No we can plot to see the relationship between vpd and sap flow measurements,
-per sapwood area and site:
+Now we can start plotting, modelling, etc.  
+For example, to look for site effects in the relationship between sapflow and
+vpd, using the 0.95 quantiles as maximum values of sapflow and the plant sapwood
+area as a third variable:
 
 ```{r ex_1_plot, fig.width=7, fig.height=4.3}
-ggplot(whole_data, aes(x = vpd_mean, y = Sapflow, colour = si_code,
-                       size = pl_sapw_area)) +
+ggplot(
+  temperate_tidy_metrics,
+  aes(x = vpd_mean, y = sapflow_q_95, colour = si_code, size = pl_sapw_area)
+) +
   geom_point(alpha = 0.2)
 ```
 
