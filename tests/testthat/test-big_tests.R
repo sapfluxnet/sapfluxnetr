@@ -81,6 +81,8 @@ test_that('each site can be loaded, completly summarised and plotted', {
       sapf_names <- c('sapf_gen', 'sapf_pd', 'sapf_md', 'sapf_day', 'sapf_night')
       env_names <- c('env_gen', 'env_pd', 'env_md', 'env_day', 'env_night')
 
+      metrics_tidy <- metrics_tidyfier(metrics)
+
       # test if load
       expect_s4_class(sfn_data, 'sfn_data')
 
@@ -127,6 +129,10 @@ test_that('each site can be loaded, completly summarised and plotted', {
       expect_identical(names(metrics[['env']]), env_names)
       expect_s3_class(metrics[['sapf']][['sapf_day']], 'tbl')
       expect_s3_class(metrics[['env']][['env_day']], 'tbl')
+
+      # test if tidyfy
+      expect_s3_class(metrics_tidy)
+      expect_true(nrow(metrics_tidy) > 0)
 
     }
 
