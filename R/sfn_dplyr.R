@@ -471,7 +471,7 @@ sfn_mutate_at <- function(sfn_data, .vars, .funs, ..., solar = FALSE) {
 #'     \item{si_*: site metadata variables (i.e. si_biome, si_contact_firstname)}
 #'     \item{st_*: stand metadata variables (i.e. st_aspect, st_lai)}
 #'     \item{sp_*: species metadata variables (i.e. sp_basal_area_perc)}
-#'     \item{env_*: environmental metadata variables (i.e. env_fluxnet)}
+#'     \item{env_*: environmental metadata variables (i.e. env_timezone)}
 #'   }
 #'
 #' @examples
