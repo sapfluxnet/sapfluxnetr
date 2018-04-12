@@ -1,0 +1,87 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# sapfluxnetr
+
+`sapfluxnetr` provides tools for a tidy data analysis for the first global
+database of sap flow measurements
+([Sapfluxnet Project](http://sapfluxnet.creaf.cat/app))
+
+## Installation
+
+You can install sapfluxnetr from github with:
+
+```{r gh-installation, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'master',
+                         build_vignettes = TRUE)
+```
+
+Be advised, `sapfluxnetr` is in active development and can contain undiscovered
+bugs. If you find something not working as expected fill a bug at
+https://github.com/sapfluxnet/sapfluxnetr/issues
+
+## Examples
+
+You can work with individual sites:
+
+```{r example_single}
+# load packages
+library(sapfluxnetr)
+# install.packages("tidyverse")
+library(tidyverse)
+
+# ARG_MAZ example site data
+data('ARG_MAZ', package = 'sapfluxnetr')
+data('sfn_metadata_ex', package = 'sapfluxnetr')
+
+# plot site sapflow measurements versus vpd
+sfn_plot(ARG_MAZ, formula_env = ~ vpd)
+
+# daily sapflow standard metrics
+arg_maz_metrics <- daily_metrics(ARG_MAZ)
+
+# tidy results
+arg_maz_tidy <- metrics_tidyfier(arg_maz_metrics, sfn_metadata_ex)
+arg_maz_tidy
+
+# plot daily aggregations
+ggplot(arg_maz_tidy, aes(x = vpd_mean, y = sapflow_q_95, colour = pl_code)) +
+  geom_point()
+```
+
+And you can work with multiple sites:
+
+```{r example_multi}
+# ARG_TRE and AUS_CAN_ST2_MIX example sites
+data('ARG_TRE', package = 'sapfluxnetr')
+data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
+
+# plotting the individual sites. It creates a list of plots
+plots_list <- sfn_plot(multi_sfn, formula_env = ~ vpd)
+plots_list[['AUS_CAN_ST2_MIX']]
+
+# daily sapflow standard metrics
+multi_metrics <- daily_metrics(multi_sfn)
+
+# tidy results
+multi_tidy <- metrics_tidyfier(multi_metrics, sfn_metadata_ex)
+multi_tidy
+
+# plot daily aggregations
+ggplot(multi_tidy, aes(x = vpd_mean, y = sapflow_q_95, colour = si_code)) +
+  geom_point(alpha = 0.2)
+```
+

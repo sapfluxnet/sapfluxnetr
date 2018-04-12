@@ -150,3 +150,8 @@ save.image(file = 'tests/testthat/AUS_CAN_ST2_MIX.RData')
 ## REMOVE ALL
 rm(list = ls())
 ##
+
+sfn_metadata_ex <- sapfluxnetr:::.write_metadata_cache('tests/testthat/Data',
+                                                    .dry = TRUE)
+
+devtools::use_data(sfn_metadata_ex, overwrite = TRUE)
