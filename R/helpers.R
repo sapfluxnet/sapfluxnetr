@@ -1150,6 +1150,12 @@ describe_md_variable <- function(variable) {
 
 #' helper for using dplyr::union in multiple sites
 .multi_union <- function(data_list) {
+
+  if (length(data_list) < 2) {
+    return(data_list[[1]])
+  }
+
+
   first <- data_list[[1]]
 
   for (i in 2:length(data_list)) {
