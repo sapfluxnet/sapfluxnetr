@@ -4,19 +4,19 @@ context("getters")
 test_that('read_sfn_data load the objects correctly', {
 
   expect_s4_class(
-    read_sfn_data('FOO', 'Data'), 'sfn_data'
+    read_sfn_data('ARG_TRE', 'Data'), 'sfn_data'
   )
 
   expect_s4_class(
-    read_sfn_data('BAR', 'Data'), 'sfn_data'
+    read_sfn_data('ARG_MAZ', 'Data'), 'sfn_data'
   )
 
   expect_s4_class(
-    read_sfn_data('BAZ', 'Data'), 'sfn_data'
+    read_sfn_data('AUS_CAN_ST2_MIX', 'Data'), 'sfn_data'
   )
 
   expect_s4_class(
-    read_sfn_data(c('FOO', 'BAR', 'BAZ'), 'Data'), 'sfn_data_multi'
+    read_sfn_data(c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'), 'Data'), 'sfn_data_multi'
   )
 
 })
@@ -24,11 +24,11 @@ test_that('read_sfn_data load the objects correctly', {
 #### as_sfn_data_multi tests ####
 test_that('as_sfn_data_multi helper works as intended', {
 
-  FOO <- read_sfn_data('FOO', 'Data')
-  BAR <- read_sfn_data('BAR', 'Data')
-  BAZ <- read_sfn_data('BAZ', 'Data')
+  ARG_TRE <- read_sfn_data('ARG_TRE', 'Data')
+  ARG_MAZ <- read_sfn_data('ARG_MAZ', 'Data')
+  AUS_CAN_ST2_MIX <- read_sfn_data('AUS_CAN_ST2_MIX', 'Data')
 
-  multi_list <- list(FOO, BAR, BAZ)
+  multi_list <- list(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 
   expect_s4_class(
     sapfluxnetr:::as_sfn_data_multi(multi_list), 'sfn_data_multi'
@@ -37,7 +37,7 @@ test_that('as_sfn_data_multi helper works as intended', {
   multi_sfn <- sapfluxnetr:::as_sfn_data_multi(multi_list)
 
   expect_identical(
-    names(multi_sfn), c('FOO', 'BAR', 'BAZ')
+    names(multi_sfn), c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX')
   )
 
   expect_s4_class(
@@ -49,7 +49,7 @@ test_that('as_sfn_data_multi helper works as intended', {
   )
 
   expect_s4_class(
-    multi_sfn[['BAZ']], 'sfn_data'
+    multi_sfn[['AUS_CAN_ST2_MIX']], 'sfn_data'
   )
 })
 
@@ -118,7 +118,7 @@ test_that('filter_by_var combines all metadata correctly', {
   )
 
   expect_identical(
-    filter_by_var(!!!filters, folder = 'Data'), c('BAR', 'FOO')
+    filter_by_var(!!!filters, folder = 'Data'), c('ARG_MAZ', 'ARG_TRE')
   )
 
   filters <- list(

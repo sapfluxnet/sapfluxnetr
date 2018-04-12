@@ -17,12 +17,12 @@
 #'
 #' @examples
 #' # load one single site (it suposes a folder called Data exists and contains
-#' # a file called FOO.RData)
+#' # a file called ARG_TRE.RData)
 #' \dontrun{
-#' FOO <- read_sfn_data('FOO', 'Data')
+#' ARG_TRE <- read_sfn_data('ARG_TRE', 'Data')
 #'
 #' # load several sites
-#' multi_sfn <- read_sfn_data(c('FOO', 'BAR', 'BAZ'), 'Data')
+#' multi_sfn <- read_sfn_data(c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'), 'Data')
 #' }
 #'
 #' @export

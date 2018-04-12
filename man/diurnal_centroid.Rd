@@ -50,10 +50,10 @@ diurnal_centroid(rep(1, 1000)) # 12.012 h
 diurnal_centroid(rep(10000, 1000)) # 12.012 h, variable scale not affects calculation
 
 # sapflow diurnal centroid
-data('FOO', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
 
 sfn_metrics(
-  FOO,
+  ARG_TRE,
   period = 'daily',
   .funs = funs(diurnal_centroid(.), data_coverage(.)),
   solar = FALSE,

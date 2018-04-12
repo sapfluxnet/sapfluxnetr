@@ -65,14 +65,14 @@ an error is raised if not valid
 }
 \examples{
 # preparation
-data('FOO', package = 'sapfluxnetr')
-sapf_data <- get_sapf_data(FOO, solar = TRUE)
+data('ARG_TRE', package = 'sapfluxnetr')
+sapf_data <- get_sapf_data(ARG_TRE, solar = TRUE)
 
 # modifying the slot data
 sapf_data[1:10, 2] <- NA
 
 # replacement. Remember, the sfn_data slot does not contain a TIMESTAMP
 # variable, it must be removed
-get_sapf_data(FOO) <- sapf_data[,-1]
+get_sapf_data(ARG_TRE) <- sapf_data[,-1]
 
 }

@@ -37,15 +37,15 @@ library(dplyr)
 library(lubridate)
 
 # data
-data('FOO', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
 
 # transform to NAs any sapflow value occured with wind speed above 25
 ws_threshold <- 25
 # get the names of the variables to mutate (tree names)
-vars_to_mutate <- names(get_sapf_data(FOO)[,-1]) # no TIMESTAMP
+vars_to_mutate <- names(get_sapf_data(ARG_TRE)[,-1]) # no TIMESTAMP
 
 sfn_mutate_at(
-  FOO,
+  ARG_TRE,
   .vars = vars(one_of(vars_to_mutate)),
   .funs = funs(
     case_when(
@@ -56,12 +56,12 @@ sfn_mutate_at(
 )
 
 ## multi
-data(BAR, package = 'sapfluxnetr')
-data(BAZ, package = 'sapfluxnetr')
-multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+data(ARG_MAZ, package = 'sapfluxnetr')
+data(AUS_CAN_ST2_MIX, package = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 
 ## in multi it's better to discard the variables to not mutate:
-vars_to_not_mutate <- names(get_env_data(FOO)) # all the environmental
+vars_to_not_mutate <- names(get_env_data(ARG_TRE)) # all the environmental
 
 multi_sfn_mutated <- sfn_mutate_at(
   multi_sfn,
@@ -74,6 +74,6 @@ multi_sfn_mutated <- sfn_mutate_at(
   )
 )
 
-multi_sfn_mutated[['FOO']]
+multi_sfn_mutated[['ARG_TRE']]
 
 }

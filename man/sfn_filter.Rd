@@ -37,15 +37,15 @@ library(dplyr)
 library(lubridate)
 
 # data
-data('FOO', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
 
 # by timestamp
-foo_timestamp <- get_timestamp(FOO)
+foo_timestamp <- get_timestamp(ARG_TRE)
 
 foo_timestamp_trimmed <- foo_timestamp[1:100]
 
 sfn_filter(
-  FOO,
+  ARG_TRE,
   TIMESTAMP \%in\% foo_timestamp_trimmed
 )
 
@@ -53,13 +53,13 @@ sfn_filter(
 ws_threshold <- 25
 
 sfn_filter(
-  FOO,
+  ARG_TRE,
   ws <= ws_threshold
 )
 
 ## multi
-data('BAR', package = 'sapfluxnetr')
-multi_sfn <- sfn_data_multi(FOO, BAR)
+data('ARG_MAZ', package = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ)
 
 # by timestamp
 sfn_filter(

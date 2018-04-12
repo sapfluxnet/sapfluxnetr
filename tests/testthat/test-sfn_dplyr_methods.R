@@ -1,28 +1,28 @@
 context("sfn_dplyr_methods")
 
-data('FOO', package = 'sapfluxnetr')
-data('BAR', package = 'sapfluxnetr')
-data('BAZ', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
+data('ARG_MAZ', package = 'sapfluxnetr')
+data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
 #### filter #####
 test_that("sfn_filter returns correct results", {
-  foo_timestamp <- get_timestamp(FOO)
+  foo_timestamp <- get_timestamp(ARG_TRE)
   foo_timestamp_trimmed <- foo_timestamp[1:100]
-  foo_solar_timestamp <- get_solar_timestamp(FOO)
+  foo_solar_timestamp <- get_solar_timestamp(ARG_TRE)
   foo_solar_timestamp_trimmed <- foo_solar_timestamp[1:100]
   ws_threshold <- 25
-  foo_subset <- sfn_filter(FOO, TIMESTAMP %in% foo_timestamp_trimmed)
-  foo_subset_2 <- sfn_filter(FOO, ws <= ws_threshold)
+  foo_subset <- sfn_filter(ARG_TRE, TIMESTAMP %in% foo_timestamp_trimmed)
+  foo_subset_2 <- sfn_filter(ARG_TRE, ws <= ws_threshold)
   foo_subset_3 <- sfn_filter(
-    FOO, TIMESTAMP %in% foo_solar_timestamp_trimmed,
+    ARG_TRE, TIMESTAMP %in% foo_solar_timestamp_trimmed,
     solar = TRUE
   )
-  multi_sfn <- sfn_data_multi(FOO, BAR)
+  multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ)
   multi_sfn_filter <- sfn_filter(
     multi_sfn, dplyr::between(lubridate::day(TIMESTAMP), 19, 23)
   )
   multi_sfn_filter_2 <- sfn_filter(multi_sfn, ws <= ws_threshold)
-  multi_sfn_2 <- sfn_data_multi(FOO, BAR, BAZ)
+  multi_sfn_2 <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
   suppressWarnings(multi_sfn_filter_3 <- sfn_filter(
     multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 1998, 1999)
   ))
@@ -76,7 +76,7 @@ test_that("sfn_filter returns correct results", {
   expect_warning(
     sfn_filter(
       multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 2008, 2009)
-    ), 'BAZ'
+    ), 'AUS_CAN_ST2_MIX'
   )
 
   expect_s4_class(multi_sfn_filter_5, 'sfn_data_multi')
@@ -84,7 +84,7 @@ test_that("sfn_filter returns correct results", {
   expect_warning(
     sfn_filter(
       multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 2006, 2007)
-    ), 'FOO'
+    ), 'ARG_TRE'
   )
 
 })
@@ -92,8 +92,8 @@ test_that("sfn_filter returns correct results", {
 #### mutate ####
 test_that('sfn_mutate returns correct results', {
 
-  foo_mutated <- sfn_mutate(FOO, ws = dplyr::if_else(ws > 25, NA_real_, ws))
-  multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+  foo_mutated <- sfn_mutate(ARG_TRE, ws = dplyr::if_else(ws > 25, NA_real_, ws))
+  multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
   multi_mutated <- sfn_mutate(
     multi_sfn, ws = dplyr::if_else(ws > 25, NA_real_, ws)
   )
@@ -130,15 +130,15 @@ test_that('sfn_mutate returns correct results', {
     expect_match(get_env_flags(multi_mutated[[3]])[['ws']], 'USER_MODF', all = TRUE)
   )
   expect_match(get_env_flags(multi_mutated[[3]])[['ws']], 'OUT_WARN', all = FALSE)
-  expect_identical(multi_sfn[['BAZ']], multi_mutated[['BAZ']])
+  expect_identical(multi_sfn[['AUS_CAN_ST2_MIX']], multi_mutated[['AUS_CAN_ST2_MIX']])
 })
 
 #### mutate_at ####
 test_that('sfn_mutate_at returns correct results', {
 
-  vars_to_mutate <- names(get_sapf_data(FOO)[,-1])
+  vars_to_mutate <- names(get_sapf_data(ARG_TRE)[,-1])
   foo_mutated <- sfn_mutate_at(
-    FOO,
+    ARG_TRE,
     .vars = dplyr::vars(dplyr::one_of(vars_to_mutate)),
     .funs = dplyr::funs(
       dplyr::case_when(
@@ -148,8 +148,8 @@ test_that('sfn_mutate_at returns correct results', {
     )
   )
 
-  vars_to_not_mutate <- names(get_env_data(FOO))
-  multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+  vars_to_not_mutate <- names(get_env_data(ARG_TRE))
+  multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
   multi_mutated <- suppressWarnings(sfn_mutate_at(
     multi_sfn,
     .vars = dplyr::vars(-dplyr::one_of(vars_to_not_mutate)), # we use -
@@ -204,14 +204,14 @@ test_that('sfn_mutate_at returns correct results', {
   expect_failure(
     expect_match(get_sapf_flags(multi_mutated[[3]])[[5]], 'USER_MODF', all = TRUE)
   )
-  expect_identical(multi_sfn[['BAZ']], multi_mutated[['BAZ']])
+  expect_identical(multi_sfn[['AUS_CAN_ST2_MIX']], multi_mutated[['AUS_CAN_ST2_MIX']])
 
 })
 
 #### metrics_tidyfier #####
 test_that('metrics_tidyfier returns the expected object for single metrics', {
 
-  foo_daily <- daily_metrics(FOO, TRUE)
+  foo_daily <- daily_metrics(ARG_TRE, TRUE)
   sfn_metadata <- sapfluxnetr:::.write_metadata_cache('Data', .dry = TRUE)
 
   foo_gen_tidy <- metrics_tidyfier(foo_daily, sfn_metadata, 'gen')
@@ -269,7 +269,7 @@ test_that('metrics_tidyfier returns the expected object for single metrics', {
 
 test_that('metrics_tidyfier returns the expected object for multi metrics', {
 
-  multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+  multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
   multi_daily <- daily_metrics(multi_sfn, TRUE)
   sfn_metadata <- sapfluxnetr:::.write_metadata_cache('Data', .dry = TRUE)
 

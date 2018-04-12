@@ -146,9 +146,9 @@ for more complex summarising functions declaration.
 library(dplyr)
 
 ## sfn_data
-data('FOO', package = 'sapfluxnetr')
-FOO_metrics <- sfn_metrics(
-  FOO,
+data('ARG_TRE', package = 'sapfluxnetr')
+ARG_TRE_metrics <- sfn_metrics(
+  ARG_TRE,
   period = '7 days',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
   solar = FALSE,
@@ -165,15 +165,15 @@ FOO_metrics <- sfn_metrics(
   side = 'start'
 )
 
-str(FOO_metrics)
-FOO_metrics[['sapf']][['sapf_pd']]
-FOO_metrics[['env']][['env_night']]
+str(ARG_TRE_metrics)
+ARG_TRE_metrics[['sapf']][['sapf_pd']]
+ARG_TRE_metrics[['env']][['env_night']]
 
 ## sfn_data_multi
 \dontrun{
-data('BAR', package = 'sapfluxnetr')
-data('BAZ', package = 'sapfluxnetr')
-multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+data('ARG_MAZ', package = 'sapfluxnetr')
+data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 
 multi_metrics <- sfn_metrics(
   multi_sfn,
@@ -193,7 +193,7 @@ multi_metrics <- sfn_metrics(
 
 str(multi_metrics)
 
-multi_metrics[['FOO']][['sapf']][['sapf_pd']]
+multi_metrics[['ARG_TRE']][['sapf']][['sapf_pd']]
 }
 
 }

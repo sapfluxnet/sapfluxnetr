@@ -43,21 +43,21 @@ library(dplyr)
 library(lubridate)
 
 # data
-data('FOO', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
 
 # transform to NAs any wind value above 25
 ws_threshold <- 25
-sfn_mutate(FOO, ws = if_else(ws > 25, NA_real_, ws))
+sfn_mutate(ARG_TRE, ws = if_else(ws > 25, NA_real_, ws))
 
 ## multi
-data(BAR, package = 'sapfluxnetr')
-data(BAZ, package = 'sapfluxnetr')
-multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+data(ARG_MAZ, package = 'sapfluxnetr')
+data(AUS_CAN_ST2_MIX, package = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 
 multi_sfn_mutated <- sfn_mutate(
   multi_sfn, ws = if_else(ws > 25, NA_real_, ws)
 )
 
-multi_sfn_mutated[['FOO']]
+multi_sfn_mutated[['ARG_TRE']]
 
 }

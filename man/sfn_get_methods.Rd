@@ -70,13 +70,13 @@ metadata.
 \examples{
 library(dplyr)
 
-data('FOO', package = 'sapfluxnetr')
-sapf_data <- get_sapf_data(FOO, solar = TRUE)
-env_data_no_solar <- get_env_data(FOO, solar = FALSE)
-plant_md <- get_plant_md(FOO)
+data('ARG_TRE', package = 'sapfluxnetr')
+sapf_data <- get_sapf_data(ARG_TRE, solar = TRUE)
+env_data_no_solar <- get_env_data(ARG_TRE, solar = FALSE)
+plant_md <- get_plant_md(ARG_TRE)
 
 # dplyr pipe to get the mean dbh for a site
-FOO \%>\%
+ARG_TRE \%>\%
   get_plant_md() \%>\%
   summarise(dbh_mean = mean(pl_dbh, na.rm = TRUE)) \%>\%
   pull(dbh_mean)

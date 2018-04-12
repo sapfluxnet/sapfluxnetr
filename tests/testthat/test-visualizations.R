@@ -1,15 +1,15 @@
 context("visualizations")
 
-data(FOO, package = 'sapfluxnetr')
+data(ARG_TRE, package = 'sapfluxnetr')
 
 test_that('sfn_plot returns the object correctly', {
-  
-  expect_s3_class(sfn_plot(FOO), 'gg')
-  expect_s3_class(sfn_plot(FOO, solar = FALSE), 'gg')
-  expect_s3_class(sfn_plot(FOO, type = 'env'), 'gg')
-  expect_s3_class(sfn_plot(FOO, type = 'ta'), 'gg')
-  expect_s3_class(sfn_plot(FOO, type = 'vpd'), 'gg')
-  expect_s3_class(sfn_plot(FOO, formula = ~vpd), 'gg')
-  expect_s3_class(sfn_plot(FOO, formula = ~ext_rad), 'gg')
-  
+
+  expect_s3_class(sfn_plot(ARG_TRE), 'gg')
+  expect_s3_class(sfn_plot(ARG_TRE, solar = FALSE), 'gg')
+  expect_s3_class(sfn_plot(ARG_TRE, type = 'env'), 'gg')
+  expect_s3_class(sfn_plot(ARG_TRE, type = 'ta'), 'gg')
+  expect_s3_class(sfn_plot(ARG_TRE, type = 'vpd'), 'gg')
+  expect_s3_class(sfn_plot(ARG_TRE, formula = ~vpd), 'gg')
+  expect_s3_class(sfn_plot(ARG_TRE, formula = ~ext_rad), 'gg')
+
 })

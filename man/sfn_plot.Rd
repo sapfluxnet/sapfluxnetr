@@ -66,25 +66,25 @@ Plot the desired data from a site object
 library(ggplot2)
 
 # data
-data('FOO', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
 
 # plotting directly
-sfn_plot(FOO, type = 'sapf')
+sfn_plot(ARG_TRE, type = 'sapf')
 
 # this could be noisy, you can facet by "Tree" (for sapflow) or by
 # "Variable" (for environmental data):
-sfn_plot(FOO, type = 'sapf') +
+sfn_plot(ARG_TRE, type = 'sapf') +
   facet_wrap(~ Tree)
 
-sfn_plot(FOO, type = 'env') +
+sfn_plot(ARG_TRE, type = 'env') +
   facet_wrap(~ Variable, scales = 'free_y')
 
 # saving and modifying:
-env_plot <- sfn_plot(FOO, type = 'env', solar = FALSE) +
+env_plot <- sfn_plot(ARG_TRE, type = 'env', solar = FALSE) +
   facet_wrap(~ Variable, scales = 'free_y')
 env_plot + labs(title = 'Environmental variables facet plot')
 
 # formula
-sfn_plot(FOO, formula_env = ~ vpd)
+sfn_plot(ARG_TRE, formula_env = ~ vpd)
 
 }

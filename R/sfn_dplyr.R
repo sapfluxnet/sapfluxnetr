@@ -27,15 +27,15 @@
 #' library(lubridate)
 #'
 #' # data
-#' data('FOO', package = 'sapfluxnetr')
+#' data('ARG_TRE', package = 'sapfluxnetr')
 #'
 #' # by timestamp
-#' foo_timestamp <- get_timestamp(FOO)
+#' foo_timestamp <- get_timestamp(ARG_TRE)
 #'
 #' foo_timestamp_trimmed <- foo_timestamp[1:100]
 #'
 #' sfn_filter(
-#'   FOO,
+#'   ARG_TRE,
 #'   TIMESTAMP %in% foo_timestamp_trimmed
 #' )
 #'
@@ -43,13 +43,13 @@
 #' ws_threshold <- 25
 #'
 #' sfn_filter(
-#'   FOO,
+#'   ARG_TRE,
 #'   ws <= ws_threshold
 #' )
 #'
 #' ## multi
-#' data('BAR', package = 'sapfluxnetr')
-#' multi_sfn <- sfn_data_multi(FOO, BAR)
+#' data('ARG_MAZ', package = 'sapfluxnetr')
+#' multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ)
 #'
 #' # by timestamp
 #' sfn_filter(
@@ -175,22 +175,22 @@ sfn_filter <- function(sfn_data, ..., solar = FALSE) {
 #' library(lubridate)
 #'
 #' # data
-#' data('FOO', package = 'sapfluxnetr')
+#' data('ARG_TRE', package = 'sapfluxnetr')
 #'
 #' # transform to NAs any wind value above 25
 #' ws_threshold <- 25
-#' sfn_mutate(FOO, ws = if_else(ws > 25, NA_real_, ws))
+#' sfn_mutate(ARG_TRE, ws = if_else(ws > 25, NA_real_, ws))
 #'
 #' ## multi
-#' data(BAR, package = 'sapfluxnetr')
-#' data(BAZ, package = 'sapfluxnetr')
-#' multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+#' data(ARG_MAZ, package = 'sapfluxnetr')
+#' data(AUS_CAN_ST2_MIX, package = 'sapfluxnetr')
+#' multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 #'
 #' multi_sfn_mutated <- sfn_mutate(
 #'   multi_sfn, ws = if_else(ws > 25, NA_real_, ws)
 #' )
 #'
-#' multi_sfn_mutated[['FOO']]
+#' multi_sfn_mutated[['ARG_TRE']]
 #'
 #' @export
 
@@ -311,15 +311,15 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
 #' library(lubridate)
 #'
 #' # data
-#' data('FOO', package = 'sapfluxnetr')
+#' data('ARG_TRE', package = 'sapfluxnetr')
 #'
 #' # transform to NAs any sapflow value occured with wind speed above 25
 #' ws_threshold <- 25
 #' # get the names of the variables to mutate (tree names)
-#' vars_to_mutate <- names(get_sapf_data(FOO)[,-1]) # no TIMESTAMP
+#' vars_to_mutate <- names(get_sapf_data(ARG_TRE)[,-1]) # no TIMESTAMP
 #'
 #' sfn_mutate_at(
-#'   FOO,
+#'   ARG_TRE,
 #'   .vars = vars(one_of(vars_to_mutate)),
 #'   .funs = funs(
 #'     case_when(
@@ -330,12 +330,12 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
 #' )
 #'
 #' ## multi
-#' data(BAR, package = 'sapfluxnetr')
-#' data(BAZ, package = 'sapfluxnetr')
-#' multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+#' data(ARG_MAZ, package = 'sapfluxnetr')
+#' data(AUS_CAN_ST2_MIX, package = 'sapfluxnetr')
+#' multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 #'
 #' ## in multi it's better to discard the variables to not mutate:
-#' vars_to_not_mutate <- names(get_env_data(FOO)) # all the environmental
+#' vars_to_not_mutate <- names(get_env_data(ARG_TRE)) # all the environmental
 #'
 #' multi_sfn_mutated <- sfn_mutate_at(
 #'   multi_sfn,
@@ -348,7 +348,7 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
 #'   )
 #' )
 #'
-#' multi_sfn_mutated[['FOO']]
+#' multi_sfn_mutated[['ARG_TRE']]
 #'
 #' @export
 

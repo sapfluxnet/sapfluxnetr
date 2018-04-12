@@ -1,7 +1,7 @@
 context("metrics_low_level")
 
 # data
-FOO <- read_sfn_data('FOO', 'Data')
+ARG_TRE <- read_sfn_data('ARG_TRE', 'Data')
 
 #### summarise_by_period tests ####
 test_that('summarise_by_period function example works', {
@@ -10,7 +10,7 @@ test_that('summarise_by_period function example works', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf_data(FOO),
+      data = get_sapf_data(ARG_TRE),
       period = '7 days',
       .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
     ),
@@ -19,7 +19,7 @@ test_that('summarise_by_period function example works', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_env_data(FOO),
+      data = get_env_data(ARG_TRE),
       period = '7 days',
       .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
     ),
@@ -27,7 +27,7 @@ test_that('summarise_by_period function example works', {
   )
 
   test_expr <- summarise_by_period(
-    data = get_sapf_data(FOO),
+    data = get_sapf_data(ARG_TRE),
     period = '7 days',
     .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
   )
@@ -56,7 +56,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf_data(FOO),
+      data = get_sapf_data(ARG_TRE),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       na.rm = TRUE, # for summarise
@@ -66,7 +66,7 @@ test_that('summarise_by_period dots work as intended', {
   )
 
   test_expr <- summarise_by_period(
-    data = get_sapf_data(FOO),
+    data = get_sapf_data(ARG_TRE),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     na.rm = TRUE, # for summarise
@@ -78,7 +78,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf_data(FOO),
+      data = get_sapf_data(ARG_TRE),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       na.rm = TRUE, # for summarise
@@ -89,7 +89,7 @@ test_that('summarise_by_period dots work as intended', {
   )
 
   test_expr2 <- summarise_by_period(
-    data = get_sapf_data(FOO),
+    data = get_sapf_data(ARG_TRE),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     na.rm = TRUE, # for summarise
@@ -102,7 +102,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf_data(FOO),
+      data = get_sapf_data(ARG_TRE),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       side = "start" # for collapse_index
@@ -111,7 +111,7 @@ test_that('summarise_by_period dots work as intended', {
   )
 
   test_expr3 <- summarise_by_period(
-    data = get_sapf_data(FOO),
+    data = get_sapf_data(ARG_TRE),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     side = "start" # for collapse_index
@@ -122,7 +122,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf_data(FOO),
+      data = get_sapf_data(ARG_TRE),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       side = "start", # for collapse_index
@@ -132,7 +132,7 @@ test_that('summarise_by_period dots work as intended', {
   )
 
   test_expr4 <- summarise_by_period(
-    data = get_sapf_data(FOO),
+    data = get_sapf_data(ARG_TRE),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     side = "start", # for collapse_index
@@ -144,7 +144,7 @@ test_that('summarise_by_period dots work as intended', {
 
   expect_s3_class(
     summarise_by_period(
-      data = get_sapf_data(FOO),
+      data = get_sapf_data(ARG_TRE),
       period = 'daily',
       .funs = dplyr::funs(mean, sd),
       na.rm = TRUE # for summarise
@@ -153,7 +153,7 @@ test_that('summarise_by_period dots work as intended', {
   )
 
   test_expr5 <- summarise_by_period(
-    data = get_sapf_data(FOO),
+    data = get_sapf_data(ARG_TRE),
     period = 'daily',
     .funs = dplyr::funs(mean, sd),
     na.rm = TRUE # for summarise
@@ -164,7 +164,7 @@ test_that('summarise_by_period dots work as intended', {
   expect_match(names(test_expr5), regexp = '_sd', all = FALSE)
 
   test_expr6 <- summarise_by_period(
-    data = get_env_data(FOO),
+    data = get_env_data(ARG_TRE),
     period = 'daily',
     .funs = dplyr::funs(
       mean(., na.rm = TRUE), sd(., na.rm = TRUE), centroid = diurnal_centroid(.)
@@ -176,7 +176,7 @@ test_that('summarise_by_period dots work as intended', {
   )
 
   test_expr7 <- summarise_by_period(
-    data = get_sapf_data(FOO),
+    data = get_sapf_data(ARG_TRE),
     period = 'daily',
     .funs = dplyr::funs(
       mean(., na.rm = TRUE), sd(., na.rm = TRUE), centroid = diurnal_centroid(.)
@@ -260,13 +260,13 @@ test_that('sfn_metrics examples work', {
 
   library(dplyr)
 
-  BAR <- read_sfn_data('BAR', 'Data')
-  BAZ <- read_sfn_data('BAZ', 'Data')
-  multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+  ARG_MAZ <- read_sfn_data('ARG_MAZ', 'Data')
+  AUS_CAN_ST2_MIX <- read_sfn_data('AUS_CAN_ST2_MIX', 'Data')
+  multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 
   expect_is(
     sfn_metrics(
-      FOO,
+      ARG_TRE,
       period = '7 days',
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
       solar = FALSE, general = TRUE,
@@ -285,7 +285,7 @@ test_that('sfn_metrics examples work', {
   )
 
   test_expr <- sfn_metrics(
-    FOO,
+    ARG_TRE,
     period = '7 days',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = FALSE, general = TRUE,
@@ -345,7 +345,7 @@ test_that('sfn_metrics examples work', {
     side = 'start'
   )
 
-  expect_identical(names(test_expr2), c('FOO', 'BAR', 'BAZ'))
+  expect_identical(names(test_expr2), c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'))
 
   expect_is(
     sfn_metrics(
@@ -363,7 +363,7 @@ test_that('sfn_metrics examples work', {
       night_start = 20,
       night_end = 6,
       side = 'start'
-    )[['FOO']],
+    )[['ARG_TRE']],
     'list'
   )
 
@@ -384,12 +384,12 @@ test_that('sfn_metrics examples work', {
     side = 'start'
   )
 
-  expect_is(test_expr3[['BAR']], 'list')
-  expect_is(test_expr3[['BAZ']], 'list')
+  expect_is(test_expr3[['ARG_MAZ']], 'list')
+  expect_is(test_expr3[['AUS_CAN_ST2_MIX']], 'list')
 
   expect_equal(
     test_expr[['sapf']][['sapf_pd']],
-    test_expr2[['FOO']][['sapf']][['sapf_pd']]
+    test_expr2[['ARG_TRE']][['sapf']][['sapf_pd']]
   )
 
 })
@@ -398,44 +398,44 @@ test_that('sfn_metrics return the expected object', {
 
   library(dplyr)
 
-  load('BAR.RData')
-  load('BAZ.RData')
+  load('ARG_MAZ.RData')
+  load('AUS_CAN_ST2_MIX.RData')
 
-  BAR <- sfn_data(
-    sapf_data = BAR_sapf_data,
-    env_data = BAR_env_data,
-    sapf_flags = BAR_sapf_flags,
-    env_flags = BAR_env_flags,
-    si_code = BAR_si_code,
-    timestamp = BAR_timestamp,
-    solar_timestamp = BAR_solar_timestamp,
-    site_md = BAR_site_md,
-    stand_md = BAR_stand_md,
-    species_md = BAR_species_md,
-    plant_md = BAR_plant_md,
-    env_md = BAR_env_md
+  ARG_MAZ <- sfn_data(
+    sapf_data = ARG_MAZ_sapf_data,
+    env_data = ARG_MAZ_env_data,
+    sapf_flags = ARG_MAZ_sapf_flags,
+    env_flags = ARG_MAZ_env_flags,
+    si_code = ARG_MAZ_si_code,
+    timestamp = ARG_MAZ_timestamp,
+    solar_timestamp = ARG_MAZ_solar_timestamp,
+    site_md = ARG_MAZ_site_md,
+    stand_md = ARG_MAZ_stand_md,
+    species_md = ARG_MAZ_species_md,
+    plant_md = ARG_MAZ_plant_md,
+    env_md = ARG_MAZ_env_md
   )
 
-  BAZ <- sfn_data(
-    sapf_data = BAZ_sapf_data,
-    env_data = BAZ_env_data,
-    sapf_flags = BAZ_sapf_flags,
-    env_flags = BAZ_env_flags,
-    si_code = BAZ_si_code,
-    timestamp = BAZ_timestamp,
-    solar_timestamp = BAZ_solar_timestamp,
-    site_md = BAZ_site_md,
-    stand_md = BAZ_stand_md,
-    species_md = BAZ_species_md,
-    plant_md = BAZ_plant_md,
-    env_md = BAZ_env_md
+  AUS_CAN_ST2_MIX <- sfn_data(
+    sapf_data = AUS_CAN_ST2_MIX_sapf_data,
+    env_data = AUS_CAN_ST2_MIX_env_data,
+    sapf_flags = AUS_CAN_ST2_MIX_sapf_flags,
+    env_flags = AUS_CAN_ST2_MIX_env_flags,
+    si_code = AUS_CAN_ST2_MIX_si_code,
+    timestamp = AUS_CAN_ST2_MIX_timestamp,
+    solar_timestamp = AUS_CAN_ST2_MIX_solar_timestamp,
+    site_md = AUS_CAN_ST2_MIX_site_md,
+    stand_md = AUS_CAN_ST2_MIX_stand_md,
+    species_md = AUS_CAN_ST2_MIX_species_md,
+    plant_md = AUS_CAN_ST2_MIX_plant_md,
+    env_md = AUS_CAN_ST2_MIX_env_md
   )
 
-  multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+  multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 
   expect_is(
     sfn_metrics(
-      FOO,
+      ARG_TRE,
       period = 'daily',
       .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
       solar = FALSE,
@@ -455,7 +455,7 @@ test_that('sfn_metrics return the expected object', {
   )
 
   test_expr <- sfn_metrics(
-    FOO,
+    ARG_TRE,
     period = 'daily',
     .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = FALSE,
@@ -526,7 +526,7 @@ test_that('sfn_metrics return the expected object', {
   # midday or nighttime)
   expect_is(
     sfn_metrics(
-      FOO,
+      ARG_TRE,
       period = 'daily',
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
       solar = FALSE,
@@ -542,7 +542,7 @@ test_that('sfn_metrics return the expected object', {
   )
 
   test_expr2 <- sfn_metrics(
-    FOO,
+    ARG_TRE,
     period = 'daily',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = FALSE,
@@ -571,7 +571,7 @@ test_that('sfn_metrics return the expected object', {
 
   expect_is(
     sfn_metrics(
-      FOO,
+      ARG_TRE,
       period = 'daily',
       .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
       solar = FALSE,
@@ -587,7 +587,7 @@ test_that('sfn_metrics return the expected object', {
   )
 
   test_expr3 <- sfn_metrics(
-    FOO,
+    ARG_TRE,
     period = 'daily',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = FALSE,
@@ -645,7 +645,7 @@ test_that('sfn_metrics return the expected object', {
   # lets be sure that without clean the hours are cutted where they must be
   # cutted
   test_expr4 <- sfn_metrics(
-    FOO,
+    ARG_TRE,
     period = 'daily',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = FALSE,
@@ -702,7 +702,7 @@ test_that('sfn_metrics return the expected object', {
   expect_equal(as.character(env_day_timestamp_4[13]), good_env_day_last_4)
 
   test_expr5 <- sfn_metrics(
-    FOO,
+    ARG_TRE,
     period = 'daily',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = FALSE,
@@ -759,7 +759,7 @@ test_that('sfn_metrics return the expected object', {
   expect_equal(as.character(env_day_timestamp_5[13]), good_env_day_last_5)
 
   test_expr6 <- sfn_metrics(
-    FOO,
+    ARG_TRE,
     period = 'daily',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = FALSE,
@@ -817,7 +817,7 @@ test_that('sfn_metrics return the expected object', {
   expect_equal(as.character(env_day_timestamp_6[13]), good_env_day_last_6)
 
   test_expr7 <- sfn_metrics(
-    BAZ,
+    AUS_CAN_ST2_MIX,
     period = 'monthly',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = FALSE,
@@ -877,16 +877,16 @@ test_that('sfn_metrics return the expected object', {
 #### daily_metrics ####
 test_that('daily metrics examples work', {
 
-  expect_is(daily_metrics(FOO, solar = FALSE), 'list')
-  expect_s3_class(daily_metrics(FOO, solar = FALSE)[['env']][['env_gen']], 'tbl_time')
+  expect_is(daily_metrics(ARG_TRE, solar = FALSE), 'list')
+  expect_s3_class(daily_metrics(ARG_TRE, solar = FALSE)[['env']][['env_gen']], 'tbl_time')
 
   expect_is(daily_metrics(
-    FOO, solar = FALSE,
+    ARG_TRE, solar = FALSE,
     pd_start = 5, pd_end = 7,
     md_start = 13, md_end = 15
   ), 'list')
   expect_s3_class(daily_metrics(
-    FOO, solar = FALSE,
+    ARG_TRE, solar = FALSE,
     pd_start = 5, pd_end = 7,
     md_start = 13, md_end = 15
   )[['sapf']][['sapf_pd']], 'tbl_time')
@@ -895,162 +895,162 @@ test_that('daily metrics examples work', {
 
 test_that('daily metrics returns the variables required', {
 
-  FOO_daily <- daily_metrics(FOO, solar = FALSE)
-  FOO_sapf_gen <- FOO_daily[['sapf']][['sapf_gen']]
-  FOO_sapf_pd <- FOO_daily[['sapf']][['sapf_pd']]
-  FOO_sapf_md <- FOO_daily[['sapf']][['sapf_md']]
-  FOO_env_gen <- FOO_daily[['env']][['env_gen']]
-  FOO_env_pd <- FOO_daily[['env']][['env_pd']]
-  FOO_env_md <- FOO_daily[['env']][['env_md']]
+  ARG_TRE_daily <- daily_metrics(ARG_TRE, solar = FALSE)
+  ARG_TRE_sapf_gen <- ARG_TRE_daily[['sapf']][['sapf_gen']]
+  ARG_TRE_sapf_pd <- ARG_TRE_daily[['sapf']][['sapf_pd']]
+  ARG_TRE_sapf_md <- ARG_TRE_daily[['sapf']][['sapf_md']]
+  ARG_TRE_env_gen <- ARG_TRE_daily[['env']][['env_gen']]
+  ARG_TRE_env_pd <- ARG_TRE_daily[['env']][['env_pd']]
+  ARG_TRE_env_md <- ARG_TRE_daily[['env']][['env_md']]
 
-  expect_match(names(FOO_sapf_gen), '_q_95', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_q_99', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_coverage', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_min_time', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_max_time', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_min', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_max', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_centroid', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_max', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_centroid', all = FALSE)
 
-  expect_match(names(FOO_sapf_pd), '_q_95', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_q_99', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_coverage', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_min_time', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_max_time', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_min', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_max', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_centroid', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_max', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_centroid', all = FALSE)
 
-  expect_match(names(FOO_sapf_md), '_q_95', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_q_99', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_coverage', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_min_time', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_max_time', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_min', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_max', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_centroid', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_max', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_centroid', all = FALSE)
 
-  expect_match(names(FOO_env_gen), '_q_95', all = FALSE)
-  expect_match(names(FOO_env_gen), '_q_99', all = FALSE)
-  expect_match(names(FOO_env_gen), '_coverage', all = FALSE)
-  expect_match(names(FOO_env_gen), '_min_time', all = FALSE)
-  expect_match(names(FOO_env_gen), '_max_time', all = FALSE)
-  expect_match(names(FOO_env_gen), '_min', all = FALSE)
-  expect_match(names(FOO_env_gen), '_max', all = FALSE)
-  expect_failure(expect_match(names(FOO_env_gen), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_env_gen), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_max', all = FALSE)
+  expect_failure(expect_match(names(ARG_TRE_env_gen), '_centroid', all = FALSE))
 
-  expect_match(names(FOO_env_pd), '_q_95', all = FALSE)
-  expect_match(names(FOO_env_pd), '_q_99', all = FALSE)
-  expect_match(names(FOO_env_pd), '_coverage', all = FALSE)
-  expect_match(names(FOO_env_pd), '_min_time', all = FALSE)
-  expect_match(names(FOO_env_pd), '_max_time', all = FALSE)
-  expect_match(names(FOO_env_pd), '_min', all = FALSE)
-  expect_match(names(FOO_env_pd), '_max', all = FALSE)
-  expect_failure(expect_match(names(FOO_env_pd), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_env_pd), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_max', all = FALSE)
+  expect_failure(expect_match(names(ARG_TRE_env_pd), '_centroid', all = FALSE))
 
-  expect_match(names(FOO_env_md), '_q_95', all = FALSE)
-  expect_match(names(FOO_env_md), '_q_99', all = FALSE)
-  expect_match(names(FOO_env_md), '_coverage', all = FALSE)
-  expect_match(names(FOO_env_md), '_min_time', all = FALSE)
-  expect_match(names(FOO_env_md), '_max_time', all = FALSE)
-  expect_match(names(FOO_env_md), '_min', all = FALSE)
-  expect_match(names(FOO_env_md), '_max', all = FALSE)
-  expect_failure(expect_match(names(FOO_env_md), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_env_md), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_max', all = FALSE)
+  expect_failure(expect_match(names(ARG_TRE_env_md), '_centroid', all = FALSE))
 })
 
 test_that('monthly metrics returns the variables required', {
 
-  FOO_monthly <- monthly_metrics(FOO, solar = FALSE)
-  FOO_sapf_gen <- FOO_monthly[['sapf']][['sapf_gen']]
-  FOO_sapf_pd <- FOO_monthly[['sapf']][['sapf_pd']]
-  FOO_sapf_md <- FOO_monthly[['sapf']][['sapf_md']]
-  FOO_env_gen <- FOO_monthly[['env']][['env_gen']]
-  FOO_env_pd <- FOO_monthly[['env']][['env_pd']]
-  FOO_env_md <- FOO_monthly[['env']][['env_md']]
+  ARG_TRE_monthly <- monthly_metrics(ARG_TRE, solar = FALSE)
+  ARG_TRE_sapf_gen <- ARG_TRE_monthly[['sapf']][['sapf_gen']]
+  ARG_TRE_sapf_pd <- ARG_TRE_monthly[['sapf']][['sapf_pd']]
+  ARG_TRE_sapf_md <- ARG_TRE_monthly[['sapf']][['sapf_md']]
+  ARG_TRE_env_gen <- ARG_TRE_monthly[['env']][['env_gen']]
+  ARG_TRE_env_pd <- ARG_TRE_monthly[['env']][['env_pd']]
+  ARG_TRE_env_md <- ARG_TRE_monthly[['env']][['env_md']]
 
-  expect_match(names(FOO_sapf_gen), '_q_95', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_q_99', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_coverage', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_min_time', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_max_time', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_min', all = FALSE)
-  expect_match(names(FOO_sapf_gen), '_max', all = FALSE)
-  expect_failure(expect_match(names(FOO_sapf_gen), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_sapf_gen), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_gen), '_max', all = FALSE)
+  expect_failure(expect_match(names(ARG_TRE_sapf_gen), '_centroid', all = FALSE))
 
-  expect_match(names(FOO_sapf_pd), '_q_95', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_q_99', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_coverage', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_min_time', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_max_time', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_min', all = FALSE)
-  expect_match(names(FOO_sapf_pd), '_max', all = FALSE)
-  expect_failure(expect_match(names(FOO_sapf_pd), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_sapf_pd), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_pd), '_max', all = FALSE)
+  expect_failure(expect_match(names(ARG_TRE_sapf_pd), '_centroid', all = FALSE))
 
-  expect_match(names(FOO_sapf_md), '_q_95', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_q_99', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_coverage', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_min_time', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_max_time', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_min', all = FALSE)
-  expect_match(names(FOO_sapf_md), '_max', all = FALSE)
-  expect_failure(expect_match(names(FOO_sapf_md), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_sapf_md), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_sapf_md), '_max', all = FALSE)
+  expect_failure(expect_match(names(ARG_TRE_sapf_md), '_centroid', all = FALSE))
 
-  expect_match(names(FOO_env_gen), '_q_95', all = FALSE)
-  expect_match(names(FOO_env_gen), '_q_99', all = FALSE)
-  expect_match(names(FOO_env_gen), '_coverage', all = FALSE)
-  expect_match(names(FOO_env_gen), '_min_time', all = FALSE)
-  expect_match(names(FOO_env_gen), '_max_time', all = FALSE)
-  expect_match(names(FOO_env_gen), '_min', all = FALSE)
-  expect_match(names(FOO_env_gen), '_max', all = FALSE)
-  expect_failure(expect_match(names(FOO_env_gen), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_env_gen), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_env_gen), '_max', all = FALSE)
+  expect_failure(expect_match(names(ARG_TRE_env_gen), '_centroid', all = FALSE))
 
-  expect_match(names(FOO_env_pd), '_q_95', all = FALSE)
-  expect_match(names(FOO_env_pd), '_q_99', all = FALSE)
-  expect_match(names(FOO_env_pd), '_coverage', all = FALSE)
-  expect_match(names(FOO_env_pd), '_min_time', all = FALSE)
-  expect_match(names(FOO_env_pd), '_max_time', all = FALSE)
-  expect_match(names(FOO_env_pd), '_min', all = FALSE)
-  expect_match(names(FOO_env_pd), '_max', all = FALSE)
-  expect_failure(expect_match(names(FOO_env_pd), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_env_pd), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_env_pd), '_max', all = FALSE)
+  expect_failure(expect_match(names(ARG_TRE_env_pd), '_centroid', all = FALSE))
 
-  expect_match(names(FOO_env_md), '_q_95', all = FALSE)
-  expect_match(names(FOO_env_md), '_q_99', all = FALSE)
-  expect_match(names(FOO_env_md), '_coverage', all = FALSE)
-  expect_match(names(FOO_env_md), '_min_time', all = FALSE)
-  expect_match(names(FOO_env_md), '_max_time', all = FALSE)
-  expect_match(names(FOO_env_md), '_min', all = FALSE)
-  expect_match(names(FOO_env_md), '_max', all = FALSE)
-  expect_failure(expect_match(names(FOO_env_md), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_env_md), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_env_md), '_max', all = FALSE)
+  expect_failure(expect_match(names(ARG_TRE_env_md), '_centroid', all = FALSE))
 })
 
 test_that('monthly metrics examples work', {
 
   # we only test the main example, as the previous tests already cover almost
   # all functionality
-  expect_is(monthly_metrics(FOO, solar = FALSE), 'list')
-  expect_s3_class(monthly_metrics(FOO, solar = TRUE)[['sapf']][['sapf_gen']], 'tbl_df')
+  expect_is(monthly_metrics(ARG_TRE, solar = FALSE), 'list')
+  expect_s3_class(monthly_metrics(ARG_TRE, solar = TRUE)[['sapf']][['sapf_gen']], 'tbl_df')
 
 })
 
 test_that('nighttime metrics work', {
 
-  data('BAZ', package = 'sapfluxnetr')
+  data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
-  expect_is(nightly_metrics(BAZ, 'monthly'), 'list')
+  expect_is(nightly_metrics(AUS_CAN_ST2_MIX, 'monthly'), 'list')
   expect_length(
-    nightly_metrics(BAZ, 'monthly')[['env']][['env_day']][['TIMESTAMP_day']], 13
+    nightly_metrics(AUS_CAN_ST2_MIX, 'monthly')[['env']][['env_day']][['TIMESTAMP_day']], 13
   )
 })
 
 test_that('*_metrics functions with ... work', {
 
-  expect_true(is.list(daily_metrics(FOO, clean = FALSE)))
-  expect_true(is.list(monthly_metrics(FOO, clean = FALSE)))
-  expect_true(is.list(nightly_metrics(FOO, clean = FALSE)))
-  expect_true(is.list(daily_metrics(FOO, side = 'end')))
-  expect_true(is.list(monthly_metrics(FOO, side = 'end')))
-  expect_true(is.list(nightly_metrics(FOO, side = 'end')))
-  # expect_error(nightly_metrics(FOO, clean = TRUE))
+  expect_true(is.list(daily_metrics(ARG_TRE, clean = FALSE)))
+  expect_true(is.list(monthly_metrics(ARG_TRE, clean = FALSE)))
+  expect_true(is.list(nightly_metrics(ARG_TRE, clean = FALSE)))
+  expect_true(is.list(daily_metrics(ARG_TRE, side = 'end')))
+  expect_true(is.list(monthly_metrics(ARG_TRE, side = 'end')))
+  expect_true(is.list(nightly_metrics(ARG_TRE, side = 'end')))
+  # expect_error(nightly_metrics(ARG_TRE, clean = TRUE))
 
 })
 

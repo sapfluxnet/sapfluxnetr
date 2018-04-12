@@ -539,13 +539,13 @@ setMethod(
 #' @examples
 #' library(dplyr)
 #'
-#' data('FOO', package = 'sapfluxnetr')
-#' sapf_data <- get_sapf_data(FOO, solar = TRUE)
-#' env_data_no_solar <- get_env_data(FOO, solar = FALSE)
-#' plant_md <- get_plant_md(FOO)
+#' data('ARG_TRE', package = 'sapfluxnetr')
+#' sapf_data <- get_sapf_data(ARG_TRE, solar = TRUE)
+#' env_data_no_solar <- get_env_data(ARG_TRE, solar = FALSE)
+#' plant_md <- get_plant_md(ARG_TRE)
 #'
 #' # dplyr pipe to get the mean dbh for a site
-#' FOO %>%
+#' ARG_TRE %>%
 #'   get_plant_md() %>%
 #'   summarise(dbh_mean = mean(pl_dbh, na.rm = TRUE)) %>%
 #'   pull(dbh_mean)
@@ -749,15 +749,15 @@ setMethod(
 #'
 #' @examples
 #' # preparation
-#' data('FOO', package = 'sapfluxnetr')
-#' sapf_data <- get_sapf_data(FOO, solar = TRUE)
+#' data('ARG_TRE', package = 'sapfluxnetr')
+#' sapf_data <- get_sapf_data(ARG_TRE, solar = TRUE)
 #'
 #' # modifying the slot data
 #' sapf_data[1:10, 2] <- NA
 #'
 #' # replacement. Remember, the sfn_data slot does not contain a TIMESTAMP
 #' # variable, it must be removed
-#' get_sapf_data(FOO) <- sapf_data[,-1]
+#' get_sapf_data(ARG_TRE) <- sapf_data[,-1]
 #'
 #' @name sfn_replacement_methods
 NULL

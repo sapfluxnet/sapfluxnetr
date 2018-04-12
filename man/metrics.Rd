@@ -107,58 +107,58 @@ month night
 \examples{
 ## daily_metrics
 # data load
-data('FOO', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
 
 # default complete daily metrics
-FOO_daily <- daily_metrics(FOO)
+ARG_TRE_daily <- daily_metrics(ARG_TRE)
 
-str(FOO_daily)
-FOO_daily[['env']][['env_gen']]
+str(ARG_TRE_daily)
+ARG_TRE_daily[['env']][['env_gen']]
 
 # change the predawn and midday interval
-FOO_int_daily <- daily_metrics(
-  FOO,
+ARG_TRE_int_daily <- daily_metrics(
+  ARG_TRE,
   pd_start = 5, pd_end = 7, # predawn starting and ending hour
   md_start = 13, md_end = 15 # midday starting and ending hour
 )
 
-str(FOO_int_daily)
+str(ARG_TRE_int_daily)
 
 ## monthly_metrics
 # data load
-data('BAR', package = 'sapfluxnetr')
+data('ARG_MAZ', package = 'sapfluxnetr')
 
 # default complete daily metrics
-BAR_monthly <- monthly_metrics(BAR)
+ARG_MAZ_monthly <- monthly_metrics(ARG_MAZ)
 
-str(BAR_monthly)
-BAR_monthly[['env']][['env_gen']]
+str(ARG_MAZ_monthly)
+ARG_MAZ_monthly[['env']][['env_gen']]
 
 # change the predawn and midday interval
-BAR_int_monthly <- monthly_metrics(
-  BAR,
+ARG_MAZ_int_monthly <- monthly_metrics(
+  ARG_MAZ,
   pd_start = 5, pd_end = 7, # predawn starting and ending hour
   md_start = 13, md_end = 15 # midday starting and ending hour
 )
 
 ## nightly_metrics
 # data load
-data('BAZ', package = 'sapfluxnetr')
+data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
 # default complete daily metrics
-BAZ_monthly <- nightly_metrics(BAR, period = 'monthly')
+AUS_CAN_ST2_MIX_monthly <- nightly_metrics(ARG_MAZ, period = 'monthly')
 
-str(BAZ_monthly)
-BAZ_monthly[['env']][['env_day']]
-BAZ_monthly[['env']][['env_night']]
+str(AUS_CAN_ST2_MIX_monthly)
+AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
+AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
 
 # change the night interval
-BAZ_monthly_short <- nightly_metrics(
-  BAR,
+AUS_CAN_ST2_MIX_monthly_short <- nightly_metrics(
+  ARG_MAZ,
   night_start = 21, night_end = 4 # night starting and ending hour
 )
 
-BAZ_monthly_short[['env']][['env_night']]
+AUS_CAN_ST2_MIX_monthly_short[['env']][['env_night']]
 
 }
 \seealso{

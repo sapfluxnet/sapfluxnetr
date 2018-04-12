@@ -3,65 +3,49 @@ library(sapfluxnetr)
 
 load(file = 'tests/testthat/big_test/plant/ARG_TRE.RData')
 
-FOO <- ARG_TRE
-
 # sapf
-FOO_sapf_data <- get_sapf_data(FOO)[,-1]
+ARG_TRE_sapf_data <- get_sapf_data(ARG_TRE)[,-1]
 
 # sapf_flags
-FOO_sapf_flags <- get_sapf_flags(FOO)[,-1]
+ARG_TRE_sapf_flags <- get_sapf_flags(ARG_TRE)[,-1]
 
 # env_data
-FOO_env_data <- get_env_data(FOO)[,-1]
+ARG_TRE_env_data <- get_env_data(ARG_TRE)[,-1]
 
 # env_flags
-FOO_env_flags <- get_env_flags(FOO)[,-1]
+ARG_TRE_env_flags <- get_env_flags(ARG_TRE)[,-1]
 
 # si code
-FOO_si_code <- 'FOO'
+ARG_TRE_si_code <- 'ARG_TRE'
 
 # timestamps, nothing to see here
-FOO_solar_timestamp <- get_solar_timestamp(FOO)
-FOO_timestamp <- get_timestamp(FOO)
+ARG_TRE_solar_timestamp <- get_solar_timestamp(ARG_TRE)
+ARG_TRE_timestamp <- get_timestamp(ARG_TRE)
 
 # site md
-FOO_site_md <- get_site_md(FOO) %>%
+ARG_TRE_site_md <- get_site_md(ARG_TRE) %>%
   mutate_at(vars(contains('email')),
-            funs(if_else(is.character(.), NA_character_, NA_character_, NA_character_))) %>%
-  mutate(si_code = 'FOO',
-         )
+            funs(if_else(is.character(.), NA_character_, NA_character_, NA_character_)))
 
-FOO_stand_md <- get_stand_md(FOO) %>%
-  mutate(si_code = 'FOO',
-  )
-FOO_species_md <- get_species_md(FOO) %>%
-  mutate(si_code = 'FOO',
-  )
-FOO_plant_md <- get_plant_md(FOO) %>%
-  mutate(si_code = 'FOO',
-  )
-FOO_env_md <- get_env_md(FOO) %>%
-  mutate(si_code = 'FOO',
-  )
+ARG_TRE_stand_md <- get_stand_md(ARG_TRE)
+ARG_TRE_species_md <- get_species_md(ARG_TRE)
+ARG_TRE_plant_md <- get_plant_md(ARG_TRE)
+ARG_TRE_env_md <- get_env_md(ARG_TRE)
 
-FOO_sapf_data_bad <- FOO_sapf_data[-1,]
-FOO_sapf_flags_bad <- FOO_sapf_flags[-1,]
-FOO_env_data_bad <- FOO_env_data[-1,]
-FOO_env_flags_bad <- FOO_env_flags[-1,]
-FOO_solar_timestamp_bad <- FOO_solar_timestamp[-1]
-FOO_timestamp_bad <- FOO_timestamp[-1]
+ARG_TRE_sapf_data_bad <- ARG_TRE_sapf_data[-1,]
+ARG_TRE_sapf_flags_bad <- ARG_TRE_sapf_flags[-1,]
+ARG_TRE_env_data_bad <- ARG_TRE_env_data[-1,]
+ARG_TRE_env_flags_bad <- ARG_TRE_env_flags[-1,]
+ARG_TRE_solar_timestamp_bad <- ARG_TRE_solar_timestamp[-1]
+ARG_TRE_timestamp_bad <- ARG_TRE_timestamp[-1]
 
-get_si_code(FOO) <- FOO_si_code
-get_site_md(FOO) <- FOO_site_md
-get_stand_md(FOO) <- FOO_stand_md
-get_species_md(FOO) <- FOO_species_md
-get_plant_md(FOO) <- FOO_plant_md
-get_env_md(FOO) <- FOO_env_md
+get_site_md(ARG_TRE) <- ARG_TRE_site_md
 
-save(FOO, file = 'tests/testthat/Data/FOO.RData')
-devtools::use_data(FOO, overwrite = TRUE)
-rm(list = c('FOO', 'ARG_TRE'))
-save.image(file = 'tests/testthat/FOO.RData')
+
+save(ARG_TRE, file = 'tests/testthat/Data/ARG_TRE.RData')
+devtools::use_data(ARG_TRE, overwrite = TRUE)
+rm(list = c('ARG_TRE'))
+save.image(file = 'tests/testthat/ARG_TRE.RData')
 
 ## REMOVE ALL
 rm(list = ls())
@@ -69,65 +53,49 @@ rm(list = ls())
 
 load(file = 'tests/testthat/big_test/plant/ARG_MAZ.RData')
 
-BAR <- ARG_MAZ
-
 # sapf
-BAR_sapf_data <- get_sapf_data(BAR)[,-1]
+ARG_MAZ_sapf_data <- get_sapf_data(ARG_MAZ)[,-1]
 
 # sapf_flags
-BAR_sapf_flags <- get_sapf_flags(BAR)[,-1]
+ARG_MAZ_sapf_flags <- get_sapf_flags(ARG_MAZ)[,-1]
 
 # env_data
-BAR_env_data <- get_env_data(BAR)[,-1]
+ARG_MAZ_env_data <- get_env_data(ARG_MAZ)[,-1]
 
 # env_flags
-BAR_env_flags <- get_env_flags(BAR)[,-1]
+ARG_MAZ_env_flags <- get_env_flags(ARG_MAZ)[,-1]
 
 # si code
-BAR_si_code <- 'BAR'
+ARG_MAZ_si_code <- 'ARG_MAZ'
 
 # timestamps, nothing to see here
-BAR_solar_timestamp <- get_solar_timestamp(BAR)
-BAR_timestamp <- get_timestamp(BAR)
+ARG_MAZ_solar_timestamp <- get_solar_timestamp(ARG_MAZ)
+ARG_MAZ_timestamp <- get_timestamp(ARG_MAZ)
 
 # site md
-BAR_site_md <- get_site_md(BAR) %>%
+ARG_MAZ_site_md <- get_site_md(ARG_MAZ) %>%
   mutate_at(vars(contains('email')),
-            funs(if_else(is.character(.), NA_character_, NA_character_, NA_character_))) %>%
-  mutate(si_code = 'BAR',
-  )
+            funs(if_else(is.character(.), NA_character_, NA_character_, NA_character_)))
 
-BAR_stand_md <- get_stand_md(BAR) %>%
-  mutate(si_code = 'BAR',
-  )
-BAR_species_md <- get_species_md(BAR) %>%
-  mutate(si_code = 'BAR',
-  )
-BAR_plant_md <- get_plant_md(BAR) %>%
-  mutate(si_code = 'BAR',
-  )
-BAR_env_md <- get_env_md(BAR) %>%
-  mutate(si_code = 'BAR',
-  )
+ARG_MAZ_stand_md <- get_stand_md(ARG_MAZ)
+ARG_MAZ_species_md <- get_species_md(ARG_MAZ)
+ARG_MAZ_plant_md <- get_plant_md(ARG_MAZ)
+ARG_MAZ_env_md <- get_env_md(ARG_MAZ)
 
-BAR_sapf_data_bad <- BAR_sapf_data[-1,]
-BAR_sapf_flags_bad <- BAR_sapf_flags[-1,]
-BAR_env_data_bad <- BAR_env_data[-1,]
-BAR_env_flags_bad <- BAR_env_flags[-1,]
-BAR_solar_timestamp_bad <- BAR_solar_timestamp[-1]
-BAR_timestamp_bad <- BAR_timestamp[-1]
+ARG_MAZ_sapf_data_bad <- ARG_MAZ_sapf_data[-1,]
+ARG_MAZ_sapf_flags_bad <- ARG_MAZ_sapf_flags[-1,]
+ARG_MAZ_env_data_bad <- ARG_MAZ_env_data[-1,]
+ARG_MAZ_env_flags_bad <- ARG_MAZ_env_flags[-1,]
+ARG_MAZ_solar_timestamp_bad <- ARG_MAZ_solar_timestamp[-1]
+ARG_MAZ_timestamp_bad <- ARG_MAZ_timestamp[-1]
 
-get_si_code(BAR) <- BAR_si_code
-get_site_md(BAR) <- BAR_site_md
-get_stand_md(BAR) <- BAR_stand_md
-get_species_md(BAR) <- BAR_species_md
-get_plant_md(BAR) <- BAR_plant_md
-get_env_md(BAR) <- BAR_env_md
+get_site_md(ARG_MAZ) <- ARG_MAZ_site_md
 
-save(BAR, file = 'tests/testthat/Data/BAR.RData')
-devtools::use_data(BAR, overwrite = TRUE)
-rm(list = c('BAR', 'ARG_MAZ'))
-save.image(file = 'tests/testthat/BAR.RData')
+
+save(ARG_MAZ, file = 'tests/testthat/Data/ARG_MAZ.RData')
+devtools::use_data(ARG_MAZ, overwrite = TRUE)
+rm(list = c('ARG_MAZ'))
+save.image(file = 'tests/testthat/ARG_MAZ.RData')
 
 ## REMOVE ALL
 rm(list = ls())
@@ -135,62 +103,50 @@ rm(list = ls())
 
 load(file = 'tests/testthat/big_test/plant/AUS_CAN_ST2_MIX.RData')
 
-BAZ <- AUS_CAN_ST2_MIX
-
 # sapf
-BAZ_sapf_data <- get_sapf_data(BAZ)[,-1]
+AUS_CAN_ST2_MIX_sapf_data <- get_sapf_data(AUS_CAN_ST2_MIX)[,-1]
 
 # sapf_flags
-BAZ_sapf_flags <- get_sapf_flags(BAZ)[,-1]
+AUS_CAN_ST2_MIX_sapf_flags <- get_sapf_flags(AUS_CAN_ST2_MIX)[,-1]
 
 # env_data
-BAZ_env_data <- get_env_data(BAZ)[,-1]
+AUS_CAN_ST2_MIX_env_data <- get_env_data(AUS_CAN_ST2_MIX)[,-1]
 
 # env_flags
-BAZ_env_flags <- get_env_flags(BAZ)[,-1]
+AUS_CAN_ST2_MIX_env_flags <- get_env_flags(AUS_CAN_ST2_MIX)[,-1]
 
 # si code
-BAZ_si_code <- 'BAZ'
+AUS_CAN_ST2_MIX_si_code <- 'AUS_CAN_ST2_MIX'
 
 # timestamps, nothing to see here
-BAZ_solar_timestamp <- get_solar_timestamp(BAZ)
-BAZ_timestamp <- get_timestamp(BAZ)
+AUS_CAN_ST2_MIX_solar_timestamp <- get_solar_timestamp(AUS_CAN_ST2_MIX)
+AUS_CAN_ST2_MIX_timestamp <- get_timestamp(AUS_CAN_ST2_MIX)
 
 # site md
-BAZ_site_md <- get_site_md(BAZ) %>%
+AUS_CAN_ST2_MIX_site_md <- get_site_md(AUS_CAN_ST2_MIX) %>%
   mutate_at(vars(contains('email')),
-            funs(if_else(is.character(.), NA_character_, NA_character_, NA_character_))) %>%
-  mutate(si_code = 'BAZ',
-  )
+            funs(if_else(is.character(.), NA_character_, NA_character_, NA_character_)))
 
-BAZ_stand_md <- get_stand_md(BAZ) %>%
-  mutate(si_code = 'BAZ',
-  )
-BAZ_species_md <- get_species_md(BAZ) %>%
-  mutate(si_code = 'BAZ',
-  )
-BAZ_plant_md <- get_plant_md(BAZ) %>%
-  mutate(si_code = 'BAZ',
-  )
-BAZ_env_md <- get_env_md(BAZ) %>%
-  mutate(si_code = 'BAZ',
-  )
+AUS_CAN_ST2_MIX_stand_md <- get_stand_md(AUS_CAN_ST2_MIX)
+AUS_CAN_ST2_MIX_species_md <- get_species_md(AUS_CAN_ST2_MIX)
+AUS_CAN_ST2_MIX_plant_md <- get_plant_md(AUS_CAN_ST2_MIX)
+AUS_CAN_ST2_MIX_env_md <- get_env_md(AUS_CAN_ST2_MIX)
 
-BAZ_sapf_data_bad <- BAZ_sapf_data[-1,]
-BAZ_sapf_flags_bad <- BAZ_sapf_flags[-1,]
-BAZ_env_data_bad <- BAZ_env_data[-1,]
-BAZ_env_flags_bad <- BAZ_env_flags[-1,]
-BAZ_solar_timestamp_bad <- BAZ_solar_timestamp[-1]
-BAZ_timestamp_bad <- BAZ_timestamp[-1]
+AUS_CAN_ST2_MIX_sapf_data_bad <- AUS_CAN_ST2_MIX_sapf_data[-1,]
+AUS_CAN_ST2_MIX_sapf_flags_bad <- AUS_CAN_ST2_MIX_sapf_flags[-1,]
+AUS_CAN_ST2_MIX_env_data_bad <- AUS_CAN_ST2_MIX_env_data[-1,]
+AUS_CAN_ST2_MIX_env_flags_bad <- AUS_CAN_ST2_MIX_env_flags[-1,]
+AUS_CAN_ST2_MIX_solar_timestamp_bad <- AUS_CAN_ST2_MIX_solar_timestamp[-1]
+AUS_CAN_ST2_MIX_timestamp_bad <- AUS_CAN_ST2_MIX_timestamp[-1]
 
-get_si_code(BAZ) <- BAZ_si_code
-get_site_md(BAZ) <- BAZ_site_md
-get_stand_md(BAZ) <- BAZ_stand_md
-get_species_md(BAZ) <- BAZ_species_md
-get_plant_md(BAZ) <- BAZ_plant_md
-get_env_md(BAZ) <- BAZ_env_md
+get_site_md(AUS_CAN_ST2_MIX) <- AUS_CAN_ST2_MIX_site_md
 
-save(BAZ, file = 'tests/testthat/Data/BAZ.RData')
-devtools::use_data(BAZ, overwrite = TRUE)
-rm(list = c('BAZ', 'AUS_CAN_ST2_MIX'))
-save.image(file = 'tests/testthat/BAZ.RData')
+
+save(AUS_CAN_ST2_MIX, file = 'tests/testthat/Data/AUS_CAN_ST2_MIX.RData')
+devtools::use_data(AUS_CAN_ST2_MIX, overwrite = TRUE)
+rm(list = c('AUS_CAN_ST2_MIX'))
+save.image(file = 'tests/testthat/AUS_CAN_ST2_MIX.RData')
+
+## REMOVE ALL
+rm(list = ls())
+##

@@ -1,32 +1,32 @@
-#' FOO sapfluxnet site
-#' 
+#' ARG_TRE sapfluxnet site
+#'
 #' Example site for package usage demonstration based on ARG_TRE
-#' 
-#' @examples 
-#' data('FOO', package = 'sapfluxnetr')
-#' FOO
-#' 
-#' @format An sfn_data class object with the data and metadata for FOO site
-"FOO"
+#'
+#' @examples
+#' data('ARG_TRE', package = 'sapfluxnetr')
+#' ARG_TRE
+#'
+#' @format An sfn_data class object with the data and metadata for ARG_TRE site
+"ARG_TRE"
 
-#' BAR sapfluxnet site
-#' 
+#' ARG_MAZ sapfluxnet site
+#'
 #' Example site for package usage demonstration based on ARG_MAZ
-#' 
-#' @examples 
-#' data('BAR', package = 'sapfluxnetr')
-#' BAR
-#' 
-#' @format An sfn_data class object with the data and metadata for BAR site
-"BAR"
+#'
+#' @examples
+#' data('ARG_MAZ', package = 'sapfluxnetr')
+#' ARG_MAZ
+#'
+#' @format An sfn_data class object with the data and metadata for ARG_MAZ site
+"ARG_MAZ"
 
-#' BAZ sapfluxnet site
-#' 
+#' AUS_CAN_ST2_MIX sapfluxnet site
+#'
 #' Example site for package usage demonstration based on AUS_CAN_ST2_MIX
-#' 
-#' @examples 
-#' data('BAZ', package = 'sapfluxnetr')
-#' BAZ
-#' 
-#' @format An sfn_data class object with the data and metadata for BAZ site
-"BAZ"
+#'
+#' @examples
+#' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
+#' AUS_CAN_ST2_MIX
+#'
+#' @format An sfn_data class object with the data and metadata for AUS_CAN_ST2_MIX site
+"AUS_CAN_ST2_MIX"

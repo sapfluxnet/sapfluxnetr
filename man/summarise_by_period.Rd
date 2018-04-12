@@ -39,7 +39,7 @@ argument with \code{\link[dplyr]{funs}}:
 # This will fail beacuse na.rm argument will be also passed to the n function,
 # which does not accept any argument:
 summarise_by_period(
-  data = get_sapf_data(FOO),
+  data = get_sapf_data(ARG_TRE),
   period = '7 days',
   .funs = funs(mean, sd, n),
   na.rm = TRUE
@@ -47,7 +47,7 @@ summarise_by_period(
 
 # to solve this is better to use the .funs argument:
 summarise_by_period(
-  data = get_sapf_data(FOO),
+  data = get_sapf_data(ARG_TRE),
   period = '7 days',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
 )
@@ -66,7 +66,7 @@ summarise_by_period(
     }
 
     summarise_by_period(
-      data = get_sapf_data(FOO),
+      data = get_sapf_data(ARG_TRE),
       period = 'daily',
       .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
     )
@@ -77,11 +77,11 @@ summarise_by_period(
 library(dplyr)
 
 # data
-data('FOO', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
 
 # simple summary
 summarise_by_period(
-  data = get_sapf_data(FOO),
+  data = get_sapf_data(ARG_TRE),
   period = '7 days',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
 )
