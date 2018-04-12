@@ -22,7 +22,17 @@ can be \code{"gen"} for the general metrics, \code{"md"} for midday metrics,
 a tibble with the following columns:
   \itemize{
     \item{TIMESTAMP: POSIXct vector with the date-time of the observation}
-    \item{Tree}
+    \item{si_code: Character vector with the site codes}
+    \item{pl_code: Character vector with the plant codes}
+    \item{sapflow_*: Variables containing the different metrics for the
+          sapflow measurements (i.e. sapflow_mean, sapflow_q_95)}
+    \item{ta_*; rh_*; vpd_*; ...: Variables containing the different metrics
+          for environmental variables (i.e. ta_mean, ta_q_95)}
+    \item{pl_*: plant metadata variables (i.e. pl_sapw_area, pl_sens_meth)}
+    \item{si_*: site metadata variables (i.e. si_biome, si_contact_firstname)}
+    \item{st_*: stand metadata variables (i.e. st_aspect, st_lai)}
+    \item{sp_*: species metadata variables (i.e. sp_basal_area_perc)}
+    \item{env_*: environmental metadata variables (i.e. env_fluxnet)}
   }
 }
 \description{
@@ -30,6 +40,15 @@ Transform the nested list of metrics in a tidy tibble where each observation
 has its own row
 }
 \examples{
-# not yet
+# data
+multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
+data('sfn_metadata_ex', package = 'sapfluxnetr')
+
+# metrics
+multi_metrics <- daily_metrics(multi_sfn)
+
+# tidyfing
+multi_tidy <- metrics_tidyfier(multi_metrics, sfn_metadata_ex, interval = 'gen')
+multi_tidy
 
 }
