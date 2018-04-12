@@ -98,8 +98,8 @@ Some methods are included in the class:
   
 ```{r show}
 library(sapfluxnetr)
-data('FOO', package = 'sapfluxnetr')
-FOO
+data('ARG_TRE', package = 'sapfluxnetr')
+ARG_TRE
 ```
   
   + `get methods`: methods to get any slot outside the object. In the case
@@ -108,19 +108,19 @@ FOO
     details.
     
 ```{r get_methods}
-get_sapf_data(FOO, solar = FALSE)
-get_sapf_data(FOO, solar = TRUE)
-get_env_data(FOO) # solar default is FALSE
-get_sapf_flags(FOO) # solar default is FALSE
-get_env_flags(FOO) # solar default is FALSE
-get_si_code(FOO)
-get_timestamp(FOO)[1:10]
-get_solar_timestamp(FOO)[1:10]
-get_site_md(FOO)
-get_stand_md(FOO)
-get_species_md(FOO)
-get_plant_md(FOO)
-get_env_md(FOO)
+get_sapf_data(ARG_TRE, solar = FALSE)
+get_sapf_data(ARG_TRE, solar = TRUE)
+get_env_data(ARG_TRE) # solar default is FALSE
+get_sapf_flags(ARG_TRE) # solar default is FALSE
+get_env_flags(ARG_TRE) # solar default is FALSE
+get_si_code(ARG_TRE)
+get_timestamp(ARG_TRE)[1:10]
+get_solar_timestamp(ARG_TRE)[1:10]
+get_site_md(ARG_TRE)
+get_stand_md(ARG_TRE)
+get_species_md(ARG_TRE)
+get_plant_md(ARG_TRE)
+get_env_md(ARG_TRE)
 ```
     
   + `assignation`: methods for `"<-"` are implemented, allowing transformation
@@ -132,13 +132,13 @@ get_env_md(FOO)
     
 ```{r assignation}
 # extraction and modification
-foo_site_md <- get_site_md(FOO)
+foo_site_md <- get_site_md(ARG_TRE)
 foo_site_md[['si_biome']]
 foo_site_md[['si_biome']] <- 'Temperate forest'
 # assignation
-get_site_md(FOO) <- foo_site_md
+get_site_md(ARG_TRE) <- foo_site_md
 # check it worked
-get_site_md(FOO)[['si_biome']]
+get_site_md(ARG_TRE)[['si_biome']]
 ```
   
   + `validation`: a validation method is implemented in order to avoid creation
@@ -147,25 +147,25 @@ get_site_md(FOO)[['si_biome']]
     
 ```{r validation, error=TRUE, purl=FALSE, collapse=FALSE}
 # get sapflow data
-foo_bad_sapf <- get_sapf_data(FOO)
+foo_bad_sapf <- get_sapf_data(ARG_TRE)
 # pull a row, now it has diferent dimensions than
 foo_bad_sapf <- foo_bad_sapf[-1,]
 # try to assign the incorrect data fails
-get_sapf_data(FOO) <- foo_bad_sapf[,-1] # ERROR
+get_sapf_data(ARG_TRE) <- foo_bad_sapf[,-1] # ERROR
 # try to build a new object also fails
 sfn_data(
   sapf_data = foo_bad_sapf[,-1], # remember to remove timestamp column
-  env_data = get_env_data(FOO)[,-1],
-  sapf_flags = get_env_flags(FOO)[,-1],
-  env_flags = get_env_flags(FOO)[,-1],
-  si_code = get_si_code(FOO),
-  timestamp = get_timestamp(FOO),
-  solar_timestamp = get_solar_timestamp(FOO),
-  site_md = get_site_md(FOO),
-  stand_md = get_stand_md(FOO),
-  species_md = get_species_md(FOO),
-  plant_md = get_plant_md(FOO),
-  env_md = get_env_md(FOO)
+  env_data = get_env_data(ARG_TRE)[,-1],
+  sapf_flags = get_env_flags(ARG_TRE)[,-1],
+  env_flags = get_env_flags(ARG_TRE)[,-1],
+  si_code = get_si_code(ARG_TRE),
+  timestamp = get_timestamp(ARG_TRE),
+  solar_timestamp = get_solar_timestamp(ARG_TRE),
+  site_md = get_site_md(ARG_TRE),
+  stand_md = get_stand_md(ARG_TRE),
+  species_md = get_species_md(ARG_TRE),
+  plant_md = get_plant_md(ARG_TRE),
+  env_md = get_env_md(ARG_TRE)
 )
 ```
 
@@ -182,11 +182,11 @@ details.
 ```{r sfn_plot, fig.width=6}
 library(ggplot2)
 
-sfn_plot(FOO, type = 'env') +
+sfn_plot(ARG_TRE, type = 'env') +
   facet_wrap(~ Variable, ncol = 3, scales = 'free_y') +
   theme(legend.position = 'none')
 
-sfn_plot(FOO, formula_env = ~ vpd) +
+sfn_plot(ARG_TRE, formula_env = ~ vpd) +
   theme(legend.position = 'none')
 ```
   
@@ -202,7 +202,7 @@ library(lubridate)
 library(dplyr)
 
 # get only the values for november
-sfn_filter(FOO, month(TIMESTAMP) == 11)
+sfn_filter(ARG_TRE, month(TIMESTAMP) == 11)
 ```
     
 ### `sfn_mutate`
@@ -217,7 +217,7 @@ Useful when you need to transform a variable to another units or similar. A flag
     
 ```{r sfn_mutate}
 # transform ws from m/s to km/h
-foo_mutated <- sfn_mutate(FOO, ws = ws * 3600/1000)
+foo_mutated <- sfn_mutate(ARG_TRE, ws = ws * 3600/1000)
 get_env_data(foo_mutated)[['ws']][1:10]
 ```
   
@@ -230,16 +230,16 @@ values when an environmental variable exceeds some threshold. See
     
 ```{r sfn_mutate_at}
 foo_mutated_2 <- sfn_mutate_at(
-  FOO,
-  vars(one_of(names(get_sapf_data(FOO)[,-1]))),
+  ARG_TRE,
+  vars(one_of(names(get_sapf_data(ARG_TRE)[,-1]))),
   funs(case_when(
     ws > 25 ~ NA_real_,
     TRUE ~ .
   ))
 )
 
-# see the difference between FOO and foo_mutated_2
-get_sapf_data(FOO)
+# see the difference between ARG_TRE and foo_mutated_2
+get_sapf_data(ARG_TRE)
 get_sapf_data(foo_mutated_2)
 ```
 
@@ -249,7 +249,7 @@ Family of functions to aggregate and summarise the site data. See `?metrics` for
 more details.
     
 ```{r metrics}
-foo_daily <- daily_metrics(FOO)
+foo_daily <- daily_metrics(ARG_TRE)
 foo_daily[['sapf']][['sapf_gen']]
 ```
 
@@ -269,9 +269,9 @@ It inherits from list so, in a nutshell, `sfn_data_multi` is a list of
   + show
   
 ```{r show_multi}
-data(BAR, package = 'sapfluxnetr')
-data(BAZ, package = 'sapfluxnetr')
-multi_sfn <- sfn_data_multi(FOO, BAR, BAZ)
+data(ARG_MAZ, package = 'sapfluxnetr')
+data(AUS_CAN_ST2_MIX, package = 'sapfluxnetr')
+multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 
 multi_sfn
 ```
@@ -289,8 +289,8 @@ object:
 
 ```{r plot_multi, fig.show='hold', fig.width=3.4}
 multi_plot <- sfn_plot(multi_sfn, formula = ~ vpd)
-multi_plot[['FOO']] + theme(legend.position = 'none')
-multi_plot[['BAZ']] + theme(legend.position = 'none')
+multi_plot[['ARG_TRE']] + theme(legend.position = 'none')
+multi_plot[['AUS_CAN_ST2_MIX']] + theme(legend.position = 'none')
 ```
 
 
@@ -298,14 +298,14 @@ multi_plot[['BAZ']] + theme(legend.position = 'none')
 
 ```{r sfn_filter_multi}
 multi_filtered <- sfn_filter(multi_sfn, month(TIMESTAMP) == 11)
-get_timestamp(multi_filtered[['BAZ']])[1:10]
+get_timestamp(multi_filtered[['AUS_CAN_ST2_MIX']])[1:10]
 ```
 
 ### `sfn_mutate`
   
 ```{r sfn_mutate_multi}
 multi_mutated <- sfn_mutate(multi_sfn, ws = ws * 3600/1000)
-get_env_data(multi_mutated[['BAZ']])[['ws']][1:10]
+get_env_data(multi_mutated[['AUS_CAN_ST2_MIX']])[['ws']][1:10]
 ```
 
 ### `sfn_mutate_at`
@@ -325,12 +325,12 @@ multi_mutated_2 <- sfn_mutate_at(
   ))
 )
 
-multi_mutated_2[['FOO']]
+multi_mutated_2[['ARG_TRE']]
 ```
 
 ### `*_metrics`
 
 ```{r metrics_multi}
 multi_metrics <- daily_metrics(multi_sfn)
-multi_metrics[['FOO']][['sapf']][['sapf_gen']]
+multi_metrics[['ARG_TRE']][['sapf']][['sapf_gen']]
 ```

@@ -471,6 +471,10 @@ sfn_mutate_at <- function(sfn_data, .vars, .funs, ..., solar = FALSE) {
 
 metrics_tidyfier <- function(metrics_res, metadata, interval = 'gen') {
 
+  # hack to avoid CRAN NOTE with the use of "." in the last step
+  . <- NULL
+
+  # which timestamp var we use (depends on the interval)
   timestamp_var <- switch(
     interval,
     'gen' = 'TIMESTAMP',

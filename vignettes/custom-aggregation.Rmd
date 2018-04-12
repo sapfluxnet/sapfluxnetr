@@ -37,14 +37,14 @@ library(dplyr)
 
 ### only mean and sd at a daily scale
 # data
-data('FOO', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
 
 # summarising funs (built with funs function in dplyr package)
 custom_funs <- funs(mean = mean(., na.rm = TRUE), std_dev = sd(., na.rm = TRUE))
 
 # metrics
 foo_simpler_metrics <- sfn_metrics(
-  FOO,
+  ARG_TRE,
   period = 'daily',
   .funs = custom_funs,
   solar = TRUE,
@@ -63,7 +63,7 @@ midday interval you can use:
 
 ```{r}
 foo_simpler_metrics_midday <- sfn_metrics(
-  FOO,
+  ARG_TRE,
   period = 'daily',
   .funs = custom_funs,
   solar = TRUE,
@@ -91,7 +91,7 @@ foo_simpler_metrics_midday[['sapf']][['sapf_md']]
 ```{r}
 # weekly
 foo_weekly <- sfn_metrics(
-  FOO,
+  ARG_TRE,
   period = '7 days',
   .funs = custom_funs,
   solar = TRUE,
@@ -110,7 +110,7 @@ foo_weekly[['env']][['env_md']]
 ```{r}
 # custom
 foo_custom <- sfn_metrics(
-  FOO,
+  ARG_TRE,
   period = as.POSIXct(
     c('2009-11-17 00:00:00', '2009-11-22 14:00:00', '2009-11-30 23:59:00'),
                       tz = 'UTC'
@@ -148,7 +148,7 @@ period instead the beggining (default) we can do the following:
 
 ```{r}
 foo_simpler_metrics_end <- sfn_metrics(
-  FOO,
+  ARG_TRE,
   period = 'daily',
   .funs = custom_funs,
   solar = TRUE,
