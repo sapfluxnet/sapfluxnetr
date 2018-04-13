@@ -6,7 +6,7 @@ skip_big <- function() {
 
 test_that('each site can be loaded, completly summarised and plotted', {
 
-  skip_big()
+  # skip_big()
 
   # sites for each unit level
   sites_names_plant <- stringr::str_remove(
@@ -21,6 +21,9 @@ test_that('each site can be loaded, completly summarised and plotted', {
     list.files('big_test/leaf', pattern = '.RData'), '.RData'
   )
 
+  # metadata indicator
+  indicator <- 1
+
   # outer loop
   for (unit_level in list(
     plant = sites_names_plant,
@@ -31,7 +34,11 @@ test_that('each site can be loaded, completly summarised and plotted', {
     # inner loop
     for (site in unit_level) {
 
-      sfn_data <- read_sfn_data(site, folder = 'big_test/plant')
+      if (indicator == 1) {folder <- 'big_test/plant'}
+      if (indicator == 2) {folder <- 'big_test/sapwood'}
+      if (indicator == 3) {folder <- 'big_test/leaf'}
+
+      sfn_data <- read_sfn_data(site, folder = folder)
 
       sfn_filtered <- suppressWarnings(
         sfn_filter(
@@ -81,7 +88,7 @@ test_that('each site can be loaded, completly summarised and plotted', {
       sapf_names <- c('sapf_gen', 'sapf_pd', 'sapf_md', 'sapf_day', 'sapf_night')
       env_names <- c('env_gen', 'env_pd', 'env_md', 'env_day', 'env_night')
 
-      metrics_tidy <- metrics_tidyfier(metrics)
+      metrics_tidy <- metrics_tidyfier(metrics, read_sfn_metadata(folder))
 
       # test if load
       expect_s4_class(sfn_data, 'sfn_data')
@@ -131,10 +138,13 @@ test_that('each site can be loaded, completly summarised and plotted', {
       expect_s3_class(metrics[['env']][['env_day']], 'tbl')
 
       # test if tidyfy
-      expect_s3_class(metrics_tidy)
+      expect_s3_class(metrics_tidy, 'tbl')
       expect_true(nrow(metrics_tidy) > 0)
 
     }
+
+    # up indicator
+    indicator <- indicator + 1
 
   }
 
