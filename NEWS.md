@@ -1,11 +1,11 @@
-# sapfluxnetr 0.0.2.9000
+# sapfluxnetr 0.0.3
 
-* Added a `NEWS.md` file to track changes to the package.
-* Added `README.md` file for new users.
+* Added metrics_tidyfier function to convert to tidy the metrics results.
 * Added sfn_metadata_ex to Data.
 * Changed all example data names to the original site name.
-* Added metrics_tidyfier function to convert to tidy the metrics results.
 * Improved install explanation in quick guide vignette.
+* Added a `NEWS.md` file to track changes to the package.
+* Added `README.md` file for new users.
 
 # sapfluxnetr 0.0.2
 
