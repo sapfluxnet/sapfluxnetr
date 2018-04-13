@@ -6,7 +6,7 @@ skip_big <- function() {
 
 test_that('each site can be loaded, completly summarised and plotted', {
 
-  # skip_big()
+  skip_big()
 
   # sites for each unit level
   sites_names_plant <- stringr::str_remove(

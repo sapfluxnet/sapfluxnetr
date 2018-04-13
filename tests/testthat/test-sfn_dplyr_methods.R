@@ -325,3 +325,35 @@ test_that('metrics_tidyfier returns the expected object for multi metrics', {
   expect_equal(nrow(multi_pd_tidy), (5*12) + (4*13) + (34*371))
 
 })
+
+test_that('metrics_tidyfier works when supplied custom metrics', {
+
+  sfn_metadata <- sapfluxnetr:::.write_metadata_cache('Data', .dry = TRUE)
+
+  tidy_custom <- sfn_metrics(
+      ARG_TRE, '7 days',
+      dplyr::funs(mean = mean(., na.rm = TRUE)),
+      solar = TRUE, general = TRUE,
+      predawn = FALSE, midday = FALSE, nighttime = FALSE
+    ) %>%
+    metrics_tidyfier(sfn_metadata)
+
+  expect_s3_class(tidy_custom, 'tbl')
+
+  expect_true(all(sfn_vars_to_filter()[['site_md']] %in% names(tidy_custom)))
+  expect_true(all(sfn_vars_to_filter()[['stand_md']] %in% names(tidy_custom)))
+  expect_true(all(sfn_vars_to_filter()[['species_md']] %in% names(tidy_custom)))
+  expect_true(all(sfn_vars_to_filter()[['plant_md']] %in% names(tidy_custom)))
+  expect_true(all(sfn_vars_to_filter()[['env_md']] %in% names(tidy_custom)))
+
+  sapflow_vars <- 'sapflow_mean'
+
+  env_vars <- sapfluxnetr:::.env_vars_names() %>%
+    purrr::map(~ paste0(.x, '_mean')) %>%
+    purrr::flatten_chr()
+
+  expect_true(all(sapflow_vars %in% names(tidy_custom)))
+  expect_true(any(env_vars %in% names(tidy_custom)))
+
+  expect_equal(nrow(tidy_custom), 4*3) # trees * weeks
+})
