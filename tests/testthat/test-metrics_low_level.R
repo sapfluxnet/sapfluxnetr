@@ -877,31 +877,41 @@ test_that('sfn_metrics return the expected object', {
 #### daily_metrics ####
 test_that('daily metrics examples work', {
 
-  expect_is(daily_metrics(ARG_TRE, solar = FALSE), 'list')
-  expect_s3_class(daily_metrics(ARG_TRE, solar = FALSE)[['env']][['env_gen']], 'tbl_time')
+  expect_s3_class(
+    daily_metrics(ARG_TRE, solar = FALSE, metadata = sfn_metadata_ex), 'tbl'
+  )
+  expect_true(is.list(
+    daily_metrics(ARG_TRE, solar = FALSE, tidy = FALSE)
+  ))
+  expect_s3_class(
+    daily_metrics(ARG_TRE, solar = FALSE, tidy = FALSE)[['env']][['env_gen']],
+    'tbl_time'
+  )
 
-  expect_is(daily_metrics(
-    ARG_TRE, solar = FALSE,
-    pd_start = 5, pd_end = 7,
-    md_start = 13, md_end = 15
-  ), 'list')
-  expect_s3_class(daily_metrics(
-    ARG_TRE, solar = FALSE,
-    pd_start = 5, pd_end = 7,
-    md_start = 13, md_end = 15
-  )[['sapf']][['sapf_pd']], 'tbl_time')
+  # expect_is(daily_metrics(
+  #   ARG_TRE, solar = FALSE,
+  #   pd_start = 5, pd_end = 7,
+  #   md_start = 13, md_end = 15
+  # ), 'list')
+  # expect_s3_class(daily_metrics(
+  #   ARG_TRE, solar = FALSE,
+  #   pd_start = 5, pd_end = 7,
+  #   md_start = 13, md_end = 15
+  # )[['sapf']][['sapf_pd']], 'tbl_time')
 
 })
 
 test_that('daily metrics returns the variables required', {
 
-  ARG_TRE_daily <- daily_metrics(ARG_TRE, solar = FALSE)
+  ARG_TRE_daily <- daily_metrics(ARG_TRE, solar = FALSE, tidy = FALSE)
   ARG_TRE_sapf_gen <- ARG_TRE_daily[['sapf']][['sapf_gen']]
-  ARG_TRE_sapf_pd <- ARG_TRE_daily[['sapf']][['sapf_pd']]
-  ARG_TRE_sapf_md <- ARG_TRE_daily[['sapf']][['sapf_md']]
+  # ARG_TRE_sapf_pd <- ARG_TRE_daily[['sapf']][['sapf_pd']]
+  # ARG_TRE_sapf_md <- ARG_TRE_daily[['sapf']][['sapf_md']]
   ARG_TRE_env_gen <- ARG_TRE_daily[['env']][['env_gen']]
-  ARG_TRE_env_pd <- ARG_TRE_daily[['env']][['env_pd']]
-  ARG_TRE_env_md <- ARG_TRE_daily[['env']][['env_md']]
+  # ARG_TRE_env_pd <- ARG_TRE_daily[['env']][['env_pd']]
+  # ARG_TRE_env_md <- ARG_TRE_daily[['env']][['env_md']]
+
+  ARG_TRE_daily_tidy <- daily_metrics(ARG_TRE, solar = FALSE)
 
   expect_match(names(ARG_TRE_sapf_gen), '_q_95', all = FALSE)
   expect_match(names(ARG_TRE_sapf_gen), '_q_99', all = FALSE)
@@ -912,23 +922,23 @@ test_that('daily metrics returns the variables required', {
   expect_match(names(ARG_TRE_sapf_gen), '_max', all = FALSE)
   expect_match(names(ARG_TRE_sapf_gen), '_centroid', all = FALSE)
 
-  expect_match(names(ARG_TRE_sapf_pd), '_q_95', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_pd), '_q_99', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_pd), '_coverage', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_pd), '_min_time', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_pd), '_max_time', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_pd), '_min', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_pd), '_max', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_pd), '_centroid', all = FALSE)
-
-  expect_match(names(ARG_TRE_sapf_md), '_q_95', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_md), '_q_99', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_md), '_coverage', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_md), '_min_time', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_md), '_max_time', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_md), '_min', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_md), '_max', all = FALSE)
-  expect_match(names(ARG_TRE_sapf_md), '_centroid', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_pd), '_q_95', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_pd), '_q_99', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_pd), '_coverage', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_pd), '_min_time', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_pd), '_max_time', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_pd), '_min', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_pd), '_max', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_pd), '_centroid', all = FALSE)
+  #
+  # expect_match(names(ARG_TRE_sapf_md), '_q_95', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_md), '_q_99', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_md), '_coverage', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_md), '_min_time', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_md), '_max_time', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_md), '_min', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_md), '_max', all = FALSE)
+  # expect_match(names(ARG_TRE_sapf_md), '_centroid', all = FALSE)
 
   expect_match(names(ARG_TRE_env_gen), '_q_95', all = FALSE)
   expect_match(names(ARG_TRE_env_gen), '_q_99', all = FALSE)
@@ -939,23 +949,33 @@ test_that('daily metrics returns the variables required', {
   expect_match(names(ARG_TRE_env_gen), '_max', all = FALSE)
   expect_failure(expect_match(names(ARG_TRE_env_gen), '_centroid', all = FALSE))
 
-  expect_match(names(ARG_TRE_env_pd), '_q_95', all = FALSE)
-  expect_match(names(ARG_TRE_env_pd), '_q_99', all = FALSE)
-  expect_match(names(ARG_TRE_env_pd), '_coverage', all = FALSE)
-  expect_match(names(ARG_TRE_env_pd), '_min_time', all = FALSE)
-  expect_match(names(ARG_TRE_env_pd), '_max_time', all = FALSE)
-  expect_match(names(ARG_TRE_env_pd), '_min', all = FALSE)
-  expect_match(names(ARG_TRE_env_pd), '_max', all = FALSE)
-  expect_failure(expect_match(names(ARG_TRE_env_pd), '_centroid', all = FALSE))
+  # expect_match(names(ARG_TRE_env_pd), '_q_95', all = FALSE)
+  # expect_match(names(ARG_TRE_env_pd), '_q_99', all = FALSE)
+  # expect_match(names(ARG_TRE_env_pd), '_coverage', all = FALSE)
+  # expect_match(names(ARG_TRE_env_pd), '_min_time', all = FALSE)
+  # expect_match(names(ARG_TRE_env_pd), '_max_time', all = FALSE)
+  # expect_match(names(ARG_TRE_env_pd), '_min', all = FALSE)
+  # expect_match(names(ARG_TRE_env_pd), '_max', all = FALSE)
+  # expect_failure(expect_match(names(ARG_TRE_env_pd), '_centroid', all = FALSE))
+  #
+  # expect_match(names(ARG_TRE_env_md), '_q_95', all = FALSE)
+  # expect_match(names(ARG_TRE_env_md), '_q_99', all = FALSE)
+  # expect_match(names(ARG_TRE_env_md), '_coverage', all = FALSE)
+  # expect_match(names(ARG_TRE_env_md), '_min_time', all = FALSE)
+  # expect_match(names(ARG_TRE_env_md), '_max_time', all = FALSE)
+  # expect_match(names(ARG_TRE_env_md), '_min', all = FALSE)
+  # expect_match(names(ARG_TRE_env_md), '_max', all = FALSE)
+  # expect_failure(expect_match(names(ARG_TRE_env_md), '_centroid', all = FALSE))
 
-  expect_match(names(ARG_TRE_env_md), '_q_95', all = FALSE)
-  expect_match(names(ARG_TRE_env_md), '_q_99', all = FALSE)
-  expect_match(names(ARG_TRE_env_md), '_coverage', all = FALSE)
-  expect_match(names(ARG_TRE_env_md), '_min_time', all = FALSE)
-  expect_match(names(ARG_TRE_env_md), '_max_time', all = FALSE)
-  expect_match(names(ARG_TRE_env_md), '_min', all = FALSE)
-  expect_match(names(ARG_TRE_env_md), '_max', all = FALSE)
-  expect_failure(expect_match(names(ARG_TRE_env_md), '_centroid', all = FALSE))
+  expect_match(names(ARG_TRE_daily_tidy), '_q_95', all = FALSE)
+  expect_match(names(ARG_TRE_daily_tidy), '_q_99', all = FALSE)
+  expect_match(names(ARG_TRE_daily_tidy), '_coverage', all = FALSE)
+  expect_match(names(ARG_TRE_daily_tidy), '_min_time', all = FALSE)
+  expect_match(names(ARG_TRE_daily_tidy), '_max_time', all = FALSE)
+  expect_match(names(ARG_TRE_daily_tidy), '_min', all = FALSE)
+  expect_match(names(ARG_TRE_daily_tidy), '_max', all = FALSE)
+  expect_match(names(ARG_TRE_daily_tidy), '_centroid', all = FALSE)
+
 })
 
 test_that('monthly metrics returns the variables required', {

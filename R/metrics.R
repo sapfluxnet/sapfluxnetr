@@ -634,8 +634,8 @@ sfn_metrics <- function(
 
 #' Complete metrics wrappers
 #'
-#' This set of functions returns a complete set of statistics for a site or
-#' several sites (using \code{\link{sfn_data_multi}})
+#' This set of functions returns a complete set of statistics for a site (using
+#' \code{\link{sfn_data}}) or several sites (using \code{\link{sfn_data_multi}})
 #'
 #' @details
 #' \code{*_metrics} functions are wrappers for \code{\link{sfn_metrics}} with a
@@ -662,11 +662,16 @@ sfn_metrics <- function(
 #' @param probs numeric vector of probabilities for
 #'   \code{\link[stats]{quantile}}
 #'
+#' @param tidy Logical indicating if the metrics must be returned in a tidy
+#'   format (a long tibble, each observation in its own row)
+#'
+#' @param metadata metadata object. Only used if tidy is TRUE
+#'
 #' @family metrics
 #'
-#' @return For \code{\link{sfn_data}} objects, a tibble with the metrics. For
-#'   \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
-#'   for each site.
+#' @return If \code{tidy} is TRUE (default), a tibble with the metrics for
+#'   sapflow and environmental data, with all the metadata included. If
+#'   \code{tidy} is FALSE, a list of tibbles with the calculated metrics.
 #'
 #' @importFrom dplyr n
 #'
@@ -676,9 +681,7 @@ NULL
 #' @rdname metrics
 #'
 #' @section daily_metrics:
-#' \code{daily_metrics} will always return the general metrics (for all data),
-#' the predawn metrics (only data in the predawn period) and the midday metrics
-#' (only data in the midday period).
+#' \code{daily_metrics} summarise daily data for all hours in the day
 #'
 #' @inheritParams sfn_metrics
 #'
@@ -686,35 +689,24 @@ NULL
 #' ## daily_metrics
 #' # data load
 #' data('ARG_TRE', package = 'sapfluxnetr')
+#' data('sfn_metadata_ex', package = 'sapfluxnetr')
 #'
 #' # default complete daily metrics
-#' ARG_TRE_daily <- daily_metrics(ARG_TRE)
+#' ARG_TRE_daily <- daily_metrics(ARG_TRE, metadata = sfn_metadata_ex)
 #'
 #' str(ARG_TRE_daily)
-#' ARG_TRE_daily[['env']][['env_gen']]
 #'
-#' # change the predawn and midday interval
-#' ARG_TRE_int_daily <- daily_metrics(
-#'   ARG_TRE,
-#'   pd_start = 5, pd_end = 7, # predawn starting and ending hour
-#'   md_start = 13, md_end = 15 # midday starting and ending hour
-#' )
-#'
-#' str(ARG_TRE_int_daily)
+#' # non tidy raw metrics
+#' ARG_TRE_raw_daily <- daily_metrics(ARG_TRE, tidy = FALSE)
 #'
 #' @export
 
 daily_metrics <- function(
   sfn_data,
   solar = TRUE,
-  # general = TRUE,
-  # predawn = TRUE,
-  pd_start = 3,
-  pd_end = 5,
-  # midday = TRUE,
-  md_start = 11,
-  md_end = 13,
   probs = c(0.95, 0.99),
+  tidy = TRUE,
+  metadata = NULL,
   ...
 ) {
 
@@ -725,29 +717,31 @@ daily_metrics <- function(
   .funs <- .fixed_metrics_funs(probs, TRUE)
 
   # just input all in the sfn_function
-  sfn_metrics(
+  res_raw <- sfn_metrics(
     sfn_data,
     period = period,
     .funs = .funs,
     solar = solar,
     general = TRUE,
-    predawn = TRUE,
-    pd_start = pd_start,
-    pd_end = pd_end,
-    midday = TRUE,
-    md_start = md_start,
-    md_end = md_end,
+    predawn = FALSE,
+    midday = FALSE,
     nighttime = FALSE,
     ...
   )
+
+  # tidy?
+  if (tidy) {
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'gen')
+    return(res_tidy)
+  } else {
+    return(res_raw)
+  }
 }
 
 #' @rdname metrics
 #'
 #' @section monthly_metrics:
-#' \code{monthly_metrics} will always return the general metrics (for all data),
-#' the predawn metrics (only data in the predawn period) and the midday metrics
-#' (only data in the midday period).
+#' \code{monthly_metrics} summarise monthly data for all hours in the day.
 #'
 #' @inheritParams sfn_metrics
 #'
@@ -756,32 +750,20 @@ daily_metrics <- function(
 #' # data load
 #' data('ARG_MAZ', package = 'sapfluxnetr')
 #'
-#' # default complete daily metrics
+#' # default complete monthly metrics
 #' ARG_MAZ_monthly <- monthly_metrics(ARG_MAZ)
 #'
 #' str(ARG_MAZ_monthly)
 #' ARG_MAZ_monthly[['env']][['env_gen']]
-#'
-#' # change the predawn and midday interval
-#' ARG_MAZ_int_monthly <- monthly_metrics(
-#'   ARG_MAZ,
-#'   pd_start = 5, pd_end = 7, # predawn starting and ending hour
-#'   md_start = 13, md_end = 15 # midday starting and ending hour
-#' )
 #'
 #' @export
 
 monthly_metrics <- function(
   sfn_data,
   solar = TRUE,
-  # general = TRUE,
-  # predawn = TRUE,
-  pd_start = 3,
-  pd_end = 5,
-  # midday = TRUE,
-  md_start = 11,
-  md_end = 13,
   probs = c(0.95, 0.99),
+  tidy = TRUE,
+  metadata = NULL,
   ...
 ) {
 
@@ -792,21 +774,24 @@ monthly_metrics <- function(
   .funs <- .fixed_metrics_funs(probs, FALSE)
 
   # just input all in the sfn_function
-  sfn_metrics(
+  res_raw <- sfn_metrics(
     sfn_data,
     period = period,
     .funs = .funs,
     solar = solar,
     general = TRUE,
-    predawn = TRUE,
-    pd_start = pd_start,
-    pd_end = pd_end,
-    midday = TRUE,
-    md_start = md_start,
-    md_end = md_end,
+    predawn = FALSE,
+    midday = FALSE,
     nighttime = FALSE,
     ...
   )
+
+  if (tidy) {
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'gen')
+    return(res_tidy)
+  } else {
+    return(res_raw)
+  }
 }
 
 #' @rdname metrics
@@ -831,7 +816,7 @@ monthly_metrics <- function(
 #' # data load
 #' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 #'
-#' # default complete daily metrics
+#' # nightly monthly metrics
 #' AUS_CAN_ST2_MIX_monthly <- nightly_metrics(ARG_MAZ, period = 'monthly')
 #'
 #' str(AUS_CAN_ST2_MIX_monthly)
@@ -839,12 +824,12 @@ monthly_metrics <- function(
 #' AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
 #'
 #' # change the night interval
-#' AUS_CAN_ST2_MIX_monthly_short <- nightly_metrics(
+#' AUS_CAN_ST2_MIX_daily_short <- nightly_metrics(
 #'   ARG_MAZ,
 #'   night_start = 21, night_end = 4 # night starting and ending hour
 #' )
 #'
-#' AUS_CAN_ST2_MIX_monthly_short[['env']][['env_night']]
+#' AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
 #'
 #' @export
 
@@ -883,4 +868,150 @@ nightly_metrics <- function(
     night_end = night_end,
     ...
   )
+}
+
+#' @rdname metrics
+#'
+#' @section predawn_metrics:
+#' \code{predawn_metrics} will always return the metrics for predawn
+#' period, summarised daily or monthly. Predawn interval is selected by start and
+#' end hours.
+#'
+#' Predawn metrics did not return the centroid metric.
+#'
+#' @inheritParams sfn_metrics
+#'
+#' @examples
+#' ## predawn_metrics
+#' # data load
+#' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
+#'
+#' # predawn monthly metrics
+#' AUS_CAN_ST2_MIX_monthly <- predawn_metrics(ARG_MAZ, period = 'monthly')
+#'
+#' str(AUS_CAN_ST2_MIX_monthly)
+#' AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
+#' AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+#'
+#' # change the predawn interval
+#' AUS_CAN_ST2_MIX_daily_short <- predawn_metrics(
+#'   ARG_MAZ,
+#'   pd_start = 3, pd_end = 5 # predawn starting and ending hour
+#' )
+#'
+#' AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+#'
+#' @export
+
+predawn_metrics <- function(
+  sfn_data,
+  period = c('daily', 'monthly'),
+  solar = TRUE,
+  pd_start = 4,
+  pd_end = 6,
+  probs = c(0.95, 0.99),
+  tidy = TRUE,
+  metadata = NULL,
+  ...
+) {
+
+  period <- match.arg(period)
+
+  # default funs
+  .funs <- .fixed_metrics_funs(probs, FALSE)
+
+  # just input all in the sfn_metrics function
+  res_raw <- sfn_metrics(
+    sfn_data,
+    period = period,
+    .funs = .funs,
+    solar = solar,
+    general = FALSE,
+    predawn = TRUE,
+    midday = FALSE,
+    nighttime = FALSE,
+    pd_start = pd_start,
+    pd_end = pd_end,
+    ...
+  )
+
+  if (tidy) {
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'pd')
+    return(res_tidy)
+  } else {
+    return(res_raw)
+  }
+}
+
+#' @rdname metrics
+#'
+#' @section midday_metrics:
+#' \code{midday_metrics} will always return the metrics for midday
+#' period, summarised daily or monthly. midday interval is selected by start and
+#' end hours.
+#'
+#' Midday metrics did not return the centroid metric.
+#'
+#' @inheritParams sfn_metrics
+#'
+#' @examples
+#' ## midday_metrics
+#' # data load
+#' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
+#'
+#' # midday monthly metrics
+#' AUS_CAN_ST2_MIX_monthly <- midday_metrics(ARG_MAZ, period = 'monthly')
+#'
+#' str(AUS_CAN_ST2_MIX_monthly)
+#' AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
+#' AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+#'
+#' # change the midday interval
+#' AUS_CAN_ST2_MIX_daily_short <- midday_metrics(
+#'   ARG_MAZ,
+#'   pd_start = 3, pd_end = 5 # midday starting and ending hour
+#' )
+#'
+#' AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+#'
+#' @export
+
+midday_metrics <- function(
+  sfn_data,
+  period = c('daily', 'monthly'),
+  solar = TRUE,
+  md_start = 4,
+  md_end = 6,
+  probs = c(0.95, 0.99),
+  tidy = TRUE,
+  metadata = NULL,
+  ...
+) {
+
+  period <- match.arg(period)
+
+  # default funs
+  .funs <- .fixed_metrics_funs(probs, FALSE)
+
+  # just input all in the sfn_metrics function
+  res_raw <- sfn_metrics(
+    sfn_data,
+    period = period,
+    .funs = .funs,
+    solar = solar,
+    general = FALSE,
+    predawn = FALSE,
+    midday = TRUE,
+    nighttime = FALSE,
+    md_start = md_start,
+    md_end = md_end,
+    ...
+  )
+
+  if (tidy) {
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'md')
+    return(res_tidy)
+  } else {
+    return(res_raw)
+  }
 }

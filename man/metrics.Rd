@@ -5,16 +5,26 @@
 \alias{daily_metrics}
 \alias{monthly_metrics}
 \alias{nightly_metrics}
+\alias{predawn_metrics}
+\alias{midday_metrics}
 \title{Complete metrics wrappers}
 \usage{
-daily_metrics(sfn_data, solar = TRUE, pd_start = 3, pd_end = 5,
-  md_start = 11, md_end = 13, probs = c(0.95, 0.99), ...)
+daily_metrics(sfn_data, solar = TRUE, probs = c(0.95, 0.99), tidy = TRUE,
+  metadata = NULL, ...)
 
-monthly_metrics(sfn_data, solar = TRUE, pd_start = 3, pd_end = 5,
-  md_start = 11, md_end = 13, probs = c(0.95, 0.99), ...)
+monthly_metrics(sfn_data, solar = TRUE, probs = c(0.95, 0.99),
+  tidy = TRUE, metadata = NULL, ...)
 
 nightly_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
   night_start = 20, night_end = 6, probs = c(0.95, 0.99), ...)
+
+predawn_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
+  pd_start = 4, pd_end = 6, probs = c(0.95, 0.99), tidy = TRUE,
+  metadata = NULL, ...)
+
+midday_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
+  md_start = 4, md_end = 6, probs = c(0.95, 0.99), tidy = TRUE,
+  metadata = NULL, ...)
 }
 \arguments{
 \item{sfn_data}{\code{\link{sfn_data}} or \code{\link{sfn_data_multi}} object
@@ -23,16 +33,13 @@ to obtain the metrics from}
 \item{solar}{Logical indicating if the solarTIMESTAMP must be used instead of
 the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
 
-\item{pd_start}{Hour to start the predawn interval}
-
-\item{pd_end}{Hour to end the predawn interval}
-
-\item{md_start}{Hour to start the midday interval}
-
-\item{md_end}{Hour to end the midday interval}
-
 \item{probs}{numeric vector of probabilities for
 \code{\link[stats]{quantile}}}
+
+\item{tidy}{Logical indicating if the metrics must be returned in a tidy
+format (a long tibble, each observation in its own row)}
+
+\item{metadata}{metadata object. Only used if tidy is TRUE}
 
 \item{...}{optional arguments to pass to methods used
 (i.e. tibbletime::collapse_index or summarise funs extra arguments)}
@@ -43,15 +50,23 @@ about the periods ('daily', 'monthly', 'yearly', ...)}
 \item{night_start}{Hour to start the night interval}
 
 \item{night_end}{Hour to end the night interval}
+
+\item{pd_start}{Hour to start the predawn interval}
+
+\item{pd_end}{Hour to end the predawn interval}
+
+\item{md_start}{Hour to start the midday interval}
+
+\item{md_end}{Hour to end the midday interval}
 }
 \value{
-For \code{\link{sfn_data}} objects, a tibble with the metrics. For
-  \code{\link{sfn_data_multi}} objects, a list of tibbles with the metrics
-  for each site.
+If \code{tidy} is TRUE (default), a tibble with the metrics for
+  sapflow and environmental data, with all the metadata included. If
+  \code{tidy} is FALSE, a list of tibbles with the calculated metrics.
 }
 \description{
-This set of functions returns a complete set of statistics for a site or
-several sites (using \code{\link{sfn_data_multi}})
+This set of functions returns a complete set of statistics for a site (using
+\code{\link{sfn_data}}) or several sites (using \code{\link{sfn_data_multi}})
 }
 \details{
 \code{*_metrics} functions are wrappers for \code{\link{sfn_metrics}} with a
@@ -77,16 +92,12 @@ set of fixed arguments.
 }
 \section{daily_metrics}{
 
-\code{daily_metrics} will always return the general metrics (for all data),
-the predawn metrics (only data in the predawn period) and the midday metrics
-(only data in the midday period).
+\code{daily_metrics} summarise daily data for all hours in the day
 }
 
 \section{monthly_metrics}{
 
-\code{monthly_metrics} will always return the general metrics (for all data),
-the predawn metrics (only data in the predawn period) and the midday metrics
-(only data in the midday period).
+\code{monthly_metrics} summarise monthly data for all hours in the day.
 }
 
 \section{nightly_metrics}{
@@ -104,6 +115,24 @@ includes from 00:00:00 of the first month night to 23:59:59 of the last
 month night
 }
 
+\section{predawn_metrics}{
+
+\code{predawn_metrics} will always return the metrics for predawn
+period, summarised daily or monthly. Predawn interval is selected by start and
+end hours.
+
+Predawn metrics did not return the centroid metric.
+}
+
+\section{midday_metrics}{
+
+\code{midday_metrics} will always return the metrics for midday
+period, summarised daily or monthly. midday interval is selected by start and
+end hours.
+
+Midday metrics did not return the centroid metric.
+}
+
 \examples{
 ## daily_metrics
 # data load
@@ -115,37 +144,21 @@ ARG_TRE_daily <- daily_metrics(ARG_TRE)
 str(ARG_TRE_daily)
 ARG_TRE_daily[['env']][['env_gen']]
 
-# change the predawn and midday interval
-ARG_TRE_int_daily <- daily_metrics(
-  ARG_TRE,
-  pd_start = 5, pd_end = 7, # predawn starting and ending hour
-  md_start = 13, md_end = 15 # midday starting and ending hour
-)
-
-str(ARG_TRE_int_daily)
-
 ## monthly_metrics
 # data load
 data('ARG_MAZ', package = 'sapfluxnetr')
 
-# default complete daily metrics
+# default complete monthly metrics
 ARG_MAZ_monthly <- monthly_metrics(ARG_MAZ)
 
 str(ARG_MAZ_monthly)
 ARG_MAZ_monthly[['env']][['env_gen']]
 
-# change the predawn and midday interval
-ARG_MAZ_int_monthly <- monthly_metrics(
-  ARG_MAZ,
-  pd_start = 5, pd_end = 7, # predawn starting and ending hour
-  md_start = 13, md_end = 15 # midday starting and ending hour
-)
-
 ## nightly_metrics
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
-# default complete daily metrics
+# nightly monthly metrics
 AUS_CAN_ST2_MIX_monthly <- nightly_metrics(ARG_MAZ, period = 'monthly')
 
 str(AUS_CAN_ST2_MIX_monthly)
@@ -153,12 +166,50 @@ AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
 AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
 
 # change the night interval
-AUS_CAN_ST2_MIX_monthly_short <- nightly_metrics(
+AUS_CAN_ST2_MIX_daily_short <- nightly_metrics(
   ARG_MAZ,
   night_start = 21, night_end = 4 # night starting and ending hour
 )
 
-AUS_CAN_ST2_MIX_monthly_short[['env']][['env_night']]
+AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+
+## predawn_metrics
+# data load
+data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
+
+# predawn monthly metrics
+AUS_CAN_ST2_MIX_monthly <- predawn_metrics(ARG_MAZ, period = 'monthly')
+
+str(AUS_CAN_ST2_MIX_monthly)
+AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
+AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+
+# change the predawn interval
+AUS_CAN_ST2_MIX_daily_short <- predawn_metrics(
+  ARG_MAZ,
+  pd_start = 3, pd_end = 5 # predawn starting and ending hour
+)
+
+AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+
+## midday_metrics
+# data load
+data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
+
+# midday monthly metrics
+AUS_CAN_ST2_MIX_monthly <- midday_metrics(ARG_MAZ, period = 'monthly')
+
+str(AUS_CAN_ST2_MIX_monthly)
+AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
+AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+
+# change the midday interval
+AUS_CAN_ST2_MIX_daily_short <- midday_metrics(
+  ARG_MAZ,
+  pd_start = 3, pd_end = 5 # midday starting and ending hour
+)
+
+AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
 
 }
 \seealso{
