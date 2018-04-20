@@ -60,9 +60,9 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
             \item{$sapf_md: metrics for midday interval (if
                   \code{midday = FALSE} the slot will be empty)}
             \item{$sapf_day: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the solot will be empty)}
+                  \code{nighttime = FALSE} the slot will be empty)}
             \item{$sapf_night: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the solot will be empty)}
+                  \code{nighttime = FALSE} the slot will be empty)}
           }}
     \item{$env: metrics for the environmental data
           \itemize{
@@ -72,9 +72,9 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
             \item{$env_md: metrics for midday interval (if
                   \code{midday = FALSE} the slot will be empty)}
             \item{$env_day: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the solot will be empty)}
+                  \code{nighttime = FALSE} the slot will be empty)}
             \item{$env_night: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the solot will be empty)}
+                  \code{nighttime = FALSE} the slot will be empty)}
           }}
   }
 
