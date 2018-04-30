@@ -29,7 +29,7 @@ predawn_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
   metadata = NULL, ...)
 
 midday_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
-  int_start = 4, int_end = 6, probs = c(0.95, 0.99), tidy = FALSE,
+  int_start = 11, int_end = 13, probs = c(0.95, 0.99), tidy = FALSE,
   metadata = NULL, ...)
 }
 \arguments{
