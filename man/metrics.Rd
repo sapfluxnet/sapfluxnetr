@@ -5,25 +5,29 @@
 \alias{daily_metrics}
 \alias{monthly_metrics}
 \alias{nightly_metrics}
+\alias{daylight_metrics}
 \alias{predawn_metrics}
 \alias{midday_metrics}
 \title{Complete metrics wrappers}
 \usage{
-daily_metrics(sfn_data, solar = TRUE, probs = c(0.95, 0.99), tidy = TRUE,
+daily_metrics(sfn_data, solar = TRUE, probs = c(0.95, 0.99), tidy = FALSE,
   metadata = NULL, ...)
 
 monthly_metrics(sfn_data, solar = TRUE, probs = c(0.95, 0.99),
-  tidy = TRUE, metadata = NULL, ...)
+  tidy = FALSE, metadata = NULL, ...)
 
 nightly_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
-  night_start = 20, night_end = 6, probs = c(0.95, 0.99), ...)
+  int_start = 20, int_end = 6, probs = c(0.95, 0.99), ...)
+
+daylight_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
+  int_start = 6, int_end = 20, probs = c(0.95, 0.99), ...)
 
 predawn_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
-  pd_start = 4, pd_end = 6, probs = c(0.95, 0.99), tidy = TRUE,
+  int_start = 4, int_end = 6, probs = c(0.95, 0.99), tidy = FALSE,
   metadata = NULL, ...)
 
 midday_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
-  md_start = 4, md_end = 6, probs = c(0.95, 0.99), tidy = TRUE,
+  int_start = 4, int_end = 6, probs = c(0.95, 0.99), tidy = FALSE,
   metadata = NULL, ...)
 }
 \arguments{
@@ -46,18 +50,6 @@ format (a long tibble, each observation in its own row)}
 
 \item{period}{Time period to aggregate data by. See period section for an explanation
 about the periods ('daily', 'monthly', 'yearly', ...)}
-
-\item{night_start}{Hour to start the night interval}
-
-\item{night_end}{Hour to end the night interval}
-
-\item{pd_start}{Hour to start the predawn interval}
-
-\item{pd_end}{Hour to end the predawn interval}
-
-\item{md_start}{Hour to start the midday interval}
-
-\item{md_end}{Hour to end the midday interval}
 }
 \value{
 If \code{tidy} is TRUE (default), a tibble with the metrics for
@@ -115,6 +107,21 @@ includes from 00:00:00 of the first month night to 23:59:59 of the last
 month night
 }
 
+\section{daylight_metrics}{
+
+\code{daylight_metrics} will always return the metrics for day and night
+periods, summarised daily or monthly
+
+Night for daily period starts in DOY x and ends in DOY x+1 (i.e. if
+\code{night_start = 20, night_end = 6} values for 2018-03-28 20:00:00 means
+values for the night starting at 2018-03-28 20:00:00 and ending at
+2018-03-29 06:00:00).
+
+Night for monthly period summarises all night periods in the month, that
+includes from 00:00:00 of the first month night to 23:59:59 of the last
+month night
+}
+
 \section{predawn_metrics}{
 
 \code{predawn_metrics} will always return the metrics for predawn
@@ -137,12 +144,15 @@ Midday metrics did not return the centroid metric.
 ## daily_metrics
 # data load
 data('ARG_TRE', package = 'sapfluxnetr')
+data('sfn_metadata_ex', package = 'sapfluxnetr')
 
 # default complete daily metrics
-ARG_TRE_daily <- daily_metrics(ARG_TRE)
+ARG_TRE_daily <- daily_metrics(ARG_TRE, metadata = sfn_metadata_ex)
 
 str(ARG_TRE_daily)
-ARG_TRE_daily[['env']][['env_gen']]
+
+# non tidy raw metrics
+ARG_TRE_raw_daily <- daily_metrics(ARG_TRE, tidy = FALSE)
 
 ## monthly_metrics
 # data load
@@ -167,6 +177,25 @@ AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
 
 # change the night interval
 AUS_CAN_ST2_MIX_daily_short <- nightly_metrics(
+  ARG_MAZ,
+  night_start = 21, night_end = 4 # night starting and ending hour
+)
+
+AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+
+## daylight_metrics
+# data load
+data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
+
+# nightly monthly metrics
+AUS_CAN_ST2_MIX_monthly <- daylight_metrics(ARG_MAZ, period = 'monthly')
+
+str(AUS_CAN_ST2_MIX_monthly)
+AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
+AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+
+# change the night interval
+AUS_CAN_ST2_MIX_daily_short <- daylight_metrics(
   ARG_MAZ,
   night_start = 21, night_end = 4 # night starting and ending hour
 )

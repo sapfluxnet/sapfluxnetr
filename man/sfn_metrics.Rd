@@ -4,8 +4,8 @@
 \alias{sfn_metrics}
 \title{Metrics summary function}
 \usage{
-sfn_metrics(sfn_data, period, .funs, solar, general, predawn, pd_start, pd_end,
-  midday, md_start, md_end, nighttime, night_start, night_end, ...)
+sfn_metrics(sfn_data, period, .funs, solar, interval = c("general", "predawn",
+  "midday", "night", "daylight"), int_start = NULL, int_end = NULL, ...)
 }
 \arguments{
 \item{sfn_data}{\code{\link{sfn_data}} or \code{\link{sfn_data_multi}} object
@@ -20,6 +20,9 @@ for more info about supplying custom functions.}
 
 \item{solar}{Logical indicating if the solarTIMESTAMP must be used instead of
 the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
+
+\item{...}{optional arguments to pass to methods used
+(i.e. tibbletime::collapse_index or summarise funs extra arguments)}
 
 \item{general}{Logical indicating if general metrics (all data) must be
 returned}
@@ -44,9 +47,6 @@ done and metrics for each subset (day and night) returned.}
 \item{night_start}{Hour to start the night interval}
 
 \item{night_end}{Hour to end the night interval}
-
-\item{...}{optional arguments to pass to methods used
-(i.e. tibbletime::collapse_index or summarise funs extra arguments)}
 }
 \value{
 For \code{\link{sfn_data}} objects, a list of tbl_time objects

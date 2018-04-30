@@ -1299,7 +1299,11 @@ midday_metrics <- function(
 #'
 #' @export
 
-metrics_tidyfier <- function(metrics_res, metadata, interval = 'gen') {
+metrics_tidyfier <- function(
+  metrics_res,
+  metadata,
+  interval = c('general', 'predawn', 'midday', 'night', 'daylight')
+) {
 
   # hack to avoid CRAN NOTE with the use of "." in the last step
   . <- NULL
@@ -1307,11 +1311,11 @@ metrics_tidyfier <- function(metrics_res, metadata, interval = 'gen') {
   # which timestamp var we use (depends on the interval)
   timestamp_var <- switch(
     interval,
-    'gen' = 'TIMESTAMP',
-    'md' = 'TIMESTAMP_md',
-    'pd' = 'TIMESTAMP_pd',
+    'general' = 'TIMESTAMP',
+    'midday' = 'TIMESTAMP_md',
+    'predawn' = 'TIMESTAMP_pd',
     'night' = 'TIMESTAMP_night',
-    'day' = 'TIMESTAMP_day'
+    'daylight' = 'TIMESTAMP_daylight'
   )
 
   # individual data objects
@@ -1319,16 +1323,11 @@ metrics_tidyfier <- function(metrics_res, metadata, interval = 'gen') {
   # site the extraction must be done without sapf/env level
   if (all(names(metrics_res) %in% c('sapf', 'env'))) {
 
-    sapf_data <- metrics_res %>%
-      purrr::map(c(paste0('sapf_', interval))) %>%
-      purrr::compact()
+    sapf_data <- metrics_res['sapf']
 
-    env_data <- metrics_res %>%
-      purrr::map(c(paste0('env_', interval))) %>%
-      purrr::compact()
+    env_data <- metrics_res['env']
 
-    raw_codes <- metadata[['site_md']] %>%
-      dplyr::pull(.data$si_code)
+    raw_codes <- metadata[['site_md']][['si_code']]
 
     raw_index <- stringr::str_detect(names(sapf_data[['sapf']])[2], raw_codes)
 
@@ -1340,10 +1339,10 @@ metrics_tidyfier <- function(metrics_res, metadata, interval = 'gen') {
   } else {
 
     sapf_data <- metrics_res %>%
-      purrr::map(c('sapf', paste0('sapf_', interval)))
+      purrr::map(c('sapf'))
 
     env_data <- metrics_res %>%
-      purrr::map(c('env', paste0('env_', interval)))
+      purrr::map(c('env'))
 
     sites_codes <- names(metrics_res)
 
