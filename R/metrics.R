@@ -312,21 +312,291 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'
 #' @export
 
+# sfn_metrics <- function(
+#   sfn_data,
+#   period,
+#   .funs,
+#   solar,
+#   general,
+#   predawn,
+#   pd_start,
+#   pd_end,
+#   midday,
+#   md_start,
+#   md_end,
+#   nighttime,
+#   night_start,
+#   night_end,
+#   ...
+# ) {
+#
+#   # argument checks
+#   if (!(class(sfn_data) %in% c('sfn_data', 'sfn_data_multi'))) {
+#     stop(
+#       'sfn_metrics only works with sfn_data and sfn_data_multi object classes'
+#     )
+#   }
+#
+#   # we need to check if multi and then repeat the function for each element
+#   if (is(sfn_data, 'sfn_data_multi')) {
+#     res_multi <- sfn_data %>%
+#       purrr::map(sfn_metrics,
+#         period = period,
+#         .funs = .funs,
+#         solar = solar,
+#         general = general,
+#         predawn = predawn,
+#         pd_start = pd_start,
+#         pd_end = pd_end,
+#         midday = midday,
+#         md_start = md_start,
+#         md_end = md_end,
+#         nighttime = nighttime,
+#         night_start = night_start,
+#         night_end = night_end,
+#         ...
+#       )
+#
+#     return(res_multi)
+#   }
+#
+#   # if sfn_data then we have to calculate the desired metrics from the data
+#
+#   print(paste0(
+#     'Crunching data for ', get_si_code(sfn_data), '. In large datasets this ',
+#     'could take a while'
+#   ))
+#
+#   sapf_data <- get_sapf_data(sfn_data, solar = solar)
+#   env_data <- get_env_data(sfn_data, solar = solar)
+#
+#   whole_data <- list(sapf = sapf_data, env = env_data)
+#
+#   if (general) {
+#     # progress to not scare seeming like freezed
+#     print(paste0('General data for ', get_si_code(sfn_data)))
+#
+#     # period summaries: we want to know period means, maximum, minimum, quantiles...
+#     whole_data %>%
+#       purrr::map(summarise_by_period, period, .funs, ...) -> period_summary
+#   } else {
+#     period_summary <- NULL
+#   }
+#
+#   # filtering summaries we want to know filtered period (predawn, midday) means,
+#   # maximum, minimum, quantiles...
+#   # `summarise_by_period` is a helper function documented in helpers.R
+#
+#   # predawn
+#   if (predawn) {
+#
+#     # progress to not scare seeming like freezed
+#     print(paste0('Predawn data for ', get_si_code(sfn_data)))
+#
+#     whole_data %>%
+#       purrr::map(
+#         dplyr::filter,
+#         dplyr::between(lubridate::hour(.data$TIMESTAMP), pd_start, pd_end)
+#       ) %>%
+#       purrr::map(summarise_by_period, period, .funs, ...) -> predawn_summary
+#
+#     names(predawn_summary) <- paste0(names(predawn_summary), '_pd')
+#     names(predawn_summary[['sapf_pd']]) <- paste0(names(predawn_summary[['sapf_pd']]), '_pd')
+#     names(predawn_summary[['env_pd']]) <- paste0(names(predawn_summary[['env_pd']]), '_pd')
+#
+#   } else {
+#     predawn_summary <- NULL
+#   }
+#
+#   # midday
+#   if (midday) {
+#
+#     # progress to not scare seeming like freezed
+#     print(paste0('Midday data for ', get_si_code(sfn_data)))
+#
+#     whole_data %>%
+#       purrr::map(
+#         dplyr::filter,
+#         dplyr::between(lubridate::hour(.data$TIMESTAMP), md_start, md_end)
+#       ) %>%
+#       purrr::map(summarise_by_period, period, .funs, ...) -> midday_summary
+#
+#     names(midday_summary) <- paste0(names(midday_summary), '_md')
+#     names(midday_summary[['sapf_md']]) <- paste0(names(midday_summary[['sapf_md']]), '_md')
+#     names(midday_summary[['env_md']]) <- paste0(names(midday_summary[['env_md']]), '_md')
+#
+#   } else {
+#     midday_summary <- NULL
+#   }
+#
+#   #### night time ####
+#   if (nighttime) {
+#
+#     # progress to not scare seeming like freezed in large datasets
+#     print(paste0('Nighttime data for ', get_si_code(sfn_data)))
+#
+#     night_data <- whole_data %>%
+#       purrr::map(
+#         dplyr::filter,
+#         dplyr::between(
+#           lubridate::hour(.data$TIMESTAMP), night_start, 24
+#         ) |
+#           dplyr::between(
+#             lubridate::hour(.data$TIMESTAMP), 0, night_end - 1
+#           )
+#       )
+#
+#
+#
+#     if (period == 'daily') {
+#
+#       night_boundaries <- night_data[['sapf']] %>%
+#         dplyr::mutate(
+#           coll = tibbletime::collapse_index(
+#             index = .data$TIMESTAMP,
+#             period = period,
+#             side = 'start'
+#           )
+#         ) %>%
+#         dplyr::group_by(.data$coll) %>%
+#         # closest to night start timestamp
+#         dplyr::summarise(
+#           custom_dates = .data$TIMESTAMP[which.min(
+#             abs(lubridate::hour(.data$TIMESTAMP) - night_start)
+#           )]
+#         ) %>%
+#         dplyr::pull(.data$custom_dates)
+#
+#       night_boundaries <- night_boundaries %>%
+#         lubridate::floor_date(unit = 'hours')
+#
+#       # workaround the two nights in one day problem (sites that start at
+#       # 00:00:00 have two nights in the same day, the first one corresponds to
+#       # the previous day and we have to fix it)
+#       margins <- 60*60*24
+#       extra_start_boundary <- night_boundaries[[1]] - margins
+#       extra_end_boundary <- night_boundaries[[length(night_boundaries)]] + margins
+#       night_boundaries <- as.POSIXct(
+#         c(
+#           as.character(extra_start_boundary),
+#           as.character(night_boundaries),
+#           as.character(extra_end_boundary)
+#         ),
+#         tz = attr(extra_start_boundary, 'tz')
+#       )
+#
+#       night_sum <- night_data %>%
+#         purrr::map(
+#           summarise_by_period, night_boundaries, .funs,
+#           # clean = FALSE, !!! dots_summ,
+#           ...
+#         )
+#
+#     } else {
+#
+#       # night_boundaries <- night_boundaries %>%
+#       #   lubridate::floor_date(unit = 'hourly')
+#       #
+#       # # workaround the two nights in one month problem (sites that start at
+#       # # XXXX-XX-01 00:00:00 have two nights in the same month, the first one
+#       # # corresponds to the previous month and we have to fix it)
+#       # margins <- 60*60*24
+#       # extra_start_boundary <- night_boundaries[[1]] - margins
+#       # extra_end_boundary <- night_boundaries[[length(night_boundaries)]] + margins
+#       # night_boundaries <- as.POSIXct(
+#       #   c(
+#       #     as.character(extra_start_boundary),
+#       #     as.character(night_boundaries),
+#       #     as.character(extra_end_boundary)
+#       #   ),
+#       #   tz = attr(extra_start_boundary, 'tz')
+#       # )
+#
+#
+#       night_sum <- night_data %>%
+#         purrr::map(
+#           summarise_by_period, period, .funs,
+#           # clean = FALSE, !!! dots_summ,
+#           ...
+#         )
+#
+#     }
+#
+#     names(night_sum[['sapf']]) <- paste0(names(night_sum[['sapf']]), '_night')
+#     names(night_sum[['env']]) <- paste0(names(night_sum[['env']]), '_night')
+#
+#     day_sum <- whole_data %>%
+#       purrr::map2(
+#         night_data,
+#         ~ dplyr::anti_join(.x, .y, by = 'TIMESTAMP')
+#       ) %>%
+#       purrr::map(summarise_by_period, period, .funs, ...)
+#
+#     names(day_sum[['sapf']]) <- paste0(names(day_sum[['sapf']]), '_day')
+#     names(day_sum[['env']]) <- paste0(names(day_sum[['env']]), '_day')
+#
+#     nighttime_summary <- list(
+#       sapf = list(
+#         sapf_day = day_sum[['sapf']],
+#         sapf_night = night_sum[['sapf']]
+#       ),
+#       env = list(
+#         env_day = day_sum[['env']],
+#         env_night = night_sum[['env']]
+#       )
+#     )
+#   } else {
+#     nighttime_summary <- NULL
+#   }
+#
+#   # we create the result object:
+#   # res
+#   #   $sapf
+#   #     $sapf_gen
+#   #     $sapf_pd
+#   #     $sapf_md
+#   #     $sapf_day
+#   #     $sapf_night
+#   #   $env
+#   #     $env_gen
+#   #     $env_pd
+#   #     $env_md
+#   #     $env_day
+#   #     $env_night
+#   # this way all is modular and after that they can be combined by bind_cols
+#   res <- list(
+#     sapf = list(
+#       sapf_gen = period_summary[['sapf']],
+#       sapf_pd = predawn_summary[['sapf_pd']],
+#       sapf_md = midday_summary[['sapf_md']],
+#       sapf_day = nighttime_summary[['sapf']][['sapf_day']],
+#       sapf_night = nighttime_summary[['sapf']][['sapf_night']]
+#     ),
+#     env = list(
+#       env_gen = period_summary[['env']],
+#       env_pd = predawn_summary[['env_pd']],
+#       env_md = midday_summary[['env_md']],
+#       env_day = nighttime_summary[['env']][['env_day']],
+#       env_night = nighttime_summary[['env']][['env_night']]
+#     )
+#   )
+#
+#   # remove the NULLs
+#   return(
+#     res %>%
+#       purrr::modify_depth(1, ~ purrr::keep(.x, ~ !is.null(.)))
+#   )
+# }
+
+
 sfn_metrics <- function(
   sfn_data,
   period,
   .funs,
   solar,
-  general,
-  predawn,
-  pd_start,
-  pd_end,
-  midday,
-  md_start,
-  md_end,
-  nighttime,
-  night_start,
-  night_end,
+  interval = c('general', 'predawn', 'midday', 'night', 'daylight'),
+  int_start = NULL,
+  int_end = NULL,
   ...
 ) {
 
@@ -341,20 +611,13 @@ sfn_metrics <- function(
   if (is(sfn_data, 'sfn_data_multi')) {
     res_multi <- sfn_data %>%
       purrr::map(sfn_metrics,
-        period = period,
-        .funs = .funs,
-        solar = solar,
-        general = general,
-        predawn = predawn,
-        pd_start = pd_start,
-        pd_end = pd_end,
-        midday = midday,
-        md_start = md_start,
-        md_end = md_end,
-        nighttime = nighttime,
-        night_start = night_start,
-        night_end = night_end,
-        ...
+                 period = period,
+                 .funs = .funs,
+                 solar = solar,
+                 interval = interval,
+                 int_start = int_start,
+                 int_end = int_end,
+                 ...
       )
 
     return(res_multi)
@@ -372,65 +635,9 @@ sfn_metrics <- function(
 
   whole_data <- list(sapf = sapf_data, env = env_data)
 
-  if (general) {
-    # progress to not scare seeming like freezed
-    print(paste0('General data for ', get_si_code(sfn_data)))
-
-    # period summaries: we want to know period means, maximum, minimum, quantiles...
-    whole_data %>%
-      purrr::map(summarise_by_period, period, .funs, ...) -> period_summary
-  } else {
-    period_summary <- NULL
-  }
-
-  # filtering summaries we want to know filtered period (predawn, midday) means,
-  # maximum, minimum, quantiles...
-  # `summarise_by_period` is a helper function documented in helpers.R
-
-  # predawn
-  if (predawn) {
-
-    # progress to not scare seeming like freezed
-    print(paste0('Predawn data for ', get_si_code(sfn_data)))
-
-    whole_data %>%
-      purrr::map(
-        dplyr::filter,
-        dplyr::between(lubridate::hour(.data$TIMESTAMP), pd_start, pd_end)
-      ) %>%
-      purrr::map(summarise_by_period, period, .funs, ...) -> predawn_summary
-
-    names(predawn_summary) <- paste0(names(predawn_summary), '_pd')
-    names(predawn_summary[['sapf_pd']]) <- paste0(names(predawn_summary[['sapf_pd']]), '_pd')
-    names(predawn_summary[['env_pd']]) <- paste0(names(predawn_summary[['env_pd']]), '_pd')
-
-  } else {
-    predawn_summary <- NULL
-  }
-
-  # midday
-  if (midday) {
-
-    # progress to not scare seeming like freezed
-    print(paste0('Midday data for ', get_si_code(sfn_data)))
-
-    whole_data %>%
-      purrr::map(
-        dplyr::filter,
-        dplyr::between(lubridate::hour(.data$TIMESTAMP), md_start, md_end)
-      ) %>%
-      purrr::map(summarise_by_period, period, .funs, ...) -> midday_summary
-
-    names(midday_summary) <- paste0(names(midday_summary), '_md')
-    names(midday_summary[['sapf_md']]) <- paste0(names(midday_summary[['sapf_md']]), '_md')
-    names(midday_summary[['env_md']]) <- paste0(names(midday_summary[['env_md']]), '_md')
-
-  } else {
-    midday_summary <- NULL
-  }
-
-  #### night time ####
-  if (nighttime) {
+  # if interval is night, is somewhat complicated. We need to uniformize the
+  # interval for nights as they span two days.
+  if (interval == 'night') {
 
     # progress to not scare seeming like freezed in large datasets
     print(paste0('Nighttime data for ', get_si_code(sfn_data)))
@@ -439,14 +646,12 @@ sfn_metrics <- function(
       purrr::map(
         dplyr::filter,
         dplyr::between(
-          lubridate::hour(.data$TIMESTAMP), night_start, 24
+          lubridate::hour(.data$TIMESTAMP), int_start, 24
         ) |
           dplyr::between(
-            lubridate::hour(.data$TIMESTAMP), 0, night_end - 1
+            lubridate::hour(.data$TIMESTAMP), 0, int_end - 1
           )
       )
-
-
 
     if (period == 'daily') {
 
@@ -462,7 +667,7 @@ sfn_metrics <- function(
         # closest to night start timestamp
         dplyr::summarise(
           custom_dates = .data$TIMESTAMP[which.min(
-            abs(lubridate::hour(.data$TIMESTAMP) - night_start)
+            abs(lubridate::hour(.data$TIMESTAMP) - int_start)
           )]
         ) %>%
         dplyr::pull(.data$custom_dates)
@@ -485,108 +690,86 @@ sfn_metrics <- function(
         tz = attr(extra_start_boundary, 'tz')
       )
 
-      night_sum <- night_data %>%
-        purrr::map(
-          summarise_by_period, night_boundaries, .funs,
-          # clean = FALSE, !!! dots_summ,
-          ...
-        )
+      period_summary <- night_data %>%
+        purrr::map(summarise_by_period, night_boundaries, .funs, ...)
 
     } else {
 
-      # night_boundaries <- night_boundaries %>%
-      #   lubridate::floor_date(unit = 'hourly')
-      #
-      # # workaround the two nights in one month problem (sites that start at
-      # # XXXX-XX-01 00:00:00 have two nights in the same month, the first one
-      # # corresponds to the previous month and we have to fix it)
-      # margins <- 60*60*24
-      # extra_start_boundary <- night_boundaries[[1]] - margins
-      # extra_end_boundary <- night_boundaries[[length(night_boundaries)]] + margins
-      # night_boundaries <- as.POSIXct(
-      #   c(
-      #     as.character(extra_start_boundary),
-      #     as.character(night_boundaries),
-      #     as.character(extra_end_boundary)
-      #   ),
-      #   tz = attr(extra_start_boundary, 'tz')
-      # )
-
-
-      night_sum <- night_data %>%
-        purrr::map(
-          summarise_by_period, period, .funs,
-          # clean = FALSE, !!! dots_summ,
-          ...
-        )
+     period_summary <- night_data %>%
+        purrr::map(summarise_by_period, period, .funs, ...)
 
     }
 
-    names(night_sum[['sapf']]) <- paste0(names(night_sum[['sapf']]), '_night')
-    names(night_sum[['env']]) <- paste0(names(night_sum[['env']]), '_night')
-
-    day_sum <- whole_data %>%
-      purrr::map2(
-        night_data,
-        ~ dplyr::anti_join(.x, .y, by = 'TIMESTAMP')
-      ) %>%
-      purrr::map(summarise_by_period, period, .funs, ...)
-
-    names(day_sum[['sapf']]) <- paste0(names(day_sum[['sapf']]), '_day')
-    names(day_sum[['env']]) <- paste0(names(day_sum[['env']]), '_day')
-
-    nighttime_summary <- list(
-      sapf = list(
-        sapf_day = day_sum[['sapf']],
-        sapf_night = night_sum[['sapf']]
-      ),
-      env = list(
-        env_day = day_sum[['env']],
-        env_night = night_sum[['env']]
-      )
+    names(period_summary[['sapf']]) <- paste0(
+      names(period_summary[['sapf']]), '_night'
     )
+    names(period_summary[['env']]) <- paste0(
+      names(period_summary[['env']]), '_night'
+    )
+
   } else {
-    nighttime_summary <- NULL
+
+    # if interval is general, we don't need to filter by hours so is
+    # straightforward:
+    if (interval == 'general') {
+
+      # progress to not scare seeming like freezed
+      print(paste0('General data for ', get_si_code(sfn_data)))
+
+      # period summaries: we want to know period means, maximum, minimum, quantiles...
+      whole_data %>%
+        purrr::map(summarise_by_period, period, .funs, ...) -> period_summary
+
+    } else {
+
+      # if interval is not general and not night, then we need to filter by hours
+      # and then calculate the summaries
+
+      # progress to not scare seeming like freezed
+      print(paste0(interval, ' data for ', get_si_code(sfn_data)))
+
+      whole_data %>%
+        purrr::map(
+          dplyr::filter,
+          dplyr::between(lubridate::hour(.data$TIMESTAMP), int_start, int_end)
+        ) %>%
+        purrr::map(summarise_by_period, period, .funs, ...) -> period_summary
+
+      # now we need to create the names with the interval
+      # predawn
+      if (interval == 'predawn') {
+        names(period_summary[['sapf']]) <- paste0(names(period_summary[['sapf']]), '_pd')
+        names(period_summary[['env']]) <- paste0(names(period_summary[['env']]), '_pd')
+      }
+
+      # midday
+      if (interval == 'midday') {
+        names(period_summary[['sapf']]) <- paste0(names(period_summary[['sapf']]), '_md')
+        names(period_summary[['env']]) <- paste0(names(period_summary[['env']]), '_md')
+      }
+
+      # daylight
+      if (interval == 'daylight') {
+        names(period_summary[['sapf']]) <- paste0(
+          names(period_summary[['sapf']]), '_daylight'
+        )
+        names(period_summary[['env']]) <- paste0(
+          names(period_summary[['env']]), '_daylight'
+        )
+      }
+    }
   }
 
-  # we create the result object:
-  # res
-  #   $sapf
-  #     $sapf_gen
-  #     $sapf_pd
-  #     $sapf_md
-  #     $sapf_day
-  #     $sapf_night
-  #   $env
-  #     $env_gen
-  #     $env_pd
-  #     $env_md
-  #     $env_day
-  #     $env_night
-  # this way all is modular and after that they can be combined by bind_cols
-  res <- list(
-    sapf = list(
-      sapf_gen = period_summary[['sapf']],
-      sapf_pd = predawn_summary[['sapf_pd']],
-      sapf_md = midday_summary[['sapf_md']],
-      sapf_day = nighttime_summary[['sapf']][['sapf_day']],
-      sapf_night = nighttime_summary[['sapf']][['sapf_night']]
-    ),
-    env = list(
-      env_gen = period_summary[['env']],
-      env_pd = predawn_summary[['env_pd']],
-      env_md = midday_summary[['env_md']],
-      env_day = nighttime_summary[['env']][['env_day']],
-      env_night = nighttime_summary[['env']][['env_night']]
-    )
-  )
-
   # remove the NULLs
-  return(
-    res %>%
-      purrr::modify_depth(1, ~ purrr::keep(.x, ~ !is.null(.)))
-  )
+  # return(
+  #   period_summary %>%
+  #     purrr::modify_depth(1, ~ purrr::keep(.x, ~ !is.null(.)))
+  # )
+
+  return(period_summary)
 }
+
+
 
 
 ####### shorthand functions for sfn_metrics ####################################
@@ -705,7 +888,7 @@ daily_metrics <- function(
   sfn_data,
   solar = TRUE,
   probs = c(0.95, 0.99),
-  tidy = TRUE,
+  tidy = FALSE,
   metadata = NULL,
   ...
 ) {
@@ -762,7 +945,7 @@ monthly_metrics <- function(
   sfn_data,
   solar = TRUE,
   probs = c(0.95, 0.99),
-  tidy = TRUE,
+  tidy = FALSE,
   metadata = NULL,
   ...
 ) {
@@ -910,7 +1093,7 @@ predawn_metrics <- function(
   pd_start = 4,
   pd_end = 6,
   probs = c(0.95, 0.99),
-  tidy = TRUE,
+  tidy = FALSE,
   metadata = NULL,
   ...
 ) {
@@ -983,7 +1166,7 @@ midday_metrics <- function(
   md_start = 4,
   md_end = 6,
   probs = c(0.95, 0.99),
-  tidy = TRUE,
+  tidy = FALSE,
   metadata = NULL,
   ...
 ) {
