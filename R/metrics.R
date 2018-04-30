@@ -905,10 +905,7 @@ daily_metrics <- function(
     period = period,
     .funs = .funs,
     solar = solar,
-    general = TRUE,
-    predawn = FALSE,
-    midday = FALSE,
-    nighttime = FALSE,
+    interval = 'general',
     ...
   )
 
@@ -962,10 +959,7 @@ monthly_metrics <- function(
     period = period,
     .funs = .funs,
     solar = solar,
-    general = TRUE,
-    predawn = FALSE,
-    midday = FALSE,
-    nighttime = FALSE,
+    interval = 'general',
     ...
   )
 
@@ -1090,8 +1084,8 @@ predawn_metrics <- function(
   sfn_data,
   period = c('daily', 'monthly'),
   solar = TRUE,
-  pd_start = 4,
-  pd_end = 6,
+  int_start = 4,
+  int_end = 6,
   probs = c(0.95, 0.99),
   tidy = FALSE,
   metadata = NULL,
@@ -1109,12 +1103,9 @@ predawn_metrics <- function(
     period = period,
     .funs = .funs,
     solar = solar,
-    general = FALSE,
-    predawn = TRUE,
-    midday = FALSE,
-    nighttime = FALSE,
-    pd_start = pd_start,
-    pd_end = pd_end,
+    interval = 'predawn',
+    int_start = int_start,
+    int_end = int_end,
     ...
   )
 
@@ -1163,8 +1154,8 @@ midday_metrics <- function(
   sfn_data,
   period = c('daily', 'monthly'),
   solar = TRUE,
-  md_start = 4,
-  md_end = 6,
+  int_start = 4,
+  int_end = 6,
   probs = c(0.95, 0.99),
   tidy = FALSE,
   metadata = NULL,
@@ -1182,12 +1173,9 @@ midday_metrics <- function(
     period = period,
     .funs = .funs,
     solar = solar,
-    general = FALSE,
-    predawn = FALSE,
-    midday = TRUE,
-    nighttime = FALSE,
-    md_start = md_start,
-    md_end = md_end,
+    interval = 'midday',
+    int_start = int_start,
+    int_end = int_end,
     ...
   )
 
