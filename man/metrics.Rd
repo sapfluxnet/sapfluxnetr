@@ -17,10 +17,12 @@ monthly_metrics(sfn_data, solar = TRUE, probs = c(0.95, 0.99),
   tidy = FALSE, metadata = NULL, ...)
 
 nightly_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
-  int_start = 20, int_end = 6, probs = c(0.95, 0.99), ...)
+  int_start = 20, int_end = 6, probs = c(0.95, 0.99), tidy = FALSE,
+  metadata = NULL, ...)
 
 daylight_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
-  int_start = 6, int_end = 20, probs = c(0.95, 0.99), ...)
+  int_start = 6, int_end = 20, probs = c(0.95, 0.99), tidy = FALSE,
+  metadata = NULL, ...)
 
 predawn_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
   int_start = 4, int_end = 6, probs = c(0.95, 0.99), tidy = FALSE,

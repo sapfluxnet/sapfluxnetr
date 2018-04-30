@@ -911,7 +911,7 @@ daily_metrics <- function(
 
   # tidy?
   if (tidy) {
-    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'gen')
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'general')
     return(res_tidy)
   } else {
     return(res_raw)
@@ -964,7 +964,7 @@ monthly_metrics <- function(
   )
 
   if (tidy) {
-    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'gen')
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'general')
     return(res_tidy)
   } else {
     return(res_raw)
@@ -1017,6 +1017,8 @@ nightly_metrics <- function(
   int_start = 20,
   int_end = 6,
   probs = c(0.95, 0.99),
+  tidy = FALSE,
+  metadata = NULL,
   ...
 ) {
 
@@ -1030,7 +1032,7 @@ nightly_metrics <- function(
   }
 
   # just input all in the sfn_metrics function
-  sfn_metrics(
+  res_raw <- sfn_metrics(
     sfn_data,
     period = period,
     .funs = .funs,
@@ -1040,6 +1042,13 @@ nightly_metrics <- function(
     int_end = int_end,
     ...
   )
+
+  if (tidy) {
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'night')
+    return(res_tidy)
+  } else {
+    return(res_raw)
+  }
 }
 
 #' @rdname metrics
@@ -1088,6 +1097,8 @@ daylight_metrics <- function(
   int_start = 6,
   int_end = 20,
   probs = c(0.95, 0.99),
+  tidy = FALSE,
+  metadata = NULL,
   ...
 ) {
 
@@ -1101,7 +1112,7 @@ daylight_metrics <- function(
   }
 
   # just input all in the sfn_metrics function
-  sfn_metrics(
+  res_raw <- sfn_metrics(
     sfn_data,
     period = period,
     .funs = .funs,
@@ -1111,6 +1122,13 @@ daylight_metrics <- function(
     int_end = int_end,
     ...
   )
+
+  if (tidy) {
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'daylight')
+    return(res_tidy)
+  } else {
+    return(res_raw)
+  }
 }
 
 #' @rdname metrics
@@ -1176,7 +1194,7 @@ predawn_metrics <- function(
   )
 
   if (tidy) {
-    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'pd')
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'predawn')
     return(res_tidy)
   } else {
     return(res_raw)
@@ -1246,7 +1264,7 @@ midday_metrics <- function(
   )
 
   if (tidy) {
-    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'md')
+    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'midday')
     return(res_tidy)
   } else {
     return(res_raw)
