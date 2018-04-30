@@ -1014,8 +1014,8 @@ nightly_metrics <- function(
   sfn_data,
   period = c('daily', 'monthly'),
   solar = TRUE,
-  night_start = 20,
-  night_end = 6,
+  int_start = 20,
+  int_end = 6,
   probs = c(0.95, 0.99),
   ...
 ) {
@@ -1024,9 +1024,7 @@ nightly_metrics <- function(
 
   # default funs
   if (period == 'daily') {
-
     .funs <- .fixed_metrics_funs(probs, TRUE)
-
   } else {
     .funs <- .fixed_metrics_funs(probs, FALSE)
   }
@@ -1037,12 +1035,80 @@ nightly_metrics <- function(
     period = period,
     .funs = .funs,
     solar = solar,
-    general = FALSE,
-    predawn = FALSE,
-    midday = FALSE,
-    nighttime = TRUE,
-    night_start = night_start,
-    night_end = night_end,
+    interval = 'night',
+    int_start = int_start,
+    int_end = int_end,
+    ...
+  )
+}
+
+#' @rdname metrics
+#'
+#' @section daylight_metrics:
+#' \code{daylight_metrics} will always return the metrics for day and night
+#' periods, summarised daily or monthly
+#'
+#' Night for daily period starts in DOY x and ends in DOY x+1 (i.e. if
+#' \code{night_start = 20, night_end = 6} values for 2018-03-28 20:00:00 means
+#' values for the night starting at 2018-03-28 20:00:00 and ending at
+#' 2018-03-29 06:00:00).
+#'
+#' Night for monthly period summarises all night periods in the month, that
+#' includes from 00:00:00 of the first month night to 23:59:59 of the last
+#' month night
+#'
+#' @inheritParams sfn_metrics
+#'
+#' @examples
+#' ## daylight_metrics
+#' # data load
+#' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
+#'
+#' # nightly monthly metrics
+#' AUS_CAN_ST2_MIX_monthly <- daylight_metrics(ARG_MAZ, period = 'monthly')
+#'
+#' str(AUS_CAN_ST2_MIX_monthly)
+#' AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
+#' AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+#'
+#' # change the night interval
+#' AUS_CAN_ST2_MIX_daily_short <- daylight_metrics(
+#'   ARG_MAZ,
+#'   night_start = 21, night_end = 4 # night starting and ending hour
+#' )
+#'
+#' AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+#'
+#' @export
+
+daylight_metrics <- function(
+  sfn_data,
+  period = c('daily', 'monthly'),
+  solar = TRUE,
+  int_start = 6,
+  int_end = 20,
+  probs = c(0.95, 0.99),
+  ...
+) {
+
+  period <- match.arg(period)
+
+  # default funs
+  if (period == 'daily') {
+    .funs <- .fixed_metrics_funs(probs, TRUE)
+  } else {
+    .funs <- .fixed_metrics_funs(probs, FALSE)
+  }
+
+  # just input all in the sfn_metrics function
+  sfn_metrics(
+    sfn_data,
+    period = period,
+    .funs = .funs,
+    solar = solar,
+    interval = 'daylight',
+    int_start = int_start,
+    int_end = int_end,
     ...
   )
 }
