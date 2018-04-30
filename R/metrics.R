@@ -128,7 +128,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'
 #' Generate daily or above metrics from a site data for the period indicated
 #'
-#' @section period:
+#' @section Period:
 #' \code{period} argument is piped to \code{tibbletime::collapse_index} function
 #' with \code{side = 'start', clean = TRUE} options. See
 #' \code{\link[tibbletime]{collapse_index}} for a detailed explanation but in
@@ -152,7 +152,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' \code{\link{summarise_by_period}} for more complex summarising functions
 #' declaration.
 #'
-#' @section interval:
+#' @section Interval:
 #' Previously to the metrics summary, data can be filtered by an special
 #' interval (predawn for example). With the \code{interval} argument this
 #' filtering can be specified:
@@ -517,6 +517,23 @@ sfn_metrics <- function(
 #'   \item{centroid: Diurnal centroid value (hours passed until the half of
 #'         the summed daily value was reached). Only returned for sapflow
 #'         measures when period is 'daily'}
+#' }
+#'
+#' @section Interval:
+#' Previously to the metrics summary, data can be filtered by an special
+#' interval (predawn for example). With the \code{interval} argument this
+#' filtering can be specified:
+#' \itemize{
+#'   \item{\code{general} (default). No special interval is used, and metrics
+#'         are performed with all the data}.
+#'   \item{\code{predawn}. Data is filtered for predawn interval. In this case
+#'         \code{int_start} and \code{int_end} must be specified as 24h value}
+#'   \item{\code{midday}. Data is filtered for midday interval. In this case
+#'         \code{int_start} and \code{int_end} must be specified as 24h value}
+#'   \item{\code{night}. Data is filtered for night interval. In this case
+#'         \code{int_start} and \code{int_end} must be specified as 24h value}
+#'   \item{\code{daylight}. Data is filtered for daylight interval. In this case
+#'         \code{int_start} and \code{int_end} must be specified as 24h value}
 #' }
 #'
 #' @param probs numeric vector of probabilities for

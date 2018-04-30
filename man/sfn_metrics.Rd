@@ -56,7 +56,7 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
 \description{
 Generate daily or above metrics from a site data for the period indicated
 }
-\section{period}{
+\section{Period}{
 
 \code{period} argument is piped to \code{tibbletime::collapse_index} function
 with \code{side = 'start', clean = TRUE} options. See
@@ -84,7 +84,7 @@ function you can specify it here. See details in
 declaration.
 }
 
-\section{interval}{
+\section{Interval}{
 
 Previously to the metrics summary, data can be filtered by an special
 interval (predawn for example). With the \code{interval} argument this

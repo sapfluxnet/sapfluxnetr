@@ -91,6 +91,25 @@ set of fixed arguments.
         measures when period is 'daily'}
 }
 }
+\section{Interval}{
+
+Previously to the metrics summary, data can be filtered by an special
+interval (predawn for example). With the \code{interval} argument this
+filtering can be specified:
+\itemize{
+  \item{\code{general} (default). No special interval is used, and metrics
+        are performed with all the data}.
+  \item{\code{predawn}. Data is filtered for predawn interval. In this case
+        \code{int_start} and \code{int_end} must be specified as 24h value}
+  \item{\code{midday}. Data is filtered for midday interval. In this case
+        \code{int_start} and \code{int_end} must be specified as 24h value}
+  \item{\code{night}. Data is filtered for night interval. In this case
+        \code{int_start} and \code{int_end} must be specified as 24h value}
+  \item{\code{daylight}. Data is filtered for daylight interval. In this case
+        \code{int_start} and \code{int_end} must be specified as 24h value}
+}
+}
+
 \section{daily_metrics}{
 
 \code{daily_metrics} summarise daily data for all hours in the day
