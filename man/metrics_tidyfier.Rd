@@ -49,7 +49,12 @@ data('sfn_metadata_ex', package = 'sapfluxnetr')
 multi_metrics <- daily_metrics(multi_sfn)
 
 # tidyfing
-multi_tidy <- metrics_tidyfier(multi_metrics, sfn_metadata_ex, interval = 'gen')
+multi_tidy <- metrics_tidyfier(
+  multi_metrics, sfn_metadata_ex, interval = 'general'
+)
 multi_tidy
+
+# A really easier way of doing the same
+multi_tidy_easy <- daily_metrics(multi_sfn, tidy = TRUE, metadata = sfn_metadata_ex)
 
 }

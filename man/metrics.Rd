@@ -45,13 +45,20 @@ the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
 \item{tidy}{Logical indicating if the metrics must be returned in a tidy
 format (a long tibble, each observation in its own row)}
 
-\item{metadata}{metadata object. Only used if tidy is TRUE}
+\item{metadata}{metadata object, usually the result of
+\code{\link{read_sfn_metadata}}. Only used if tidy is TRUE.}
 
 \item{...}{optional arguments to pass to methods used
 (i.e. tibbletime::collapse_index or summarise funs extra arguments)}
 
 \item{period}{Time period to aggregate data by. See period section for an explanation
 about the periods ('daily', 'monthly', 'yearly', ...)}
+
+\item{int_start}{Numeric value indicating the starting hour of the special
+interval in 24h format. See Interval section in details.}
+
+\item{int_end}{Numeric value indicating the ending hour of the special
+interval in 24h format. See Interval section in details.}
 }
 \value{
 If \code{tidy} is TRUE (default), a tibble with the metrics for
@@ -80,8 +87,8 @@ set of fixed arguments.
   \item{min: Minimum value for the period}
   \item{min_time: Time when minimum value was reached}
   \item{centroid: Diurnal centroid value (hours passed until the half of
-        the summed daily value was reached). Only returned when period
-        is 'daily' and data is from sapflow}
+        the summed daily value was reached). Only returned for sapflow
+        measures when period is 'daily'}
 }
 }
 \section{daily_metrics}{
@@ -96,32 +103,23 @@ set of fixed arguments.
 
 \section{nightly_metrics}{
 
-\code{nightly_metrics} will always return the metrics for day and night
+\code{nightly_metrics} will return the metrics for night
 periods, summarised daily or monthly
 
 Night for daily period starts in DOY x and ends in DOY x+1 (i.e. if
-\code{night_start = 20, night_end = 6} values for 2018-03-28 20:00:00 means
-values for the night starting at 2018-03-28 20:00:00 and ending at
-2018-03-29 06:00:00).
+\code{night_start = 20, night_end = 6} values for the night starting at
+2018-03-28 20:00:00 and ending at 2018-03-29 06:00:00 are summarised).
 
 Night for monthly period summarises all night periods in the month, that
 includes from 00:00:00 of the first month night to 23:59:59 of the last
-month night
+month night.
 }
 
 \section{daylight_metrics}{
 
-\code{daylight_metrics} will always return the metrics for day and night
-periods, summarised daily or monthly
-
-Night for daily period starts in DOY x and ends in DOY x+1 (i.e. if
-\code{night_start = 20, night_end = 6} values for 2018-03-28 20:00:00 means
-values for the night starting at 2018-03-28 20:00:00 and ending at
-2018-03-29 06:00:00).
-
-Night for monthly period summarises all night periods in the month, that
-includes from 00:00:00 of the first month night to 23:59:59 of the last
-month night
+\code{daylight_metrics} will return the metrics for daylight
+periods, summarised daily or monthly. Daylight interval is selected by start
+and end hours.
 }
 
 \section{predawn_metrics}{
@@ -148,99 +146,130 @@ Midday metrics did not return the centroid metric.
 data('ARG_TRE', package = 'sapfluxnetr')
 data('sfn_metadata_ex', package = 'sapfluxnetr')
 
-# default complete daily metrics
-ARG_TRE_daily <- daily_metrics(ARG_TRE, metadata = sfn_metadata_ex)
+# non tidy raw metrics (default)
+ARG_TRE_raw_daily <- daily_metrics(ARG_TRE)
+str(ARG_TRE_raw_daily)
 
-str(ARG_TRE_daily)
-
-# non tidy raw metrics
-ARG_TRE_raw_daily <- daily_metrics(ARG_TRE, tidy = FALSE)
+# tidy daily metrics
+ARG_TRE_daily <- daily_metrics(
+  ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex
+)
+ARG_TRE_daily
 
 ## monthly_metrics
 # data load
-data('ARG_MAZ', package = 'sapfluxnetr')
+data('ARG_TRE', package = 'sapfluxnetr')
+data('sfn_metadata_ex', package = 'sapfluxnetr')
 
-# default complete monthly metrics
-ARG_MAZ_monthly <- monthly_metrics(ARG_MAZ)
+# non tidy raw metrics (default)
+ARG_TRE_raw_monthly <- monthly_metrics(ARG_TRE)
+str(ARG_TRE_raw_monthly)
 
-str(ARG_MAZ_monthly)
-ARG_MAZ_monthly[['env']][['env_gen']]
+# tidy monthly metrics
+ARG_TRE_monthly <- monthly_metrics(
+  ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex
+)
+ARG_TRE_monthly
 
 ## nightly_metrics
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
-# nightly monthly metrics
-AUS_CAN_ST2_MIX_monthly <- nightly_metrics(ARG_MAZ, period = 'monthly')
+# non tidy daily night metrics (default)
+AUS_CAN_ST2_MIX_night <- nightly_metrics(AUS_CAN_ST2_MIX)
 
-str(AUS_CAN_ST2_MIX_monthly)
-AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
-AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+str(AUS_CAN_ST2_MIX_night)
+AUS_CAN_ST2_MIX_night[['sapf']]
+AUS_CAN_ST2_MIX_night[['env']]
 
 # change the night interval
-AUS_CAN_ST2_MIX_daily_short <- nightly_metrics(
-  ARG_MAZ,
-  night_start = 21, night_end = 4 # night starting and ending hour
+AUS_CAN_ST2_MIX_night_short <- nightly_metrics(
+  AUS_CAN_ST2_MIX, int_start = 21, int_end = 4 # night starting and ending hour
 )
+AUS_CAN_ST2_MIX_night_short[['env']]
 
-AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+# tidy nightly metrics
+data('sfn_metadata_ex', package = 'sapfluxnetr')
+AUS_CAN_ST2_MIX_night_tidy <- nightly_metrics(
+  AUS_CAN_ST2_MIX,
+  tidy = TRUE, metadata = sfn_metadata_ex
+)
+AUS_CAN_ST2_MIX_night_tidy
 
 ## daylight_metrics
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
-# nightly monthly metrics
-AUS_CAN_ST2_MIX_monthly <- daylight_metrics(ARG_MAZ, period = 'monthly')
+# non tidy daily daylight metrics (default)
+AUS_CAN_ST2_MIX_daylight <- daylight_metrics(AUS_CAN_ST2_MIX)
 
-str(AUS_CAN_ST2_MIX_monthly)
-AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
-AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+str(AUS_CAN_ST2_MIX_daylight)
+AUS_CAN_ST2_MIX_daylight[['sapf']]
+AUS_CAN_ST2_MIX_daylight[['env']]
 
-# change the night interval
-AUS_CAN_ST2_MIX_daily_short <- daylight_metrics(
-  ARG_MAZ,
-  night_start = 21, night_end = 4 # night starting and ending hour
+# change the daylight interval
+AUS_CAN_ST2_MIX_daylight_short <- daylight_metrics(
+  AUS_CAN_ST2_MIX, int_start = 8, int_end = 18 # night starting and ending hour
 )
+AUS_CAN_ST2_MIX_daylight_short[['env']]
 
-AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+# tidy daylight metrics
+data('sfn_metadata_ex', package = 'sapfluxnetr')
+AUS_CAN_ST2_MIX_daylight_tidy <- daylight_metrics(
+  AUS_CAN_ST2_MIX,
+  tidy = TRUE, metadata = sfn_metadata_ex
+)
+AUS_CAN_ST2_MIX_daylight_tidy
 
 ## predawn_metrics
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
-# predawn monthly metrics
-AUS_CAN_ST2_MIX_monthly <- predawn_metrics(ARG_MAZ, period = 'monthly')
+# non tidy daily predawn metrics (default)
+AUS_CAN_ST2_MIX_predawn <- predawn_metrics(AUS_CAN_ST2_MIX)
 
-str(AUS_CAN_ST2_MIX_monthly)
-AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
-AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+str(AUS_CAN_ST2_MIX_predawn)
+AUS_CAN_ST2_MIX_predawn[['sapf']]
+AUS_CAN_ST2_MIX_predawn[['env']]
 
 # change the predawn interval
-AUS_CAN_ST2_MIX_daily_short <- predawn_metrics(
-  ARG_MAZ,
-  pd_start = 3, pd_end = 5 # predawn starting and ending hour
+AUS_CAN_ST2_MIX_predawn_short <- predawn_metrics(
+  AUS_CAN_ST2_MIX, int_start = 8, int_end = 18 # night starting and ending hour
 )
+AUS_CAN_ST2_MIX_predawn_short[['env']]
 
-AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+# tidy daylight metrics
+data('sfn_metadata_ex', package = 'sapfluxnetr')
+AUS_CAN_ST2_MIX_predawn_tidy <- predawn_metrics(
+  AUS_CAN_ST2_MIX,
+  tidy = TRUE, metadata = sfn_metadata_ex
+)
+AUS_CAN_ST2_MIX_predawn_tidy
 
 ## midday_metrics
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
-# midday monthly metrics
-AUS_CAN_ST2_MIX_monthly <- midday_metrics(ARG_MAZ, period = 'monthly')
+# non tidy daily midday metrics (default)
+AUS_CAN_ST2_MIX_midday <- midday_metrics(AUS_CAN_ST2_MIX)
 
-str(AUS_CAN_ST2_MIX_monthly)
-AUS_CAN_ST2_MIX_monthly[['env']][['env_day']]
-AUS_CAN_ST2_MIX_monthly[['env']][['env_night']]
+str(AUS_CAN_ST2_MIX_midday)
+AUS_CAN_ST2_MIX_midday[['sapf']]
+AUS_CAN_ST2_MIX_midday[['env']]
 
 # change the midday interval
-AUS_CAN_ST2_MIX_daily_short <- midday_metrics(
-  ARG_MAZ,
-  pd_start = 3, pd_end = 5 # midday starting and ending hour
+AUS_CAN_ST2_MIX_midday_short <- midday_metrics(
+  AUS_CAN_ST2_MIX, int_start = 8, int_end = 18 # night starting and ending hour
 )
+AUS_CAN_ST2_MIX_midday_short[['env']]
 
-AUS_CAN_ST2_MIX_daily_short[['env']][['env_night']]
+# tidy daylight metrics
+data('sfn_metadata_ex', package = 'sapfluxnetr')
+AUS_CAN_ST2_MIX_midday_tidy <- midday_metrics(
+  AUS_CAN_ST2_MIX,
+  tidy = TRUE, metadata = sfn_metadata_ex
+)
+AUS_CAN_ST2_MIX_midday_tidy
 
 }
 \seealso{

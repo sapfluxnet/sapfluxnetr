@@ -21,61 +21,24 @@ for more info about supplying custom functions.}
 \item{solar}{Logical indicating if the solarTIMESTAMP must be used instead of
 the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).}
 
+\item{interval}{Character vector indicating if the metrics must be filtered
+by an special hour interval. See Interval section in details.}
+
+\item{int_start}{Numeric value indicating the starting hour of the special
+interval in 24h format. See Interval section in details.}
+
+\item{int_end}{Numeric value indicating the ending hour of the special
+interval in 24h format. See Interval section in details.}
+
 \item{...}{optional arguments to pass to methods used
 (i.e. tibbletime::collapse_index or summarise funs extra arguments)}
-
-\item{general}{Logical indicating if general metrics (all data) must be
-returned}
-
-\item{predawn}{Logical indicating if metrics for predawn interval must be
-returned.}
-
-\item{pd_start}{Hour to start the predawn interval}
-
-\item{pd_end}{Hour to end the predawn interval}
-
-\item{midday}{Logical indicating if metrics for midday interval must be
-returned.}
-
-\item{md_start}{Hour to start the midday interval}
-
-\item{md_end}{Hour to end the midday interval}
-
-\item{nighttime}{Logical indicating if division between night and day id
-done and metrics for each subset (day and night) returned.}
-
-\item{night_start}{Hour to start the night interval}
-
-\item{night_end}{Hour to end the night interval}
 }
 \value{
 For \code{\link{sfn_data}} objects, a list of tbl_time objects
   with the following structure:
   \itemize{
-    \item{$sapf: metrics for the sapflow data
-          \itemize{
-            \item{$sapf: general metrics}
-            \item{$sapf_pd: metrics for predawn interval (if
-                  \code{predawn = FALSE} the slot will be empty)}
-            \item{$sapf_md: metrics for midday interval (if
-                  \code{midday = FALSE} the slot will be empty)}
-            \item{$sapf_day: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the slot will be empty)}
-            \item{$sapf_night: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the slot will be empty)}
-          }}
-    \item{$env: metrics for the environmental data
-          \itemize{
-            \item{$env: general metrics}
-            \item{$env_pd: metrics for predawn interval (if
-                  \code{predawn = FALSE} the slot will be empty)}
-            \item{$env_md: metrics for midday interval (if
-                  \code{midday = FALSE} the slot will be empty)}
-            \item{$env_day: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the slot will be empty)}
-            \item{$env_night: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the slot will be empty)}
-          }}
+    \item{$sapf: metrics for the sapflow data}
+    \item{$env: metrics for the environmental data}
   }
 
   For \code{\link{sfn_data_multi}} objects, a list of lists of tbl_time objects
@@ -83,32 +46,8 @@ For \code{\link{sfn_data}} objects, a list of tbl_time objects
   \itemize{
     \item{$SITE_CODE
       \itemize{
-        \item{$sapf: metrics for the sapflow data
-          \itemize{
-            \item{$sapf: general metrics}
-            \item{$sapf_pd: metrics for predawn interval (if
-                  \code{predawn = FALSE} the slot will be empty)}
-            \item{$sapf_md: metrics for midday interval (if
-                  \code{midday = FALSE} the slot will be empty)}
-            \item{$sapf_day: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the solot will be empty)}
-            \item{$sapf_night: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the solot will be empty)}
-          }}
-      }
-      \itemize{
-        \item{$env: metrics for the environmental data
-          \itemize{
-            \item{$env: general metrics}
-            \item{$env_pd: metrics for predawn interval (if
-                  \code{predawn = FALSE} the slot will be empty)}
-            \item{$env_md: metrics for midday interval (if
-                  \code{midday = FALSE} the slot will be empty)}
-            \item{$env_day: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the solot will be empty)}
-            \item{$env_night: metrics for diurnal interval (if
-                  \code{nighttime = FALSE} the solot will be empty)}
-          }}
+        \item{$sapf: metrics for the sapflow data}
+        \item{$env: metrics for the environmental data}
       }
     }
     \item{$NEXT_SITE_CODE...}
@@ -120,13 +59,15 @@ Generate daily or above metrics from a site data for the period indicated
 \section{period}{
 
 \code{period} argument is piped to \code{tibbletime::collapse_index} function
-with \code{side = 'end', clean = FALSE} options. See
+with \code{side = 'start', clean = TRUE} options. See
 \code{\link[tibbletime]{collapse_index}} for a detailed explanation but in
 short:
 \itemize{
-  \item{\emph{frequency period} format: "1 day", "7 day", "1 month", "1 year"}
+  \item{\emph{frequency period} format: "1 day", "7 day", "1 month",
+        "1 year"}
   \item{\emph{shorthand} format: "hourly", "daily", "monthly", "yearly"}
-  \item{\emph{custom} format: a vector of dates to use as custom and more flexible boundaries}
+  \item{\emph{custom} format: a vector of dates to use as custom and more
+        flexible boundaries}
 }
 Also, you can override the default behaviour of \code{sfn_metrics}, providing
 \code{side = 'end'} or \code{clean = FALSE}.
@@ -138,13 +79,34 @@ Also, you can override the default behaviour of \code{sfn_metrics}, providing
 \code{\link[dplyr]{summarise_all}} function of \code{dplyr} package. Basically
 it accepts a list of function calls generated by funs(), or a character vector
 of function names, or simply a function. If you want to pass on a custom
-function you can specify it here. See details in \code{\link{summarise_by_period}}
-for more complex summarising functions declaration.
+function you can specify it here. See details in
+\code{\link{summarise_by_period}} for more complex summarising functions
+declaration.
+}
+
+\section{interval}{
+
+Previously to the metrics summary, data can be filtered by an special
+interval (predawn for example). With the \code{interval} argument this
+filtering can be specified:
+\itemize{
+  \item{\code{general} (default). No special interval is used, and metrics
+        are performed with all the data}.
+  \item{\code{predawn}. Data is filtered for predawn interval. In this case
+        \code{int_start} and \code{int_end} must be specified as 24h value}
+  \item{\code{midday}. Data is filtered for midday interval. In this case
+        \code{int_start} and \code{int_end} must be specified as 24h value}
+  \item{\code{night}. Data is filtered for night interval. In this case
+        \code{int_start} and \code{int_end} must be specified as 24h value}
+  \item{\code{daylight}. Data is filtered for daylight interval. In this case
+        \code{int_start} and \code{int_end} must be specified as 24h value}
+}
 }
 
 \examples{
 library(dplyr)
 
+### general metrics
 ## sfn_data
 data('ARG_TRE', package = 'sapfluxnetr')
 ARG_TRE_metrics <- sfn_metrics(
@@ -152,22 +114,12 @@ ARG_TRE_metrics <- sfn_metrics(
   period = '7 days',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
   solar = FALSE,
-  general = TRUE,
-  predawn = TRUE,
-  pd_start = 4,
-  pd_end = 6,
-  midday = TRUE,
-  md_start = 12,
-  md_end = 14,
-  nighttime = TRUE,
-  night_start = 20,
-  night_end = 6,
-  side = 'start'
+  interval = 'general'
 )
 
 str(ARG_TRE_metrics)
-ARG_TRE_metrics[['sapf']][['sapf_pd']]
-ARG_TRE_metrics[['env']][['env_night']]
+ARG_TRE_metrics[['sapf']]
+ARG_TRE_metrics[['env']]
 
 ## sfn_data_multi
 \dontrun{
@@ -180,21 +132,25 @@ multi_metrics <- sfn_metrics(
   period = '7 days',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
   solar = FALSE,
-  general = TRUE,
-  predawn = TRUE,
-  pd_start = 4,
-  pd_end = 6,
-  midday = TRUE,
-  md_start = 12,
-  md_end = 14,
-  nighttime = FALSE,
-  side = 'start'
+  interval = 'general'
 )
 
 str(multi_metrics)
 
-multi_metrics[['ARG_TRE']][['sapf']][['sapf_pd']]
+multi_metrics[['ARG_TRE']][['sapf']]
 }
+
+### midday metrics
+ARG_TRE_midday <- sfn_metrics(
+  ARG_TRE,
+  period = 'daily',
+  .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+  solar = TRUE,
+  interval = 'midday', int_start = 11, int_end = 13
+)
+
+str(ARG_TRE_midday)
+ARG_TRE_midday[['sapf']]
 
 }
 \seealso{
