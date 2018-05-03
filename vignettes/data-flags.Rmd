@@ -20,7 +20,7 @@ Data flags indicate comments on individual data points raised in the quality
 control assesment of site data. They are useful to understand the original
 data and to track analysis problems to their origins.  
 
-Possible values for flags are as follow:
+Possible values for flags when data comes from Sapfluxnet project are as follow:
 
   + **"CALCULATED"** Indicates that the value was originally missing and was
     calculated in the quality check step.
