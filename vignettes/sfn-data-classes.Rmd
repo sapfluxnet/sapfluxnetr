@@ -18,44 +18,60 @@ knitr::opts_chunk$set(
 
 # `sfn_data`
 
-`sfn_data` is a S4 class designed for store and interact with Sapfluxnet sites
-data and metadata.
+`snf_data` is an S4 class designed for store and interact with sapflow data
+at individual plant level (not raw data), primarily from Sapfluxnet project
+sites data and metadata.
 
-## Slots
+## S4 Slots
 
 `sfn_data` class has twelve different slots:
 
-  1. **sapf_data**: Tibble containing sapflow data, without TIMESTAMP variable.
+  1. **sapf_data**: Tibble containing the sapflow data, each column representing
+     an individual tree, **without** any TIMESTAMP variable.
   
-  2. **env_data**: Tibble containing environmental data, without TIMESTAMP
-     variable.
+  2. **env_data**: Tibble containing the environmental data, each column an
+     environmental variable, **without** any TIMESTAMP variable. It must have
+     the same `nrow` that `sapf_data`, in order to be able to combine both in
+     further analyses or aggregations.
   
-  3. **sapf_flags**: Tibble with the same dimensions as sapf_data, containing
-     the flags for each element of sapf_data.
+  3. **sapf_flags**: Tibble with the same dimensions as `sapf_data`, containing
+     the flags (special remarks indicating possible outliers or any annotation
+     of interest) for each observation in `sapf_data`.
   
-  4. **env_flags**: Tibble with the same dimensions as env_data, containing
-     the flags for each element of env_data.
+  4. **env_flags**: Tibble with the same dimensions as `env_data`, containing
+     the flags for each observation in `env_data`.
   
-  5. **si_code**: Character vector of length 1 with the
-     site code.
+  5. **si_code**: Character vector of length 1 with the site code. Useful for
+     further analyses or aggregations in order to identify the site when working
+     with more than one.
   
   6. **timestamp**: POSIXct vector of length equal to `nrow(sapf_data)` with the
-     timestamp.
+     timestamp values.
   
   7. **solar_timestamp**: POSIXct vector of length equal to `nrow(sapf_data)`
      with the aparent solar timestamp.
   
-  7. **site_md**: Tibble with the site metadata.
+  8. **site_md**: Tibble with the site metadata. See `sfn_vars_to_filter()` for
+     a list of possible metadata variables. This variables are not mandatory,
+     and new ones can be added.
   
-  8. **stand_md**: Tibble with the stand metadata.
+  9. **stand_md**: Tibble with the stand metadata. See `sfn_vars_to_filter()`
+     for a list of possible metadata variables. This variables are not
+     mandatory, and new ones can be added.
   
-  9. **species_md**: Tibble with the species metadata.
+  10. **species_md**: Tibble with the species metadata. See
+      `sfn_vars_to_filter()` for a list of possible metadata variables. This
+      variables are not mandatory, and new ones can be added.
   
-  10. **plant_md**: Tibble with the plant metadata.
+  11. **plant_md**: Tibble with the plant metadata. See `sfn_vars_to_filter()`
+      for a list of possible metadata variables. This variables are not
+      mandatory, and new ones can be added.
   
-  11. **env_md**: Tibble with the environmental metadata.
+  12. **env_md**: Tibble with the environmental metadata. See
+      `sfn_vars_to_filter()` for a list of possible metadata variables. This
+      variables are not mandatory, and new ones can be added.
 
-### Class design
+### `sfn_data` design
 
 The schematics of the class are summarised in Fig 1.
 
@@ -71,10 +87,11 @@ This design have some characteristics:
     
     `ncol(env_data) == ncol(env_flags)`  
     
-    In the case of differences in the dimensions of between environmental and
-    sap flow data, NAs must be added when equalising both TIMESTAMPs (i.e. if
-    env data is longer than sapf data, rows are added to the later with NAs to
-    make them equal, and flags ("NA_ADDED") are raised to indicate the adding).
+    In the case of differences in the dimensions between environmental and
+    sap flow data, NAs must be added in the corresponding places when equalising
+    both TIMESTAMPs (i.e. if env data is longer than sapf data, rows are added
+    to the later with NAs to make them equal, and flags ("NA_ADDED") are raised
+    to indicate the adding).
 
   + **si_code slot**: This slot indicates the site. This is useful for
     identifying the site in the metrics functions results.
@@ -269,10 +286,12 @@ It inherits from list so, in a nutshell, `sfn_data_multi` is a list of
   + show
   
 ```{r show_multi}
+# creating a sfn_data_multi object
 data(ARG_MAZ, package = 'sapfluxnetr')
 data(AUS_CAN_ST2_MIX, package = 'sapfluxnetr')
 multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 
+# show method
 multi_sfn
 ```
 
@@ -332,5 +351,5 @@ multi_mutated_2[['ARG_TRE']]
 
 ```{r metrics_multi}
 multi_metrics <- daily_metrics(multi_sfn)
-multi_metrics[['ARG_TRE']][['sapf']][['sapf_gen']]
+multi_metrics[['ARG_TRE']][['sapf']]
 ```
