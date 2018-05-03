@@ -38,17 +38,17 @@ the package is as per usual:
 install.packages('sapfluxnetr')
 ```
 
-Development versions of the package reside in github. If you want the lastest
-updates, and also the latests bugs, ( be advised ;) ), please install the master
+Development versions of the package reside in github. If you want the latest
+updates, and also the latest bugs, ( be advised ;) ), please install the devel
 branch of the [github repository](https://github.com/sapfluxnet/sapfluxnetr)
 with the `devtools` package:
 
 ```{r github_inst, eval=FALSE}
-devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'master',
+devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'devel',
                          build_vignettes = TRUE)
 ```
 
-Now you can load the package, and also the `tidyverse` package, as it will be
+Now you can load the package, along with the `tidyverse` package, as it will be
 needed later:
 
 ```{r pkg_load}
@@ -82,7 +82,7 @@ sapfluxnet_db
 `sapwood` folder contains the sites with sap flow sapwood level units available.  
 `leaf` folder contains the sites with sap flow leaf level units available.
 
-To start working with the data simply create an RStudio project in the
+To start working with the data, simply create an RStudio project in the
 `sapfluxnet_db` folder and follow the following examples.
 
 >DISCLAIMER: In order to be able to build the vignette in the CRAN tests
@@ -92,14 +92,14 @@ To start working with the data simply create an RStudio project in the
 
 ## Inspecting a site
 
-First, let's get used to the data structure that Sapfluxnet Data provides, and
+First, let's get used to the data structure that Sapfluxnet provides, and
 for that we will choose a site and start playing with it.
 
 ### Loading a site
 
 In this example we will use the `ARG_MAZ` site, as it is small and it will be
-fast to see the package capabilities. There are sites like `FRA_PUE` 20 times
-bigger than this, but as you can imagine, the time is also increasing when
+fast seeing the package capabilities. There are sites like `FRA_PUE` 100 times
+bigger than this, but as one can imagine, the time is also increasing when
 analising those bigger datasets.  
 So, let's read the data in the environment:
 
@@ -119,7 +119,6 @@ arg_maz <- read_sfn_data('ARG_MAZ', folder = folder)
 arg_maz
 ```
 
-
 At first glance, we know by this summary that is an Argentinian forest (first
 three letters of the site code are always the country code),
 contributed by Sebastian Pfautsch and Pablo Peri with 5 *Nothofagus pumilio*
@@ -130,7 +129,7 @@ environmental data has some flags (more on that later).
 
 ### Accesing the data and the metadata
 
-`sfn_class` objects have different slots containing the different data, each of
+`sfn_data` objects have different slots containing the different data, each of
 one has an accesor function (see `?sfn_get_methods` and
 `vignette('sfn-data-classes', package = 'sapfluxnetr'` for detailed info):
 
@@ -233,14 +232,14 @@ sfn_plot(arg_maz, type = 'env', solar = TRUE) +
 
 We can also plot environmental variables individually (with the `type` argument),
 or an environmental variable *versus* the sap flow measurements (with the
-`formula` argument). See `?sfn_plot` for a complete description of the
+`formula_env` argument). See `?sfn_plot` for a complete description of the
 available plots.
 
 ```{r vpd_and_vs, fig.show='hold'}
 # vpd individually
 sfn_plot(arg_maz, type = 'vpd', solar = TRUE)
 # vpd vs sapf
-sfn_plot(arg_maz, formula = ~vpd, solar = TRUE) +
+sfn_plot(arg_maz, formula_env = ~vpd, solar = TRUE) +
   theme(legend.position = 'none')
 ```
 
@@ -249,8 +248,8 @@ sfn_plot(arg_maz, formula = ~vpd, solar = TRUE) +
 Sapfluxnet data is stored as subdaily measures, being the timestep different
 among sites (it can be from 10 minutes in some sites to 1 hour in others).  
 `sapfluxnetr` offers some simple, yet complete aggregation functions returning
-some pre-defined metrics: `daily_metrics`, `monthly_metrics` and
-`nightly_metrics`.
+some pre-defined metrics: `daily_metrics`, `monthly_metrics`, `predawn_metrics`,
+`midday_metrics`, `daylight_metrics` and `nightly_metrics`.
 
 `daily_metrics` and `monthly_metrics` returns a list containing the sapflow and
 environmental data aggregated by day and month, respectively, in three different
