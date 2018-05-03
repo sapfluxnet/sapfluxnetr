@@ -1,5 +1,15 @@
 # sapfluxnetr 0.0.3.9000
 
+* Refactored `sfn_metrics` to uniformize interval start and interval end
+* Modified `nightly_metrics` to return only night interval
+* Created `predawn_metrics`, `midday_metrics` and `daylight_metrics` functions
+  taking leverage in the refactored `sfn_metrics` functions.
+* Modified `daily_metrics` and `monthly_metrics` to return only the general
+  interval metrics, avoiding this way the creation of very big objects.
+* Added `tidy` argument to *_metrics functions, to skip one step when creating
+  tidy metrics.
+* Updated documentation and vignettes accordingly with the changes made
+
 # sapfluxnetr 0.0.3
 
 * Added metrics_tidyfier function to convert to tidy the metrics results.

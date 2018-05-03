@@ -243,23 +243,36 @@ sfn_plot(arg_maz, formula_env = ~vpd, solar = TRUE) +
   theme(legend.position = 'none')
 ```
 
-### Aggregate metrics
+### Aggregation metrics
 
-Sapfluxnet data is stored as subdaily measures, being the timestep different
-among sites (it can be from 10 minutes in some sites to 1 hour in others).  
+Sapfluxnet data is stored as subdaily measures for both, sap flow and
+environmental, being the timestep different among sites (it can be from 10
+minutes in some sites to 1 hour in others). Aggregation metrics are calculated
+for both kinds of data.  
 `sapfluxnetr` offers some simple, yet complete aggregation functions returning
 some pre-defined metrics: `daily_metrics`, `monthly_metrics`, `predawn_metrics`,
-`midday_metrics`, `daylight_metrics` and `nightly_metrics`.
+`midday_metrics`, `daylight_metrics` and `nightly_metrics`.  
+`daily_metrics` and `monthly_metrics` perform a daily and monthly aggregation,
+respectively, with a set of predefined metrics. `predawn_metrics`,
+`midday_metrics`, `daylight_metrics` and `nightly_metrics` perform daily or
+monthly aggregations (controlled by the `period` argument) by hour-defined
+intervals, also with a set of predefined metrics.  
 
-`daily_metrics` and `monthly_metrics` returns a list containing the sapflow and
-environmental data aggregated by day and month, respectively, in three different
-flavours, *general* (all data summarised), *pd* (only predawn period summarised)
-and *md* (only midday period summarised).  
-`nightly_metrics` divides the data in *day* and *night* and returns the metrics
-for each subset in the period declared (daily or monthly).  
-All three funtions return the same metrics, *mean*, *standard deviation*, *n*,
-*data coverage*, *quantiles* (0.95 and 0.99 by default), *diurnal centroid*,
-*min value*, *time at min value*, *max value* and *time at max value*.
+Predefined metrics are:
+
+1. *mean*
+1. *standard deviation*
+1. *n* (including NAs)
+1. *data coverage* (percentage of *n* that are not NAs)
+1. *quantile 95*
+1. *quatile 99*
+1. *minimum value*
+1. *maximum value*
+1. *time at min value*
+1. *time at max value*
+1. *diurnal centroid* (Only calculated **for sap flow** measurements when using
+   `daily_metrics`, see `?diurnal_centroid` for limitations in the calculation
+   of this metric)
 
 Let's see some examples:
 
@@ -272,30 +285,20 @@ names(arg_maz_daily[['env']])
 ```
 
 We can see that results are divided in `sapf` and `env` and inside each of them
-there are the `gen`, `pd` and `md` results. So if we want to inspect the
-general aggregation for sap flow measures we can do it as follows:
-
-```{r daily_sapf_gen}
-arg_maz_daily[['sapf']][['sapf_gen']]
-```
-
-We can also select specific variables, for example the 0.99 quantiles of sap
+the metrics are indicated by the end of the variable names.  
+This way we can select specific variables, for example the 0.99 quantiles of sap
 flow measures:
 
 ```{r daily_sapf_gen_q99}
-arg_maz_daily[['sapf']][['sapf_gen']] %>%
+arg_maz_daily[['sapf']] %>%
   select(TIMESTAMP, ends_with('q_99'))
 ```
 
-The same is applicable to the environmental data, in this case we can select
-mean values of the midday interval for environmental variables:
-
-  > Note that in the midday and predawn intervals metrics, the variable names
-    end with `_md` and `_pd` respectively
+The same is applicable to the environmental data, in this case the mean values:
 
 ```{r daily_sapf_md_mean}
-arg_maz_daily[['env']][['env_md']] %>%
-  select(TIMESTAMP_md, ends_with('mean_md')) # note that midday variables ends with "_md"
+arg_maz_daily[['env']] %>%
+  select(TIMESTAMP, ends_with('mean'))
 ```
 
 If interested in custom metrics or custom aggregations, there is a generic
@@ -304,12 +307,26 @@ calculate and the periods to aggregate. See `?sfn_metrics` and
 `vignette('custom-aggregation'. package = 'sapfluxnetr')` for more details
 about it.
 
-#### Agregation TIMESTAMP format
+#### TIMESTAMP format in aggregations
 
 It's worth to mention that aggregated TIMESTAMPS are fixed to the **beginning**
 of the period aggregated, meaning that data from `2018-01-01 00:00:00` to
 `2018-01-01 23:59:59` are aggregated as `2018-01-01 00:00:00`.  
 You can change this using the `side` parameter (see `?sfn_metrics`)
+
+#### Tidy metrics
+
+
+TODO!!!!
+
+
+The default returned object for this aggregation functions is a list with
+the sap flow and the environmental data, but given that usually is more
+confortable to have all data (sap flow and environmental) and ancillary data
+(metadata) altogether in a tidy data frame (each row an observation), all
+aggregation functions have an argument, `tidy` that can be setted to *TRUE*
+to obtain this kind of data frame. We will cover this in the
+["Tidy metrics"](#tidymetrics) section.
 
 ## Working with multiple sites
 
@@ -318,7 +335,7 @@ of a common group of sites could be even more interesting. `sapfluxnetr` allows
 filtering sites by metadata values (biomes, countries, species...) and work
 with them as a unique set.
 
-### Building the metadata database
+### Building the metadata database {#metadatadatabase}
 
 First thing we have to do is creating a metadata database. It is not mandatory,
 but filtering sites by metadata can be a very time and resources consuming step
@@ -334,7 +351,6 @@ sfn_metadata <- read_sfn_metadata(folder = 'test_suite/plant', .write_cache = TR
 # sfn_metadata <- read_sfn_metadata(folder = folder, .write_cache = TRUE)
 sfn_metadata <- sapfluxnetr:::.write_metadata_cache(folder = folder, .dry = TRUE)
 ```
-
 
 The important bit here is `.write_cache = TRUE`. This will write a file called
 `.metadata_cache.RData` containing all the metadata for all sites present in
@@ -397,7 +413,6 @@ sfn_vars_to_filter()
 describe_md_variable('pl_sens_meth')
 ```
 
-
 ### sfn_data_multi objects
 
 We can load all temperate sites with a simple pipe
@@ -433,6 +448,9 @@ temperate_aggregated <- temperate_sites %>%
 
 and *voilà*, all sites aggregated, so we can start working with the data.
 
+## Tidy metrics {#tidymetrics}
+
+
 The structure of `daily_metrics` results allows for easy data subsetting and
 is fast to create a data frame with the desired data. In order to make things
 easier, `sapfluxnetr` offers a way to *tidyfy* the metrics results generating
@@ -444,11 +462,11 @@ more details):
 
 ```{r tidyfing}
 # tidyfing the metrics
-temperate_tidy_metrics <- metrics_tidyfier(
-  temperate_aggregated, sfn_metadata, interval = 'gen'
-)
-
-temperate_tidy_metrics
+# temperate_tidy_metrics <- metrics_tidyfier(
+#   temperate_aggregated, sfn_metadata, interval = 'gen'
+# )
+# 
+# temperate_tidy_metrics
 ```
 
 Now we can start plotting, modelling, etc.  
@@ -457,10 +475,10 @@ vpd, using the 0.95 quantiles as maximum values of sapflow and the plant sapwood
 area as a third variable:
 
 ```{r ex_1_plot, fig.width=7, fig.height=4.3}
-ggplot(
-  temperate_tidy_metrics,
-  aes(x = vpd_mean, y = sapflow_q_95, colour = si_code, size = pl_sapw_area)
-) +
-  geom_point(alpha = 0.2)
+# ggplot(
+#   temperate_tidy_metrics,
+#   aes(x = vpd_mean, y = sapflow_q_95, colour = si_code, size = pl_sapw_area)
+# ) +
+#   geom_point(alpha = 0.2)
 ```
 
