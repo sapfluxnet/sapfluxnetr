@@ -444,41 +444,40 @@ Now we can aggregate all sites at once
 ```{r multi_aggregation}
 temperate_aggregated <- temperate_sites %>%
   daily_metrics()
+
+names(temperate_aggregated)
 ```
 
-and *voilà*, all sites aggregated, so we can start working with the data.
+and *voilà*, all sites aggregated and stored in a list, so we can start working
+with the data.
 
 ## Tidy metrics {#tidymetrics}
 
-
-The structure of `daily_metrics` results allows for easy data subsetting and
-is fast to create a data frame with the desired data. In order to make things
-easier, `sapfluxnetr` offers a way to *tidyfy* the metrics results generating
-an unique, yet complete data frame containing all metrics and metadata. This can
-be done using the `metrics_tidyfier` function. We will need the metrics results
-object, the metadata cache and also indicating which interval (general, midday,
-predawn, night or day) we want to transform to tidy (see `?metrics_tidyfier` for
-more details):
+Most of the times it comes in handy to have a tidy dataset with all the
+sap flow and environmental measurements, along with the metadata for the sites
+aggregated, in order to work with the data in an easier way. This can be
+done with the `metrics_tidyfier` function (see `?metrics_tidyfier`). But
+`daily_metrics` and related functions also implement the `tidy` argument. This
+allows for returning directly a metrics data frame combining all sites
+aggregated along with their metadata, saving one step in the workflow:
 
 ```{r tidyfing}
-# tidyfing the metrics
-# temperate_tidy_metrics <- metrics_tidyfier(
-#   temperate_aggregated, sfn_metadata, interval = 'gen'
-# )
-# 
-# temperate_tidy_metrics
+temperate_tidy <- temperate_sites %>%
+  daily_metrics(tidy = TRUE, metadata = sfn_metadata)
+
+temperate_tidy
 ```
 
-Now we can start plotting, modelling, etc.  
+Now we can start analysing, modelling, etc.  
 For example, to look for site effects in the relationship between sapflow and
 vpd, using the 0.95 quantiles as maximum values of sapflow and the plant sapwood
 area as a third variable:
 
 ```{r ex_1_plot, fig.width=7, fig.height=4.3}
-# ggplot(
-#   temperate_tidy_metrics,
-#   aes(x = vpd_mean, y = sapflow_q_95, colour = si_code, size = pl_sapw_area)
-# ) +
-#   geom_point(alpha = 0.2)
+ggplot(
+  temperate_tidy,
+  aes(x = vpd_mean, y = sapflow_q_95, colour = si_code, size = pl_sapw_area)
+) +
+  geom_point(alpha = 0.2)
 ```
 
