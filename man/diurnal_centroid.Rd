@@ -57,10 +57,7 @@ sfn_metrics(
   period = 'daily',
   .funs = funs(diurnal_centroid(.), data_coverage(.)),
   solar = FALSE,
-  general = TRUE,
-  predawn = FALSE,
-  midday = FALSE,
-  nighttime = FALSE
+  interval = 'general'
 )
 
 }
