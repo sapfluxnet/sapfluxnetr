@@ -6,7 +6,7 @@
 \usage{
 sfn_plot(sfn_data, type = c("sapf", "env", "ta", "rh", "vpd", "ppfd_in",
   "netrad", "sw_in", "ext_rad", "ws", "precip", "swc_shallow", "swc_deep"),
-  formula_env = NULL, solar = TRUE)
+  formula_env = NULL, solar = TRUE, ...)
 }
 \arguments{
 \item{sfn_data}{sfn_data object to plot. It can be also an sfn_data_multi
@@ -22,6 +22,9 @@ plot vs. the sapflow values. If NULL (default), \code{sfn_plot} will use
 
 \item{solar}{Logical indicating if the solar timestamp must be used instead
 of the site timestamp}
+
+\item{...}{Further arguments to be passed on \code{\link{geom_point}} or
+\code{\link{geom_col}} to modify geometry aesthetics.}
 }
 \value{
 A ggplot object that can be called to see the plot. If input is an
@@ -60,6 +63,14 @@ Plot the desired data from a site object
   \code{formula} argument can be used to select an environmental variable to
   plot versus all the sapflow measurements. Any envirinmental variable is
   allowed, if it exist in the site provided.
+}
+
+\section{Geometry}{
+
+  By default \code{sfn_plot} generates plots using \code{\link{geom_point}}
+  geometry, except in the case of \code{type = "ws"} and
+  \code{type = "precip"} where \code{\link{geom_col}} is used. These
+  geometries can be modified with the \code{...} argument.
 }
 
 \examples{

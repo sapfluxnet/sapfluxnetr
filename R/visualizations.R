@@ -30,6 +30,12 @@
 #'   plot versus all the sapflow measurements. Any envirinmental variable is
 #'   allowed, if it exist in the site provided.
 #'
+#' @section Geometry:
+#'   By default \code{sfn_plot} generates plots using \code{\link{geom_point}}
+#'   geometry, except in the case of \code{type = "ws"} and
+#'   \code{type = "precip"} where \code{\link{geom_col}} is used. These
+#'   geometries can be modified with the \code{...} argument.
+#'
 #' @param sfn_data sfn_data object to plot. It can be also an sfn_data_multi
 #'   object.
 #'
@@ -43,6 +49,9 @@
 #'
 #' @param solar Logical indicating if the solar timestamp must be used instead
 #'   of the site timestamp
+#'
+#' @param ... Further arguments to be passed on \code{\link{geom_point}} or
+#'   \code{\link{geom_col}} to modify geometry aesthetics.
 #'
 #' @examples
 #' library(ggplot2)
@@ -84,7 +93,8 @@ sfn_plot <- function(
     'ws', 'precip', 'swc_shallow', 'swc_deep'
   ),
   formula_env = NULL,
-  solar = TRUE
+  solar = TRUE,
+  ...
 ) {
 
   # if sfn_data_multi, iterate over the elements
@@ -92,11 +102,18 @@ sfn_plot <- function(
     plot_list <- purrr::map(
       sfn_data,
       ~ sfn_plot(
-        .x, type = type, formula_env = formula_env, solar = solar
+        .x, type = type, formula_env = formula_env, solar = solar, ...
       )
     )
 
     return(plot_list)
+  }
+
+  dots <- rlang::enquos(...)
+
+  if (length(dots) < 1) {
+    dots <- rlang::sym('alpha = 1')
+    dots <- rlang::enquo(dots)
   }
 
   # if formula, lets do that plot
@@ -118,7 +135,7 @@ sfn_plot <- function(
         -.data$TIMESTAMP, -!!rlang::get_expr(formula_env)
       ) %>%
       ggplot(aes_(x = formula_env, y = ~Sapflow, colour = ~Tree)) +
-      geom_point(alpha = 0.2) +
+      geom_point(rlang::eval_tidy(dots)) +
       labs(y = paste0('Sapflow [', units_char, ']'),
            subtitle = paste0('Sap flow vs. ', rlang::get_expr(formula_env)),
            title = get_si_code(sfn_data))
@@ -141,7 +158,7 @@ sfn_plot <- function(
       res_plot <- data %>%
         tidyr::gather(key = 'Tree', value = 'Sapflow', -.data$TIMESTAMP) %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~Sapflow, colour = ~Tree)) +
-        geom_point(alpha = 0.2) +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = paste0('Sapflow [', units_char, ']')) +
         scale_x_datetime()
     }
@@ -154,7 +171,7 @@ sfn_plot <- function(
       res_plot <- data %>%
         tidyr::gather(key = 'Variable', value = 'Value', -.data$TIMESTAMP) %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~Value, colour = ~Variable)) +
-        geom_point(alpha = 0.4) +
+        geom_point(rlang::eval_tidy(dots)) +
         scale_x_datetime()
     }
 
@@ -170,7 +187,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ta)) +
-        geom_point(alpha = 0.4, colour = '#C0392B') +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = 'Air Temperature [C]') +
         scale_x_datetime()
     }
@@ -186,7 +203,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~rh)) +
-        geom_point(alpha = 0.4, colour = '#6BB9F0') +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = 'Relative Humidity [%]') +
         scale_x_datetime()
     }
@@ -202,7 +219,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~vpd)) +
-        geom_point(alpha = 0.4, colour = '#6BB9F0') +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = 'VPD [kPa]') +
         scale_x_datetime()
     }
@@ -218,7 +235,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ppfd_in)) +
-        geom_point(alpha = 0.4, colour = '#D35400') +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = 'PPFD [?]') +
         scale_x_datetime()
     }
@@ -234,7 +251,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~sw_in)) +
-        geom_point(alpha = 0.4, colour = '#E87E04') +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = 'sw [?]') +
         scale_x_datetime()
     }
@@ -250,7 +267,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~netrad)) +
-        geom_point(alpha = 0.4, colour = '#EB9532') +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = 'Net Radiation [?]') +
         scale_x_datetime()
     }
@@ -266,7 +283,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ext_rad)) +
-        geom_point(alpha = 0.4, colour = '#F89406') +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = 'Extraterrestrial Radiation [?]') +
         scale_x_datetime()
     }
@@ -282,7 +299,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ws)) +
-        geom_col(alpha = 0.4, fill = '#674172') +
+        geom_col(rlang::eval_tidy(dots)) +
         labs(y = 'Wind Speed [m/s]') +
         scale_x_datetime()
     }
@@ -298,7 +315,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~precip)) +
-        geom_col(alpha = 0.4, fill = '#67809F') +
+        geom_col(rlang::eval_tidy(dots)) +
         labs(y = 'Precipitation [?]') +
         scale_x_datetime()
     }
@@ -314,7 +331,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~swc_shallow)) +
-        geom_point(alpha = 0.4, colour = '#26A65B') +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = 'SWC Shallow [cm3/cm3]') +
         scale_x_datetime()
     }
@@ -330,7 +347,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~swc_deep)) +
-        geom_point(alpha = 0.4, colour = '#019875') +
+        geom_point(rlang::eval_tidy(dots)) +
         labs(y = 'SWC Deep [cm3/cm3]') +
         scale_x_datetime()
     }
