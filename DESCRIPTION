@@ -11,6 +11,7 @@ Description: Download, aggregate and select data from SAPFLUXNET Project.
 Depends: R (>= 3.4.3)
 License: MIT + file LICENSE
 Encoding: UTF-8
+BugReport: https://github.com/sapfluxnet/sapfluxnetr/issues
 LazyData: true
 Imports:
     dplyr,

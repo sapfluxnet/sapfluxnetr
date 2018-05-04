@@ -8,6 +8,8 @@
   interval metrics, avoiding this way the creation of very big objects.
 * Added `tidy` argument to *_metrics functions, to skip one step when creating
   tidy metrics.
+* Updated README file
+* Added bug report link to DESCRIPTION file
 * Updated documentation and vignettes accordingly with the changes made
 
 # sapfluxnetr 0.0.3

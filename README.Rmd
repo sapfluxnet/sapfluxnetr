@@ -50,14 +50,12 @@ data('sfn_metadata_ex', package = 'sapfluxnetr')
 sfn_plot(ARG_MAZ, formula_env = ~ vpd)
 
 # daily sapflow standard metrics
-arg_maz_metrics <- daily_metrics(ARG_MAZ)
-
-# tidy results
-arg_maz_tidy <- metrics_tidyfier(arg_maz_metrics, sfn_metadata_ex)
-arg_maz_tidy
+arg_maz_metrics <- daily_metrics(
+  ARG_MAZ, tidy = TRUE, metadata = sfn_metadata_ex
+)
 
 # plot daily aggregations
-ggplot(arg_maz_tidy, aes(x = vpd_mean, y = sapflow_q_95, colour = pl_code)) +
+ggplot(arg_maz_metrics, aes(x = vpd_q_95, y = sapflow_q_95, colour = pl_code)) +
   geom_point()
 ```
 
@@ -74,14 +72,12 @@ plots_list <- sfn_plot(multi_sfn, formula_env = ~ vpd)
 plots_list[['AUS_CAN_ST2_MIX']]
 
 # daily sapflow standard metrics
-multi_metrics <- daily_metrics(multi_sfn)
-
-# tidy results
-multi_tidy <- metrics_tidyfier(multi_metrics, sfn_metadata_ex)
-multi_tidy
+multi_metrics <- daily_metrics(
+  multi_sfn, tidy = TRUE, metadata = sfn_metadata_ex
+)
 
 # plot daily aggregations
-ggplot(multi_tidy, aes(x = vpd_mean, y = sapflow_q_95, colour = si_code)) +
+ggplot(multi_metrics, aes(x = vpd_q_95, y = sapflow_q_95, colour = si_code)) +
   geom_point(alpha = 0.2)
 ```
 
