@@ -101,19 +101,10 @@ sfn_plot <- function(
   if (class(sfn_data) == 'sfn_data_multi') {
     plot_list <- purrr::map(
       sfn_data,
-      ~ sfn_plot(
-        .x, type = type, formula_env = formula_env, solar = solar, ...
-      )
+      sfn_plot, type = type, formula_env = formula_env, solar = solar, ...
     )
 
     return(plot_list)
-  }
-
-  dots <- rlang::enquos(...)
-
-  if (length(dots) < 1) {
-    dots <- rlang::sym('alpha = 1')
-    dots <- rlang::enquo(dots)
   }
 
   # if formula, lets do that plot
@@ -135,7 +126,7 @@ sfn_plot <- function(
         -.data$TIMESTAMP, -!!rlang::get_expr(formula_env)
       ) %>%
       ggplot(aes_(x = formula_env, y = ~Sapflow, colour = ~Tree)) +
-      geom_point(rlang::eval_tidy(dots)) +
+      geom_point(...) +
       labs(y = paste0('Sapflow [', units_char, ']'),
            subtitle = paste0('Sap flow vs. ', rlang::get_expr(formula_env)),
            title = get_si_code(sfn_data))
@@ -158,7 +149,7 @@ sfn_plot <- function(
       res_plot <- data %>%
         tidyr::gather(key = 'Tree', value = 'Sapflow', -.data$TIMESTAMP) %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~Sapflow, colour = ~Tree)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = paste0('Sapflow [', units_char, ']')) +
         scale_x_datetime()
     }
@@ -171,7 +162,7 @@ sfn_plot <- function(
       res_plot <- data %>%
         tidyr::gather(key = 'Variable', value = 'Value', -.data$TIMESTAMP) %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~Value, colour = ~Variable)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         scale_x_datetime()
     }
 
@@ -187,7 +178,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ta)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = 'Air Temperature [C]') +
         scale_x_datetime()
     }
@@ -203,7 +194,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~rh)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = 'Relative Humidity [%]') +
         scale_x_datetime()
     }
@@ -219,7 +210,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~vpd)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = 'VPD [kPa]') +
         scale_x_datetime()
     }
@@ -235,7 +226,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ppfd_in)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = 'PPFD [?]') +
         scale_x_datetime()
     }
@@ -251,7 +242,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~sw_in)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = 'sw [?]') +
         scale_x_datetime()
     }
@@ -267,7 +258,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~netrad)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = 'Net Radiation [?]') +
         scale_x_datetime()
     }
@@ -283,7 +274,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ext_rad)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = 'Extraterrestrial Radiation [?]') +
         scale_x_datetime()
     }
@@ -299,7 +290,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~ws)) +
-        geom_col(rlang::eval_tidy(dots)) +
+        geom_col(...) +
         labs(y = 'Wind Speed [m/s]') +
         scale_x_datetime()
     }
@@ -315,7 +306,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~precip)) +
-        geom_col(rlang::eval_tidy(dots)) +
+        geom_col(...) +
         labs(y = 'Precipitation [?]') +
         scale_x_datetime()
     }
@@ -331,7 +322,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~swc_shallow)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = 'SWC Shallow [cm3/cm3]') +
         scale_x_datetime()
     }
@@ -347,7 +338,7 @@ sfn_plot <- function(
       # actual plot
       res_plot <- data %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~swc_deep)) +
-        geom_point(rlang::eval_tidy(dots)) +
+        geom_point(...) +
         labs(y = 'SWC Deep [cm3/cm3]') +
         scale_x_datetime()
     }
