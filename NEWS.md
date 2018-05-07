@@ -1,5 +1,6 @@
 # sapfluxnetr 0.0.3.9000
 
+* Added geom control to `sfn_plot` function.
 * Refactored `sfn_metrics` to uniformize interval start and interval end
 * Modified `nightly_metrics` to return only night interval
 * Created `predawn_metrics`, `midday_metrics` and `daylight_metrics` functions
