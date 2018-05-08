@@ -1,4 +1,4 @@
-# sapfluxnetr 0.0.3.9000
+# sapfluxnetr 0.0.4
 
 * Added geom control to `sfn_plot` function.
 * Refactored `sfn_metrics` to uniformize interval start and interval end
