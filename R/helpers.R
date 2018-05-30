@@ -59,7 +59,7 @@ max_time <- function(x, time) {
   # example) this will return a length 0 POSIXct vector, which will crash
   # dplyr summarise step. So, check if all NA and if true return NA
   if(all(is.na(x))) {
-    return(NA)
+    return(as.POSIXct(NA, tz = attr(time, 'tz'), origin = lubridate::origin))
   } else {
     time[which.max(x)]
   }
@@ -75,7 +75,7 @@ min_time <- function(x, time) {
   # example) this will return a length 0 POSIXct vector, which will crash
   # dplyr summarise step. So, check if all NA and if true return NA
   if(all(is.na(x))) {
-    return(NA)
+    return(as.POSIXct(NA, tz = attr(time, 'tz'), origin = lubridate::origin))
   } else {
     time[which.min(x)]
   }
