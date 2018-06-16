@@ -1099,8 +1099,9 @@ metrics_tidyfier <- function(
 
   species_md <- metadata[['species_md']] %>%
     dplyr::filter(.data$si_code %in% sites_codes) %>%
-    dplyr::group_by(.data$si_code) %>%
-    dplyr::summarise_all(function(x) { list(x) })
+    # dplyr::group_by(.data$si_code) %>%
+    # dplyr::summarise_all(function(x) { list(x) })
+    dplyr::mutate(pl_species = .data$sp_name)
 
   env_md <- metadata[['env_md']] %>%
     dplyr::filter(.data$si_code %in% sites_codes)
@@ -1165,11 +1166,13 @@ metrics_tidyfier <- function(
     tidyr::spread(.data$sapflow, .data$value, sep = '_') %>%
 
     # join all the metadata, always first the plant_md to join by pl_code
-    # and after that by site code as the rest of metadata is one row only
+    # and after that by site code as the rest of metadata is one row only,
+    # except for species_md, as it has a row by species and we need to join
+    # not only by site, also by pl_species
     dplyr::left_join(plant_md, by = 'pl_code') %>%
     dplyr::left_join(site_md, by = 'si_code') %>%
     dplyr::left_join(stand_md, by = 'si_code') %>%
-    dplyr::left_join(species_md, by = 'si_code') %>%
+    dplyr::left_join(species_md, by = c('si_code', 'pl_species')) %>%
     dplyr::left_join(env_md, by = 'si_code') %>%
 
     # order the columns

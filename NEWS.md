@@ -1,4 +1,7 @@
 # sapfluxnetr 0.0.4.9000
+* Fixed bug in metrics function that created min and max time variables as double
+  instead of POSIXct in sites with NAs in the first day of measures
+* Now species metadata variables are returned individually isntead of a list
 
 # sapfluxnetr 0.0.4
 
