@@ -18,20 +18,20 @@
 #'
 #' @export
 
-# data_coverage <- function(x) {
-#   (sum(!is.na(x)) / length(x)) * 100
-# }
-data_coverage <- function(data, flags, timestep) {
-  
-  # original data without tha added NAs due to standarise TIMESTAMP between
-  # sapf and env data
-  ori_data <- data[!stringr::str_detect(flags, 'NA_ADDED')]
-  # coverage, but instead of being based on the length of data, it is based on
-  # the timestep provided (minutes in a day/timestep = expected steps)
-  res <- (sum(!is.na(ori_data)) / (1440/timestep)) * 100
-  # return coverage
-  return(res)
+data_coverage <- function(x) {
+  (sum(!is.na(x)) / length(x)) * 100
 }
+# data_coverage <- function(data, flags, timestep) {
+#   
+#   # original data without tha added NAs due to standarise TIMESTAMP between
+#   # sapf and env data
+#   ori_data <- data[!stringr::str_detect(flags, 'NA_ADDED')]
+#   # coverage, but instead of being based on the length of data, it is based on
+#   # the timestep provided (minutes in a day/timestep = expected steps)
+#   res <- (sum(!is.na(ori_data)) / (1440/timestep)) * 100
+#   # return coverage
+#   return(res)
+# }
 
 #' time at maximum/minimum
 #'
