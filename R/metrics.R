@@ -92,8 +92,10 @@ summarise_by_period <- function(data, period, .funs, ...) {
 
   # we will need the extra arguments (...) if any, just in case
   dots <- rlang::quos(...)
-  dots_collapse_index <- dots[names(dots) %in% methods::formalArgs(tibbletime::collapse_index)]
-  dots_summarise_all <- dots[!(names(dots) %in% methods::formalArgs(tibbletime::collapse_index))]
+  dots_collapse_index <- dots[names(dots) %in% 
+                                methods::formalArgs(tibbletime::collapse_index)]
+  dots_summarise_all <- dots[!(names(dots) %in% 
+                                 methods::formalArgs(tibbletime::collapse_index))]
 
   # TODO set clean = TRUE and side "start" for the collapse, except if they are
   # setted by the user.
@@ -415,14 +417,22 @@ sfn_metrics <- function(
       # now we need to create the names with the interval
       # predawn
       if (interval == 'predawn') {
-        names(period_summary[['sapf']]) <- paste0(names(period_summary[['sapf']]), '_pd')
-        names(period_summary[['env']]) <- paste0(names(period_summary[['env']]), '_pd')
+        names(period_summary[['sapf']]) <- paste0(
+          names(period_summary[['sapf']]), '_pd'
+        )
+        names(period_summary[['env']]) <- paste0(
+          names(period_summary[['env']]), '_pd'
+        )
       }
 
       # midday
       if (interval == 'midday') {
-        names(period_summary[['sapf']]) <- paste0(names(period_summary[['sapf']]), '_md')
-        names(period_summary[['env']]) <- paste0(names(period_summary[['env']]), '_md')
+        names(period_summary[['sapf']]) <- paste0(
+          names(period_summary[['sapf']]), '_md'
+        )
+        names(period_summary[['env']]) <- paste0(
+          names(period_summary[['env']]), '_md'
+        )
       }
 
       # daylight
