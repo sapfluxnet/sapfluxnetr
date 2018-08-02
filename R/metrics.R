@@ -286,15 +286,17 @@ sfn_metrics <- function(
 
   # we need to check if multi and then repeat the function for each element
   if (is(sfn_data, 'sfn_data_multi')) {
+    
     res_multi <- sfn_data %>%
-      purrr::map(sfn_metrics,
-                 period = period,
-                 .funs = .funs,
-                 solar = solar,
-                 interval = interval,
-                 int_start = int_start,
-                 int_end = int_end,
-                 ...
+      furrr::future_map(sfn_metrics,
+                        period = period,
+                        .funs = .funs,
+                        solar = solar,
+                        interval = interval,
+                        int_start = int_start,
+                        int_end = int_end,
+                        ...,
+                        .progress = TRUE
       )
 
     return(res_multi)

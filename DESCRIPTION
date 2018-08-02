@@ -15,6 +15,7 @@ BugReport: https://github.com/sapfluxnet/sapfluxnetr/issues
 LazyData: true
 Imports:
     dplyr,
+    furrr,
     ggplot2,
     lubridate,
     methods,
