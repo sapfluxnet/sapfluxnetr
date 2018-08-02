@@ -192,28 +192,44 @@ test_that('summarise_by_period dots work as intended', {
 })
 
 #### data_coverage tests ####
-test_that('data_coverage works as intended', {
-
-  data_10 <- c(rnorm(10), rep(NA, 90))
-  data_20 <- c(rnorm(20), rep(NA, 80))
-  data_40 <- c(rnorm(40), rep(NA, 60))
-  data_80 <- c(rnorm(80), rep(NA, 20))
-  data_100 <- c(rnorm(100))
-
-  # works for doubles
-  expect_equal(data_coverage(data_10), 10)
-  expect_equal(data_coverage(data_20), 20)
-  expect_equal(data_coverage(data_40), 40)
-  expect_equal(data_coverage(data_80), 80)
-  expect_equal(data_coverage(data_100), 100)
-
-  # works for characters
-  expect_equal(data_coverage(as.character(data_10)), 10)
-  expect_equal(data_coverage(as.character(data_20)), 20)
-  expect_equal(data_coverage(as.character(data_40)), 40)
-  expect_equal(data_coverage(as.character(data_80)), 80)
-  expect_equal(data_coverage(as.character(data_100)), 100)
-
+# test_that('data_coverage works as intended', {
+# 
+#   data_10 <- c(rnorm(10), rep(NA, 90))
+#   data_20 <- c(rnorm(20), rep(NA, 80))
+#   data_40 <- c(rnorm(40), rep(NA, 60))
+#   data_80 <- c(rnorm(80), rep(NA, 20))
+#   data_100 <- c(rnorm(100))
+# 
+#   # works for doubles
+#   expect_equal(data_coverage(data_10), 10)
+#   expect_equal(data_coverage(data_20), 20)
+#   expect_equal(data_coverage(data_40), 40)
+#   expect_equal(data_coverage(data_80), 80)
+#   expect_equal(data_coverage(data_100), 100)
+# 
+#   # works for characters
+#   expect_equal(data_coverage(as.character(data_10)), 10)
+#   expect_equal(data_coverage(as.character(data_20)), 20)
+#   expect_equal(data_coverage(as.character(data_40)), 40)
+#   expect_equal(data_coverage(as.character(data_80)), 80)
+#   expect_equal(data_coverage(as.character(data_100)), 100)
+# 
+# })
+test_that('data_coverage works', {
+  
+  data <- rnorm(48)
+  flags_100 <- c(rep('', 48))
+  flags_75 <- c(rep('NA_ADDED', 12), rep('', 36))
+  flags_50 <- c(rep('NA_ADDED', 24), rep('', 24))
+  flags_25 <- c(rep('NA_ADDED', 36), rep('', 12))
+  flags_0 <- c(rep('NA_ADDED', 48))
+  timestep <- 30
+  
+  expect_equal(data_coverage(data, flags_100, timestep), 100)
+  expect_equal(data_coverage(data, flags_75, timestep), 75)
+  expect_equal(data_coverage(data, flags_50, timestep), 50)
+  expect_equal(data_coverage(data, flags_25, timestep), 25)
+  expect_equal(data_coverage(data, flags_0, timestep), 0)
 })
 
 #### diurnal_centroid tests ####

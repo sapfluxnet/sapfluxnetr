@@ -4,7 +4,7 @@
 \alias{data_coverage}
 \title{data coverage}
 \usage{
-data_coverage(x)
+data_coverage(data, flags, timestep)
 }
 \arguments{
 \item{x}{a vector, usually a variable in the sapflow or environmental data.}
