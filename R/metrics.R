@@ -92,9 +92,9 @@ summarise_by_period <- function(data, period, .funs, ...) {
 
   # we will need the extra arguments (...) if any, just in case
   dots <- rlang::quos(...)
-  dots_collapse_index <- dots[names(dots) %in% 
+  dots_collapse_index <- dots[names(dots) %in%
                                 methods::formalArgs(tibbletime::collapse_index)]
-  dots_summarise_all <- dots[!(names(dots) %in% 
+  dots_summarise_all <- dots[!(names(dots) %in%
                                  methods::formalArgs(tibbletime::collapse_index))]
 
   # TODO set clean = TRUE and side "start" for the collapse, except if they are
@@ -412,7 +412,9 @@ sfn_metrics <- function(
           dplyr::filter,
           dplyr::between(lubridate::hour(.data$TIMESTAMP), int_start, int_end)
         ) %>%
+        ### map2(., list(ts_sapf, ts_env), ~ mutate(.x, ts = .y))
         purrr::map(summarise_by_period, period, .funs, ...) -> period_summary
+        ### map(mutate eliminar ^timestep_*)
 
       # now we need to create the names with the interval
       # predawn
@@ -485,7 +487,8 @@ sfn_metrics <- function(
     mean = mean(., na.rm = TRUE),
     sd = stats::sd(., na.rm = TRUE),
     n = n(),
-    coverage = data_coverage(.),
+    # coverage = data_coverage(.),
+    coverage = data_coverage(., ts)
     !!! quantile_args,
     max = max(., na.rm = TRUE),
     max_time = max_time(., .data$TIMESTAMP_coll),
