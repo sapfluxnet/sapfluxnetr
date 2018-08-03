@@ -4,7 +4,7 @@
 \alias{data_coverage}
 \title{data coverage}
 \usage{
-data_coverage(x)
+data_coverage(x, timestep, period_min)
 }
 \arguments{
 \item{x}{a vector, usually a variable in the sapflow or environmental data.}
@@ -18,7 +18,9 @@ helper for sfn_metrics
 }
 \details{
 This helper function calculates the coverage percentage in a vector, and is
-designed to be used inside a dplyr summarise statement.
+designed to be used inside a dplyr summarise statement. It calculates the
+coverage as the percentage of no NAs in the expected lenght of the summarising
+period stated by the timestep.
 }
 \examples{
 library(dplyr)

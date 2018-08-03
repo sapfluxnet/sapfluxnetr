@@ -3,7 +3,9 @@
 #' helper for sfn_metrics
 #'
 #' This helper function calculates the coverage percentage in a vector, and is
-#' designed to be used inside a dplyr summarise statement.
+#' designed to be used inside a dplyr summarise statement. It calculates the
+#' coverage as the percentage of no NAs in the expected lenght of the summarising
+#' period stated by the timestep.
 #'
 #' @param x a vector, usually a variable in the sapflow or environmental data.
 #'
@@ -18,20 +20,84 @@
 #'
 #' @export
 
-data_coverage <- function(x, timestep) {
-  (sum(!is.na(x)) / timestep) * 100
+data_coverage <- function(x, timestep, period_min) {
+  
+  timestep <- timestep[1]
+  period_min <- period_min[1]
+  (sum(!is.na(x)) / (period_min/timestep)) * 100
+  
 }
-# data_coverage <- function(data, flags, timestep) {
-#
-  # # original data without tha added NAs due to standarise TIMESTAMP between
-  # # sapf and env data
-  # ori_data <- data[!stringr::str_detect(flags, 'NA_ADDED')]
-  # # coverage, but instead of being based on the length of data, it is based on
-  # # the timestep provided (minutes in a day/timestep = expected steps)
-  # res <- (sum(!is.na(ori_data)) / (1440/timestep)) * 100
-  # # return coverage
-  # return(res)
-# }
+
+#' transform period as in tibbletime period argument in minutes
+#' 
+#' helper for data_coverage
+#' 
+#' This function uses tibbletime and lubirdate functions to convert the period
+#' supplied into minutes to calculate the expected timesteps in the coverage
+#' calculation.
+#' 
+#' @return An integer with the period value in minutes
+#' 
+#' @param period character indicating the period to summarise
+#' 
+#' @examples
+#' 
+#' # daily period, expected 1440 minutes
+#' .period_to_minutes('daily')
+#' 
+#' # the same, but with other specification
+#' .period_to_minutes('1 day')
+.period_to_minutes <- function(period, timestamp){
+  
+  # if the period is a custom period,
+  if (
+    inherits(period, c("Date", "POSIXct", "POSIXt", "yearmon", "yearqtr", "hms"))
+  ) {
+    
+    periods_info <- data.frame(TIMESTAMP = timestamp) %>% dplyr::mutate(
+      boundaries = tibbletime::collapse_index(
+        index = .data$TIMESTAMP,
+        period = period,
+        side = 'start'
+      )
+    ) %>%
+      dplyr::group_by(.data$boundaries) %>%
+      dplyr::summarise(n = dplyr::n())
+    
+    if (
+      last(timestamp_vec) != last(period_vec) &&
+      last(timestamp_vec) > last(period_vec)
+    ) {
+      boundaries <- c(periods_info$boundaries, last(timestamp_vec))
+    } else {
+      boundaries <- periods_info$boundaries
+    }
+    
+    res <- c()
+    # calculate the lenght of each interval between the dates vector
+    for (i in 1:(length(boundaries) - 1)) {
+      period_min <- lubridate::int_length(
+        lubridate::interval(boundaries[i], boundaries[i+1])
+      ) / 60
+      
+      res <- c(res, period_min)
+    }
+    
+    return(res)
+    
+  } else {
+    # parse the period using tibbletime
+    parse_period <- tibbletime::parse_period(period)
+    # transform to minutes (duration returns seconds, so dividing by 60 is 
+    # mandatory)
+    period_min <- lubridate::duration(
+      glue::glue('{period_parsed$freq} {period_parsed$period}')
+    )@.Data / 60
+    
+    return(period_min)
+  }
+  
+}
 
 #' time at maximum/minimum
 #'
