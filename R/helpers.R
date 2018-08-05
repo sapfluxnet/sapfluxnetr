@@ -15,10 +15,9 @@
 #'   variable
 #'
 #' @examples
-#' #library(dplyr)
-#' #iris %>%
-#' #  group_by(Species) %>%
-#' #  summarise_all(data_coverage) # 100 for all variables and levels
+#' # data for one day, 60 minutes timestep (24 values) with a 75% of coberture
+#' x <- rep(c(1,2,3,NA), 6)
+#' data_coverage(x, 60, 1440) # 75
 #'
 #' @export
 
@@ -70,12 +69,12 @@ data_coverage <- function(x, timestep, period_minutes) {
       dplyr::summarise(n = dplyr::n())
     
     if (
-      dplyr::last(timestamp_vec) != dplyr::last(period_vec) &&
-      dplyr::last(timestamp_vec) > dplyr::last(period_vec)
+      dplyr::last(timestamp) != dplyr::last(period) &&
+      dplyr::last(timestamp) > dplyr::last(period)
     ) {
       boundaries <- c(
         periods_info$boundaries,
-        dplyr::last(timestamp_vec) + lubridate::minutes(timestep)
+        dplyr::last(timestamp) + lubridate::minutes(timestep)
       )
     } else {
       boundaries <- periods_info$boundaries

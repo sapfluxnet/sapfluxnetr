@@ -192,45 +192,60 @@ test_that('summarise_by_period dots work as intended', {
 })
 
 #### data_coverage tests ####
-# test_that('data_coverage works as intended', {
-# 
-#   data_10 <- c(rnorm(10), rep(NA, 90))
-#   data_20 <- c(rnorm(20), rep(NA, 80))
-#   data_40 <- c(rnorm(40), rep(NA, 60))
-#   data_80 <- c(rnorm(80), rep(NA, 20))
-#   data_100 <- c(rnorm(100))
-# 
-#   # works for doubles
-#   expect_equal(data_coverage(data_10), 10)
-#   expect_equal(data_coverage(data_20), 20)
-#   expect_equal(data_coverage(data_40), 40)
-#   expect_equal(data_coverage(data_80), 80)
-#   expect_equal(data_coverage(data_100), 100)
-# 
-#   # works for characters
-#   expect_equal(data_coverage(as.character(data_10)), 10)
-#   expect_equal(data_coverage(as.character(data_20)), 20)
-#   expect_equal(data_coverage(as.character(data_40)), 40)
-#   expect_equal(data_coverage(as.character(data_80)), 80)
-#   expect_equal(data_coverage(as.character(data_100)), 100)
-# 
-# })
-# test_that('data_coverage works', {
-#   
-#   data <- rnorm(48)
-#   flags_100 <- c(rep('', 48))
-#   flags_75 <- c(rep('NA_ADDED', 12), rep('', 36))
-#   flags_50 <- c(rep('NA_ADDED', 24), rep('', 24))
-#   flags_25 <- c(rep('NA_ADDED', 36), rep('', 12))
-#   flags_0 <- c(rep('NA_ADDED', 48))
-#   timestep <- 30
-#   
-#   expect_equal(data_coverage(data, flags_100, timestep), 100)
-#   expect_equal(data_coverage(data, flags_75, timestep), 75)
-#   expect_equal(data_coverage(data, flags_50, timestep), 50)
-#   expect_equal(data_coverage(data, flags_25, timestep), 25)
-#   expect_equal(data_coverage(data, flags_0, timestep), 0)
-# })
+test_that('data_coverage works as intended', {
+
+  data_0 <- rep(NA, 24)
+  data_25 <- rep(c(1, NA, NA, NA), 6)
+  data_50 <- rep(c(1, 2, NA, NA), 6)
+  data_75 <- rep(c(1, 2, 3, NA), 6)
+  data_100 <- rep(1:4, 6)
+
+  # works for doubles
+  expect_equal(data_coverage(data_0, 60, 1440), 0)
+  expect_equal(data_coverage(data_25, 60, 1440), 25)
+  expect_equal(data_coverage(data_50, 60, 1440), 50)
+  expect_equal(data_coverage(data_75, 60, 1440), 75)
+  expect_equal(data_coverage(data_100, 60, 1440), 100)
+
+  # works for characters
+  expect_equal(data_coverage(as.character(data_0), 60, 1440), 0)
+  expect_equal(data_coverage(as.character(data_25), 60, 1440), 25)
+  expect_equal(data_coverage(as.character(data_50), 60, 1440), 50)
+  expect_equal(data_coverage(as.character(data_75), 60, 1440), 75)
+  expect_equal(data_coverage(as.character(data_100), 60, 1440), 100)
+
+})
+
+#### .period_to_minutes tests ####
+test_that('helper .period_to_minutes works with tibbletime periods', {
+  expect_equal(sapfluxnetr:::.period_to_minutes('daily'), 1440)
+  expect_equal(sapfluxnetr:::.period_to_minutes('1 day'), 1440)
+  expect_equal(sapfluxnetr:::.period_to_minutes('monthly'), 43830)
+  expect_equal(sapfluxnetr:::.period_to_minutes('1 year'), 525960)
+})
+
+test_that('.period_to_minutes works with custom POSIXct periods', {
+  
+  timestamp_vec <- get_timestamp(ARG_MAZ)
+  period_vec <- c(timestamp_vec[49], timestamp_vec[73], timestamp_vec[193])
+  timestep_val <- 60
+  
+  expect_equal(
+    length(
+      sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
+    ),
+    length(timestamp_vec)
+  )
+  expect_equal(
+    length(
+      unique(
+        sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
+      )
+    ),
+    4
+  )
+  
+})
 
 #### diurnal_centroid tests ####
 test_that('diurnal_centroid function works with even data', {

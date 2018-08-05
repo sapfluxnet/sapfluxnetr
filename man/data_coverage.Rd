@@ -27,9 +27,8 @@ coverage as the percentage of no NAs in the expected lenght of the summarising
 period stated by the timestep.
 }
 \examples{
-#library(dplyr)
-#iris \%>\%
-#  group_by(Species) \%>\%
-#  summarise_all(data_coverage) # 100 for all variables and levels
+# data for one day, 60 minutes timestep (24 values) with a 75\% of coberture
+x <- rep(c(1,2,3,NA), 6)
+data_coverage(x, 60, 1440) # 75
 
 }
