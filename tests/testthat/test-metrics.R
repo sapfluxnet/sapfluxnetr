@@ -192,29 +192,29 @@ test_that('summarise_by_period dots work as intended', {
 })
 
 #### data_coverage tests ####
-test_that('data_coverage works as intended', {
-
-  data_10 <- c(rnorm(10), rep(NA, 90))
-  data_20 <- c(rnorm(20), rep(NA, 80))
-  data_40 <- c(rnorm(40), rep(NA, 60))
-  data_80 <- c(rnorm(80), rep(NA, 20))
-  data_100 <- c(rnorm(100))
-
-  # works for doubles
-  expect_equal(data_coverage(data_10), 10)
-  expect_equal(data_coverage(data_20), 20)
-  expect_equal(data_coverage(data_40), 40)
-  expect_equal(data_coverage(data_80), 80)
-  expect_equal(data_coverage(data_100), 100)
-
-  # works for characters
-  expect_equal(data_coverage(as.character(data_10)), 10)
-  expect_equal(data_coverage(as.character(data_20)), 20)
-  expect_equal(data_coverage(as.character(data_40)), 40)
-  expect_equal(data_coverage(as.character(data_80)), 80)
-  expect_equal(data_coverage(as.character(data_100)), 100)
-
-})
+# test_that('data_coverage works as intended', {
+# 
+#   data_10 <- c(rnorm(10), rep(NA, 90))
+#   data_20 <- c(rnorm(20), rep(NA, 80))
+#   data_40 <- c(rnorm(40), rep(NA, 60))
+#   data_80 <- c(rnorm(80), rep(NA, 20))
+#   data_100 <- c(rnorm(100))
+# 
+#   # works for doubles
+#   expect_equal(data_coverage(data_10), 10)
+#   expect_equal(data_coverage(data_20), 20)
+#   expect_equal(data_coverage(data_40), 40)
+#   expect_equal(data_coverage(data_80), 80)
+#   expect_equal(data_coverage(data_100), 100)
+# 
+#   # works for characters
+#   expect_equal(data_coverage(as.character(data_10)), 10)
+#   expect_equal(data_coverage(as.character(data_20)), 20)
+#   expect_equal(data_coverage(as.character(data_40)), 40)
+#   expect_equal(data_coverage(as.character(data_80)), 80)
+#   expect_equal(data_coverage(as.character(data_100)), 100)
+# 
+# })
 # test_that('data_coverage works', {
 #   
 #   data <- rnorm(48)
@@ -481,8 +481,8 @@ test_that('sfn_metrics for nightly metrics works', {
   # lets be sure that without clean the hours are cutted where they must be
   # cutted
   expect_identical(names(test_expr3), c('sapf', 'env'))
-  expect_s3_class(test_expr3[['sapf']], 'tbl_time')
-  expect_s3_class(test_expr3[['env']], 'tbl_time')
+  expect_s3_class(test_expr3[['sapf']], 'tbl')
+  expect_s3_class(test_expr3[['env']], 'tbl')
 
   sapf_night_timestamp_3 <- test_expr3[['sapf']][['TIMESTAMP_night']]
   env_night_timestamp_3 <- test_expr3[['env']][['TIMESTAMP_night']]

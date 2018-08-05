@@ -4,10 +4,14 @@
 \alias{data_coverage}
 \title{data coverage}
 \usage{
-data_coverage(x, timestep, period_min)
+data_coverage(x, timestep, period_minutes)
 }
 \arguments{
 \item{x}{a vector, usually a variable in the sapflow or environmental data.}
+
+\item{timestep}{numeric value with the timestep in minutes}
+
+\item{period_minutes}{numeric value with the period in minutes}
 }
 \value{
 a single value (numeric) with the percentage of coverage for that
@@ -23,9 +27,9 @@ coverage as the percentage of no NAs in the expected lenght of the summarising
 period stated by the timestep.
 }
 \examples{
-library(dplyr)
-iris \%>\%
-  group_by(Species) \%>\%
-  summarise_all(data_coverage) # 100 for all variables and levels
+#library(dplyr)
+#iris \%>\%
+#  group_by(Species) \%>\%
+#  summarise_all(data_coverage) # 100 for all variables and levels
 
 }

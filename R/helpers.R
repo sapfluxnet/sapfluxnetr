@@ -8,23 +8,25 @@
 #' period stated by the timestep.
 #'
 #' @param x a vector, usually a variable in the sapflow or environmental data.
+#' @param timestep numeric value with the timestep in minutes
+#' @param period_minutes numeric value with the period in minutes
 #'
 #' @return a single value (numeric) with the percentage of coverage for that
 #'   variable
 #'
 #' @examples
-#' library(dplyr)
-#' iris %>%
-#'   group_by(Species) %>%
-#'   summarise_all(data_coverage) # 100 for all variables and levels
+#' #library(dplyr)
+#' #iris %>%
+#' #  group_by(Species) %>%
+#' #  summarise_all(data_coverage) # 100 for all variables and levels
 #'
 #' @export
 
-data_coverage <- function(x, timestep, period_min) {
+data_coverage <- function(x, timestep, period_minutes) {
   
   timestep <- timestep[1]
-  period_min <- period_min[1]
-  (sum(!is.na(x)) / (period_min/timestep)) * 100
+  period_minutes <- period_minutes[1]
+  (sum(!is.na(x)) / (period_minutes/timestep)) * 100
   
 }
 
@@ -38,7 +40,10 @@ data_coverage <- function(x, timestep, period_min) {
 #' 
 #' @return An integer with the period value in minutes
 #' 
-#' @param period character indicating the period to summarise
+#' @param period character indicating the period to summarise or POSIX vector
+#'   with the boundaries for irregular periods
+#' @param timestamp timestamp vector obtained from data
+#' @param timestep numeric with the timestep in minutes, obtained from metadata
 #' 
 #' @examples
 #' 
@@ -47,7 +52,7 @@ data_coverage <- function(x, timestep, period_min) {
 #' 
 #' # the same, but with other specification
 #' .period_to_minutes('1 day')
-.period_to_minutes <- function(period, timestamp){
+.period_to_minutes <- function(period, timestamp, timestep){
   
   # if the period is a custom period,
   if (
@@ -65,29 +70,34 @@ data_coverage <- function(x, timestep, period_min) {
       dplyr::summarise(n = dplyr::n())
     
     if (
-      last(timestamp_vec) != last(period_vec) &&
-      last(timestamp_vec) > last(period_vec)
+      dplyr::last(timestamp_vec) != dplyr::last(period_vec) &&
+      dplyr::last(timestamp_vec) > dplyr::last(period_vec)
     ) {
-      boundaries <- c(periods_info$boundaries, last(timestamp_vec))
+      boundaries <- c(
+        periods_info$boundaries,
+        dplyr::last(timestamp_vec) + lubridate::minutes(timestep)
+      )
     } else {
       boundaries <- periods_info$boundaries
     }
     
-    res <- c()
     # calculate the lenght of each interval between the dates vector
+    loop_res <- c()
     for (i in 1:(length(boundaries) - 1)) {
       period_min <- lubridate::int_length(
         lubridate::interval(boundaries[i], boundaries[i+1])
       ) / 60
       
-      res <- c(res, period_min)
+      loop_res <- c(loop_res, period_min)
     }
+    
+    res <- rep(loop_res, times = periods_info$n)
     
     return(res)
     
   } else {
     # parse the period using tibbletime
-    parse_period <- tibbletime::parse_period(period)
+    period_parsed <- tibbletime::parse_period(period)
     # transform to minutes (duration returns seconds, so dividing by 60 is 
     # mandatory)
     period_min <- lubridate::duration(

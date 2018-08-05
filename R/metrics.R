@@ -310,9 +310,19 @@ sfn_metrics <- function(
   ))
 
   sapf_data <- get_sapf_data(sfn_data, solar = solar) %>%
-    dplyr::mutate(timestep = get_plant_md(sfn_data)[['pl_sens_timestep']])
+    dplyr::mutate(
+      timestep = get_plant_md(sfn_data)[['pl_sens_timestep']][1],
+      period_minutes = .period_to_minutes(
+        period, TIMESTAMP, unique(timestep)
+      )
+    )
   env_data <- get_env_data(sfn_data, solar = solar) %>%
-    dplyr::mutate(timestep = get_env_md(sfn_data)[['env_timestep']])
+    dplyr::mutate(
+      timestep = get_env_md(sfn_data)[['env_timestep']][1],
+      period_minutes = .period_to_minutes(
+        period, TIMESTAMP, unique(timestep)
+      )
+    )
 
   whole_data <- list(sapf = sapf_data, env = env_data)
 
@@ -453,7 +463,12 @@ sfn_metrics <- function(
 
   # remove the timestep columns created
   res <- period_summary %>%
-    purrr::modify_depth(1, ~ dplyr::select(.x, -starts_with('timestep')))
+    purrr::modify_depth(
+      1, ~ dplyr::select(
+        .x, -dplyr::starts_with('timestep'),
+        -dplyr::starts_with('period_minutes')
+      )
+    )
 
   return(res)
 }
@@ -488,7 +503,7 @@ sfn_metrics <- function(
     sd = stats::sd(., na.rm = TRUE),
     n = n(),
     # coverage = data_coverage(.),
-    coverage = data_coverage(., timestep, period_min),
+    coverage = data_coverage(., .data$timestep, .data$period_minutes),
     !!! quantile_args,
     max = max(., na.rm = TRUE),
     max_time = max_time(., .data$TIMESTAMP_coll),
