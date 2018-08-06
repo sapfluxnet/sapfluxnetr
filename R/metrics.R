@@ -313,14 +313,14 @@ sfn_metrics <- function(
     dplyr::mutate(
       timestep = get_plant_md(sfn_data)[['pl_sens_timestep']][1],
       period_minutes = .period_to_minutes(
-        period, TIMESTAMP, unique(timestep)
+        period, .data$TIMESTAMP, unique(.data$timestep)
       )
     )
   env_data <- get_env_data(sfn_data, solar = solar) %>%
     dplyr::mutate(
       timestep = get_env_md(sfn_data)[['env_timestep']][1],
       period_minutes = .period_to_minutes(
-        period, TIMESTAMP, unique(timestep)
+        period, .data$TIMESTAMP, unique(.data$timestep)
       )
     )
 
@@ -461,7 +461,7 @@ sfn_metrics <- function(
     }
   }
 
-  # remove the timestep columns created
+  # remove the timestep and period_minutes columns created
   res <- period_summary %>%
     purrr::modify_depth(
       1, ~ dplyr::select(
@@ -547,23 +547,6 @@ sfn_metrics <- function(
 #'         measures when period is 'daily'}
 #' }
 #'
-#' @section Interval:
-#' Previously to the metrics summary, data can be filtered by an special
-#' interval (predawn for example). With the \code{interval} argument this
-#' filtering can be specified:
-#' \itemize{
-#'   \item{\code{general} (default). No special interval is used, and metrics
-#'         are performed with all the data}.
-#'   \item{\code{predawn}. Data is filtered for predawn interval. In this case
-#'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#'   \item{\code{midday}. Data is filtered for midday interval. In this case
-#'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#'   \item{\code{night}. Data is filtered for night interval. In this case
-#'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#'   \item{\code{daylight}. Data is filtered for daylight interval. In this case
-#'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#' }
-#'
 #' @param probs numeric vector of probabilities for
 #'   \code{\link[stats]{quantile}}
 #'
@@ -575,9 +558,10 @@ sfn_metrics <- function(
 #'
 #' @family metrics
 #'
-#' @return If \code{tidy} is TRUE (default), a tibble with the metrics for
+#' @return If \code{tidy} is TRUE, a tibble with the metrics for
 #'   sapflow and environmental data, with all the metadata included. If
-#'   \code{tidy} is FALSE, a list of tibbles with the calculated metrics.
+#'   \code{tidy} is FALSE (default), a list of tibbles with the calculated
+#'   metrics.
 #'
 #' @importFrom dplyr n
 #'

@@ -58,29 +58,54 @@ data_coverage <- function(x, timestep, period_minutes) {
     inherits(period, c("Date", "POSIXct", "POSIXt", "yearmon", "yearqtr", "hms"))
   ) {
     
-    periods_info <- data.frame(TIMESTAMP = timestamp) %>% dplyr::mutate(
-      boundaries = tibbletime::collapse_index(
-        index = .data$TIMESTAMP,
-        period = period,
-        side = 'start'
-      )
-    ) %>%
-      dplyr::group_by(.data$boundaries) %>%
-      dplyr::summarise(n = dplyr::n())
+    # First, we obtain the boundaries for calculating the intervals in minutes.
+    # For that we profit from collapse_index, as it allows to get these
+    # boundaries as well as use it to get the n(), used later to create the
+    # repeated vector
     
-    if (
-      dplyr::last(timestamp) != dplyr::last(period) &&
-      dplyr::last(timestamp) > dplyr::last(period)
-    ) {
+    # if the custom period starts after the start of the timestamp, default
+    # behaviour of collapse_index
+    if (dplyr::first(timestamp) <= dplyr::first(period)) {
+      periods_info <- data.frame(TIMESTAMP = timestamp) %>% dplyr::mutate(
+        boundaries = tibbletime::collapse_index(
+          index = .data$TIMESTAMP,
+          period = period,
+          side = 'start'
+        )
+      ) %>% 
+        dplyr::group_by(boundaries) %>% 
+        dplyr::summarise(n = n())
+      
+    } else {
+      # if custom period starts before the timestamp, we need to set that as the
+      # start date for collapse index
+      periods_info <- data.frame(TIMESTAMP = timestamp) %>% dplyr::mutate(
+        boundaries = tibbletime::collapse_index(
+          index = .data$TIMESTAMP,
+          period = period,
+          side = 'start',
+          start_date = period[1]
+        )
+      ) %>% 
+        dplyr::group_by(boundaries) %>% 
+        dplyr::summarise(n = n())
+    }
+    
+    # modify the boundaries to add the last value, as we will use them to
+    # calculate the intervals length in minutes
+    if (dplyr::last(timestamp) >= dplyr::last(period)) {
       boundaries <- c(
         periods_info$boundaries,
         dplyr::last(timestamp) + lubridate::minutes(timestep)
       )
     } else {
-      boundaries <- periods_info$boundaries
+      boundaries <- c(
+        periods_info$boundaries,
+        dplyr::last(period)
+      )
     }
     
-    # calculate the lenght of each interval between the dates vector
+    # calculate the lenght of each interval between the boundaries
     loop_res <- c()
     for (i in 1:(length(boundaries) - 1)) {
       period_min <- lubridate::int_length(
@@ -90,6 +115,9 @@ data_coverage <- function(x, timestep, period_minutes) {
       loop_res <- c(loop_res, period_min)
     }
     
+    # we need a vector of length equal to timestamp, but with the values of
+    # minutes repeated to use it in the summarise function. We use here the n
+    # calculated before
     res <- rep(loop_res, times = periods_info$n)
     
     return(res)
@@ -103,6 +131,7 @@ data_coverage <- function(x, timestep, period_minutes) {
       glue::glue('{period_parsed$freq} {period_parsed$period}')
     )@.Data / 60
     
+    # we return one value, to create a column for the summarise function
     return(period_min)
   }
   
@@ -210,7 +239,8 @@ min_time <- function(x, time) {
 #' sfn_metrics(
 #'   ARG_TRE,
 #'   period = 'daily',
-#'   .funs = funs(diurnal_centroid(.), data_coverage(.)),
+#'   .funs = funs(diurnal_centroid(.),
+#'                data_coverage(., timestep, period_minutes)),
 #'   solar = FALSE,
 #'   interval = 'general'
 #' )

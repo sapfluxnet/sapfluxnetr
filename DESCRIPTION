@@ -16,6 +16,7 @@ LazyData: true
 Imports:
     dplyr,
     ggplot2,
+    glue,
     lubridate,
     methods,
     purrr,
