@@ -310,6 +310,8 @@ sfn_metrics <- function(
   ))
 
   sapf_data <- get_sapf_data(sfn_data, solar = solar) %>%
+    # mutate to create the temporal columns timestep and period_minutes, to use
+    # them in the data_coverage summarise function
     dplyr::mutate(
       timestep = get_plant_md(sfn_data)[['pl_sens_timestep']][1],
       period_minutes = .period_to_minutes(
@@ -317,6 +319,8 @@ sfn_metrics <- function(
       )
     )
   env_data <- get_env_data(sfn_data, solar = solar) %>%
+    # mutate to create the temporal columns timestep and period_minutes, to use
+    # them in the data_coverage summarise function
     dplyr::mutate(
       timestep = get_env_md(sfn_data)[['env_timestep']][1],
       period_minutes = .period_to_minutes(
@@ -333,6 +337,11 @@ sfn_metrics <- function(
     # progress to not scare seeming like freezed in large datasets
     print(paste0('Nighttime data for ', get_si_code(sfn_data)))
 
+    # period_minutes modification especific for night intervals calculations
+    new_period_minutes <- lubridate::as.duration(
+      lubridate::hours(24 - (int_start - int_end))
+    )@.Data / 60
+    
     night_data <- whole_data %>%
       purrr::map(
         dplyr::filter,
@@ -342,6 +351,10 @@ sfn_metrics <- function(
           dplyr::between(
             lubridate::hour(.data$TIMESTAMP), 0, int_end - 1
           )
+      ) %>% 
+      purrr::map(
+        dplyr::mutate,
+        period_minutes = new_period_minutes
       )
 
     if (period == 'daily') {
@@ -387,7 +400,11 @@ sfn_metrics <- function(
     } else {
 
      period_summary <- night_data %>%
-        purrr::map(summarise_by_period, period, .funs, ...)
+       purrr::map(
+         dplyr::mutate,
+         period_minutes = new_period_minutes * 30
+       ) %>%
+       purrr::map(summarise_by_period, period, .funs, ...)
 
     }
 
@@ -418,15 +435,26 @@ sfn_metrics <- function(
 
       # progress to not scare seeming like freezed
       print(paste0(interval, ' data for ', get_si_code(sfn_data)))
+      
+      # period_minutes modification especific for daytime intervals calculations
+      new_period_minutes <- lubridate::as.duration(
+        lubridate::hours(int_end - int_start)
+      )@.Data / 60
+      
+      if (period != 'daily') {
+        new_period_minutes <- new_period_minutes * 30
+      }
 
       whole_data %>%
         purrr::map(
           dplyr::filter,
-          dplyr::between(lubridate::hour(.data$TIMESTAMP), int_start, int_end)
+          dplyr::between(lubridate::hour(.data$TIMESTAMP), int_start, int_end - 1)
         ) %>%
-        ### map2(., list(ts_sapf, ts_env), ~ mutate(.x, ts = .y))
+        purrr::map(
+          dplyr::mutate,
+          period_minutes = new_period_minutes
+        ) %>%
         purrr::map(summarise_by_period, period, .funs, ...) -> period_summary
-        ### map(mutate eliminar ^timestep_*)
 
       # now we need to create the names with the interval
       # predawn
