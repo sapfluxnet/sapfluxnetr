@@ -1,7 +1,13 @@
 # sapfluxnetr 0.0.4.9000
+* Fixed `data_coverage` function. Now it returns the real coverage based on the
+  timestep, the period to summarise for and the timestamp values. This only will
+  work within the wrapper metrics functions (using internally the 
+  `.fixed_metrics_funtions` function).
+* Fixed a bug in sfn_metrics that for special intervals (md, pd, daylight) the
+  filtering step was collecting timestamps above the int_end
 * Fixed bug in metrics function that created min and max time variables as double
   instead of POSIXct in sites with NAs in the first day of measures
-* Now species metadata variables are returned individually isntead of a list
+* Now species metadata variables are returned individually instead of a list
 
 # sapfluxnetr 0.0.4
 
