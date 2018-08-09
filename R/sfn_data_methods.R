@@ -521,7 +521,8 @@ setMethod(
 #' \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
 #' environmental flags as tibbletime objects.
 #'
-#' \code{get_timestamp} method retrieve only the timestamp as POSIXct vector.
+#' \code{get_timestamp} and \code{get_solar_timestamp} methods retrieve only the
+#' timestamp as POSIXct vector.
 #'
 #' \code{get_si_code} method retrieve a character vector with length(timestamp)
 #' containing the site code.
@@ -722,6 +723,294 @@ setMethod(
   function(object) {
     slot(object, "env_md") %>%
       tibble::as_tibble()
+  }
+)
+
+#### sfn_data_multi get methods ######################################################
+#' sfn_data_multi get methods
+#'
+#' Methods to get the data and metadata from the sfn_data class slots
+#'
+#' \code{get_sapf_data} and \code{get_env_data} methods retrieve sapflow or
+#' environmental tibbletimes from the sfn_data objects contained in the 
+#' sfn_data_multi and return them in a list.
+#'
+#' \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
+#' environmental flags tibbletimes from the sfn_data objects contained in the 
+#' sfn_data_multi and return them in a list.
+#'
+#' \code{get_timestamp} and \code{get_solar_timestamp} methods retrieve only the
+#' timestamps as POSIXct vectors and return them as a list (each element
+#' corresponding to a site in the sfn_data_multi object).
+#'
+#' \code{get_si_code} method retrieve a character vector with length(timestamp)
+#' containing the site code for each site, returning them as a list.
+#'
+#' \code{get_site_md}, \code{get_stand_md}, \code{get_species_md},
+#' \code{get_plant_md} and \code{get_env_md} methods retrieve the corresponding
+#' metadata objects for each site returning them as a list, unless collapse is
+#' TRUE, then the list collapses to a tibble.
+#'
+#' @param object Object of class sfn_data_multi from which data or metadata is
+#'   retrieved
+#'
+#' @param solar Logical indicating if the timestamp to return in the \code{get_sapf_data},
+#'   \code{get_env_data}, \code{get_sapf_flags} and \code{get_env_flags} methods is
+#'   the solarTIMESTAMP (TRUE) or the contributors provided TIMESTAMP (FALSE)
+#'
+#' @param collapse Logical indicating if the metadata get methods must collapse
+#'   the returning list to a data frame with all sites
+#'
+#' @examples
+#' library(dplyr)
+#'
+#' @name sfn_multi_get_methods
+#' @include sfn_data_classes.R sfn_data_generics.R
+NULL
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_sapf_data", "sfn_data_multi",
+  function(object, solar = FALSE) {
+    # data
+    .sapf <- object %>%
+      purrr::map(slot, "sapf_data")
+    
+    # timestamp
+    if (solar) {
+      TIMESTAMP <- object %>%
+        purrr::map(slot, "solar_timestamp")
+    } else {
+      TIMESTAMP <- TIMESTAMP <- object %>%
+        purrr::map(slot, "timestamp")
+    }
+    
+    # combining both
+    res <- TIMESTAMP %>%
+      purrr::map2(.sapf, cbind) %>%
+      purrr::map(rename, TIMESTAMP = ".x[[i]]") %>%
+      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+    
+    # return
+    return(res)
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_env_data", "sfn_data_multi",
+  function(object, solar = FALSE) {
+    # data
+    .env <- object %>%
+      purrr::map(slot, "env_data")
+    
+    # timestamp
+    if (solar) {
+      TIMESTAMP <- object %>%
+        purrr::map(slot, "solar_timestamp")
+    } else {
+      TIMESTAMP <- TIMESTAMP <- object %>%
+        purrr::map(slot, "timestamp")
+    }
+    
+    # combining both
+    res <- TIMESTAMP %>%
+      purrr::map2(.env, cbind) %>%
+      purrr::map(rename, TIMESTAMP = ".x[[i]]") %>%
+      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+    
+    # return
+    return(res)
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_sapf_flags", "sfn_data_multi",
+  function(object, solar = FALSE) {
+    # data
+    .flags <- object %>%
+      purrr::map(slot, "sapf_flags")
+    
+    # timestamp
+    if (solar) {
+      TIMESTAMP <- object %>%
+        purrr::map(slot, "solar_timestamp")
+    } else {
+      TIMESTAMP <- TIMESTAMP <- object %>%
+        purrr::map(slot, "timestamp")
+    }
+    
+    # combining both
+    res <- TIMESTAMP %>%
+      purrr::map2(.flags, cbind) %>%
+      purrr::map(rename, TIMESTAMP = ".x[[i]]") %>%
+      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+    
+    # return
+    return(res)
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_env_flags", "sfn_data_multi",
+  function(object, solar = FALSE) {
+    # data
+    .flags <- object %>%
+      purrr::map(slot, "env_flags")
+    
+    # timestamp
+    if (solar) {
+      TIMESTAMP <- object %>%
+        purrr::map(slot, "solar_timestamp")
+    } else {
+      TIMESTAMP <- TIMESTAMP <- object %>%
+        purrr::map(slot, "timestamp")
+    }
+    
+    # combining both
+    res <- TIMESTAMP %>%
+      purrr::map2(.flags, cbind) %>%
+      purrr::map(rename, TIMESTAMP = ".x[[i]]") %>%
+      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+    
+    # return
+    return(res)
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_timestamp", "sfn_data_multi",
+  function(object) {
+    res <- object %>%
+      purrr::map(slot, "timestamp")
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_solar_timestamp", "sfn_data_multi",
+  function(object) {
+    res <- object %>%
+      purrr::map(slot, "solar_timestamp")
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_si_code", "sfn_data_multi",
+  function(object) {
+    res <- object %>%
+      purrr::map(slot, "si_code")
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_site_md", "sfn_data_multi",
+  function(object, collapse = FALSE) {
+    res_list <- object %>%
+      purrr::map(slot, 'site_md') %>%
+      purrr::map(tibble::as_tibble)
+    
+    if (isTRUE(collapse)) {
+      return(
+        res_list %>%
+          dplyr::bind_rows()
+      )
+    } else {
+      return(res_list)
+    }
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_stand_md", "sfn_data_multi",
+  function(object, collapse = FALSE) {
+    res_list <- object %>%
+      purrr::map(slot, 'stand_md') %>%
+      purrr::map(tibble::as_tibble)
+    
+    if (isTRUE(collapse)) {
+      return(
+        res_list %>%
+          dplyr::bind_rows()
+      )
+    } else {
+      return(res_list)
+    }
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_species_md", "sfn_data_multi",
+  function(object, collapse = FALSE) {
+    res_list <- object %>%
+      purrr::map(slot, 'species_md') %>%
+      purrr::map(tibble::as_tibble)
+    
+    if (isTRUE(collapse)) {
+      return(
+        res_list %>%
+          dplyr::bind_rows()
+      )
+    } else {
+      return(res_list)
+    }
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_plant_md", "sfn_data_multi",
+  function(object, collapse = FALSE) {
+    res_list <- object %>%
+      purrr::map(slot, 'plant_md') %>%
+      purrr::map(tibble::as_tibble)
+    
+    if (isTRUE(collapse)) {
+      return(
+        res_list %>%
+          dplyr::bind_rows()
+      )
+    } else {
+      return(res_list)
+    }
+  }
+)
+
+#' @rdname sfn_multi_get_methods
+#' @export
+setMethod(
+  "get_env_md", "sfn_data_multi",
+  function(object, collapse = FALSE) {
+    res_list <- object %>%
+      purrr::map(slot, 'env_md') %>%
+      purrr::map(tibble::as_tibble)
+    
+    if (isTRUE(collapse)) {
+      return(
+        res_list %>%
+          dplyr::bind_rows()
+      )
+    } else {
+      return(res_list)
+    }
   }
 )
 

@@ -58,7 +58,8 @@ tibbletime object to create a functional dataset to work with.
 \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
 environmental flags as tibbletime objects.
 
-\code{get_timestamp} method retrieve only the timestamp as POSIXct vector.
+\code{get_timestamp} and \code{get_solar_timestamp} methods retrieve only the
+timestamp as POSIXct vector.
 
 \code{get_si_code} method retrieve a character vector with length(timestamp)
 containing the site code.

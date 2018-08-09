@@ -3,7 +3,9 @@
 #' Generics for getting the info in the slots of SfnData
 #'
 #' see \code{\link{sfn_get_methods}} for detailed info about using the get
-#' methods in \code{sfn_data} class objects
+#' methods in \code{sfn_data} class objects and
+#' \code{\link{sfn_multi_get_methods}} for detailed info about using the get
+#' methods in \code{sfn_data_multi} class objects.
 #' 
 #' @param object Object to get data from
 #' 
