@@ -1146,11 +1146,11 @@ metrics_tidyfier <- function(
       )) %>%
 
     # union all sites, creating the variables needed as NA for those sites that
-    # lack some env variable
-    .multi_union() %>%
-
+    # lack some env variable. We do this with bind_rows in dplyr
+    dplyr::bind_rows() %>%
+    
     # arrange by timestamp
-    dplyr::arrange(eval(as.name(timestamp_var))) %>%
+    dplyr::arrange(!!dplyr::sym(timestamp_var)) %>%
 
     # mutate to get the plant code. Is tricky as we have to separate the metric
     # and interval labels at the end of the tree column

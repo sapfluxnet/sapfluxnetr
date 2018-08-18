@@ -10,8 +10,8 @@
 \alias{midday_metrics}
 \title{Complete metrics wrappers}
 \usage{
-daily_metrics(sfn_data, solar = TRUE, probs = c(0.95, 0.99), tidy = FALSE,
-  metadata = NULL, ...)
+daily_metrics(sfn_data, solar = TRUE, probs = c(0.95, 0.99),
+  tidy = FALSE, metadata = NULL, ...)
 
 monthly_metrics(sfn_data, solar = TRUE, probs = c(0.95, 0.99),
   tidy = FALSE, metadata = NULL, ...)
@@ -20,17 +20,17 @@ nightly_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
   int_start = 20, int_end = 6, probs = c(0.95, 0.99), tidy = FALSE,
   metadata = NULL, ...)
 
-daylight_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
-  int_start = 6, int_end = 20, probs = c(0.95, 0.99), tidy = FALSE,
-  metadata = NULL, ...)
+daylight_metrics(sfn_data, period = c("daily", "monthly"),
+  solar = TRUE, int_start = 6, int_end = 20, probs = c(0.95, 0.99),
+  tidy = FALSE, metadata = NULL, ...)
 
 predawn_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
   int_start = 4, int_end = 6, probs = c(0.95, 0.99), tidy = FALSE,
   metadata = NULL, ...)
 
 midday_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
-  int_start = 11, int_end = 13, probs = c(0.95, 0.99), tidy = FALSE,
-  metadata = NULL, ...)
+  int_start = 11, int_end = 13, probs = c(0.95, 0.99),
+  tidy = FALSE, metadata = NULL, ...)
 }
 \arguments{
 \item{sfn_data}{\code{\link{sfn_data}} or \code{\link{sfn_data_multi}} object
@@ -294,3 +294,4 @@ AUS_CAN_ST2_MIX_midday_tidy
 \seealso{
 Other metrics: \code{\link{sfn_metrics}}
 }
+\concept{metrics}
