@@ -1184,7 +1184,7 @@ describe_md_variable <- function(variable) {
       }
     }
 
-    first <- dplyr::union(first, data_list[[i]])
+    first <- dplyr::union_all(first, data_list[[i]])
   }
 
   return(first)
