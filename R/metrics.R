@@ -1046,10 +1046,10 @@ metrics_tidyfier <- function(
   metadata,
   interval = c('general', 'predawn', 'midday', 'night', 'daylight')
 ) {
-
+  
   # hack to avoid CRAN NOTE with the use of "." in the last step
   . <- NULL
-
+  
   # which timestamp var we use (depends on the interval)
   timestamp_var <- switch(
     interval,
@@ -1059,114 +1059,124 @@ metrics_tidyfier <- function(
     'night' = 'TIMESTAMP_night',
     'daylight' = 'TIMESTAMP_daylight'
   )
-
+  
   # individual data objects
   # In the case of sapf and env data, if the metrics corresponds to only one
   # site the extraction must be done without sapf/env level
   if (all(names(metrics_res) %in% c('sapf', 'env'))) {
-
+    
     sapf_data <- metrics_res['sapf']
-
+    
     env_data <- metrics_res['env']
-
+    
     raw_codes <- metadata[['site_md']][['si_code']]
-
+    
     raw_index <- stringr::str_detect(names(sapf_data[['sapf']])[2], raw_codes)
-
+    
     sites_codes <- raw_codes[raw_index]
-
+    
     names(sapf_data) <- sites_codes
     names(env_data) <- sites_codes
-
+    
   } else {
-
+    
     sapf_data <- metrics_res %>%
       purrr::map(c('sapf'))
-
+    
     env_data <- metrics_res %>%
       purrr::map(c('env'))
-
+    
     sites_codes <- names(metrics_res)
-
+    
   }
-
+  
+  # get the metadata
   plant_md <- metadata[['plant_md']] %>%
     dplyr::filter(.data$si_code %in% sites_codes)
-
+  
   site_md <- metadata[['site_md']] %>%
     dplyr::filter(.data$si_code %in% sites_codes)
-
+  
   stand_md <- metadata[['stand_md']] %>%
     dplyr::filter(.data$si_code %in% sites_codes)
-
+  
   species_md <- metadata[['species_md']] %>%
     dplyr::filter(.data$si_code %in% sites_codes) %>%
     # dplyr::group_by(.data$si_code) %>%
     # dplyr::summarise_all(function(x) { list(x) })
     dplyr::mutate(pl_species = .data$sp_name)
-
+  
   env_md <- metadata[['env_md']] %>%
     dplyr::filter(.data$si_code %in% sites_codes)
-
-  # whole data object
-  env_vars_names <- .env_vars_names()
-
-  # In this step we need to avoid gathering environmental metrics as well as the
-  # timestamp. If we do it this way we don't have to worry which env vars are
-  # present at the current site
-  env_vars_to_exclude_from_gather <- dplyr::vars(
-    -dplyr::starts_with('TIMESTAMP'),
-    -dplyr::starts_with(env_vars_names[1]),
-    -dplyr::starts_with(env_vars_names[2]),
-    -dplyr::starts_with(env_vars_names[3]),
-    -dplyr::starts_with(env_vars_names[4]),
-    -dplyr::starts_with(env_vars_names[5]),
-    -dplyr::starts_with(env_vars_names[6]),
-    -dplyr::starts_with(env_vars_names[7]),
-    -dplyr::starts_with(env_vars_names[8]),
-    -dplyr::starts_with(env_vars_names[9]),
-    -dplyr::starts_with(env_vars_names[10]),
-    -dplyr::starts_with(env_vars_names[11])
-  )
-
-  tmp_data <- sapf_data %>%
-
-    # join sapf and env for all sites
-    purrr::map2(env_data, ~ dplyr::full_join(.x, .y, by = timestamp_var)) %>%
-
+  
+  
+  # we start modifing the sapflow data
+  whole_data <- sapf_data %>%
+    
     # converting to tibble to get rid of tibbletime corrupted index after gather
     purrr::map(tibble::as.tibble) %>%
-
-    # wide to long for sapflow measures (we use here the excluded vars from
-    # before)
+    
+    # wide to long, because we want to extract tree and metric
     purrr::map(
       ~ suppressWarnings(tidyr::gather(
-        .x, tree, value, !!! env_vars_to_exclude_from_gather
-      )
-      )) %>%
-
-    # union all sites, creating the variables needed as NA for those sites that
-    # lack some env variable. We do this with bind_rows in dplyr
-    dplyr::bind_rows() %>%
+        .x, tree, value, -dplyr::starts_with('TIMESTAMP')
+      ))
+    ) %>%
     
-    # arrange by timestamp
-    dplyr::arrange(!!dplyr::sym(timestamp_var)) %>%
-
     # mutate to get the plant code. Is tricky as we have to separate the metric
-    # and interval labels at the end of the tree column
-    dplyr::mutate(
-      sapflow = stringr::str_sub(
-        .data$tree, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2] + 2, -1
-      ),
-      tree = stringr::str_sub(
-        .data$tree, 1, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2]
+    # and interval labels at the end of the tree column and rename tree as
+    # pl_code
+    purrr::map(
+      ~dplyr::mutate(
+        .x,
+        sapflow = stringr::str_sub(
+          .data$tree, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2] + 2, -1
+        ),
+        tree = stringr::str_sub(
+          .data$tree, 1, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2]
+        )
       )
     ) %>%
-    dplyr::rename(pl_code = .data$tree) %>%
-
-    # from long to wide, as each sapflow metric is a variable
-    tidyr::spread(.data$sapflow, .data$value, sep = '_') %>%
-
+    purrr::map(
+      ~dplyr::rename(.x, pl_code = .data$tree)
+    ) %>%
+    
+    # resources consuming step here!
+    # now we have the spread (long to wide) the sapflow values by metric,
+    # replicating the trees, as each sapflow metric is a variable
+    purrr::map(
+      ~tidyr::spread(.x, .data$sapflow, .data$value, sep = '_')
+    ) %>%
+    
+    # fix the sapflow_min_time and sapflow_max_time, because with the
+    # gather/spread steps posixct becomes numerical
+    purrr::map(
+      ~dplyr::mutate_at(
+        .x,
+        dplyr::vars(
+          dplyr::contains('sapflow_min_time'),
+          dplyr::contains('sapflow_max_time')
+        ),
+        dplyr::funs(
+          as.POSIXct(
+            ., tz = attr(.data[[timestamp_var]], 'tz'),
+            origin = lubridate::origin
+          )
+        )
+      )
+    ) %>%
+    
+    # join sapf and env for all sites, by timestamp. As we have two lists, of
+    # equal length, one with the modified sapflow data and another with the
+    # env data, we join them together with map2
+    purrr::map2(env_data, ~ dplyr::full_join(.x, .y, by = timestamp_var)) %>%
+    
+    # and finally we join all list elements with bind rows (controls for
+    # missing variables and create them with the correct class), arranging by
+    # TIMESTMAP
+    dplyr::bind_rows() %>%
+    dplyr::arrange(!!dplyr::sym(timestamp_var)) %>%
+    
     # join all the metadata, always first the plant_md to join by pl_code
     # and after that by site code as the rest of metadata is one row only,
     # except for species_md, as it has a row by species and we need to join
@@ -1176,28 +1186,13 @@ metrics_tidyfier <- function(
     dplyr::left_join(stand_md, by = 'si_code') %>%
     dplyr::left_join(species_md, by = c('si_code', 'pl_species')) %>%
     dplyr::left_join(env_md, by = 'si_code') %>%
-
+    
     # order the columns
     dplyr::select(
       dplyr::starts_with('TIMESTAMP'), .data$si_code, .data$pl_code,
       dplyr::starts_with('sapflow_'), dplyr::everything()
     )
-
-  # reconvert the sapflow times (min and max) to POSIX, if calculated
-  whole_data <- tmp_data %>%
-    dplyr::mutate_at(
-      dplyr::vars(
-        dplyr::contains('sapflow_min_time'),
-        dplyr::contains('sapflow_max_time')
-      ),
-      dplyr::funs(
-        as.POSIXct(
-          ., tz = attr(.data[[timestamp_var]], 'tz'),
-          origin = lubridate::origin
-        )
-      )
-    )
-
+  
   return(whole_data)
-
+  
 }
