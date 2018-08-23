@@ -799,18 +799,18 @@ test_that('metrics_tidyfier returns the expected object for single metrics', {
   
   # is the data there
   sapflow_vars <- paste0(
-    'sapflow_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95, 0.99), TRUE))
+    'sapflow_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95), TRUE))
   )
   
   sapflow_vars_pd <- paste0(
-    'sapflow_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95, 0.99), FALSE)),
+    'sapflow_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95), FALSE)),
     '_pd'
   )
   
   env_vars <- sapfluxnetr:::.env_vars_names() %>%
     purrr::map(
       ~ paste0(
-        .x, '_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95, 0.99), FALSE))
+        .x, '_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95), FALSE))
       )
     ) %>%
     purrr::flatten_chr()
@@ -818,7 +818,7 @@ test_that('metrics_tidyfier returns the expected object for single metrics', {
   env_vars_pd <- sapfluxnetr:::.env_vars_names() %>%
     purrr::map(
       ~ paste0(
-        .x, '_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95, 0.99), FALSE)),
+        .x, '_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95), FALSE)),
         '_pd'
       )
     ) %>%

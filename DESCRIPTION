@@ -42,5 +42,6 @@ Suggests:
     knitr,
     rmarkdown,
     testthat,
-    tidyverse
+    tidyverse,
+    future
 VignetteBuilder: knitr

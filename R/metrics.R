@@ -278,25 +278,30 @@ sfn_metrics <- function(
 ) {
 
   # argument checks
-  if (!(class(sfn_data) %in% c('sfn_data', 'sfn_data_multi'))) {
-    stop(
-      'sfn_metrics only works with sfn_data and sfn_data_multi object classes'
-    )
-  }
+  # if (!(class(sfn_data) %in% c('sfn_data', 'sfn_data_multi'))) {
+  #   stop(
+  #     'sfn_metrics only works with sfn_data and sfn_data_multi object classes'
+  #   )
+  # }
+  stopifnot(
+    inherits(sfn_data, c('sfn_data', 'sfn_data_multi'))
+  )
 
   # we need to check if multi and then repeat the function for each element
-  if (is(sfn_data, 'sfn_data_multi')) {
+  if (inherits(sfn_data, 'sfn_data_multi')) {
     
     res_multi <- sfn_data %>%
-      furrr::future_map(sfn_metrics,
-                        period = period,
-                        .funs = .funs,
-                        solar = solar,
-                        interval = interval,
-                        int_start = int_start,
-                        int_end = int_end,
-                        ...,
-                        .progress = TRUE
+      furrr::future_map(
+      # purrr::map(
+        sfn_metrics,
+        period = period,
+        .funs = .funs,
+        solar = solar,
+        interval = interval,
+        int_start = int_start,
+        int_end = int_end,
+        ...,
+        .progress = TRUE
       )
 
     return(res_multi)
@@ -461,6 +466,9 @@ sfn_metrics <- function(
 #'
 #' @param centroid logical indicating if centroid calculation must be made.
 #'   (i.e. in monthly metrics, the centroid calculation is not needed)
+#'
+#' @importFrom stats sd
+#' @importFrom stats quantile
 
 .fixed_metrics_funs <- function(probs, centroid) {
 
@@ -470,19 +478,19 @@ sfn_metrics <- function(
   # we need magic to add the quantiles as they return more than one value
   # (usually). So lets play with quasiquotation
   quantile_args <- probs %>%
-    purrr::map(function(x) {dplyr::quo(stats::quantile(., probs = x, na.rm = TRUE))})
+    purrr::map(function(x) {dplyr::quo(quantile(., probs = x, na.rm = TRUE))})
   names(quantile_args) <- paste0('q_', round(probs*100, 0))
 
   .funs <- dplyr::funs(
     mean = mean(., na.rm = TRUE),
-    sd = stats::sd(., na.rm = TRUE),
-    n = n(),
+    sd = sd(., na.rm = TRUE),
+    # n = n(),
     coverage = data_coverage(.),
     !!! quantile_args,
-    max = max(., na.rm = TRUE),
-    max_time = max_time(., .data$TIMESTAMP_coll),
-    min = min(., na.rm = TRUE),
-    min_time = min_time(., .data$TIMESTAMP_coll),
+    # max = max(., na.rm = TRUE),
+    # max_time = max_time(., .data$TIMESTAMP_coll),
+    # min = min(., na.rm = TRUE),
+    # min_time = min_time(., .data$TIMESTAMP_coll),
     centroid = diurnal_centroid(.)
   )
 
@@ -586,34 +594,38 @@ NULL
 daily_metrics <- function(
   sfn_data,
   solar = TRUE,
-  probs = c(0.95, 0.99),
+  probs = c(0.95),
   tidy = FALSE,
   metadata = NULL,
   ...
 ) {
+  
+  # hack for cran tests
+  . <- NULL
 
   # hardcoded values
   period <- 'daily'
 
   # default funs
   .funs <- .fixed_metrics_funs(probs, TRUE)
-
+  
+  # pipe for avoid creating intermediate big objects
+  # 
   # just input all in the sfn_function
-  res_raw <- sfn_metrics(
+  sfn_metrics(
     sfn_data,
     period = period,
     .funs = .funs,
     solar = solar,
     interval = 'general',
     ...
-  )
-
-  # tidy?
-  if (tidy) {
-    res_tidy <- metrics_tidyfier(res_raw, metadata, interval = 'general')
-    return(res_tidy)
-  } else {
-    return(res_raw)
+  ) %>% {
+    # and tidyfy it if tidy is true
+    if (tidy) {
+      metrics_tidyfier(., metadata, interval = 'general')
+    } else {
+      .
+    }
   }
 }
 
@@ -645,7 +657,7 @@ daily_metrics <- function(
 monthly_metrics <- function(
   sfn_data,
   solar = TRUE,
-  probs = c(0.95, 0.99),
+  probs = c(0.95),
   tidy = FALSE,
   metadata = NULL,
   ...
@@ -725,7 +737,7 @@ nightly_metrics <- function(
   solar = TRUE,
   int_start = 20,
   int_end = 6,
-  probs = c(0.95, 0.99),
+  probs = c(0.95),
   tidy = FALSE,
   metadata = NULL,
   ...
@@ -803,7 +815,7 @@ daylight_metrics <- function(
   solar = TRUE,
   int_start = 6,
   int_end = 20,
-  probs = c(0.95, 0.99),
+  probs = c(0.95),
   tidy = FALSE,
   metadata = NULL,
   ...
@@ -883,7 +895,7 @@ predawn_metrics <- function(
   solar = TRUE,
   int_start = 4,
   int_end = 6,
-  probs = c(0.95, 0.99),
+  probs = c(0.95),
   tidy = FALSE,
   metadata = NULL,
   ...
@@ -959,7 +971,7 @@ midday_metrics <- function(
   solar = TRUE,
   int_start = 11,
   int_end = 13,
-  probs = c(0.95, 0.99),
+  probs = c(0.95),
   tidy = FALSE,
   metadata = NULL,
   ...
@@ -1113,58 +1125,210 @@ metrics_tidyfier <- function(
   # we start modifing the sapflow data
   whole_data <- sapf_data %>%
     
-    # converting to tibble to get rid of tibbletime corrupted index after gather
-    purrr::map(tibble::as.tibble) %>%
+    # # converting to tibble to get rid of tibbletime corrupted index after gather
+    # purrr::map(tibble::as.tibble) %>%
+    # 
+    # # wide to long, because we want to extract tree and metric
+    # purrr::map(
+    #   ~ suppressWarnings(tidyr::gather(
+    #     .x, tree, value, -dplyr::starts_with('TIMESTAMP')
+    #   ))
+    # ) %>%
+    # 
+    # # mutate to get the plant code. Is tricky as we have to separate the metric
+    # # and interval labels at the end of the tree column and rename tree as
+    # # pl_code
+    # purrr::map(
+    #   ~dplyr::mutate(
+    #     .x,
+    #     sapflow = stringr::str_sub(
+    #       .data$tree, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2] + 2, -1
+    #     ),
+    #     tree = stringr::str_sub(
+    #       .data$tree, 1, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2]
+    #     )
+    #   )
+    # ) %>%
+    # purrr::map(
+    #   ~dplyr::rename(.x, pl_code = .data$tree)
+    # ) %>%
+    # 
+    # # resources consuming step here!
+    # # now we have the spread (long to wide) the sapflow values by metric,
+    # # replicating the trees, as each sapflow metric is a variable
+    # purrr::map(
+    #   ~tidyr::spread(.x, .data$sapflow, .data$value, sep = '_')
+    # ) %>%
+    # 
+    # # fix the sapflow_min_time and sapflow_max_time, because with the
+    # # gather/spread steps posixct becomes numerical
+    # purrr::map(
+    #   ~dplyr::mutate_at(
+    #     .x,
+    #     dplyr::vars(
+    #       dplyr::contains('sapflow_min_time'),
+    #       dplyr::contains('sapflow_max_time')
+    #     ),
+    #     dplyr::funs(
+    #       as.POSIXct(
+    #         ., tz = attr(.data[[timestamp_var]], 'tz'),
+    #         origin = lubridate::origin
+    #       )
+    #     )
+    #   )
+    # ) %>%
+    purrr::map(.sapflow_tidy) %>%
+  
+    # join sapf and env for all sites, by timestamp. As we have two lists, of
+    # equal length, one with the modified sapflow data and another with the
+    # env data, we join them together with map2
+    purrr::map2(env_data, ~ dplyr::full_join(.x, .y, by = timestamp_var)) %>%
     
-    # wide to long, because we want to extract tree and metric
-    purrr::map(
-      ~ suppressWarnings(tidyr::gather(
-        .x, tree, value, -dplyr::starts_with('TIMESTAMP')
-      ))
-    ) %>%
+    # and finally we join all list elements with bind rows (controls for
+    # missing variables and create them with the correct class), arranging by
+    # TIMESTMAP
+    dplyr::bind_rows() %>%
+    dplyr::arrange(!!dplyr::sym(timestamp_var)) %>%
     
-    # mutate to get the plant code. Is tricky as we have to separate the metric
-    # and interval labels at the end of the tree column and rename tree as
-    # pl_code
-    purrr::map(
-      ~dplyr::mutate(
-        .x,
-        sapflow = stringr::str_sub(
-          .data$tree, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2] + 2, -1
-        ),
-        tree = stringr::str_sub(
-          .data$tree, 1, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2]
-        )
-      )
-    ) %>%
-    purrr::map(
-      ~dplyr::rename(.x, pl_code = .data$tree)
-    ) %>%
+    # join all the metadata, always first the plant_md to join by pl_code
+    # and after that by site code as the rest of metadata is one row only,
+    # except for species_md, as it has a row by species and we need to join
+    # not only by site, also by pl_species
+    dplyr::left_join(plant_md, by = 'pl_code') %>%
+    dplyr::left_join(site_md, by = 'si_code') %>%
+    dplyr::left_join(stand_md, by = 'si_code') %>%
+    dplyr::left_join(species_md, by = c('si_code', 'pl_species')) %>%
+    dplyr::left_join(env_md, by = 'si_code') %>%
     
-    # resources consuming step here!
-    # now we have the spread (long to wide) the sapflow values by metric,
-    # replicating the trees, as each sapflow metric is a variable
-    purrr::map(
-      ~tidyr::spread(.x, .data$sapflow, .data$value, sep = '_')
-    ) %>%
+    # order the columns
+    dplyr::select(
+      dplyr::starts_with('TIMESTAMP'), .data$si_code, .data$pl_code,
+      dplyr::starts_with('sapflow_'), dplyr::everything()
+    )
+  
+  return(whole_data)
+  
+}
+
+#' Build a tidy data frame from the metrics results nested list
+#'
+#' Transform the nested list of metrics in a tidy tibble where each observation
+#' has its own row
+#'
+#' @param metrics_res Nested list containing the metrics results as obtained
+#'   from \code{\link{metrics}}
+#'
+#' @param metadata List containing the metadata nested list, as obtained from
+#'   \code{\link{read_sfn_metadata}}
+#'
+#' @param interval Interval to return, it depends on the \code{metrics_res} and
+#'   can be \code{"gen"} for the general metrics, \code{"md"} for midday metrics,
+#'   \code{"pd"} for predawn metrics, \code{"night"} for night metrics or
+#'   \code{"day"} for diurnal metrics.
+#'
+#' @return a tibble with the following columns:
+#'   \itemize{
+#'     \item{TIMESTAMP: POSIXct vector with the date-time of the observation}
+#'     \item{si_code: Character vector with the site codes}
+#'     \item{pl_code: Character vector with the plant codes}
+#'     \item{sapflow_*: Variables containing the different metrics for the
+#'           sapflow measurements (i.e. sapflow_mean, sapflow_q_95)}
+#'     \item{ta_*; rh_*; vpd_*; ...: Variables containing the different metrics
+#'           for environmental variables (i.e. ta_mean, ta_q_95)}
+#'     \item{pl_*: plant metadata variables (i.e. pl_sapw_area, pl_sens_meth)}
+#'     \item{si_*: site metadata variables (i.e. si_biome, si_contact_firstname)}
+#'     \item{st_*: stand metadata variables (i.e. st_aspect, st_lai)}
+#'     \item{sp_*: species metadata variables (i.e. sp_basal_area_perc)}
+#'     \item{env_*: environmental metadata variables (i.e. env_timezone)}
+#'   }
+#'
+#' @examples
+#' # data
+#' multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
+#' data('sfn_metadata_ex', package = 'sapfluxnetr')
+#'
+#' # metrics
+#' multi_metrics <- daily_metrics(multi_sfn)
+#'
+#' # tidyfing
+#' multi_tidy <- metrics_tidyfier(
+#'   multi_metrics, sfn_metadata_ex, interval = 'general'
+#' )
+#' multi_tidy
+#'
+#' # A really easier way of doing the same
+#' multi_tidy_easy <- daily_metrics(multi_sfn, tidy = TRUE, metadata = sfn_metadata_ex)
+#'
+#' @export
+
+metrics_tidyfier_alt <- function(
+  metrics_res,
+  metadata,
+  interval = c('general', 'predawn', 'midday', 'night', 'daylight')
+) {
+  
+  # hack to avoid CRAN NOTE with the use of "." in the last step
+  . <- NULL
+  
+  # which timestamp var we use (depends on the interval)
+  timestamp_var <- switch(
+    interval,
+    'general' = 'TIMESTAMP',
+    'midday' = 'TIMESTAMP_md',
+    'predawn' = 'TIMESTAMP_pd',
+    'night' = 'TIMESTAMP_night',
+    'daylight' = 'TIMESTAMP_daylight'
+  )
+  
+  # individual data objects
+  # In the case of sapf and env data, if the metrics corresponds to only one
+  # site the extraction must be done without sapf/env level
+  if (all(names(metrics_res) %in% c('sapf', 'env'))) {
     
-    # fix the sapflow_min_time and sapflow_max_time, because with the
-    # gather/spread steps posixct becomes numerical
-    purrr::map(
-      ~dplyr::mutate_at(
-        .x,
-        dplyr::vars(
-          dplyr::contains('sapflow_min_time'),
-          dplyr::contains('sapflow_max_time')
-        ),
-        dplyr::funs(
-          as.POSIXct(
-            ., tz = attr(.data[[timestamp_var]], 'tz'),
-            origin = lubridate::origin
-          )
-        )
-      )
-    ) %>%
+    sapf_data <- metrics_res['sapf']
+    env_data <- metrics_res['env']
+    raw_codes <- metadata[['site_md']][['si_code']]
+    raw_index <- stringr::str_detect(names(sapf_data[['sapf']])[2], raw_codes)
+    sites_codes <- raw_codes[raw_index]
+    names(sapf_data) <- sites_codes
+    names(env_data) <- sites_codes
+    
+  } else {
+    
+    sapf_data <- metrics_res %>%
+      purrr::map(c('sapf'))
+    env_data <- metrics_res %>%
+      purrr::map(c('env'))
+    sites_codes <- names(metrics_res)
+    
+  }
+  
+  # get the metadata
+  plant_md <- metadata[['plant_md']] %>%
+    dplyr::filter(.data$si_code %in% sites_codes)
+  
+  site_md <- metadata[['site_md']] %>%
+    dplyr::filter(.data$si_code %in% sites_codes)
+  
+  stand_md <- metadata[['stand_md']] %>%
+    dplyr::filter(.data$si_code %in% sites_codes)
+  
+  species_md <- metadata[['species_md']] %>%
+    dplyr::filter(.data$si_code %in% sites_codes) %>%
+    # dplyr::group_by(.data$si_code) %>%
+    # dplyr::summarise_all(function(x) { list(x) })
+    dplyr::mutate(pl_species = .data$sp_name)
+  
+  env_md <- metadata[['env_md']] %>%
+    dplyr::filter(.data$si_code %in% sites_codes)
+  
+  
+  # we start modifing the sapflow data
+  whole_data <- sapf_data %>%
+    
+    # use .sapflow_tidy wrapper function in helpers.R, see there for
+    # step explanations
+    furrr::future_map(.sapflow_tidy) %>%
     
     # join sapf and env for all sites, by timestamp. As we have two lists, of
     # equal length, one with the modified sapflow data and another with the
