@@ -731,24 +731,22 @@ test_that('*_metrics functions with ... work', {
 #### .fixed_metrics_funs ####
 test_that('.fixed_metrics_funs works', {
 
-  .funs <- sapfluxnetr:::.fixed_metrics_funs(probs = c(0.95, 0.99), TRUE)
+  .funs <- sapfluxnetr:::.fixed_metrics_funs(probs = c(0.95), TRUE)
 
   expect_s3_class(.funs, 'fun_list')
   expect_identical(
     names(.funs),
-    c('mean', 'sd', 'n', 'coverage', 'q_95', 'q_99', 'max',
-      'max_time', 'min', 'min_time', 'centroid')
+    c('mean', 'sd', 'coverage', 'q_95', 'centroid')
   )
 
   .funs_no_centroid <- sapfluxnetr:::.fixed_metrics_funs(
-    probs = c(0.1, 0.01), FALSE
+    probs = c(0.1), FALSE
   )
 
   expect_s3_class(.funs_no_centroid, 'fun_list')
   expect_identical(
     names(.funs_no_centroid),
-    c('mean', 'sd', 'n', 'coverage', 'q_10', 'q_1', 'max',
-      'max_time', 'min', 'min_time')
+    c('mean', 'sd', 'coverage', 'q_10')
   )
 
 })
