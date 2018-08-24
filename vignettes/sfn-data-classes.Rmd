@@ -281,9 +281,10 @@ It inherits from list so, in a nutshell, `sfn_data_multi` is a list of
 
 ## Methods
 
-`sfn_data_multi` has only one custom method declared.
+`sfn_data_multi` has the following methods declared.
   
-  + show
+  + `show`: it shows the number, codes and combined timestamp span of sites in the
+    multi object.
   
 ```{r show_multi}
 # creating a sfn_data_multi object
@@ -295,8 +296,19 @@ multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 multi_sfn
 ```
 
-It shows the number and codes of site composing the multi object and the
-combined timestamp span of all the sites contained.
+  + `get` methods: they work the same as in the `sfn_data` objects,
+    except they return a list, with the corresponding data for the sites in the
+    `sfn_data_multi` object as elements.
+
+```{r get_multi}
+# get sapflow data
+get_sapf_data(multi_sfn)
+# get plant metadata
+get_plant_md(multi_sfn)
+# with metadata, we can collapse
+get_plant_md(multi_sfn, collapse = TRUE)
+```
+
 
 ## Utilities
 
