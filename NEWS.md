@@ -3,12 +3,12 @@
 * **Implementation of furrr::future_map** in `sfn_metrics`. After some
   benchmarking, the benefits in time are solid, so now the user has the ability
   to perform the metrics in parallel.
-* New logic with performance improvements for metrics_tidyfier (introduing the
+* New logic with performance improvements for metrics_tidyfier (introducing the
   .sapflow_tidy internal helper function)
 * Added get methods for sfn_data_multi class objects
 * Fixed bug in metrics function that created min and max time variables as double
   instead of POSIXct in sites with NAs in the first day of measures
-* Now species metadata variables are returned individually instead of a list
+* Now species metadata variables are returned individually instead of in a list
 
 # sapfluxnetr 0.0.4
 
