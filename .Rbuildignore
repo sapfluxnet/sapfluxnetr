@@ -3,6 +3,7 @@
 
 tests/testthat/Data/.metadata_cache.RData
 tests/testthat/big_test/
+^benchmarking$
 ^data-raw$
 ^README\.Rmd$
 ^README-.*\.png$
