@@ -51,13 +51,13 @@ format (a long tibble, each observation in its own row)}
 \item{...}{optional arguments to pass to methods used
 (i.e. tibbletime::collapse_index or summarise funs extra arguments)}
 
-\item{period}{Time period to aggregate data by. See period section for an explanation
-about the periods ('daily', 'monthly', 'yearly', ...)}
+\item{period}{Time period to aggregate data by. See period section for an
+explanation about the periods ('daily', 'monthly', 'yearly', ...)}
 
-\item{int_start}{Numeric value indicating the starting hour of the special
+\item{int_start}{Integer value indicating the starting hour of the special
 interval in 24h format. See Interval section in details.}
 
-\item{int_end}{Numeric value indicating the ending hour of the special
+\item{int_end}{Integer value indicating the ending hour of the special
 interval in 24h format. See Interval section in details.}
 }
 \value{
@@ -77,15 +77,11 @@ set of fixed arguments.
 \itemize{
   \item{mean: mean of variable (tree or environmental variable) for the
         given period. NAs are removed}
-  \item{n: Number of measures in the give period used for the metrics
-        (NAs included)}
+  \item{sd: standard deviation of the variable for the givn period. NAs are
+        removed}
   \item{coverage: Data coverage percentage (percentage of measures without
         NAs)}
-  \item{q_XX: XX quantile value for the period}
-  \item{max: Maximum value for the period}
-  \item{max_time: Time when maximum value was reached}
-  \item{min: Minimum value for the period}
-  \item{min_time: Time when minimum value was reached}
+  \item{q_XX: 0.XX quantile value for the period}
   \item{centroid: Diurnal centroid value (hours passed until the half of
         the summed daily value was reached). Only returned for sapflow
         measures when period is 'daily'}

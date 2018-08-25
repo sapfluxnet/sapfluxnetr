@@ -87,6 +87,10 @@ read_sfn_data <- function(site_code, folder = '.') {
     env_md = tibble::tibble()
   )
 
+  # we do a simple for loop instead of loading all sites and getting the
+  # metadata because in the benchmarking it not presents any time adventage and
+  # in this way the memory is liberated in each loop, so it's suitable for
+  # low memory systems (more or less)
   for (i in 1:length(sites_codes)) {
 
     print(paste0(
@@ -120,60 +124,6 @@ read_sfn_data <- function(site_code, folder = '.') {
 
   return(sfn_metadata)
 
-}
-
-.write_metadata_cache_furrr <- function(
-  folder, .dry = FALSE
-) {
-  
-  site_codes <- list.files(folder, recursive = TRUE, pattern = '.RData') %>%
-    stringr::str_remove('.RData') %>%
-    split(., ceiling(seq_along(.)/25))
-  
-  # we made a sequential loop for each 25 sites, to be able to remove objects
-  # and clear the memory.
-  
-  sfn_metadata <- list(
-    site_md = tibble::tibble(),
-    stand_md = tibble::tibble(),
-    species_md = tibble::tibble(),
-    plant_md = tibble::tibble(),
-    env_md = tibble::tibble()
-  )
-  
-  for (sites_group in site_codes) {
-    
-    sites_group %>%
-      read_sfn_data(folder = folder) -> multi
-    
-    site_md_g <- multi %>% get_site_md(collapse = TRUE)
-    stand_md_g <- multi %>% get_stand_md(collapse = TRUE)
-    species_md_g <- multi %>% get_species_md(collapse = TRUE)
-    plant_md_g <- multi %>% get_plant_md(collapse = TRUE)
-    env_md_g <- multi %>% get_env_md(collapse = TRUE)
-    
-    sfn_metadata_g <- list(
-      site_md = site_md_g,
-      stand_md = stand_md_g,
-      species_md = species_md_g,
-      plant_md = plant_md_g,
-      env_md = env_md_g
-    )
-    
-    sfn_metadata <- sfn_metadata %>%
-      purrr::map2(sfn_metadata_g, dplyr::bind_rows)
-    
-    rm(multi, site_md_g, stand_md_g, species_md_g, plant_md_g, env_md_g)
-  }
-  
-  # cache thing
-  if (!.dry) {
-    save(sfn_metadata, file = file.path(folder, '.metadata_cache.RData'))
-  }
-  
-  return(sfn_metadata)
-  
-  
 }
 
 #' Read and combine all metadata
@@ -286,7 +236,11 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'
 #' @export
 
-filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache = FALSE) {
+filter_by_var <- function(
+  ...,
+  folder = '.', join = c('and', 'or'),
+  .use_cache = FALSE
+) {
 
   # Don't waste resources, if cache, read metadata from disk directly
   if (.use_cache) {
