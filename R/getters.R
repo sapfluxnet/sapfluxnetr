@@ -110,7 +110,8 @@ read_sfn_data <- function(site_code, folder = '.') {
     )
     sfn_metadata[['plant_md']] <- dplyr::bind_rows(
       sfn_metadata[['plant_md']], get_plant_md(sfn_data) %>%
-        dplyr::mutate(pl_name = as.character(.data$pl_name)) # TODO remove this when the sites are corrected
+        # TODO remove this when the sites are corrected
+        dplyr::mutate(pl_name = as.character(.data$pl_name))
     )
     sfn_metadata[['env_md']] <- dplyr::bind_rows(
       sfn_metadata[['env_md']], get_env_md(sfn_data)
@@ -322,4 +323,34 @@ filter_by_var <- function(
     return(res_names)
 
   }
+}
+
+#' list available sites in a db folder
+#' 
+#' Retrieves the site codes in the specified folder
+#' 
+#' If folder 
+#' 
+#' @param folder Character vector of length 1 indicating the route to the
+#'   db folder
+#' 
+#' @examples
+#' \dontrun{
+#' # list the sites available in Data folder
+#' sfn_sites_in_folder('Data/')
+#' }
+#' 
+#' @export
+sfn_sites_in_folder <- function(folder = '.') {
+  # get the files, if any
+  res <- list.files(folder, pattern = '.RData') %>%
+    stringr::str_remove('.RData')
+  
+  if (length(res) < 1) {
+    # if no files were found, report it and stop
+    stop(folder, ' does not contain any site data file')
+  }
+  
+  # return res
+  return(res)
 }
