@@ -6,13 +6,13 @@
 #' Given a site code and a route, \code{read_sfn_data} will return the selected
 #' sfn_data object
 #'
-#' @param site_code A character vector with the site code/s
+#' @param site_codes A character vector with the site code/s
 #'
 #' @param folder Route to the folder containing the \code{.RData} file. Default
 #'   to working directory.
 #'
-#' @return If \code{site_code} is a vector of length 1, an sfn_data object with
-#'   the selected site data. If \code{site_code} is a vector of length > 1, then
+#' @return If \code{site_codes} is a vector of length 1, an sfn_data object with
+#'   the selected site data. If \code{site_codes} is a vector of length > 1, then
 #'   a sfn_data_multi object containing all selected sites.
 #'
 #' @examples
@@ -27,27 +27,27 @@
 #'
 #' @export
 
-read_sfn_data <- function(site_code, folder = '.') {
+read_sfn_data <- function(site_codes, folder = '.') {
 
   # if more than one site we need to map the call
-  if (length(site_code) > 1) {
-    sites_multi <- purrr::map(site_code, read_sfn_data, folder) %>%
+  if (length(site_codes) > 1) {
+    sites_multi <- purrr::map(site_codes, read_sfn_data, folder) %>%
       as_sfn_data_multi()
 
     return(sites_multi)
   }
 
   # one site, we need to find it and load it
-  file_name <- file.path(folder, paste0(site_code, '.RData'))
+  file_name <- file.path(folder, paste0(site_codes, '.RData'))
 
   if (!file.exists(file_name)) {
-    stop(folder, ' folder does not contain any file called ', site_code, '.RData')
+    stop(folder, ' folder does not contain any file called ', site_codes, '.RData')
   } else {
     load(file = file_name)
 
     # load will load in the function environment a SITE_CODE object,
     # we need to access to it to return it
-    return(eval(as.name(site_code)))
+    return(eval(as.name(site_codes)))
   }
 
 }
