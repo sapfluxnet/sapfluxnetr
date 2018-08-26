@@ -28,28 +28,28 @@
 #' @export
 
 read_sfn_data <- function(site_codes, folder = '.') {
-
+  
   # if more than one site we need to map the call
   if (length(site_codes) > 1) {
     sites_multi <- purrr::map(site_codes, read_sfn_data, folder) %>%
       as_sfn_data_multi()
-
+    
     return(sites_multi)
   }
-
+  
   # one site, we need to find it and load it
   file_name <- file.path(folder, paste0(site_codes, '.RData'))
-
+  
   if (!file.exists(file_name)) {
     stop(folder, ' folder does not contain any file called ', site_codes, '.RData')
   } else {
     load(file = file_name)
-
+    
     # load will load in the function environment a SITE_CODE object,
     # we need to access to it to return it
     return(eval(as.name(site_codes)))
   }
-
+  
 }
 
 #' Write metadata cache file to disk
@@ -70,7 +70,7 @@ read_sfn_data <- function(site_codes, folder = '.') {
 #'   species, plant and environmental)
 
 .write_metadata_cache <- function(folder, .dry = FALSE) {
-
+  
   # In order to avoid loading all data objects at one time in memory (it could be
   # too much in a normal system we think), lets only store the metadata. To do
   # that, we load one site and store the metadata before to pass to the next.
@@ -78,7 +78,7 @@ read_sfn_data <- function(site_codes, folder = '.') {
   # result in all objects in memory, so NO GOOD, we nned to circumvent that.
   sites_codes <- list.files(folder, recursive = TRUE, pattern = '.RData') %>%
     stringr::str_remove('.RData')
-
+  
   sfn_metadata <- list(
     site_md = tibble::tibble(),
     stand_md = tibble::tibble(),
@@ -86,19 +86,19 @@ read_sfn_data <- function(site_codes, folder = '.') {
     plant_md = tibble::tibble(),
     env_md = tibble::tibble()
   )
-
+  
   # we do a simple for loop instead of loading all sites and getting the
   # metadata because in the benchmarking it not presents any time adventage and
   # in this way the memory is liberated in each loop, so it's suitable for
   # low memory systems (more or less)
   for (i in 1:length(sites_codes)) {
-
+    
     print(paste0(
       'processing site ', sites_codes[i], ' (', i, ' of ', length(sites_codes), ')'
     ), width = 80)
-
+    
     sfn_data <- read_sfn_data(sites_codes[i], folder)
-
+    
     sfn_metadata[['site_md']] <- dplyr::bind_rows(
       sfn_metadata[['site_md']], get_site_md(sfn_data)
     )
@@ -117,14 +117,14 @@ read_sfn_data <- function(site_codes, folder = '.') {
       sfn_metadata[['env_md']], get_env_md(sfn_data)
     )
   }
-
+  
   # cache thing
   if (!.dry) {
     save(sfn_metadata, file = file.path(folder, '.metadata_cache.RData'))
   }
-
+  
   return(sfn_metadata)
-
+  
 }
 
 #' Read and combine all metadata
@@ -161,22 +161,22 @@ read_sfn_data <- function(site_codes, folder = '.') {
 #' @export
 
 read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
-
+  
   if (.write_cache) {
     sfn_metadata <- .write_metadata_cache(folder = folder, .dry = FALSE)
   } else {
     file_name <- file.path(folder, '.metadata_cache.RData')
-
+    
     if (!file.exists(file_name)) {
       stop('metadata cache file not found at ', folder,
-            ' If you want to create one, please set .write_cache to TRUE')
+           ' If you want to create one, please set .write_cache to TRUE')
     } else {
       load(file_name)
     }
   }
-
+  
   return(sfn_metadata)
-
+  
 }
 
 
@@ -242,12 +242,12 @@ filter_by_var <- function(
   folder = '.', join = c('and', 'or'),
   .use_cache = FALSE
 ) {
-
+  
   # Don't waste resources, if cache, read metadata from disk directly
   if (.use_cache) {
-
+    
     cache_file <- file.path(folder, '.metadata_cache.RData')
-
+    
     if (file.exists(cache_file)) {
       load(cache_file) # loads and object called sfn_metadata
     } else {
@@ -261,17 +261,17 @@ filter_by_var <- function(
             'This can take a while...')
     sfn_metadata <- .write_metadata_cache(folder, .dry = TRUE)
   }
-
+  
   # if we accept ... (expressions with logical result) we need to enquo them
   dots <- dplyr::quos(...)
-
+  
   metadata <- c(site_md = 'si_', stand_md = 'st_',
                 species_md = 'sp_', plant_md = 'pl_', env_md = 'env_')
   res_list <- vector(mode = 'list')
-
+  
   # loop along all metadata classes to check if there is filters and apply them
   for (md in 1:5) {
-
+    
     # dot dispatcher, distribute the dots in the corresponding metadata
     sel_dots <- dots %>%
       purrr::map(rlang::quo_get_expr) %>%
@@ -279,7 +279,7 @@ filter_by_var <- function(
       purrr::map(stringr::str_detect, pattern = metadata[[md]]) %>%
       purrr::map_lgl(any)
     md_dots <- dots[sel_dots]
-
+    
     # if there is filters, filter the corresponding metadata, pull the codes
     # and get the unique (in case of plant and species md, that can be repeated)
     if (length(md_dots) > 0) {
@@ -290,39 +290,110 @@ filter_by_var <- function(
         # pull the si_code variable
         dplyr::pull(.data$si_code) %>%
         unique()
-
+      
       res_list[[md]] <- md_sites_selected
       names(res_list)[md] <- names(metadata)[md]
-
+      
     } else {
       # if there is no filter, return NULL to the list, we will remove it after
       res_list[[md]] <- NULL
     }
   }
-
+  
   # remove the NULL elements, this way we can check for values in all elements
   # We do it with purrr::keep (compact removes also empty vectors, which is not
   # desirable in this situation)
   names_sites <- res_list %>%
     purrr::keep(~ !is.null(.x))
-
+  
   # get the join argument
   join <- match.arg(join)
   if (join == 'or') {
-
+    
     # 'or' indicates any site that meet any condition
     res_names <- purrr::flatten_chr(names_sites) %>%
       unique()
     return(res_names)
-
+    
   } else {
-
+    
     # 'and' indicates only sites that meet all conditions, we will do that with
     # Reduce and intersect
     res_names <- Reduce(intersect, names_sites)
     return(res_names)
-
+    
   }
+}
+
+filter_sites_by_md <- function(
+  sites, sfn_metadata,
+  ...,
+  .join = c('and', 'or')
+) {
+  
+  # if we accept ... (expressions with logical result) we need to enquo them
+  dots <- dplyr::quos(...)
+  # metadata dic to distribute the dots arguments to their respective md
+  metadata <- c(site_md = 'si_', stand_md = 'st_',
+                species_md = 'sp_', plant_md = 'pl_', env_md = 'env_')
+  # empty res
+  res_list <- vector(mode = 'list')
+  
+  # loop along all metadata classes to check if there is filters and apply them
+  for (md in 1:5) {
+    
+    # dot dispatcher, distribute the dots in the corresponding metadata
+    sel_dots <- dots %>%
+      purrr::map(rlang::quo_get_expr) %>%
+      purrr::map(as.character) %>%
+      purrr::map(stringr::str_detect, pattern = metadata[[md]]) %>%
+      purrr::map_lgl(any)
+    md_dots <- dots[sel_dots]
+    
+    # if there is filters, filter the corresponding metadata, pull the codes
+    # and get the unique (in case of plant and species md, that can be repeated)
+    if (length(md_dots) > 0) {
+      md_sites_selected <- sfn_metadata[[names(metadata)[md]]] %>%
+        dplyr::filter(
+          !!! md_dots
+        ) %>%
+        # pull the si_code variable
+        dplyr::pull(.data$si_code) %>%
+        unique()
+      
+      res_list[[md]] <- md_sites_selected
+      names(res_list)[md] <- names(metadata)[md]
+      
+    } else {
+      # if there is no filter, return NULL to the list, we will remove it after
+      res_list[[md]] <- NULL
+    }
+  }
+  
+  # remove the NULL elements, this way we can check for values in all elements
+  # We do it with purrr::keep (compact removes also empty vectors, which is not
+  # desirable in this situation)
+  names_sites <- res_list %>%
+    purrr::keep(~ !is.null(.x))
+  
+  # get the join argument
+  .join <- match.arg(.join)
+  if (.join == 'or') {
+    
+    # 'or' indicates any site that meet any condition
+    res_names <- purrr::flatten_chr(names_sites) %>%
+      unique()
+    return(res_names)
+    
+  } else {
+    
+    # 'and' indicates only sites that meet all conditions, we will do that with
+    # Reduce and intersect
+    res_names <- Reduce(intersect, names_sites)
+    return(res_names)
+    
+  }
+  
 }
 
 #' list available sites in a db folder

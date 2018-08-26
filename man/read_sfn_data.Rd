@@ -4,17 +4,17 @@
 \alias{read_sfn_data}
 \title{Read sfn_data from disk}
 \usage{
-read_sfn_data(site_code, folder = ".")
+read_sfn_data(site_codes, folder = ".")
 }
 \arguments{
-\item{site_code}{A character vector with the site code/s}
+\item{site_codes}{A character vector with the site code/s}
 
 \item{folder}{Route to the folder containing the \code{.RData} file. Default
 to working directory.}
 }
 \value{
-If \code{site_code} is a vector of length 1, an sfn_data object with
-  the selected site data. If \code{site_code} is a vector of length > 1, then
+If \code{site_codes} is a vector of length 1, an sfn_data object with
+  the selected site data. If \code{site_codes} is a vector of length > 1, then
   a sfn_data_multi object containing all selected sites.
 }
 \description{
