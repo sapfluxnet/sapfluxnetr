@@ -6,8 +6,8 @@
 \title{Initialize method for sfn_data}
 \usage{
 \S4method{initialize}{sfn_data}(.Object, sapf_data, env_data, sapf_flags,
-  env_flags, si_code, timestamp, solar_timestamp, site_md, stand_md, species_md,
-  plant_md, env_md)
+  env_flags, si_code, timestamp, solar_timestamp, site_md, stand_md,
+  species_md, plant_md, env_md)
 }
 \arguments{
 \item{.Object}{sfn_data object to create}

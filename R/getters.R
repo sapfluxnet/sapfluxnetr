@@ -6,13 +6,13 @@
 #' Given a site code and a route, \code{read_sfn_data} will return the selected
 #' sfn_data object
 #'
-#' @param site_code A character vector with the site code/s
+#' @param site_codes A character vector with the site code/s
 #'
 #' @param folder Route to the folder containing the \code{.RData} file. Default
 #'   to working directory.
 #'
-#' @return If \code{site_code} is a vector of length 1, an sfn_data object with
-#'   the selected site data. If \code{site_code} is a vector of length > 1, then
+#' @return If \code{site_codes} is a vector of length 1, an sfn_data object with
+#'   the selected site data. If \code{site_codes} is a vector of length > 1, then
 #'   a sfn_data_multi object containing all selected sites.
 #'
 #' @examples
@@ -27,29 +27,29 @@
 #'
 #' @export
 
-read_sfn_data <- function(site_code, folder = '.') {
-
+read_sfn_data <- function(site_codes, folder = '.') {
+  
   # if more than one site we need to map the call
-  if (length(site_code) > 1) {
-    sites_multi <- purrr::map(site_code, read_sfn_data, folder) %>%
+  if (length(site_codes) > 1) {
+    sites_multi <- purrr::map(site_codes, read_sfn_data, folder) %>%
       as_sfn_data_multi()
-
+    
     return(sites_multi)
   }
-
+  
   # one site, we need to find it and load it
-  file_name <- file.path(folder, paste0(site_code, '.RData'))
-
+  file_name <- file.path(folder, paste0(site_codes, '.RData'))
+  
   if (!file.exists(file_name)) {
-    stop(folder, ' folder does not contain any file called ', site_code, '.RData')
+    stop(folder, ' folder does not contain any file called ', site_codes, '.RData')
   } else {
     load(file = file_name)
-
+    
     # load will load in the function environment a SITE_CODE object,
     # we need to access to it to return it
-    return(eval(as.name(site_code)))
+    return(eval(as.name(site_codes)))
   }
-
+  
 }
 
 #' Write metadata cache file to disk
@@ -70,7 +70,7 @@ read_sfn_data <- function(site_code, folder = '.') {
 #'   species, plant and environmental)
 
 .write_metadata_cache <- function(folder, .dry = FALSE) {
-
+  
   # In order to avoid loading all data objects at one time in memory (it could be
   # too much in a normal system we think), lets only store the metadata. To do
   # that, we load one site and store the metadata before to pass to the next.
@@ -78,7 +78,7 @@ read_sfn_data <- function(site_code, folder = '.') {
   # result in all objects in memory, so NO GOOD, we nned to circumvent that.
   sites_codes <- list.files(folder, recursive = TRUE, pattern = '.RData') %>%
     stringr::str_remove('.RData')
-
+  
   sfn_metadata <- list(
     site_md = tibble::tibble(),
     stand_md = tibble::tibble(),
@@ -86,15 +86,19 @@ read_sfn_data <- function(site_code, folder = '.') {
     plant_md = tibble::tibble(),
     env_md = tibble::tibble()
   )
-
+  
+  # we do a simple for loop instead of loading all sites and getting the
+  # metadata because in the benchmarking it not presents any time adventage and
+  # in this way the memory is liberated in each loop, so it's suitable for
+  # low memory systems (more or less)
   for (i in 1:length(sites_codes)) {
-
+    
     print(paste0(
       'processing site ', sites_codes[i], ' (', i, ' of ', length(sites_codes), ')'
     ), width = 80)
-
+    
     sfn_data <- read_sfn_data(sites_codes[i], folder)
-
+    
     sfn_metadata[['site_md']] <- dplyr::bind_rows(
       sfn_metadata[['site_md']], get_site_md(sfn_data)
     )
@@ -106,20 +110,21 @@ read_sfn_data <- function(site_code, folder = '.') {
     )
     sfn_metadata[['plant_md']] <- dplyr::bind_rows(
       sfn_metadata[['plant_md']], get_plant_md(sfn_data) %>%
-        dplyr::mutate(pl_name = as.character(.data$pl_name)) # TODO remove this when the sites are corrected
+        # TODO remove this when the sites are corrected
+        dplyr::mutate(pl_name = as.character(.data$pl_name))
     )
     sfn_metadata[['env_md']] <- dplyr::bind_rows(
       sfn_metadata[['env_md']], get_env_md(sfn_data)
     )
   }
-
+  
   # cache thing
   if (!.dry) {
     save(sfn_metadata, file = file.path(folder, '.metadata_cache.RData'))
   }
-
+  
   return(sfn_metadata)
-
+  
 }
 
 #' Read and combine all metadata
@@ -156,47 +161,46 @@ read_sfn_data <- function(site_code, folder = '.') {
 #' @export
 
 read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
-
+  
   if (.write_cache) {
     sfn_metadata <- .write_metadata_cache(folder = folder, .dry = FALSE)
   } else {
     file_name <- file.path(folder, '.metadata_cache.RData')
-
+    
     if (!file.exists(file_name)) {
       stop('metadata cache file not found at ', folder,
-            ' If you want to create one, please set .write_cache to TRUE')
+           ' If you want to create one, please set .write_cache to TRUE')
     } else {
       load(file_name)
     }
   }
-
+  
   return(sfn_metadata)
-
+  
 }
-
 
 #' Filter the sites by metadata variable values
 #'
-#' \code{filter_by_var} function takes logical expressions for the metadata
-#' variables (i.e. \code{pl_sens_meth == 'HR'}), and list the sites that meet
-#' the expressions.
+#' \code{filter_sites_by_md} function takes logical expressions for the metadata
+#' variables (i.e. \code{pl_sens_meth == 'HR'}), and list the sites that met
+#' the criteria from thos supplied
 #'
-#' \code{join} argument indicates how sites must be filtered between metadata
+#' \code{.join} argument indicates how sites must be filtered between metadata
 #' classes. \code{'and'} indicates only sites meeting all conditions for all
-#' metadata classes are returned. \code{'or'}cindicates all sites meeting any
+#' metadata classes are returned. \code{'or'} indicates all sites meeting any
 #' condition between classes are returned. For two or more filtes of the same
 #' metadata class, they are combined as 'and'.
+#' 
+#' @param sites character vector with the sites codes to filter, generally the
+#'   result of \code{\link{sfn_sites_in_folder}}
+#'
+#' @param metadata metadata tbl object, usually the result of
+#'   \code{\link{read_sfn_metadata}}
 #'
 #' @param ... Logical expressions for the metadata variables, as in
 #'   \code{\link[dplyr]{filter}}.
 #'
-#' @param folder Route to the folder containing the data files (*.RData)
-#'
-#' @param join Character indicating how to filter the sites, see details.
-#'
-#' @param .use_cache Experimental, not implemented yet. Searches can be time
-#'   and resources consuming. Using a cache speed up the searches storing the
-#'   results in a cache folder and serving directly from the file.
+#' @param .join Character indicating how to filter the sites, see details.
 #'
 #' @examples
 #' # simple, want to know which sites are using the Heat Ratio method to measure
@@ -205,26 +209,31 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #' # For this to work there must be a folder called 'Data' in the working
 #' # directory containing the sites .RData files
 #' \dontrun{
-#' filter_by_var(pl_sens_meth == 'HR', folder = 'Data')
+#' sites <- sfn_sites_in_folder('Data')
+#' metadata <- read_sfn_metadata('Data')
+#' 
+#' filter_sites_by_md(pl_sens_meth == 'HR', sites = sites, metadata = metadata)
 #'
 #' # Both, Heat Ratio and Heat Dissipation
-#' filter_by_var(pl_sens_meth %in% c('HR', 'HD'),
-#'               folder = 'Data')
+#' filter_sites_by_md(
+#'   pl_sens_meth %in% c('HR', 'HD'),
+#'   sites = sites, metadata = metadata
+#' )
 #'
 #' # more complex, Heat Ratio method AND Mediterranean biome
-#' filter_by_var(
+#' filter_sites_by_md(
 #'   pl_sens_meth == 'HR',
 #'   si_biome == 'Mediterranean',
-#'   folder = 'Data',
-#'   join = 'and' # default
+#'   sites = sites, metadata = metadata
+#'   .join = 'and' # default
 #' )
 #'
 #' # join = 'or' returns sites that meet any condition
-#' filter_by_var(
+#' filter_sites_by_md(
 #'   pl_sens_meth == 'HR',
 #'   si_biome == 'Mediterranean',
-#'   folder = 'Data',
-#'   join = 'or'
+#'   sites = sites, metadata = metadata
+#'   .join = 'or'
 #' )
 #' }
 #'
@@ -232,86 +241,117 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'
 #' @export
 
-filter_by_var <- function(..., folder = '.', join = c('and', 'or'), .use_cache = FALSE) {
-
-  # Don't waste resources, if cache, read metadata from disk directly
-  if (.use_cache) {
-
-    cache_file <- file.path(folder, '.metadata_cache.RData')
-
-    if (file.exists(cache_file)) {
-      load(cache_file) # loads and object called sfn_metadata
-    } else {
-      warning('.use_cache is TRUE but no cache file could be found in ', folder,
-              '\n', 'Running read_sfn_metadata with .write_cache = TRUE to ',
-              'create the sapfluxnet metadata db. This can take a while...')
-      sfn_metadata <- read_sfn_metadata(folder, .write_cache = TRUE)
-    }
-  } else {
-    message('.use_cache is set to FALSE, creating a temporal metadata db. ',
-            'This can take a while...')
-    sfn_metadata <- .write_metadata_cache(folder, .dry = TRUE)
-  }
-
+filter_sites_by_md <- function(
+  sites, metadata,
+  ...,
+  .join = c('and', 'or')
+) {
+  
   # if we accept ... (expressions with logical result) we need to enquo them
   dots <- dplyr::quos(...)
-
-  metadata <- c(site_md = 'si_', stand_md = 'st_',
+  # metadata dic to distribute the dots arguments to their respective md
+  metadata_dic <- c(site_md = 'si_', stand_md = 'st_',
                 species_md = 'sp_', plant_md = 'pl_', env_md = 'env_')
+  # empty res
   res_list <- vector(mode = 'list')
-
+  
   # loop along all metadata classes to check if there is filters and apply them
   for (md in 1:5) {
-
+    
     # dot dispatcher, distribute the dots in the corresponding metadata
     sel_dots <- dots %>%
       purrr::map(rlang::quo_get_expr) %>%
       purrr::map(as.character) %>%
-      purrr::map(stringr::str_detect, pattern = metadata[[md]]) %>%
+      purrr::map(stringr::str_detect, pattern = metadata_dic[[md]]) %>%
       purrr::map_lgl(any)
     md_dots <- dots[sel_dots]
-
+    
     # if there is filters, filter the corresponding metadata, pull the codes
     # and get the unique (in case of plant and species md, that can be repeated)
     if (length(md_dots) > 0) {
-      md_sites_selected <- sfn_metadata[[names(metadata)[md]]] %>%
+      md_sites_selected <- metadata[[names(metadata_dic)[md]]] %>%
         dplyr::filter(
           !!! md_dots
         ) %>%
         # pull the si_code variable
         dplyr::pull(.data$si_code) %>%
         unique()
-
+      
       res_list[[md]] <- md_sites_selected
-      names(res_list)[md] <- names(metadata)[md]
-
+      names(res_list)[md] <- names(metadata_dic)[md]
+      
     } else {
       # if there is no filter, return NULL to the list, we will remove it after
       res_list[[md]] <- NULL
     }
   }
-
+  
   # remove the NULL elements, this way we can check for values in all elements
   # We do it with purrr::keep (compact removes also empty vectors, which is not
   # desirable in this situation)
   names_sites <- res_list %>%
     purrr::keep(~ !is.null(.x))
-
+  
   # get the join argument
-  join <- match.arg(join)
-  if (join == 'or') {
-
+  .join <- match.arg(.join)
+  if (.join == 'or') {
+    
     # 'or' indicates any site that meet any condition
     res_names <- purrr::flatten_chr(names_sites) %>%
       unique()
-    return(res_names)
-
+    # we return only those which fulfill the criteria but also are in the sites
+    # provided
+    return(res_names[res_names %in% sites])
+    
   } else {
-
+    
     # 'and' indicates only sites that meet all conditions, we will do that with
     # Reduce and intersect
     res_names <- Reduce(intersect, names_sites)
-    return(res_names)
-
+    # we return only those which fulfill the criteria but also are in the sites
+    # provided
+    return(res_names[res_names %in% sites])
+    
   }
+  
+}
+
+#' list available sites in a db folder
+#' 
+#' Retrieves the site codes in the specified folder
+#' 
+#' If folder 
+#' 
+#' @param folder Character vector of length 1 indicating the route to the
+#'   db folder
+#' 
+#' @examples
+#' \dontrun{
+#' # list the sites available in Data folder
+#' sfn_sites_in_folder('Data/')
+#' }
+#' 
+#' @return A character vector with the site codes present in the folder, an
+#'   error if the folder is not valid or does not contain any site data file.
+#' 
+#' @export
+sfn_sites_in_folder <- function(folder = '.') {
+  
+  # checks
+  stopifnot(
+    is.character(folder), # folder must be character
+    dir.exists(folder) # folder must be a valid directory
+  )
+  
+  # get the files, if any
+  res <- list.files(folder, pattern = '.RData') %>%
+    stringr::str_remove('.RData')
+  
+  if (length(res) < 1) {
+    # if no files were found, report it and stop
+    stop(folder, ' does not contain any site data file')
+  }
+  
+  # return res
+  return(res)
 }

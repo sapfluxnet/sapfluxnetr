@@ -55,11 +55,11 @@ summarise_by_period(
 }
 \section{TIMESTAMP_coll}{
 
-  Previously to the collapsing step, a temporal variable called \code{TIMESTAMP_coll}
-  is created to be able to catch the real timestamp when some events happens, for
-  example to use the \code{min_time} function. If your custom summarise function
-  needs to get the time at which some event happens, use TIMESTAMP_coll instead of
-  TIMESTAMP for that:
+  Previously to the collapsing step, a temporal variable called
+  \code{TIMESTAMP_coll} is created to be able to catch the real timestamp when
+  some events happens, for example to use the \code{min_time} function. If
+  your custom summarise function needs to get the time at which some event
+  happens, use TIMESTAMP_coll instead of TIMESTAMP for that:
   \preformatted{
     min_time <- function(x, time) {
       time[which.min(x)]

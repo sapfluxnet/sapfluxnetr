@@ -16,12 +16,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-`sapfluxnetr` package offers a very flexible but powerfull system based on
+`sapfluxnetr` package offers a very flexible but powerful system based on
 `tidyverse` and `tibbletime` packages to aggregate and summarise the site/s data
 in the form of the `sfn_metrics` functions. All the metrics family of functions
 (`?metrics`) make use of `sfn_metrics` under the hood. If you want full control
-to the metrics returned and temporal periods to aggregate we recommend you to
-use this main function. This vignette will show you how.
+to the statistics returned and aggregation periodswe recommend you to use this
+main function. This vignette will show you how.
 
 ## Pre-fixed summarising functions
 
@@ -38,7 +38,7 @@ See each function help for a detailed description and examples of use.
 
 `daily_metrics` and related functions return a complete set of metrics ready for
 use, but if you want simpler metrics and/or avoid the computational burden of
-returning all the pre-fixed metrics you can supply your own summarising metrics
+returning all the pre-fixed metrics you can supply your own summarising functions
 using the `funs` function belonging to the `dplyr` package in the `tidyverse`
 suite:
 
@@ -51,7 +51,7 @@ library(dplyr)
 # data
 data('ARG_TRE', package = 'sapfluxnetr')
 
-# summarising funs (built with funs function in dplyr package)
+# summarising funs (built with funs function from dplyr package)
 custom_funs <- funs(mean = mean(., na.rm = TRUE), std_dev = sd(., na.rm = TRUE))
 
 # metrics
@@ -140,8 +140,8 @@ the internal functions used:
         TRUE by default in the sfn_metrics implementation
   
   1. `dplyr::summarise_all` accepts extra arguments intended to be applied to
-     summarising functions provided (to all, so they all must have the argument
-     provided or an error will be raised). That's the reason because we
+     the summarising functions provided (to **all**, so they all must have the
+     argument provided or an error will be raised). That's the reason because we
      recommend to use the `funs` function from `dplyr`, as the arguments are
      specified for the individual functions.
 
@@ -164,3 +164,52 @@ foo_simpler_metrics_end[['sapf']]
 If it is compared with the `foo_simpler_metrics` calculated before, now the
 period is identified in the TIMESTAMP by the ending of the period (daily in this
 case).
+
+## Temporary columns helpers
+
+The internal aggregation process in `sfn_metrics` generates some transitory
+columns which can be used in the summarising functions:
+
+### `TIMESTAMP_coll`
+
+When aggregating by the declared period (i.e. `"daily"`), the TIMESTAMP column
+collapses to the period start/end value (meaning that all the TIMESTAMP values
+for the same day becomes identical).  
+This makes impossible to use any summarise functions that obtain the
+time of the day at which one event happens (i.e. time of the day at which the
+maximum sap flow occurs) because all TIMESTAMP values are identical.
+For that kind of summarising functions, a transitory column called
+`TIMESTAMP_coll` is created. So in this case we can create a function that
+takes de variable values for the day, the TIMESTAMP_coll values for the day
+and return the TIMESTAMP at which the max sap flow occurs and use it with
+`sfn_metrics`:
+
+```{r timestamp_coll}
+max_time <- function(x, time) {
+  
+  # x: vector of values for a day
+  # time: TIMESTAMP for the day 
+
+  # if all the values in x are NAs (a daily summmarise of no measures day for
+  # example) this will return a length 0 POSIXct vector, which will crash
+  # dplyr summarise step. So, check if all NA and if true return NA as POSIXct
+  if(all(is.na(x))) {
+    return(as.POSIXct(NA, tz = attr(time, 'tz'), origin = lubridate::origin))
+  } else {
+    time[which.max(x)]
+  }
+}
+
+custom_funs <- funs(max = max(., na.rm = TRUE), max_time(., TIMESTAMP_coll))
+
+max_time_metrics <- sfn_metrics(
+  ARG_TRE,
+  period = 'daily',
+  .funs = custom_funs,
+  solar = TRUE,
+  interval = 'general'
+)
+
+max_time_metrics[['sapf']]
+```
+

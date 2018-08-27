@@ -165,8 +165,6 @@ data_coverage <- function(x, timestep, period_minutes) {
 NULL
 
 #' @describeIn time_at_events helper for sfn_metrics
-#'
-#' @export
 
 max_time <- function(x, time) {
 
@@ -181,8 +179,6 @@ max_time <- function(x, time) {
 }
 
 #' @describeIn time_at_events helper for sfn_metrics
-#'
-#' @export
 
 min_time <- function(x, time) {
 
@@ -294,8 +290,6 @@ diurnal_centroid <- function(variable) {
 #' @return A numeric value with the normalized diurnal centroid value
 #'
 #' @author Jacob Nelson & Víctor Granda
-#'
-#' @export
 
 norm_diurnal_centroid <- function(sapf_var, rad_var) {
 
@@ -1255,53 +1249,52 @@ describe_md_variable <- function(variable) {
 #' @return a character vector with env vars names
 
 .env_vars_names <- function() {
-
   c('ta', 'rh', 'vpd', 'sw_in', 'ppfd_in', 'netrad', 'ext_rad',
     'swc_shallow', 'swc_deep', 'ws', 'precip')
-
 }
 
-#' helper for using dplyr::union in multiple sites
-.multi_union <- function(data_list) {
-
-  if (length(data_list) < 2) {
-    return(data_list[[1]])
-  }
-
-
-  first <- data_list[[1]]
-
-  for (i in 2:length(data_list)) {
-
-    first_vars <- names(first)
-    next_vars <- names(data_list[[i]])
-
-    if (!all(first_vars %in% next_vars)) {
-      var_to_add <- first_vars[which(!(first_vars %in% next_vars))]
-
-      for (var in var_to_add) {
-        if (class(first[[var]])[1] == 'POSIXct') {
-          data_list[[i]][var] <- as.POSIXct(NA, tz = 'UTC')
-        } else {
-          data_list[[i]][var] <- NA_real_
-        }
-      }
-    }
-
-    if (!all(next_vars %in% first_vars)) {
-      var_to_add <- next_vars[which(!(next_vars %in% first_vars))]
-
-      for (var in var_to_add) {
-        if (class(data_list[[i]][[var]])[1] == 'POSIXct') {
-          first[[var]] <- as.POSIXct(NA, tz = 'UTC')
-        } else {
-          first[[var]] <- NA_real_
-        }
-      }
-    }
-
-    first <- dplyr::union(first, data_list[[i]])
-  }
-
-  return(first)
+#' .sapflow_tidy helper
+#' 
+#' @param data site sapflow metrics dataframe
+.sapflow_tidy <- function(data) {
+  
+  data %>%
+    # converting to tibble to get rid of tibbletime corrupted index after gather
+    tibble::as_tibble() %>%
+    
+    # wide to long, because we want to extract tree and metric
+    tidyr::gather(tree, value, -dplyr::starts_with('TIMESTAMP')) %>%
+    
+    # mutate to get the plant code. Is tricky as we have to separate the metric
+    # and interval labels at the end of the tree column and rename tree as
+    # pl_code
+    dplyr::mutate(
+      sapflow = stringr::str_sub(
+        .data$tree, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2] + 2, -1
+      ),
+      tree = stringr::str_sub(
+        .data$tree, 1, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2]
+      )
+    ) %>%
+    dplyr::rename(pl_code = .data$tree) %>%
+    
+    # resources consuming step here!
+    # now we have the spread (long to wide) the sapflow values by metric,
+    # replicating the trees, as each sapflow metric is a variable
+    tidyr::spread(.data$sapflow, .data$value, sep = '_') %>%
+    
+    # fix the sapflow_min_time and sapflow_max_time, because with the
+    # gather/spread steps posixct becomes numerical
+    dplyr::mutate_at(
+      dplyr::vars(
+        dplyr::contains('sapflow_min_time'),
+        dplyr::contains('sapflow_max_time')
+      ),
+      dplyr::funs(
+        as.POSIXct(
+          ., tz = attr(.data[[timestamp_var]], 'tz'),
+          origin = lubridate::origin
+        )
+      )
+    )
 }

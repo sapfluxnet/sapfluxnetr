@@ -104,21 +104,33 @@ test_that('read_sfn_metadata works as intended', {
 
 })
 
-#### filter_by_var tests ####
-test_that('filter_by_var combines all metadata correctly', {
+#### filter_sites_by_md tests ####
+test_that('filter_sites_by_md combines all metadata correctly', {
 
+  data('sfn_metadata_ex', package = 'sapfluxnetr')
+  sites <- sfn_sites_in_folder('Data')
   filters <- list(dplyr::quo(pl_sens_meth == 'HR'))
 
-  expect_true(
-    is.character(filter_by_var(!!!filters, folder = 'Data'))
-  )
+  # expect_true(
+  #   is.character(filter_by_var(!!!filters, folder = 'Data'))
+  # )
+  expect_true(is.character(filter_sites_by_md(
+    sites, sfn_metadata_ex, !!!filters
+  )))
 
+  # expect_length(
+  #   filter_by_var(!!!filters, folder = 'Data'), 2
+  # )
   expect_length(
-    filter_by_var(!!!filters, folder = 'Data'), 2
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters), 2
   )
 
+  # expect_identical(
+  #   filter_by_var(!!!filters, folder = 'Data'), c('ARG_MAZ', 'ARG_TRE')
+  # )
   expect_identical(
-    filter_by_var(!!!filters, folder = 'Data'), c('ARG_MAZ', 'ARG_TRE')
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters),
+    c('ARG_MAZ', 'ARG_TRE')
   )
 
   filters <- list(
@@ -126,8 +138,11 @@ test_that('filter_by_var combines all metadata correctly', {
     dplyr::quo(env_ta == 'Clearing')
   )
 
+  # expect_length(
+  #   filter_by_var(!!!filters, folder = 'Data'), 0
+  # )
   expect_length(
-    filter_by_var(!!!filters, folder = 'Data'), 0
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters), 0
   )
 
   filters <- list(
@@ -135,22 +150,29 @@ test_that('filter_by_var combines all metadata correctly', {
     dplyr::quo(env_ta == 'Above canopy')
   )
 
+  # expect_length(
+  #   filter_by_var(!!!filters, folder = 'Data'), 0
+  # )
   expect_length(
-    filter_by_var(!!!filters, folder = 'Data'), 0
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters), 0
   )
 
-  expect_error(
-    filter_by_var(!!!filters, folder = 'tururu'),
-    'tururu'
-  )
+  # expect_error(
+  #   filter_by_var(!!!filters, folder = 'tururu'),
+  #   'tururu'
+  # )
 
   filters <- list(
     dplyr::quo(pl_sens_meth == 'HR'),
     dplyr::quo(env_nonexistentname == 'Above canopy')
   )
 
+  # expect_error(
+  #   filter_by_var(!!!filters, folder = 'Data'),
+  #   'env_nonexistentname'
+  # )
   expect_error(
-    filter_by_var(!!!filters, folder = 'Data'),
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters),
     'env_nonexistentname'
   )
 
@@ -158,6 +180,20 @@ test_that('filter_by_var combines all metadata correctly', {
 
 })
 
+#### sfn_sites_in_folder ####
+test_that('sfn_sites_in_folder returns the expected results', {
+  
+  expect_true(is.character(sfn_sites_in_folder('Data')))
+  expect_length(sfn_sites_in_folder('Data'), 3)
+  expect_identical(
+    sfn_sites_in_folder('Data'), c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX')
+  )
+  
+  # errors
+  expect_error(sfn_sites_in_folder('NonExistentFolder'))
+  expect_error(sfn_sites_in_folder(53))
+  
+})
 
 #### teardown
 # teardown(unlink(file.path('Data', '.metadata_cache.RData')))

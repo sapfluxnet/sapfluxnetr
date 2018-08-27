@@ -1,4 +1,5 @@
 # sapfluxnetr 0.0.4.9000
+
 * Fixed `data_coverage` function. Now it returns the real coverage based on the
   timestep, the period to summarise for and the timestamp values. This only will
   work within the wrapper metrics functions (using internally the 
@@ -8,6 +9,17 @@
 * Fixed bug in metrics function that created min and max time variables as double
   instead of POSIXct in sites with NAs in the first day of measures
 * Now species metadata variables are returned individually instead of a list
+* Added helper function `sfn_sites_in_folder` to list the site codes in a folder
+* Deprecated `filter_by_var`, substituted by `filter_sites_by_md`
+* **Implementation of furrr::future_map** in `sfn_metrics`. After some
+  benchmarking, the benefits in time are solid, so now the user has the ability
+  to perform the metrics in parallel.
+* New logic with performance improvements for metrics_tidyfier (introducing the
+  .sapflow_tidy internal helper function)
+* Added get methods for sfn_data_multi class objects
+* Fixed bug in metrics function that created min and max time variables as double
+  instead of POSIXct in sites with NAs in the first day of measures
+* Now species metadata variables are returned individually instead of in a list
 
 # sapfluxnetr 0.0.4
 

@@ -49,7 +49,7 @@ data('sfn_metadata_ex', package = 'sapfluxnetr')
 # plot site sapflow measurements versus vpd
 sfn_plot(ARG_MAZ, formula_env = ~ vpd)
 
-# daily sapflow standard metrics
+# daily sapflow and environmental metrics
 arg_maz_metrics <- daily_metrics(
   ARG_MAZ, tidy = TRUE, metadata = sfn_metadata_ex
 )
