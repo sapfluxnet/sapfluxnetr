@@ -50,8 +50,6 @@ data_coverage <- function(x) {
 NULL
 
 #' @describeIn time_at_events helper for sfn_metrics
-#'
-#' @export
 
 max_time <- function(x, time) {
 
@@ -66,8 +64,6 @@ max_time <- function(x, time) {
 }
 
 #' @describeIn time_at_events helper for sfn_metrics
-#'
-#' @export
 
 min_time <- function(x, time) {
 
@@ -178,8 +174,6 @@ diurnal_centroid <- function(variable) {
 #' @return A numeric value with the normalized diurnal centroid value
 #'
 #' @author Jacob Nelson & Víctor Granda
-#'
-#' @export
 
 norm_diurnal_centroid <- function(sapf_var, rad_var) {
 

@@ -158,6 +158,20 @@ test_that('filter_by_var combines all metadata correctly', {
 
 })
 
+#### sfn_sites_in_folder ####
+test_that('sfn_sites_in_folder returns the expected results', {
+  
+  expect_true(is.character(sfn_sites_in_folder('Data')))
+  expect_length(sfn_sites_in_folder('Data'), 3)
+  expect_identical(
+    sfn_sites_in_folder('Data'), c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX')
+  )
+  
+  # errors
+  expect_error(sfn_sites_in_folder('NonExistentFolder'))
+  expect_error(sfn_sites_in_folder(53))
+  
+})
 
 #### teardown
 # teardown(unlink(file.path('Data', '.metadata_cache.RData')))

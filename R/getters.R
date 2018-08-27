@@ -413,6 +413,13 @@ filter_sites_by_md <- function(
 #' 
 #' @export
 sfn_sites_in_folder <- function(folder = '.') {
+  
+  # checks
+  stopifnot(
+    is.character(folder), # folder must be character
+    dir.exists(folder) # folder must be a valid directory
+  )
+  
   # get the files, if any
   res <- list.files(folder, pattern = '.RData') %>%
     stringr::str_remove('.RData')
