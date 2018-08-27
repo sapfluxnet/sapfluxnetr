@@ -1,5 +1,7 @@
 # sapfluxnetr 0.0.4.9000
 
+* Added helper function `sfn_sites_in_folder` to list the site codes in a folder
+* Deprecated `filter_by_var`, substituted by `filter_sites_by_md`
 * **Implementation of furrr::future_map** in `sfn_metrics`. After some
   benchmarking, the benefits in time are solid, so now the user has the ability
   to perform the metrics in parallel.
