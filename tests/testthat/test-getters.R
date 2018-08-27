@@ -104,32 +104,32 @@ test_that('read_sfn_metadata works as intended', {
 
 })
 
-#### filter_by_var tests ####
-test_that('filter_by_var combines all metadata correctly', {
+#### filter_sites_by_md tests ####
+test_that('filter_sites_by_md combines all metadata correctly', {
 
   data('sfn_metadata_ex', package = 'sapfluxnetr')
   sites <- sfn_sites_in_folder('Data')
   filters <- list(dplyr::quo(pl_sens_meth == 'HR'))
 
-  expect_true(
-    is.character(filter_by_var(!!!filters, folder = 'Data'))
-  )
-  expect_true(is.character(sapfluxnetr:::filter_sites_by_md(
+  # expect_true(
+  #   is.character(filter_by_var(!!!filters, folder = 'Data'))
+  # )
+  expect_true(is.character(filter_sites_by_md(
     sites, sfn_metadata_ex, !!!filters
   )))
 
+  # expect_length(
+  #   filter_by_var(!!!filters, folder = 'Data'), 2
+  # )
   expect_length(
-    filter_by_var(!!!filters, folder = 'Data'), 2
-  )
-  expect_length(
-    sapfluxnetr:::filter_sites_by_md(sites, sfn_metadata_ex, !!!filters), 2
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters), 2
   )
 
+  # expect_identical(
+  #   filter_by_var(!!!filters, folder = 'Data'), c('ARG_MAZ', 'ARG_TRE')
+  # )
   expect_identical(
-    filter_by_var(!!!filters, folder = 'Data'), c('ARG_MAZ', 'ARG_TRE')
-  )
-  expect_identical(
-    sapfluxnetr:::filter_sites_by_md(sites, sfn_metadata_ex, !!!filters),
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters),
     c('ARG_MAZ', 'ARG_TRE')
   )
 
@@ -138,11 +138,11 @@ test_that('filter_by_var combines all metadata correctly', {
     dplyr::quo(env_ta == 'Clearing')
   )
 
+  # expect_length(
+  #   filter_by_var(!!!filters, folder = 'Data'), 0
+  # )
   expect_length(
-    filter_by_var(!!!filters, folder = 'Data'), 0
-  )
-  expect_length(
-    sapfluxnetr:::filter_sites_by_md(sites, sfn_metadata_ex, !!!filters), 0
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters), 0
   )
 
   filters <- list(
@@ -150,29 +150,29 @@ test_that('filter_by_var combines all metadata correctly', {
     dplyr::quo(env_ta == 'Above canopy')
   )
 
+  # expect_length(
+  #   filter_by_var(!!!filters, folder = 'Data'), 0
+  # )
   expect_length(
-    filter_by_var(!!!filters, folder = 'Data'), 0
-  )
-  expect_length(
-    sapfluxnetr:::filter_sites_by_md(sites, sfn_metadata_ex, !!!filters), 0
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters), 0
   )
 
-  expect_error(
-    filter_by_var(!!!filters, folder = 'tururu'),
-    'tururu'
-  )
+  # expect_error(
+  #   filter_by_var(!!!filters, folder = 'tururu'),
+  #   'tururu'
+  # )
 
   filters <- list(
     dplyr::quo(pl_sens_meth == 'HR'),
     dplyr::quo(env_nonexistentname == 'Above canopy')
   )
 
+  # expect_error(
+  #   filter_by_var(!!!filters, folder = 'Data'),
+  #   'env_nonexistentname'
+  # )
   expect_error(
-    filter_by_var(!!!filters, folder = 'Data'),
-    'env_nonexistentname'
-  )
-  expect_error(
-    sapfluxnetr:::filter_sites_by_md(sites, sfn_metadata_ex, !!!filters),
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters),
     'env_nonexistentname'
   )
 

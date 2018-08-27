@@ -10,6 +10,10 @@ sfn_sites_in_folder(folder = ".")
 \item{folder}{Character vector of length 1 indicating the route to the
 db folder}
 }
+\value{
+A character vector with the site codes present in the folder, an
+  error if the folder is not valid or does not contain any site data file.
+}
 \description{
 Retrieves the site codes in the specified folder
 }

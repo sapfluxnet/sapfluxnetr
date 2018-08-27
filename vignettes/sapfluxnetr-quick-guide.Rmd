@@ -261,14 +261,8 @@ Predefined metrics are:
 
 1. *mean*
 1. *standard deviation*
-1. ~~*n* (including NAs)~~
 1. *data coverage* (percentage of period covered by the raw data)
 1. *quantile 95*
-1. ~~*quatile 99*~~
-1. ~~*minimum value*~~
-1. ~~*maximum value*~~
-1. ~~*time at min value*~~
-1. ~~*time at max value*~~
 1. *diurnal centroid* (Only calculated **for sap flow** measurements when using
    `daily_metrics`, see `?diurnal_centroid` for limitations in the calculation
    of this metric)
@@ -359,41 +353,67 @@ each metadata class (site, stand, species, plant and environmental metadata).
 sfn_metadata[['plant_md']]
 ```
 
-### Filtering sites
+### Listing the sites in a folder and filtering by metadata
 
-Now that we have our metadata database built, we can start filtering sites by
-metadata, with the `filter_by_var` function. As a first try, let's list all
-sites belonging to temperate forest biome (mediterranean included):
+Now that we have our metadata database built, we can inspect the site codes
+in a folder with `sfn_sites_in_folder`:
+
+```{r sfn_sites_in_folder, eval=FALSE}
+folder <- 'test_suite/plant/'
+sites <- sfn_sites_in_folder(folder)
+
+sites
+```
+
+```{r sfn_sites_in_folder_real, echo=FALSE}
+sites <- sfn_sites_in_folder(folder)
+sites
+```
+
+
+We can filter these sites by any metadata variable, to select those that met
+some criteria. This is done with `filter_sites_by_md`. As a first try, let's
+list all sites belonging to temperate forest biome (mediterranean included):
 
 ```{r filtering_by_md, eval=FALSE}
-temperate <- filter_by_var(
-  si_biome %in% c('Mediterranean', 'Temperate forest'),
-  folder = 'test_suite/plant',
-  .use_cache = TRUE
-)
+temperate <- sfn_sites_in_folder(folder) %>%
+  filter_sites_by_md(
+    si_biome %in% c('Mediterranean', 'Temperate forest'),
+    metadata = sfn_metadata
+  )
 
 temperate
 ```
 
 ```{r filtering_by_md_real, echo=FALSE, warning=FALSE}
-temperate <- c("ARG_MAZ", "ARG_TRE", "AUS_CAN_ST2_MIX")
+temperate <- sfn_sites_in_folder(folder) %>%
+  filter_sites_by_md(
+    si_biome %in% c('Mediterranean', 'Temperate forest'),
+    metadata = sfn_metadata
+  )
 temperate
 ```
 
 You can combine all filters you want:
 
 ```{r filters_combined, eval=FALSE}
-temperate_hr <- filter_by_var(
-  si_biome %in% c('Mediterranean', 'Temperate forest'),
-  pl_sap_meth == 'HR',
-  folder = 'test_suite/plant',
-  .use_cache = TRUE
-)
+temperate_hr <- sfn_sites_in_folder(folder) %>%
+  filter_sites_by_md(
+    si_biome %in% c('Mediterranean', 'Temperate forest'),
+    pl_sens_meth == 'HR',
+    metadata = sfn_metadata
+  )
+
 temperate_hr
 ```
 
 ```{r filters_combined_real, echo=FALSE, warning=FALSE}
-temperate_hr <- c("ARG_MAZ", "ARG_TRE")
+temperate_hr <- sfn_sites_in_folder(folder) %>%
+  filter_sites_by_md(
+    si_biome %in% c('Mediterranean', 'Temperate forest'),
+    pl_sens_meth == 'HR',
+    metadata = sfn_metadata
+  )
 temperate_hr
 ```
 

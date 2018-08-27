@@ -31,9 +31,10 @@ library(tidyverse)
 folder <- 'test_suite/plant'
 sfn_metadata <- read_sfn_metadata(folder)
 
-daily_results <- filter_by_var(
+daily_results <- sfn_sites_in_folder(folder) %>%
+  filter_sites_by_md(
     si_biome %in% c("Temperate forest", 'Mediterranean'),
-    folder = folder, .use_cache = TRUE
+    sites = sites, metadata = sfn_metadata
   ) %>%
   read_sfn_data(folder) %>%
   daily_metrics(tidy = TRUE, metadata = sfn_metadata)
@@ -51,9 +52,10 @@ library(tidyverse)
 
 folder <- 'test_suite/plant'
 metadata <- read_sfn_metadata(folder)
-sites <- filter_by_var(
+sites <- sfn_sites_in_folder(folder) %>%
+  filter_sites_by_md(
     si_biome %in% c("Temperate forest", 'Mediterranean'),
-    folder = folder, .use_cache = TRUE
+    sites = sites, metadata = sfn_metadata
   )
 
 daily_results_1 <- read_sfn_data(sites[1:30], folder) %>%
@@ -98,9 +100,10 @@ library(future)
 plan('multiprocess')
 
 # metrics!!
-daily_results_parallel <- filter_by_var(
+daily_results_parallel <- sfn_sites_in_folder(folder) %>%
+  filter_sites_by_md(
     si_biome %in% c("Temperate forest", 'Mediterranean'),
-    folder = folder, .use_cache = TRUE
+    sites = sites, metadata = sfn_metadata
   ) %>%
   read_sfn_data(folder) %>%
   daily_metrics(tidy = TRUE, metadata = sfn_metadata)
@@ -130,9 +133,10 @@ plant('sequential')
 options('future.globals.maxSize' = 1014*1024^2)
 
 # do the metrics
-daily_results_limit <- filter_by_var(
+daily_results_limit <- sfn_sites_in_folder(folder) %>%
+  filter_sites_by_md(
     si_biome %in% c("Temperate forest", 'Mediterranean'),
-    folder = folder, .use_cache = TRUE
+    sites = sites, metadata = sfn_metadata
   ) %>%
   read_sfn_data(folder) %>%
   daily_metrics(tidy = TRUE, metadata = sfn_metadata)

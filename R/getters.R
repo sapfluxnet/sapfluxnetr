@@ -179,29 +179,28 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
   
 }
 
-
 #' Filter the sites by metadata variable values
 #'
-#' \code{filter_by_var} function takes logical expressions for the metadata
-#' variables (i.e. \code{pl_sens_meth == 'HR'}), and list the sites that meet
-#' the expressions.
+#' \code{filter_sites_by_md} function takes logical expressions for the metadata
+#' variables (i.e. \code{pl_sens_meth == 'HR'}), and list the sites that met
+#' the criteria from thos supplied
 #'
-#' \code{join} argument indicates how sites must be filtered between metadata
+#' \code{.join} argument indicates how sites must be filtered between metadata
 #' classes. \code{'and'} indicates only sites meeting all conditions for all
-#' metadata classes are returned. \code{'or'}cindicates all sites meeting any
+#' metadata classes are returned. \code{'or'} indicates all sites meeting any
 #' condition between classes are returned. For two or more filtes of the same
 #' metadata class, they are combined as 'and'.
+#' 
+#' @param sites character vector with the sites codes to filter, generally the
+#'   result of \code{\link{sfn_sites_in_folder}}
+#'
+#' @param metadata metadata tbl object, usually the result of
+#'   \code{\link{read_sfn_metadata}}
 #'
 #' @param ... Logical expressions for the metadata variables, as in
 #'   \code{\link[dplyr]{filter}}.
 #'
-#' @param folder Route to the folder containing the data files (*.RData)
-#'
-#' @param join Character indicating how to filter the sites, see details.
-#'
-#' @param .use_cache Experimental, not implemented yet. Searches can be time
-#'   and resources consuming. Using a cache speed up the searches storing the
-#'   results in a cache folder and serving directly from the file.
+#' @param .join Character indicating how to filter the sites, see details.
 #'
 #' @examples
 #' # simple, want to know which sites are using the Heat Ratio method to measure
@@ -210,26 +209,31 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #' # For this to work there must be a folder called 'Data' in the working
 #' # directory containing the sites .RData files
 #' \dontrun{
-#' filter_by_var(pl_sens_meth == 'HR', folder = 'Data')
+#' sites <- sfn_sites_in_folder('Data')
+#' metadata <- read_sfn_metadata('Data')
+#' 
+#' filter_sites_by_md(pl_sens_meth == 'HR', sites = sites, metadata = metadata)
 #'
 #' # Both, Heat Ratio and Heat Dissipation
-#' filter_by_var(pl_sens_meth %in% c('HR', 'HD'),
-#'               folder = 'Data')
+#' filter_sites_by_md(
+#'   pl_sens_meth %in% c('HR', 'HD'),
+#'   sites = sites, metadata = metadata
+#' )
 #'
 #' # more complex, Heat Ratio method AND Mediterranean biome
-#' filter_by_var(
+#' filter_sites_by_md(
 #'   pl_sens_meth == 'HR',
 #'   si_biome == 'Mediterranean',
-#'   folder = 'Data',
-#'   join = 'and' # default
+#'   sites = sites, metadata = metadata
+#'   .join = 'and' # default
 #' )
 #'
 #' # join = 'or' returns sites that meet any condition
-#' filter_by_var(
+#' filter_sites_by_md(
 #'   pl_sens_meth == 'HR',
 #'   si_biome == 'Mediterranean',
-#'   folder = 'Data',
-#'   join = 'or'
+#'   sites = sites, metadata = metadata
+#'   .join = 'or'
 #' )
 #' }
 #'
@@ -237,96 +241,8 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'
 #' @export
 
-filter_by_var <- function(
-  ...,
-  folder = '.', join = c('and', 'or'),
-  .use_cache = FALSE
-) {
-  
-  # Don't waste resources, if cache, read metadata from disk directly
-  if (.use_cache) {
-    
-    cache_file <- file.path(folder, '.metadata_cache.RData')
-    
-    if (file.exists(cache_file)) {
-      load(cache_file) # loads and object called sfn_metadata
-    } else {
-      warning('.use_cache is TRUE but no cache file could be found in ', folder,
-              '\n', 'Running read_sfn_metadata with .write_cache = TRUE to ',
-              'create the sapfluxnet metadata db. This can take a while...')
-      sfn_metadata <- read_sfn_metadata(folder, .write_cache = TRUE)
-    }
-  } else {
-    message('.use_cache is set to FALSE, creating a temporal metadata db. ',
-            'This can take a while...')
-    sfn_metadata <- .write_metadata_cache(folder, .dry = TRUE)
-  }
-  
-  # if we accept ... (expressions with logical result) we need to enquo them
-  dots <- dplyr::quos(...)
-  
-  metadata <- c(site_md = 'si_', stand_md = 'st_',
-                species_md = 'sp_', plant_md = 'pl_', env_md = 'env_')
-  res_list <- vector(mode = 'list')
-  
-  # loop along all metadata classes to check if there is filters and apply them
-  for (md in 1:5) {
-    
-    # dot dispatcher, distribute the dots in the corresponding metadata
-    sel_dots <- dots %>%
-      purrr::map(rlang::quo_get_expr) %>%
-      purrr::map(as.character) %>%
-      purrr::map(stringr::str_detect, pattern = metadata[[md]]) %>%
-      purrr::map_lgl(any)
-    md_dots <- dots[sel_dots]
-    
-    # if there is filters, filter the corresponding metadata, pull the codes
-    # and get the unique (in case of plant and species md, that can be repeated)
-    if (length(md_dots) > 0) {
-      md_sites_selected <- sfn_metadata[[names(metadata)[md]]] %>%
-        dplyr::filter(
-          !!! md_dots
-        ) %>%
-        # pull the si_code variable
-        dplyr::pull(.data$si_code) %>%
-        unique()
-      
-      res_list[[md]] <- md_sites_selected
-      names(res_list)[md] <- names(metadata)[md]
-      
-    } else {
-      # if there is no filter, return NULL to the list, we will remove it after
-      res_list[[md]] <- NULL
-    }
-  }
-  
-  # remove the NULL elements, this way we can check for values in all elements
-  # We do it with purrr::keep (compact removes also empty vectors, which is not
-  # desirable in this situation)
-  names_sites <- res_list %>%
-    purrr::keep(~ !is.null(.x))
-  
-  # get the join argument
-  join <- match.arg(join)
-  if (join == 'or') {
-    
-    # 'or' indicates any site that meet any condition
-    res_names <- purrr::flatten_chr(names_sites) %>%
-      unique()
-    return(res_names)
-    
-  } else {
-    
-    # 'and' indicates only sites that meet all conditions, we will do that with
-    # Reduce and intersect
-    res_names <- Reduce(intersect, names_sites)
-    return(res_names)
-    
-  }
-}
-
 filter_sites_by_md <- function(
-  sites, sfn_metadata,
+  sites, metadata,
   ...,
   .join = c('and', 'or')
 ) {
@@ -334,7 +250,7 @@ filter_sites_by_md <- function(
   # if we accept ... (expressions with logical result) we need to enquo them
   dots <- dplyr::quos(...)
   # metadata dic to distribute the dots arguments to their respective md
-  metadata <- c(site_md = 'si_', stand_md = 'st_',
+  metadata_dic <- c(site_md = 'si_', stand_md = 'st_',
                 species_md = 'sp_', plant_md = 'pl_', env_md = 'env_')
   # empty res
   res_list <- vector(mode = 'list')
@@ -346,14 +262,14 @@ filter_sites_by_md <- function(
     sel_dots <- dots %>%
       purrr::map(rlang::quo_get_expr) %>%
       purrr::map(as.character) %>%
-      purrr::map(stringr::str_detect, pattern = metadata[[md]]) %>%
+      purrr::map(stringr::str_detect, pattern = metadata_dic[[md]]) %>%
       purrr::map_lgl(any)
     md_dots <- dots[sel_dots]
     
     # if there is filters, filter the corresponding metadata, pull the codes
     # and get the unique (in case of plant and species md, that can be repeated)
     if (length(md_dots) > 0) {
-      md_sites_selected <- sfn_metadata[[names(metadata)[md]]] %>%
+      md_sites_selected <- metadata[[names(metadata_dic)[md]]] %>%
         dplyr::filter(
           !!! md_dots
         ) %>%
@@ -362,7 +278,7 @@ filter_sites_by_md <- function(
         unique()
       
       res_list[[md]] <- md_sites_selected
-      names(res_list)[md] <- names(metadata)[md]
+      names(res_list)[md] <- names(metadata_dic)[md]
       
     } else {
       # if there is no filter, return NULL to the list, we will remove it after
@@ -383,14 +299,18 @@ filter_sites_by_md <- function(
     # 'or' indicates any site that meet any condition
     res_names <- purrr::flatten_chr(names_sites) %>%
       unique()
-    return(res_names)
+    # we return only those which fulfill the criteria but also are in the sites
+    # provided
+    return(res_names[res_names %in% sites])
     
   } else {
     
     # 'and' indicates only sites that meet all conditions, we will do that with
     # Reduce and intersect
     res_names <- Reduce(intersect, names_sites)
-    return(res_names)
+    # we return only those which fulfill the criteria but also are in the sites
+    # provided
+    return(res_names[res_names %in% sites])
     
   }
   
@@ -410,6 +330,9 @@ filter_sites_by_md <- function(
 #' # list the sites available in Data folder
 #' sfn_sites_in_folder('Data/')
 #' }
+#' 
+#' @return A character vector with the site codes present in the folder, an
+#'   error if the folder is not valid or does not contain any site data file.
 #' 
 #' @export
 sfn_sites_in_folder <- function(folder = '.') {
