@@ -889,7 +889,7 @@ setMethod(
 setMethod(
   "get_timestamp", "sfn_data_multi",
   function(object) {
-    res <- object %>%
+    object %>%
       purrr::map(slot, "timestamp")
   }
 )
@@ -899,7 +899,7 @@ setMethod(
 setMethod(
   "get_solar_timestamp", "sfn_data_multi",
   function(object) {
-    res <- object %>%
+    object %>%
       purrr::map(slot, "solar_timestamp")
   }
 )
@@ -909,7 +909,7 @@ setMethod(
 setMethod(
   "get_si_code", "sfn_data_multi",
   function(object) {
-    res <- object %>%
+    object %>%
       purrr::map(slot, "si_code")
   }
 )
