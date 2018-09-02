@@ -498,15 +498,22 @@ setMethod(
 
     # 2. combined timespan
     timestamp_minmax <- object %>%
-      purrr::map(~ slot(.x, 'timestamp')) %>%
+      # we take only the first timestamp value, to make it faster in
+      # large multis
+      purrr::map(~ slot(.x, 'timestamp')[1]) %>%
       purrr::map(as.character) %>%
       purrr::flatten_chr() %>%
       sort()
-    timestamp_span <- lubridate::interval(timestamp_minmax[1],
-                                          utils::tail(timestamp_minmax, 1),
-                                          tzone = "UTC") %>%
+    timestamp_span <- lubridate::interval(
+      timestamp_minmax[1],
+      utils::tail(timestamp_minmax, 1),
+      tzone = "UTC"
+    ) %>%
       as.character()
-    cat('Time span (UTC) for the combined sites: ', timestamp_span, '\n', sep = '')
+    cat(
+      'Approximate time span (UTC) for the combined sites: ', timestamp_span,
+      '\n', sep = ''
+    )
   }
 )
 
