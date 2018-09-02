@@ -414,17 +414,20 @@ setMethod(
     cat("Biome: ", site_md[['si_biome']], '\n\n')
 
     # timestamp span
-    timestamp_minmax <- .min_max(slot(object, 'timestamp'))
-    timestamp_span <- lubridate::interval(timestamp_minmax[1],
-                                          timestamp_minmax[2],
-                                          tzone = get_timezone(object)) %>%
+    # timestamp_minmax <- .min_max(slot(object, 'timestamp'))
+    timestamp_span <- lubridate::interval(
+      dplyr::first(slot(object, 'timestamp')),
+      dplyr::last(slot(object, 'timestamp')),
+      tzone = get_timezone(object)
+    ) %>%
       as.character()
     cat("TIMESTAMP span: ", timestamp_span, "\n\n")
     # solar_timestamp
-    solar_timestamp_minmax <- .min_max(slot(object, 'solar_timestamp'))
-    solar_timestamp_span <- lubridate::interval(solar_timestamp_minmax[1],
-                                                solar_timestamp_minmax[2],
-                                                tzone = get_timezone(object)) %>%
+    # solar_timestamp_minmax <- .min_max(slot(object, 'solar_timestamp'))
+    solar_timestamp_span <- lubridate::interval(
+      dplyr::first(slot(object, 'solar_timestamp')),
+      dplyr::last(slot(object, 'solar_timestamp'))
+    ) %>%
       as.character()
     cat("Solar TIMESTAMP span: ", solar_timestamp_span, "\n\n")
 
@@ -500,13 +503,13 @@ setMethod(
     timestamp_minmax <- object %>%
       # we take only the first timestamp value, to make it faster in
       # large multis
-      purrr::map(~ slot(.x, 'timestamp')[1]) %>%
+      purrr::map(~ slot(.x, 'solar_timestamp')[1]) %>%
       purrr::map(as.character) %>%
       purrr::flatten_chr() %>%
       sort()
     timestamp_span <- lubridate::interval(
-      timestamp_minmax[1],
-      utils::tail(timestamp_minmax, 1),
+      dplyr::first(timestamp_minmax),
+      dplyr::last(timestamp_minmax),
       tzone = "UTC"
     ) %>%
       as.character()
