@@ -78,9 +78,7 @@
 summarise_by_period <- function(data, period, .funs, ...) {
 
   # modificate .funs if data is environmental (no centroids).
-  env_vars_names <- .env_vars_names()
-
-  if (any(names(data) %in% env_vars_names)) {
+  if (any(names(data) %in% .env_vars_names())) {
 
     # only in daily, but as daily can be stated in many ways, we check if
     # .funs[['centroid']] is NULL, and if not, we make it.
@@ -119,7 +117,11 @@ summarise_by_period <- function(data, period, .funs, ...) {
     ) %>%
     dplyr::group_by(.data$TIMESTAMP) %>%
     dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
-    dplyr::select(-dplyr::contains('_coll_')) -> res
+    dplyr::select(
+      -dplyr::contains('_coll_'),
+      -dplyr::contains('accumulated'),
+      dplyr::contains('precip_accumulated')
+    ) -> res
 
   return(res)
 
@@ -538,9 +540,10 @@ sfn_metrics <- function(
   .funs <- dplyr::funs(
     mean = mean(., na.rm = TRUE),
     sd = stats::sd(., na.rm = TRUE),
-    # n = n(),
     coverage = data_coverage(., .data$timestep, .data$period_minutes),
     !!! quantile_args,
+    accumulated = sum(., na.rm = TRUE),
+    # n = n(),
     # max = max(., na.rm = TRUE),
     # max_time = max_time(., .data$TIMESTAMP_coll),
     # min = min(., na.rm = TRUE),

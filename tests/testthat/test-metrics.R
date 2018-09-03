@@ -188,6 +188,29 @@ test_that('summarise_by_period dots work as intended', {
   )
 
   expect_match(names(test_expr7), regexp = '_centroid', all = FALSE)
+  
+  test_expr8 <- summarise_by_period(
+    data = get_sapf_data(ARG_TRE),
+    period = 'daily',
+    .funs = dplyr::funs(
+      mean(., na.rm = TRUE), sd(., na.rm = TRUE),
+      accumulated = sum(., na.rm = TRUE)
+    )
+  )
+  
+  expect_false('sapflow_accumulated' %in% names(test_expr8))
+  
+  test_expr9 <- summarise_by_period(
+    data = get_env_data(ARG_TRE),
+    period = 'daily',
+    .funs = dplyr::funs(
+      mean(., na.rm = TRUE), sd(., na.rm = TRUE),
+      accumulated = sum(., na.rm = TRUE)
+    )
+  )
+  
+  expect_match(names(test_expr9), regexp = 'precip_accumulated', all = FALSE)
+  expect_false('ta_accumulated' %in% names(test_expr9))
 
 })
 
@@ -767,7 +790,7 @@ test_that('.fixed_metrics_funs works', {
   expect_s3_class(.funs, 'fun_list')
   expect_identical(
     names(.funs),
-    c('mean', 'sd', 'coverage', 'q_95', 'centroid')
+    c('mean', 'sd', 'coverage', 'q_95', 'accumulated', 'centroid')
   )
 
   .funs_no_centroid <- sapfluxnetr:::.fixed_metrics_funs(
@@ -777,7 +800,7 @@ test_that('.fixed_metrics_funs works', {
   expect_s3_class(.funs_no_centroid, 'fun_list')
   expect_identical(
     names(.funs_no_centroid),
-    c('mean', 'sd', 'coverage', 'q_10')
+    c('mean', 'sd', 'coverage', 'q_10', 'accumulated')
   )
 
 })
@@ -829,12 +852,12 @@ test_that('metrics_tidyfier returns the expected object for single metrics', {
   # is the data there
   sapflow_vars <- paste0(
     'sapflow_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95), TRUE))
-  )
+  )[-5]
   
   sapflow_vars_pd <- paste0(
     'sapflow_', names(sapfluxnetr:::.fixed_metrics_funs(c(0.95), FALSE)),
     '_pd'
-  )
+  )[-5]
   
   env_vars <- sapfluxnetr:::.env_vars_names() %>%
     purrr::map(
