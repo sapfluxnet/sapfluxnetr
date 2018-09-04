@@ -1,5 +1,6 @@
 # sapfluxnetr 0.0.4.9000
 
+* Added `acummulated_precip` as new metric for the default `*_metrics` functions.
 * Fixed `data_coverage` function. Now it returns the real coverage based on the
   timestep, the period to summarise for and the timestamp values. This only will
   work within the wrapper metrics functions (using internally the 
