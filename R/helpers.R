@@ -606,7 +606,7 @@ as_sfn_data_multi <- function(x) {
         )
       ),
       si_dist_mgmt = list(
-        units = c('Agriculture', 'Drought', 'Fire', 'Forestry', 'Grazing',
+        values = c('Agriculture', 'Drought', 'Fire', 'Forestry', 'Grazing',
                   'Hydrologic event', 'Land cover change', 'Pests and disease',
                   'NULL'),
         type = "Character",
@@ -920,7 +920,7 @@ as_sfn_data_multi <- function(x) {
         description = 'Sap flow measures sensor manufacturer'
       ),
       pl_sens_cor_grad = list(
-        units = c('No correction', 'NTG separately measured',
+        values = c('No correction', 'NTG separately measured',
                   'NTG measured in cyclic heating deisgn','NTG modelled',
                   'Other/unknown'),
         type = 'Character',

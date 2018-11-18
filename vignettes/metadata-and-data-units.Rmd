@@ -1,0 +1,100 @@
+---
+title: "Metadata and Data units"
+author: "Victor Granda (Sapfluxnet Team)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Metadata
+
+Metadata numeric variables come in different units depending on the variable.
+One easy way to check for a variable units is to use the `describe_md_variable`
+function:
+
+```{r describe_md_variable}
+library(sapfluxnetr)
+describe_md_variable('si_elev')
+describe_md_variable('st_age')
+```
+
+As it can be seen, site elevation is in meters and stand age is in years.
+
+Nevertheless, and for the sake of completion, here you can find a complete list
+of the metadata variables and their units:
+
+```{r md_vars_table, echo=FALSE, results='asis'}
+suppressMessages(library(dplyr))
+library(magrittr)
+site_md_table <- sapfluxnetr:::.metadata_architecture() %>%
+  magrittr::extract2(., 'site_md') %>%
+  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  dplyr::mutate(
+    variable = sapfluxnetr:::.metadata_architecture() %>%
+      magrittr::extract2(., 'site_md') %>%
+      names()
+  ) %>%
+  select(variable, everything())
+
+stand_md_table <- sapfluxnetr:::.metadata_architecture() %>%
+  magrittr::extract2(., 'stand_md') %>%
+  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  dplyr::mutate(
+    variable = sapfluxnetr:::.metadata_architecture() %>%
+      magrittr::extract2(., 'stand_md') %>%
+      names()
+  ) %>%
+  select(variable, everything())
+
+species_md_table <- sapfluxnetr:::.metadata_architecture() %>%
+  magrittr::extract2(., 'species_md') %>%
+  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  dplyr::mutate(
+    variable = sapfluxnetr:::.metadata_architecture() %>%
+      magrittr::extract2(., 'species_md') %>%
+      names()
+  ) %>%
+  select(variable, everything())
+
+plant_md_table <- sapfluxnetr:::.metadata_architecture() %>%
+  magrittr::extract2(., 'plant_md') %>%
+  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  dplyr::mutate(
+    variable = sapfluxnetr:::.metadata_architecture() %>%
+      magrittr::extract2(., 'plant_md') %>%
+      names()
+  ) %>%
+  select(variable, everything())
+
+env_md_table <- sapfluxnetr:::.metadata_architecture() %>%
+  magrittr::extract2(., 'env_md') %>%
+  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  dplyr::mutate(
+    variable = sapfluxnetr:::.metadata_architecture() %>%
+      magrittr::extract2(., 'env_md') %>%
+      names()
+  ) %>%
+  select(variable, everything())
+
+bind_rows(
+  site_md_table, stand_md_table, species_md_table, plant_md_table, env_md_table
+) %>%
+  xtable::xtable(align = c('lcccc')) %>%
+  print(type = 'html')
+```
+
+## Data
+
+
