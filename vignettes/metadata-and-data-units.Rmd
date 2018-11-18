@@ -97,4 +97,16 @@ bind_rows(
 
 ## Data
 
+### Sap flow units
+
+Sap flow units depends on the database level choosen:
+
+  - Plant: $cm³/s$
+  - Sapwood: $cm³/s/cm²_sa_$
+  - Leaf: $cm³/s/cm²_la_$
+
+### Environmental variables
+
+Environmental variables come in the following units:
+
 
