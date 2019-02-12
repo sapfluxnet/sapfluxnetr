@@ -50,7 +50,7 @@ site_md_table <- sapfluxnetr:::.metadata_architecture() %>%
 
 stand_md_table <- sapfluxnetr:::.metadata_architecture() %>%
   magrittr::extract2(., 'stand_md') %>%
-  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  purrr::map_dfr(magrittr::extract, c('description', 'type', 'units')) %>%
   dplyr::mutate(
     variable = sapfluxnetr:::.metadata_architecture() %>%
       magrittr::extract2(., 'stand_md') %>%
@@ -60,7 +60,7 @@ stand_md_table <- sapfluxnetr:::.metadata_architecture() %>%
 
 species_md_table <- sapfluxnetr:::.metadata_architecture() %>%
   magrittr::extract2(., 'species_md') %>%
-  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  purrr::map_dfr(magrittr::extract, c('description', 'type', 'units')) %>%
   dplyr::mutate(
     variable = sapfluxnetr:::.metadata_architecture() %>%
       magrittr::extract2(., 'species_md') %>%
@@ -70,7 +70,7 @@ species_md_table <- sapfluxnetr:::.metadata_architecture() %>%
 
 plant_md_table <- sapfluxnetr:::.metadata_architecture() %>%
   magrittr::extract2(., 'plant_md') %>%
-  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  purrr::map_dfr(magrittr::extract, c('description', 'type', 'units')) %>%
   dplyr::mutate(
     variable = sapfluxnetr:::.metadata_architecture() %>%
       magrittr::extract2(., 'plant_md') %>%
@@ -80,7 +80,7 @@ plant_md_table <- sapfluxnetr:::.metadata_architecture() %>%
 
 env_md_table <- sapfluxnetr:::.metadata_architecture() %>%
   magrittr::extract2(., 'env_md') %>%
-  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  purrr::map_dfr(magrittr::extract, c('description', 'type', 'units')) %>%
   dplyr::mutate(
     variable = sapfluxnetr:::.metadata_architecture() %>%
       magrittr::extract2(., 'env_md') %>%
