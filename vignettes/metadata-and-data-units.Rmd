@@ -40,7 +40,7 @@ suppressMessages(library(dplyr))
 library(magrittr)
 site_md_table <- sapfluxnetr:::.metadata_architecture() %>%
   magrittr::extract2(., 'site_md') %>%
-  purrr::map_df(magrittr::extract, c('description', 'type', 'units')) %>%
+  purrr::map_dfr(magrittr::extract, c('description', 'type', 'units')) %>%
   dplyr::mutate(
     variable = sapfluxnetr:::.metadata_architecture() %>%
       magrittr::extract2(., 'site_md') %>%
@@ -101,9 +101,9 @@ bind_rows(
 
 Sap flow units depends on the database level choosen:
 
-  - Plant: $cm³/s$
-  - Sapwood: $cm³/s/cm²_sa_$
-  - Leaf: $cm³/s/cm²_la_$
+$$Plant:~\frac{cm³}{s}$$
+$$Sapwood:~\frac{cm³}{cm²_{sa}·s}$$
+$$Leaf:~\frac{cm³}{cm²_{la}·s}$$
 
 ### Environmental variables
 
