@@ -1,0 +1,11 @@
+pandoc: '2.5'
+pkgdown: 1.3.0
+pkgdown_sha: ~
+articles:
+  custom-aggregation: custom-aggregation.html
+  data-flags: data-flags.html
+  memory-and-parallelization: memory-and-parallelization.html
+  metadata-and-data-units: metadata-and-data-units.html
+  sapfluxnetr-quick-guide: sapfluxnetr-quick-guide.html
+  sfn-data-classes: sfn-data-classes.html
+
