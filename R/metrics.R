@@ -699,6 +699,8 @@ monthly_metrics <- function(
   metadata = NULL,
   ...
 ) {
+  
+  . <- NULL
 
   # hardcoded values
   period <- 'monthly'
@@ -779,6 +781,8 @@ nightly_metrics <- function(
   metadata = NULL,
   ...
 ) {
+  
+  . <- NULL
 
   period <- match.arg(period)
 
@@ -857,6 +861,8 @@ daylight_metrics <- function(
   metadata = NULL,
   ...
 ) {
+  
+  . <- NULL
 
   period <- match.arg(period)
 
@@ -937,6 +943,8 @@ predawn_metrics <- function(
   metadata = NULL,
   ...
 ) {
+  
+  . <- NULL
 
   period <- match.arg(period)
 
@@ -1013,6 +1021,8 @@ midday_metrics <- function(
   metadata = NULL,
   ...
 ) {
+  
+  . <- NULL
 
   period <- match.arg(period)
 

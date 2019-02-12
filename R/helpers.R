@@ -47,10 +47,10 @@ data_coverage <- function(x, timestep, period_minutes) {
 #' @examples
 #' 
 #' # daily period, expected 1440 minutes
-#' .period_to_minutes('daily')
+#' sapfluxnetr:::.period_to_minutes('daily')
 #' 
 #' # the same, but with other specification
-#' .period_to_minutes('1 day')
+#' sapfluxnetr:::.period_to_minutes('1 day')
 .period_to_minutes <- function(period, timestamp, timestep){
   
   # if the period is a custom period,
@@ -157,9 +157,9 @@ data_coverage <- function(x, timestep, period_minutes) {
 #' storms %>%
 #'   group_by(year) %>%
 #'   summarise(wind_max = max(wind),
-#'             hour_at_max = max_time(wind, time = hour),
+#'             hour_at_max = sapfluxnetr:::max_time(wind, time = hour),
 #'             wind_min = min(wind),
-#'             hour_at_min = min_time(wind, time = hour))
+#'             hour_at_min = sapfluxnetr:::min_time(wind, time = hour))
 #'
 #' @name time_at_events
 NULL
@@ -301,34 +301,34 @@ norm_diurnal_centroid <- function(sapf_var, rad_var) {
   return(norm_dc)
 }
 
-#' min max
-#'
-#' wrapper for quicky return the max and the min value of a vector to use in
-#' a dplyr pipe
-#'
-#' @param x a numeric, POSIXct... (any accepted by \code{\link[base]{max}} and
-#'   \code{\link[base]{min}}) vector
-#'
-#' @return a two-element named vector, c(min = value, max = value) with values
-#'   transformed to characters
-#'
-#' @examples
-#' library(tidiverse)
-#' # pipe example, not efficient
-#' iris %>%
-#'   pull(Sepal.Length) %>%
-#'   min_max()
-#'
-#' # the same, directly
-#' min_max(iris$Sepal.Length)
-
-.min_max <- function(x) {
-  # c(min = min(x, na.rm = TRUE), max = max(x, na.rm = TRUE))
-  c(
-    min = as.character(x[which.min(x)]),
-    max = as.character(x[which.max(x)])
-  )
-}
+# #' min max
+# #'
+# #' wrapper for quicky return the max and the min value of a vector to use in
+# #' a dplyr pipe
+# #'
+# #' @param x a numeric, POSIXct... (any accepted by \code{\link[base]{max}} and
+# #'   \code{\link[base]{min}}) vector
+# #'
+# #' @return a two-element named vector, c(min = value, max = value) with values
+# #'   transformed to characters
+# #'
+# #' @examples
+# #' library(tidyverse)
+# #' # pipe example, not efficient
+# #' iris %>%
+# #'   pull(Sepal.Length) %>%
+# #'   .min_max()
+# #'
+# #' # the same, directly
+# #' .min_max(iris$Sepal.Length)
+# 
+# .min_max <- function(x) {
+#   # c(min = min(x, na.rm = TRUE), max = max(x, na.rm = TRUE))
+#   c(
+#     min = as.character(x[which.min(x)]),
+#     max = as.character(x[which.max(x)])
+#   )
+# }
 
 #' Timezones dictionary
 #'
@@ -1257,6 +1257,11 @@ describe_md_variable <- function(variable) {
 #' 
 #' @param data site sapflow metrics dataframe
 .sapflow_tidy <- function(data) {
+  
+  # hack for cran check not comply about global undefined
+  tree <- NULL
+  value <- NULL
+  . <- NULL
   
   data %>%
     # converting to tibble to get rid of tibbletime corrupted index after gather

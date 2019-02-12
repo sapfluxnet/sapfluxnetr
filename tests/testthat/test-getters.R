@@ -56,7 +56,7 @@ test_that('as_sfn_data_multi helper works as intended', {
 #### read_sfn_metadata tests ####
 test_that('.write_sfn_metadata writes correctly the file', {
 
-  skip_on_cran()
+  testthat::skip_on_cran()
 
   folder <- 'Data'
   sfn_metadata <- sapfluxnetr:::.write_metadata_cache(folder, .dry = TRUE)
@@ -71,7 +71,7 @@ test_that('.write_sfn_metadata writes correctly the file', {
   expect_s3_class(sfn_metadata[['plant_md']], 'tbl')
   expect_s3_class(sfn_metadata[['env_md']], 'tbl')
 
-  sfn_metadata_2 <- sapfluxnetr::.write_metadata_cache(folder)
+  sfn_metadata_2 <- sapfluxnetr:::.write_metadata_cache(folder)
   expect_true(file.exists(file.path(folder, '.metadata_cache.RData')))
   expect_identical(sfn_metadata, sfn_metadata_2)
 

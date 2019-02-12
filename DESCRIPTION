@@ -8,7 +8,7 @@ Authors@R: c(
   person("Jacob", "Nelson", email = "", role = 'ctb')
   )
 Description: Download, aggregate and select data from SAPFLUXNET Project.
-Depends: R (>= 3.4.3)
+Depends: R (>= 3.4.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 BugReport: https://github.com/sapfluxnet/sapfluxnetr/issues
@@ -44,5 +44,7 @@ Suggests:
     rmarkdown,
     testthat,
     tidyverse,
-    future
+    future,
+    magrittr,
+    xtable
 VignetteBuilder: knitr

@@ -39,8 +39,8 @@ library(dplyr)
 storms \%>\%
   group_by(year) \%>\%
   summarise(wind_max = max(wind),
-            hour_at_max = max_time(wind, time = hour),
+            hour_at_max = sapfluxnetr:::max_time(wind, time = hour),
             wind_min = min(wind),
-            hour_at_min = min_time(wind, time = hour))
+            hour_at_min = sapfluxnetr:::min_time(wind, time = hour))
 
 }

@@ -28,8 +28,8 @@ calculation.
 \examples{
 
 # daily period, expected 1440 minutes
-.period_to_minutes('daily')
+sapfluxnetr:::.period_to_minutes('daily')
 
 # the same, but with other specification
-.period_to_minutes('1 day')
+sapfluxnetr:::.period_to_minutes('1 day')
 }
