@@ -1292,7 +1292,7 @@ describe_md_variable <- function(variable) {
       ),
       dplyr::funs(
         as.POSIXct(
-          ., tz = attr(.data[[timestamp_var]], 'tz'),
+          ., tz = attr(.data[[1]], 'tz'),
           origin = lubridate::origin
         )
       )

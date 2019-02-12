@@ -81,7 +81,7 @@ test_that('constructors_work', {
       plant_md = ARG_TRE_plant_md,
       env_md = ARG_TRE_env_md
     ),
-    'invalid class “sfn_data” object'
+    'invalid class'
   )
 
   expect_error(
@@ -99,7 +99,7 @@ test_that('constructors_work', {
       plant_md = ARG_TRE_plant_md,
       env_md = ARG_TRE_env_md
     ),
-    'invalid class “sfn_data” object'
+    'invalid class'
   )
 
   expect_error(
@@ -117,7 +117,7 @@ test_that('constructors_work', {
       plant_md = ARG_TRE_plant_md,
       env_md = ARG_TRE_env_md
     ),
-    'invalid class “sfn_data” object'
+    'invalid class'
   )
 
   expect_error(
@@ -135,7 +135,7 @@ test_that('constructors_work', {
       plant_md = ARG_TRE_plant_md,
       env_md = ARG_TRE_env_md
     ),
-    'invalid class “sfn_data” object'
+    'invalid class'
   )
 
   expect_error(
@@ -153,7 +153,7 @@ test_that('constructors_work', {
       plant_md = ARG_TRE_plant_md,
       env_md = ARG_TRE_env_md
     ),
-    'invalid class “sfn_data” object'
+    'invalid class'
   )
 
   expect_error(
@@ -171,7 +171,7 @@ test_that('constructors_work', {
       plant_md = ARG_TRE_plant_md,
       env_md = ARG_TRE_env_md
     ),
-    'invalid class “sfn_data” object'
+    'invalid class'
   )
 
   expect_error(
@@ -207,7 +207,7 @@ test_that('constructors_work', {
       plant_md = ARG_TRE_plant_md,
       env_md = ARG_TRE_env_md
     ),
-    'invalid class “sfn_data” object'
+    'invalid class'
   )
 
   expect_error(
@@ -225,7 +225,7 @@ test_that('constructors_work', {
       plant_md = ARG_TRE_plant_md,
       env_md = ARG_TRE_env_md
     ),
-    'invalid class “sfn_data” object'
+    'invalid class'
   )
 
   expect_error(
@@ -243,7 +243,7 @@ test_that('constructors_work', {
       plant_md = ARG_TRE_plant_md,
       env_md = ARG_TRE_env_md
     ),
-    'invalid class “sfn_data” object'
+    'invalid class'
   )
 
   expect_error(
