@@ -342,8 +342,6 @@ setMethod(
 #'
 #' @param object sfn_data object to show
 #'
-#' @importFrom dplyr %>%
-#'
 #' @export
 
 setMethod(
