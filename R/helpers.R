@@ -22,47 +22,47 @@
 #' @export
 
 data_coverage <- function(x, timestep, period_minutes) {
-  
+
   timestep <- timestep[1]
   period_minutes <- period_minutes[1]
   (sum(!is.na(x)) / (period_minutes/timestep)) * 100
-  
+
 }
 
 #' transform period as in tibbletime period argument in minutes
-#' 
+#'
 #' helper for data_coverage
-#' 
+#'
 #' This function uses tibbletime and lubirdate functions to convert the period
 #' supplied into minutes to calculate the expected timesteps in the coverage
 #' calculation.
-#' 
+#'
 #' @return An integer with the period value in minutes
-#' 
+#'
 #' @param period character indicating the period to summarise or POSIX vector
 #'   with the boundaries for irregular periods
 #' @param timestamp timestamp vector obtained from data
 #' @param timestep numeric with the timestep in minutes, obtained from metadata
-#' 
+#'
 #' @examples
-#' 
+#'
 #' # daily period, expected 1440 minutes
 #' sapfluxnetr:::.period_to_minutes('daily')
-#' 
+#'
 #' # the same, but with other specification
 #' sapfluxnetr:::.period_to_minutes('1 day')
 .period_to_minutes <- function(period, timestamp, timestep){
-  
+
   # if the period is a custom period,
   if (
     inherits(period, c("Date", "POSIXct", "POSIXt", "yearmon", "yearqtr", "hms"))
   ) {
-    
+
     # First, we obtain the boundaries for calculating the intervals in minutes.
     # For that we profit from collapse_index, as it allows to get these
     # boundaries as well as use it to get the n(), used later to create the
     # repeated vector
-    
+
     # if the custom period starts after the start of the timestamp, default
     # behaviour of collapse_index
     if (dplyr::first(timestamp) <= dplyr::first(period)) {
@@ -72,10 +72,10 @@ data_coverage <- function(x, timestep, period_minutes) {
           period = period,
           side = 'start'
         )
-      ) %>% 
-        dplyr::group_by(boundaries) %>% 
+      ) %>%
+        dplyr::group_by(boundaries) %>%
         dplyr::summarise(n = n())
-      
+
     } else {
       # if custom period starts before the timestamp, we need to set that as the
       # start date for collapse index
@@ -86,11 +86,11 @@ data_coverage <- function(x, timestep, period_minutes) {
           side = 'start',
           start_date = period[1]
         )
-      ) %>% 
-        dplyr::group_by(boundaries) %>% 
+      ) %>%
+        dplyr::group_by(boundaries) %>%
         dplyr::summarise(n = n())
     }
-    
+
     # modify the boundaries to add the last value, as we will use them to
     # calculate the intervals length in minutes
     if (dplyr::last(timestamp) >= dplyr::last(period)) {
@@ -104,37 +104,37 @@ data_coverage <- function(x, timestep, period_minutes) {
         dplyr::last(period)
       )
     }
-    
+
     # calculate the lenght of each interval between the boundaries
     loop_res <- c()
     for (i in 1:(length(boundaries) - 1)) {
       period_min <- lubridate::int_length(
         lubridate::interval(boundaries[i], boundaries[i+1])
       ) / 60
-      
+
       loop_res <- c(loop_res, period_min)
     }
-    
+
     # we need a vector of length equal to timestamp, but with the values of
     # minutes repeated to use it in the summarise function. We use here the n
     # calculated before
     res <- rep(loop_res, times = periods_info$n)
-    
+
     return(res)
-    
+
   } else {
     # parse the period using tibbletime
     period_parsed <- tibbletime::parse_period(period)
-    # transform to minutes (duration returns seconds, so dividing by 60 is 
+    # transform to minutes (duration returns seconds, so dividing by 60 is
     # mandatory)
     period_min <- lubridate::duration(
       glue::glue('{period_parsed$freq} {period_parsed$period}')
     )@.Data / 60
-    
+
     # we return one value, to create a column for the summarise function
     return(period_min)
   }
-  
+
 }
 
 #' time at maximum/minimum
@@ -321,7 +321,7 @@ norm_diurnal_centroid <- function(sapf_var, rad_var) {
 # #'
 # #' # the same, directly
 # #' .min_max(iris$Sepal.Length)
-# 
+#
 # .min_max <- function(x) {
 #   # c(min = min(x, na.rm = TRUE), max = max(x, na.rm = TRUE))
 #   c(
@@ -1203,28 +1203,28 @@ describe_md_variable <- function(variable) {
   # description
   cat('Description:\n')
   arch_list %>%
-    purrr::modify(c(variable, 'description')) %>%
+    purrr::map_depth(1, list(variable, 'description')) %>%
     purrr::flatten_chr() %>%
     cat('\n', sep = '', fill = 80)
 
   # values
   cat('Values:\n')
   arch_list %>%
-    purrr::modify(c(variable, 'values')) %>%
+    purrr::map_depth(1, c(variable, 'values')) %>%
     purrr::flatten_chr() %>%
     cat('\n', sep = ' | ', fill = 80)
 
   # units
   cat('Units:\n')
   arch_list %>%
-    purrr::modify(c(variable, 'units')) %>%
+    purrr::map_depth(1, c(variable, 'units')) %>%
     purrr::flatten_chr() %>%
     cat('\n\n', sep = '')
 
   # type
   cat('Type:\n')
   arch_list %>%
-    purrr::modify(c(variable, 'type')) %>%
+    purrr::map_depth(1, c(variable, 'type')) %>%
     purrr::flatten_chr() %>%
     cat('\n', sep = '')
 }
@@ -1254,22 +1254,22 @@ describe_md_variable <- function(variable) {
 }
 
 #' .sapflow_tidy helper
-#' 
+#'
 #' @param data site sapflow metrics dataframe
 .sapflow_tidy <- function(data) {
-  
+
   # hack for cran check not comply about global undefined
   tree <- NULL
   value <- NULL
   . <- NULL
-  
+
   data %>%
     # converting to tibble to get rid of tibbletime corrupted index after gather
     tibble::as_tibble() %>%
-    
+
     # wide to long, because we want to extract tree and metric
     tidyr::gather(tree, value, -dplyr::starts_with('TIMESTAMP')) %>%
-    
+
     # mutate to get the plant code. Is tricky as we have to separate the metric
     # and interval labels at the end of the tree column and rename tree as
     # pl_code
@@ -1282,12 +1282,12 @@ describe_md_variable <- function(variable) {
       )
     ) %>%
     dplyr::rename(pl_code = .data$tree) %>%
-    
+
     # resources consuming step here!
     # now we have the spread (long to wide) the sapflow values by metric,
     # replicating the trees, as each sapflow metric is a variable
     tidyr::spread(.data$sapflow, .data$value, sep = '_') %>%
-    
+
     # fix the sapflow_min_time and sapflow_max_time, because with the
     # gather/spread steps posixct becomes numerical
     dplyr::mutate_at(
