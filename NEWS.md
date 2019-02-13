@@ -1,5 +1,10 @@
-# sapfluxnetr 0.0.4.9000
+# sapfluxnetr 0.0.5
 
+* Cleaning to comply with CRAN checks.
+* Added the *"Metadata and data units"* vignette.
+* Fixes for the new `purrr` version.
+* Exported the pipe operator (`%>%`) from `magrittr` package. Now loading
+  `sapfluxnetr` the pipe can be used.
 * Added `acummulated_precip` as new metric for the default `*_metrics` functions.
 * Fixed `data_coverage` function. Now it returns the real coverage based on the
   timestep, the period to summarise for and the timestamp values. This only will
