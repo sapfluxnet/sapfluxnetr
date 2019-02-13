@@ -4,8 +4,8 @@
 \alias{metrics_tidyfier}
 \title{Build a tidy data frame from the metrics results nested list}
 \usage{
-metrics_tidyfier(metrics_res, metadata, interval = c("general", "predawn",
-  "midday", "night", "daylight"))
+metrics_tidyfier(metrics_res, metadata, interval = c("general",
+  "predawn", "midday", "night", "daylight"))
 }
 \arguments{
 \item{metrics_res}{Nested list containing the metrics results as obtained

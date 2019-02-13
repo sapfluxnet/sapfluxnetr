@@ -13,16 +13,16 @@
 daily_metrics(sfn_data, solar = TRUE, probs = c(0.95), tidy = FALSE,
   metadata = NULL, ...)
 
-monthly_metrics(sfn_data, solar = TRUE, probs = c(0.95), tidy = FALSE,
-  metadata = NULL, ...)
+monthly_metrics(sfn_data, solar = TRUE, probs = c(0.95),
+  tidy = FALSE, metadata = NULL, ...)
 
 nightly_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
   int_start = 20, int_end = 6, probs = c(0.95), tidy = FALSE,
   metadata = NULL, ...)
 
-daylight_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
-  int_start = 6, int_end = 20, probs = c(0.95), tidy = FALSE,
-  metadata = NULL, ...)
+daylight_metrics(sfn_data, period = c("daily", "monthly"),
+  solar = TRUE, int_start = 6, int_end = 20, probs = c(0.95),
+  tidy = FALSE, metadata = NULL, ...)
 
 predawn_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
   int_start = 4, int_end = 6, probs = c(0.95), tidy = FALSE,
@@ -272,3 +272,4 @@ AUS_CAN_ST2_MIX_midday_tidy
 \seealso{
 Other metrics: \code{\link{sfn_metrics}}
 }
+\concept{metrics}

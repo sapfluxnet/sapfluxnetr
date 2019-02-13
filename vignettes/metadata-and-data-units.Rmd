@@ -109,4 +109,57 @@ $$Leaf:~\frac{cm³}{cm²_{la}·s}$$
 
 Environmental variables come in the following units:
 
+```{r environmetal_vars_table, echo=FALSE, results='asis'}
+tibble::tibble(
+  Variable = c(
+    'env_ta', 'env_rh', 'env_vpd', 'env_sw_in', 'env_ppfd', 'env_netrad',
+    'env_ws', 'env_precip', 'env_swc_shallow', 'env_swc_deep'
+  ),
+  Description = c(
+    'Air temperature', 'Air relative humidity',
+    'Vapour pressure deficit', 'Shortwave incoming radiation',
+    'Incoming photosynthetic photon flux density',
+    'Net radiation', 'Wind speed', 'Precipitation',
+    'Shallow soil water content',
+    'Deep soil water content'
+  ),
+  Units = c(
+    'ºC', '%', 'kPa', 'W m-2', 'micromols m-2 s-1', 'W m-2', 'm s-1', 'mm timestep-1',
+    'cm3 cm-3', 'cm3 cm-3'
+  )
+) %>%
+  xtable::xtable(align = c('lccc')) %>%
+  print(type = 'html')
+```
 
+## Timestamps
+
+### TIMESTAMP
+
+`TIMESTAMP` variable comes as provided by the contributors and timezone is
+applied per the site metadata description:
+
+```{r TIMESTAMP_var}
+library(dplyr)
+library(lubridate)
+
+# timezone provided by contributor
+get_env_md(ARG_TRE) %>% pull(env_time_zone)
+
+# timezone in the TIMESTAMP
+get_timestamp(ARG_TRE) %>% tz()
+```
+
+As you can see, the final timezone is in GMT format.
+
+### Solar TIMESTAMP
+
+When inspecting the solar `TIMESTAMP` variable, timezone declared is UTC:
+
+```{r solar_TIMESTAMP}
+get_solar_timestamp(ARG_TRE) %>% tz()
+```
+
+This is so because solar timestamp is only refered to the sun position in the
+sky, rendering the timezone useless in this case. So UTC was chosen as timezone
+to be able to join and compare global data.
