@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sapfluxnetr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5.9000</span>
       </span>
     </div>
 
@@ -111,7 +111,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/sapfluxnet/sapfluxnetr">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -125,7 +130,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Metrics summary function</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/sapfluxnet/sapfluxnetr/blob/master/R/metrics.R'><code>R/metrics.R</code></a></small>
     <div class="hidden name"><code>sfn_metrics.Rd</code></div>
     </div>
 
@@ -282,7 +287,7 @@ interval (predawn for example). This filtering can be specified with the
 #&gt;   ..$ ARG_TRE_Nan_Jt_3_n   : int [1:3] 96 168 48
 #&gt;   ..$ ARG_TRE_Nan_Jt_4_n   : int [1:3] 96 168 48
 #&gt;   ..- attr(*, "index_quo")= language ~TIMESTAMP
-#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x563350965a40&gt; 
+#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x5628810a6e18&gt; 
 #&gt;   ..- attr(*, "index_time_zone")= chr "Etc/GMT+3"
 #&gt;  $ env :Classes ‘tbl_time’, ‘tbl_df’, ‘tbl’ and 'data.frame':	3 obs. of  28 variables:
 #&gt;   ..$ TIMESTAMP       : POSIXct[1:3], format: "2009-11-15" "2009-11-22" ...
@@ -314,7 +319,7 @@ interval (predawn for example). This filtering can be specified with the
 #&gt;   ..$ ppfd_in_n       : int [1:3] 96 168 48
 #&gt;   ..$ ext_rad_n       : int [1:3] 96 168 48
 #&gt;   ..- attr(*, "index_quo")= language ~TIMESTAMP
-#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x56335f115a38&gt; 
+#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x562881ae9498&gt; 
 #&gt;   ..- attr(*, "index_time_zone")= chr "Etc/GMT+3"</div><div class='input'><span class='no'>ARG_TRE_metrics</span><span class='kw'>[[</span><span class='st'>'sapf'</span>]]</div><div class='output co'>#&gt; # A time tibble: 3 x 13
 #&gt; <span style='color: #949494;'># Index: TIMESTAMP</span><span>
 #&gt;   TIMESTAMP           ARG_TRE_Nan_Jt_… ARG_TRE_Nan_Jt_… ARG_TRE_Nan_Jt_…
@@ -382,7 +387,7 @@ interval (predawn for example). This filtering can be specified with the
 #&gt;   ..$ ARG_TRE_Nan_Jt_3_n_md   : int [1:13] 2 2 2 2 2 2 2 2 2 2 ...
 #&gt;   ..$ ARG_TRE_Nan_Jt_4_n_md   : int [1:13] 2 2 2 2 2 2 2 2 2 2 ...
 #&gt;   ..- attr(*, "index_quo")= language ~TIMESTAMP
-#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x56335460a470&gt; 
+#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x562881a20448&gt; 
 #&gt;   ..- attr(*, "index_time_zone")= chr "UTC"
 #&gt;  $ env :Classes ‘tbl_df’, ‘tbl’ and 'data.frame':	13 obs. of  28 variables:
 #&gt;   ..$ TIMESTAMP_md       : POSIXct[1:13], format: "2009-11-18" "2009-11-19" ...
@@ -414,7 +419,7 @@ interval (predawn for example). This filtering can be specified with the
 #&gt;   ..$ ppfd_in_n_md       : int [1:13] 2 2 2 2 2 2 2 2 2 2 ...
 #&gt;   ..$ ext_rad_n_md       : int [1:13] 2 2 2 2 2 2 2 2 2 2 ...
 #&gt;   ..- attr(*, "index_quo")= language ~TIMESTAMP
-#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x5633541f6420&gt; 
+#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x56287b6d5060&gt; 
 #&gt;   ..- attr(*, "index_time_zone")= chr "UTC"</div><div class='input'><span class='no'>ARG_TRE_midday</span><span class='kw'>[[</span><span class='st'>'sapf'</span>]]</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 13 x 13</span><span>
 #&gt;    TIMESTAMP_md        ARG_TRE_Nan_Jt_… ARG_TRE_Nan_Jt_… ARG_TRE_Nan_Jt_…
 #&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;dttm&gt;</span><span>                         </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>            </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>            </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>

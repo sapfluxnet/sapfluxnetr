@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sapfluxnetr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5.9000</span>
       </span>
     </div>
 
@@ -76,7 +76,14 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/sapfluxnet/sapfluxnetr">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -91,9 +98,9 @@
       <h1>Metadata and Data units</h1>
                         <h4 class="author">Victor Granda (Sapfluxnet Team)</h4>
             
-            <h4 class="date">2019-02-12</h4>
+            <h4 class="date">2019-02-13</h4>
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/sapfluxnet/sapfluxnetr/blob/master/vignettes/metadata-and-data-units.Rmd"><code>vignettes/metadata-and-data-units.Rmd</code></a></small>
       <div class="hidden name"><code>metadata-and-data-units.Rmd</code></div>
 
     </div>
@@ -132,7 +139,7 @@
 <p>As it can be seen, site elevation is in meters and stand age is in years.</p>
 <p>Nevertheless, and for the sake of completion, here you can find a complete list of the metadata variables and their units:</p>
 <!-- html table generated in R 3.5.2 by xtable 1.8-3 package -->
-<!-- Tue Feb 12 23:22:45 2019 -->
+<!-- Wed Feb 13 19:38:34 2019 -->
 <table class="table">
 <tr>
 <th>
@@ -1608,6 +1615,196 @@ None
 <h3 class="hasAnchor">
 <a href="#environmental-variables" class="anchor"></a>Environmental variables</h3>
 <p>Environmental variables come in the following units:</p>
+<!-- html table generated in R 3.5.2 by xtable 1.8-3 package -->
+<!-- Wed Feb 13 19:38:34 2019 -->
+<table class="table">
+<tr>
+<th>
+</th>
+<th>
+Variable
+</th>
+<th>
+Description
+</th>
+<th>
+Units
+</th>
+</tr>
+<tr>
+<td>
+1
+</td>
+<td align="center">
+env_ta
+</td>
+<td align="center">
+Air temperature
+</td>
+<td align="center">
+ºC
+</td>
+</tr>
+<tr>
+<td>
+2
+</td>
+<td align="center">
+env_rh
+</td>
+<td align="center">
+Air relative humidity
+</td>
+<td align="center">
+%
+</td>
+</tr>
+<tr>
+<td>
+3
+</td>
+<td align="center">
+env_vpd
+</td>
+<td align="center">
+Vapour pressure deficit
+</td>
+<td align="center">
+kPa
+</td>
+</tr>
+<tr>
+<td>
+4
+</td>
+<td align="center">
+env_sw_in
+</td>
+<td align="center">
+Shortwave incoming radiation
+</td>
+<td align="center">
+W m-2
+</td>
+</tr>
+<tr>
+<td>
+5
+</td>
+<td align="center">
+env_ppfd
+</td>
+<td align="center">
+Incoming photosynthetic photon flux density
+</td>
+<td align="center">
+micromols m-2 s-1
+</td>
+</tr>
+<tr>
+<td>
+6
+</td>
+<td align="center">
+env_netrad
+</td>
+<td align="center">
+Net radiation
+</td>
+<td align="center">
+W m-2
+</td>
+</tr>
+<tr>
+<td>
+7
+</td>
+<td align="center">
+env_ws
+</td>
+<td align="center">
+Wind speed
+</td>
+<td align="center">
+m s-1
+</td>
+</tr>
+<tr>
+<td>
+8
+</td>
+<td align="center">
+env_precip
+</td>
+<td align="center">
+Precipitation
+</td>
+<td align="center">
+mm timestep-1
+</td>
+</tr>
+<tr>
+<td>
+9
+</td>
+<td align="center">
+env_swc_shallow
+</td>
+<td align="center">
+Shallow soil water content
+</td>
+<td align="center">
+cm3 cm-3
+</td>
+</tr>
+<tr>
+<td>
+10
+</td>
+<td align="center">
+env_swc_deep
+</td>
+<td align="center">
+Deep soil water content
+</td>
+<td align="center">
+cm3 cm-3
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div id="timestamps" class="section level2">
+<h2 class="hasAnchor">
+<a href="#timestamps" class="anchor"></a>Timestamps</h2>
+<div id="timestamp" class="section level3">
+<h3 class="hasAnchor">
+<a href="#timestamp" class="anchor"></a>TIMESTAMP</h3>
+<p><code>TIMESTAMP</code> variable comes as provided by the contributors and timezone is applied per the site metadata description:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dplyr)</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(lubridate)</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="co">#&gt; Attaching package: 'lubridate'</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co">#&gt; The following object is masked from 'package:base':</span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt;     date</span></a>
+<a class="sourceLine" id="cb2-8" title="8"></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="co"># timezone provided by contributor</span></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="kw"><a href="../reference/sfn_get_generics.html">get_env_md</a></span>(ARG_TRE) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span>(env_time_zone)</a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="co">#&gt; [1] "13UTC-03:00, P"</span></a>
+<a class="sourceLine" id="cb2-12" title="12"></a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="co"># timezone in the TIMESTAMP</span></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="kw"><a href="../reference/sfn_get_generics.html">get_timestamp</a></span>(ARG_TRE) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="http://lubridate.tidyverse.org/reference/tz.html">tz</a></span>()</a>
+<a class="sourceLine" id="cb2-15" title="15"><span class="co">#&gt; [1] "Etc/GMT+3"</span></a></code></pre></div>
+<p>As you can see, the final timezone is in GMT format.</p>
+</div>
+<div id="solar-timestamp" class="section level3">
+<h3 class="hasAnchor">
+<a href="#solar-timestamp" class="anchor"></a>Solar TIMESTAMP</h3>
+<p>When inspecting the solar <code>TIMESTAMP</code> variable, timezone declared is UTC:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw"><a href="../reference/sfn_get_generics.html">get_solar_timestamp</a></span>(ARG_TRE) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="http://lubridate.tidyverse.org/reference/tz.html">tz</a></span>()</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="co">#&gt; [1] "UTC"</span></a></code></pre></div>
+<p>This is so because solar timestamp is only refered to the sun position in the sky, rendering the timezone useless in this case. So UTC was chosen as timezone to be able to join and compare global data.</p>
 </div>
 </div>
   </div>
@@ -1619,6 +1816,7 @@ None
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#metadata">Metadata</a></li>
       <li><a href="#data">Data</a></li>
+      <li><a href="#timestamps">Timestamps</a></li>
       </ul>
 </div>
       </div>
