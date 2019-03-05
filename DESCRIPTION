@@ -44,6 +44,7 @@ Collate:
 Suggests:
     future,
     knitr,
+    remotes,
     rmarkdown,
     testthat,
     tidyverse,

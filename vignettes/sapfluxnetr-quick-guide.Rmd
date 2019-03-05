@@ -1,6 +1,6 @@
 ---
 title: "sapfluxnetr (Not So) Quick Guide"
-author: "Víctor Granda (Sapfluxnet Team)"
+author: "Víctor Granda (SAPFLUXNET Team)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -22,30 +22,34 @@ folder <- 'resources'
 
 `sapfluxnetr` R package provides tools for a tidy data analysis for the first
 sap flow measurements global database 
-([Sapfluxnet Project](http://sapfluxnet.creaf.cat/app)). In this vignette you
+([SAPFLUXNET Project](http://sapfluxnet.creaf.cat/app)). In this vignette you
 will learn how to install the package, download the data and get started with
 some data metrics.
 
 ## Installing the package
 
->DISCLAIMER: Not yet in CRAN really, use the devtools::install_github method
- instead
+`sapfluxnetr` is not yet in CRAN, so the installation must be done with the
+[remotes]() package:
 
-`sapfluxnetr` stable versions will be in the CRAN repository, so the
-installation of the package is as per usual:
-
-```{r cran_inst, eval=FALSE}
-install.packages('sapfluxnetr')
+```{r remotes_inst, eval=FALSE}
+# if (!require(remotes)) {install.packages('remotes')}
+remotes::install_github(
+  'sapfluxnet/sapfluxnetr',
+  build_opts = c("--no-resave-data", "--no-manual", "--build-vignettes")
+)
 ```
 
 Development versions of the package reside in github. If you want the latest
-updates, and also the latest bugs, ( be advised ;) ), please install the devel
+updates, **and also the latest bugs** ( be advised ;) ), please install the devel
 branch of the [github repository](https://github.com/sapfluxnet/sapfluxnetr)
 with the `devtools` package:
 
 ```{r github_inst, eval=FALSE}
-devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'devel',
-                         build_vignettes = TRUE)
+# if (!require(remotes)) {install.packages('remotes')}
+remotes::install_github(
+  'sapfluxnet/sapfluxnetr', ref = 'devel',
+  build_opts = c("--no-resave-data", "--no-manual", "--build-vignettes")
+)
 ```
 
 Now you can load the package, along with the `tidyverse` package, as it will be
@@ -53,6 +57,7 @@ needed later:
 
 ```{r pkg_load}
 library(sapfluxnetr)
+# if (!require(tidyverse)) {install.packages('tidyverse')}
 library(tidyverse)
 ```
 
@@ -61,38 +66,68 @@ library(tidyverse)
 
 ### Zenodo
 
-To be written as the data is not yet in Zenodo
+During the embargo period (2019-03-05 to 2020-03-05) only the data contributors
+can access the data. If you are a data contributor willing to access the data,
+follow these steps:
 
-### Sapfluxnet Data test suite
+  1. Go to SAPFLUXNET repository in Zenodo (https://zenodo.org/record/2530798)
+  1. Click in the `Request access` button, fill the form and click the
+     `Send request` button.
+  1. SAPFLUXNET Team will send you an email with the link to activate your
+     access to the Zenodo repository.
+  1. Follow the link and click in the download button. This will download a
+     zip file
+  1. Unzip the file in any location
+  1. You are ready to go ;)
 
-Download the test suite data from [here](). Unzip the file maintaining the
-folder structure:
+### SAPFLUXNET Data estructure
+
+SAPFLUXNET database estrucuture is as follows:
 
 ```
-sapfluxnet_db
+0.1.3 (database version number)
   |
-  |-- test_suite
-       |
-       |-- plant
-       |-- sapwood
-       |-- leaf
+  |-- RData
+  |    |
+  |    |-- plant
+  |    |-- sapwood
+  |    |-- leaf
+  |
+  |-- csv
+  |    |
+  |    |-- plant
+  |    |-- sapwood
+  |    |-- leaf
 ```
 
-`plant` folder contains the sites with sap flow plant level units available.  
-`sapwood` folder contains the sites with sap flow sapwood level units available.  
-`leaf` folder contains the sites with sap flow leaf level units available.
+`RData` folder contains the RData files for each site divided by sap flow units
+level:
 
-To start working with the data, simply create an RStudio project in the
-`sapfluxnet_db` folder and follow the following examples.
+  - `plant` sites with sap flow plant level units available.  
+  - `sapwood` sites with sap flow sapwood level units available.  
+  - `leaf` sites with sap flow leaf level units available.
+
+`csv` folder contains the csv files (9 files, 5 of metadata, 2 of data and 2 more
+for the data flags) for each units level available and site. We do not provide
+scripts or functions to work with the csv files, only the RData objects.
+
+To start working with the data, you have two options:
+
+  - If working in RStudio, create a project in the data root folder (`0.1.3` in
+    this example) and follow the examples in this vignette to get started.
+  
+  - If not, set the data root folder (`0.1.3` in this example) as the working
+    directory with `setwd` and follow the examples in this vignette to get
+    started.
 
 >DISCLAIMER: In order to be able to build the vignette in the CRAN tests
- the following examples will be based on a small subset of Sapfluxnet Data,
+ the following examples will be based on a small subset of SAPFLUXNET Data,
  composed by `ARG_TRE`, `ARG_MAZ` and `AUS_CAN_ST2_MIX` sites.
  Outputs may vary if you follow the vignette examples with the complete database.
 
 ## Inspecting a site
 
-First, let's get used to the data structure that Sapfluxnet provides, and
+First, let's get used to the data structure that SAPFLUXNET provides, and
 for that we will choose a site and start playing with it.
 
 ### Loading a site
@@ -105,7 +140,7 @@ So, let's read the data in the environment:
 
 ```{r read_and_inspect, eval=FALSE}
 # read the data
-arg_maz <- read_sfn_data('ARG_MAZ', folder = 'test_suite/plant')
+arg_maz <- read_sfn_data('ARG_MAZ', folder = 'RData/plant')
 
 # see a brief summary of the site:
 arg_maz
@@ -245,7 +280,7 @@ sfn_plot(arg_maz, formula_env = ~vpd, solar = TRUE) +
 
 ### Aggregation metrics
 
-Sapfluxnet data is stored as subdaily measures with different timestep between
+SAPFLUXNET data is stored as subdaily measures with different timestep between
 sites (ranging from 10 minutes to 2 hours) for both, sap flow and environmental
 data. Aggregation metrics are calculated for both kinds of data.  
 `sapfluxnetr` offers some simple, yet complete aggregation functions returning
@@ -261,6 +296,7 @@ Predefined metrics are:
 
 1. *mean*
 1. *standard deviation*
+1. *accumulated* for the precipitation data
 1. *data coverage* (percentage of period covered by the raw data)
 1. *quantile 95*
 1. *diurnal centroid* (Only calculated **for sap flow** measurements when using
@@ -333,7 +369,7 @@ let's create a cached metadata database. This will take some minutes, so maybe
 it is a good moment to prepare a hot beverage ;)
 
 ```{r metadata_database, eval = FALSE}
-sfn_metadata <- read_sfn_metadata(folder = 'test_suite/plant', .write_cache = TRUE)
+sfn_metadata <- read_sfn_metadata(folder = 'RData/plant', .write_cache = TRUE)
 ```
 
 ```{r metadata_database_real, echo=FALSE, warning=FALSE}
@@ -359,9 +395,8 @@ Now that we have our metadata database built, we can inspect the site codes
 in a folder with `sfn_sites_in_folder`:
 
 ```{r sfn_sites_in_folder, eval=FALSE}
-folder <- 'test_suite/plant/'
+folder <- 'RData/plant/'
 sites <- sfn_sites_in_folder(folder)
-
 sites
 ```
 
@@ -434,7 +469,7 @@ We can load all temperate sites with a simple pipe
 
 ```{r multi, eval=FALSE}
 temperate_sites <- temperate %>%
-  read_sfn_data(folder = 'test_suite/plant')
+  read_sfn_data(folder = 'RData/plant')
 temperate_sites
 ```
 
@@ -444,12 +479,14 @@ temperate_sites <- temperate %>%
 temperate_sites
 ```
 
-We have created a `sfn_data_multi` object, which is just a list, but adapted to
-contain `sfn_data` objects. Main functions of `sapfluxnetr` are adapted to work
-with this lists. As any list, we can access the sites:
+This creates an `sfn_data_multi` object, which is just a list, but adapted to
+contain `sfn_data` objects. Main functions of `sapfluxnetr` work with this type
+of objects. As in any list, we can access the sites:
 
 ```{r mutil_site}
-temperate_sites[['AUS_CAN_ST2_MIX']] # same as temp_hr_sites[[3]]
+temperate_sites[['AUS_CAN_ST2_MIX']]
+# temperate_sites[[3]] # the same
+# temperate_sites$AUS_CAN_ST2_MIX # the same
 ```
 
 ### Multi aggregation
@@ -472,8 +509,11 @@ Most of the times it comes in handy to have a tidy dataset with all the
 sap flow and environmental measurements, along with the metadata for the sites
 aggregated, in order to work with the data in an easier way. This can be
 done with the `metrics_tidyfier` function (see `?metrics_tidyfier`). But
-`daily_metrics` and related functions also implement the `tidy` argument. This
-allows for returning directly a metrics data frame combining all sites
+`daily_metrics` and related functions also implement the `tidy` argument.
+For the `tidy` argument to work, we must have available the metadata,
+see the ["metadata section"](#metadatadatabase) for more details about this.
+
+This allows for returning directly a metrics data frame combining all sites
 aggregated along with their metadata, saving one step in the workflow:
 
 ```{r tidyfing}

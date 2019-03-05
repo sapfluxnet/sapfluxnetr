@@ -1,5 +1,7 @@
 # sapfluxnetr 0.0.5.9000
 
+* Updated sapfluxnetr Not So Quick Guide vignette
+
 # sapfluxnetr 0.0.5
 
 * Cleaning to comply with CRAN checks.
