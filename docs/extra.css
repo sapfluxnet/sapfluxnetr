@@ -23,3 +23,10 @@ a:focus {
 .nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
   background-color: hsl(339, 90%, 68%);
 }
+
+/* Hack to make bigger the navbar */
+.navbar {
+  background-color: #141622;
+  min-height: 70px !important;
+  padding-top: 8px;
+}
