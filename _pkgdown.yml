@@ -1,0 +1,7 @@
+development:
+  mode: unreleased
+  version_label: warning
+  version_tooltip: "Not yet in CRAN"
+
+navbar:
+  type: inverse
