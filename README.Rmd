@@ -20,12 +20,14 @@ database of sap flow measurements
 
 ## Installation
 
-You can install sapfluxnetr from github with:
+You can install sapfluxnetr from github with the `remotes` package:
 
 ```{r gh-installation, eval = FALSE}
-# install.packages("devtools")
-devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'master',
-                         build_vignettes = TRUE)
+# if (!require(remotes)) {install.packages('remotes')}
+remotes::install_github(
+  'sapfluxnet/sapfluxnetr',
+  build_opts = c("--no-resave-data", "--no-manual", "--build-vignettes")
+)
 ```
 
 Be advised, `sapfluxnetr` is in active development and can contain undiscovered

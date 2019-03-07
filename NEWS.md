@@ -1,6 +1,6 @@
 # sapfluxnetr 0.0.5.9000
 
-* Updated sapfluxnetr Not So Quick Guide vignette
+* Updated sapfluxnetr Not So Quick Guide vignette and README file
 
 # sapfluxnetr 0.0.5
 

@@ -9,12 +9,14 @@ Project](http://sapfluxnet.creaf.cat/app))
 
 ## Installation
 
-You can install sapfluxnetr from github with:
+You can install sapfluxnetr from github with the `remotes` package:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github('sapfluxnet/sapfluxnetr', ref = 'master',
-                         build_vignettes = TRUE)
+# if (!require(remotes)) {install.packages('remotes')}
+remotes::install_github(
+  'sapfluxnet/sapfluxnetr',
+  build_opts = c("--no-resave-data", "--no-manual", "--build-vignettes")
+)
 ```
 
 Be advised, `sapfluxnetr` is in active development and can contain
@@ -30,12 +32,12 @@ You can work with individual sites:
 library(sapfluxnetr)
 # install.packages("tidyverse")
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
-#> ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
-#> ✔ tibble  1.4.2     ✔ dplyr   0.7.6
-#> ✔ tidyr   0.8.1     ✔ stringr 1.3.1
-#> ✔ readr   1.1.1     ✔ forcats 0.3.0
-#> ── Conflicts ────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ✔ ggplot2 3.1.0     ✔ purrr   0.3.0
+#> ✔ tibble  2.0.0     ✔ dplyr   0.7.8
+#> ✔ tidyr   0.8.2     ✔ stringr 1.3.1
+#> ✔ readr   1.3.1     ✔ forcats 0.3.0
+#> ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 
