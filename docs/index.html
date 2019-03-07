@@ -106,10 +106,12 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install sapfluxnetr from github with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># install.packages("devtools")</span></a>
-<a class="sourceLine" id="cb1-2" title="2">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">'sapfluxnet/sapfluxnetr'</span>, <span class="dt">ref =</span> <span class="st">'master'</span>,</a>
-<a class="sourceLine" id="cb1-3" title="3">                         <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<p>You can install sapfluxnetr from github with the <code>remotes</code> package:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># if (!require(remotes)) {install.packages('remotes')}</span></a>
+<a class="sourceLine" id="cb1-2" title="2">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(</a>
+<a class="sourceLine" id="cb1-3" title="3">  <span class="st">'sapfluxnet/sapfluxnetr'</span>,</a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">build_opts =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"--no-resave-data"</span>, <span class="st">"--no-manual"</span>, <span class="st">"--build-vignettes"</span>)</a>
+<a class="sourceLine" id="cb1-5" title="5">)</a></code></pre></div>
 <p>Be advised, <code>sapfluxnetr</code> is in active development and can contain undiscovered bugs. If you find something not working as expected fill a bug at <a href="https://github.com/sapfluxnet/sapfluxnetr/issues" class="uri">https://github.com/sapfluxnet/sapfluxnetr/issues</a></p>
 </div>
 <div id="examples" class="section level2">
@@ -120,12 +122,12 @@
 <a class="sourceLine" id="cb2-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(sapfluxnetr)</a>
 <a class="sourceLine" id="cb2-3" title="3"><span class="co"># install.packages("tidyverse")</span></a>
 <a class="sourceLine" id="cb2-4" title="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
-<a class="sourceLine" id="cb2-5" title="5"><span class="co">#&gt; ── Attaching packages ──────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co">#&gt; ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
 <a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt; ✔ ggplot2 3.1.0     ✔ purrr   0.3.0</span></a>
 <a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt; ✔ tibble  2.0.0     ✔ dplyr   0.7.8</span></a>
 <a class="sourceLine" id="cb2-8" title="8"><span class="co">#&gt; ✔ tidyr   0.8.2     ✔ stringr 1.3.1</span></a>
 <a class="sourceLine" id="cb2-9" title="9"><span class="co">#&gt; ✔ readr   1.3.1     ✔ forcats 0.3.0</span></a>
-<a class="sourceLine" id="cb2-10" title="10"><span class="co">#&gt; ── Conflicts ─────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="co">#&gt; ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
 <a class="sourceLine" id="cb2-11" title="11"><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></a>
 <a class="sourceLine" id="cb2-12" title="12"><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></a>
 <a class="sourceLine" id="cb2-13" title="13"></a>
@@ -135,7 +137,7 @@
 <a class="sourceLine" id="cb2-17" title="17"></a>
 <a class="sourceLine" id="cb2-18" title="18"><span class="co"># plot site sapflow measurements versus vpd</span></a>
 <a class="sourceLine" id="cb2-19" title="19"><span class="kw"><a href="reference/sfn_plot.html">sfn_plot</a></span>(ARG_MAZ, <span class="dt">formula_env =</span> <span class="op">~</span><span class="st"> </span>vpd)</a></code></pre></div>
-<p><img src="README-example_single-1.png" width="700"></p>
+<p><img src="index_files/figure-html/example_single-1.png" width="700"></p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"></a>
 <a class="sourceLine" id="cb3-2" title="2"><span class="co"># daily sapflow and environmental metrics</span></a>
 <a class="sourceLine" id="cb3-3" title="3">arg_maz_metrics &lt;-<span class="st"> </span><span class="kw"><a href="reference/metrics.html">daily_metrics</a></span>(</a>
@@ -147,7 +149,7 @@
 <a class="sourceLine" id="cb3-9" title="9"><span class="co"># plot daily aggregations</span></a>
 <a class="sourceLine" id="cb3-10" title="10"><span class="kw">ggplot</span>(arg_maz_metrics, <span class="kw">aes</span>(<span class="dt">x =</span> vpd_q_<span class="dv">95</span>, <span class="dt">y =</span> sapflow_q_<span class="dv">95</span>, <span class="dt">colour =</span> pl_code)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb3-11" title="11"><span class="st">  </span><span class="kw">geom_point</span>()</a></code></pre></div>
-<p><img src="README-example_single-2.png" width="700"></p>
+<p><img src="index_files/figure-html/example_single-2.png" width="700"></p>
 <p>And you can work with multiple sites:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># ARG_TRE and AUS_CAN_ST2_MIX example sites</span></a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(<span class="st">'ARG_TRE'</span>, <span class="dt">package =</span> <span class="st">'sapfluxnetr'</span>)</a>
@@ -158,7 +160,7 @@
 <a class="sourceLine" id="cb4-7" title="7">plots_list &lt;-<span class="st"> </span><span class="kw"><a href="reference/sfn_plot.html">sfn_plot</a></span>(multi_sfn, <span class="dt">formula_env =</span> <span class="op">~</span><span class="st"> </span>vpd)</a>
 <a class="sourceLine" id="cb4-8" title="8">plots_list[[<span class="st">'AUS_CAN_ST2_MIX'</span>]]</a>
 <a class="sourceLine" id="cb4-9" title="9"><span class="co">#&gt; Warning: Removed 526066 rows containing missing values (geom_point).</span></a></code></pre></div>
-<p><img src="README-example_multi-1.png" width="700"></p>
+<p><img src="index_files/figure-html/example_multi-1.png" width="700"></p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"></a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="co"># daily sapflow standard metrics</span></a>
 <a class="sourceLine" id="cb5-3" title="3">multi_metrics &lt;-<span class="st"> </span><span class="kw"><a href="reference/metrics.html">daily_metrics</a></span>(</a>
@@ -175,7 +177,7 @@
 <a class="sourceLine" id="cb5-14" title="14"><span class="kw">ggplot</span>(multi_metrics, <span class="kw">aes</span>(<span class="dt">x =</span> vpd_q_<span class="dv">95</span>, <span class="dt">y =</span> sapflow_q_<span class="dv">95</span>, <span class="dt">colour =</span> si_code)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb5-15" title="15"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.2</span>)</a>
 <a class="sourceLine" id="cb5-16" title="16"><span class="co">#&gt; Warning: Removed 10966 rows containing missing values (geom_point).</span></a></code></pre></div>
-<p><img src="README-example_multi-2.png" width="700"></p>
+<p><img src="index_files/figure-html/example_multi-2.png" width="700"></p>
 </div>
 </div>
   </div>

@@ -96,9 +96,9 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>sapfluxnetr (Not So) Quick Guide</h1>
-                        <h4 class="author">Víctor Granda (Sapfluxnet Team)</h4>
+                        <h4 class="author">Víctor Granda (SAPFLUXNET Team)</h4>
             
-            <h4 class="date">2019-02-13</h4>
+            <h4 class="date">2019-03-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/sapfluxnet/sapfluxnetr/blob/master/vignettes/sapfluxnetr-quick-guide.Rmd"><code>vignettes/sapfluxnetr-quick-guide.Rmd</code></a></small>
       <div class="hidden name"><code>sapfluxnetr-quick-guide.Rmd</code></div>
@@ -107,29 +107,34 @@
 
     
     
-<p><code>sapfluxnetr</code> R package provides tools for a tidy data analysis for the first sap flow measurements global database (<a href="http://sapfluxnet.creaf.cat/app">Sapfluxnet Project</a>). In this vignette you will learn how to install the package, download the data and get started with some data metrics.</p>
+<p><code>sapfluxnetr</code> R package provides tools for a tidy data analysis for the first sap flow measurements global database (<a href="http://sapfluxnet.creaf.cat/app">SAPFLUXNET Project</a>). In this vignette you will learn how to install the package, download the data and get started with some data metrics.</p>
 <div id="installing-the-package" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installing-the-package" class="anchor"></a>Installing the package</h2>
-<blockquote>
-<p>DISCLAIMER: Not yet in CRAN really, use the devtools::install_github method instead</p>
-</blockquote>
-<p><code>sapfluxnetr</code> stable versions will be in the CRAN repository, so the installation of the package is as per usual:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">'sapfluxnetr'</span>)</a></code></pre></div>
-<p>Development versions of the package reside in github. If you want the latest updates, and also the latest bugs, ( be advised ;) ), please install the devel branch of the <a href="https://github.com/sapfluxnet/sapfluxnetr">github repository</a> with the <code>devtools</code> package:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">'sapfluxnet/sapfluxnetr'</span>, <span class="dt">ref =</span> <span class="st">'devel'</span>,</a>
-<a class="sourceLine" id="cb2-2" title="2">                         <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<p><code>sapfluxnetr</code> is not yet in CRAN, so the installation must be done with the <a href="">remotes</a> package:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># if (!require(remotes)) {install.packages('remotes')}</span></a>
+<a class="sourceLine" id="cb1-2" title="2">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(</a>
+<a class="sourceLine" id="cb1-3" title="3">  <span class="st">'sapfluxnet/sapfluxnetr'</span>,</a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">build_opts =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"--no-resave-data"</span>, <span class="st">"--no-manual"</span>, <span class="st">"--build-vignettes"</span>)</a>
+<a class="sourceLine" id="cb1-5" title="5">)</a></code></pre></div>
+<p>Development versions of the package reside in github. If you want the latest updates, <strong>and also the latest bugs</strong> ( be advised ;) ), please install the devel branch of the <a href="https://github.com/sapfluxnet/sapfluxnetr">github repository</a> with the <code>devtools</code> package:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co"># if (!require(remotes)) {install.packages('remotes')}</span></a>
+<a class="sourceLine" id="cb2-2" title="2">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(</a>
+<a class="sourceLine" id="cb2-3" title="3">  <span class="st">'sapfluxnet/sapfluxnetr'</span>, <span class="dt">ref =</span> <span class="st">'devel'</span>,</a>
+<a class="sourceLine" id="cb2-4" title="4">  <span class="dt">build_opts =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"--no-resave-data"</span>, <span class="st">"--no-manual"</span>, <span class="st">"--build-vignettes"</span>)</a>
+<a class="sourceLine" id="cb2-5" title="5">)</a></code></pre></div>
 <p>Now you can load the package, along with the <code>tidyverse</code> package, as it will be needed later:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(sapfluxnetr)</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="co">#&gt; ── Attaching packages ──────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
-<a class="sourceLine" id="cb3-4" title="4"><span class="co">#&gt; ✔ ggplot2 3.1.0     ✔ purrr   0.3.0</span></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="co">#&gt; ✔ tibble  2.0.0     ✔ dplyr   0.7.8</span></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt; ✔ tidyr   0.8.2     ✔ stringr 1.3.1</span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt; ✔ readr   1.3.1     ✔ forcats 0.3.0</span></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt; ── Conflicts ─────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-2" title="2"><span class="co"># if (!require(tidyverse)) {install.packages('tidyverse')}</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="co">#&gt; ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="co">#&gt; ✔ ggplot2 3.1.0     ✔ purrr   0.3.0</span></a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt; ✔ tibble  2.0.0     ✔ dplyr   0.7.8</span></a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt; ✔ tidyr   0.8.2     ✔ stringr 1.3.1</span></a>
+<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt; ✔ readr   1.3.1     ✔ forcats 0.3.0</span></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt; ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
+<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></a>
+<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></a></code></pre></div>
 </div>
 <div id="download-the-data" class="section level2">
 <h2 class="hasAnchor">
@@ -137,37 +142,66 @@
 <div id="zenodo" class="section level3">
 <h3 class="hasAnchor">
 <a href="#zenodo" class="anchor"></a>Zenodo</h3>
-<p>To be written as the data is not yet in Zenodo</p>
+<p>During the embargo period (2019-03-05 to 2020-03-05) only the data contributors can access the data. If you are a data contributor willing to access the data, follow these steps:</p>
+<ol style="list-style-type: decimal">
+<li>Go to SAPFLUXNET repository in Zenodo (<a href="https://zenodo.org/record/2530798" class="uri">https://zenodo.org/record/2530798</a>)</li>
+<li>Click in the <code>Request access</code> button, fill the form and click the <code>Send request</code> button.</li>
+<li>SAPFLUXNET Team will send you an email with the link to activate your access to the Zenodo repository.</li>
+<li>Follow the link and click in the download button. This will download a zip file</li>
+<li>Unzip the file in any location</li>
+<li>You are ready to go ;)</li>
+</ol>
 </div>
-<div id="sapfluxnet-data-test-suite" class="section level3">
+<div id="sapfluxnet-data-estructure" class="section level3">
 <h3 class="hasAnchor">
-<a href="#sapfluxnet-data-test-suite" class="anchor"></a>Sapfluxnet Data test suite</h3>
-<p>Download the test suite data from <a href="">here</a>. Unzip the file maintaining the folder structure:</p>
-<pre><code>sapfluxnet_db
+<a href="#sapfluxnet-data-estructure" class="anchor"></a>SAPFLUXNET Data estructure</h3>
+<p>SAPFLUXNET database estrucuture is as follows:</p>
+<pre><code>0.1.3 (database version number)
   |
-  |-- test_suite
-       |
-       |-- plant
-       |-- sapwood
-       |-- leaf</code></pre>
-<p><code>plant</code> folder contains the sites with sap flow plant level units available.<br><code>sapwood</code> folder contains the sites with sap flow sapwood level units available.<br><code>leaf</code> folder contains the sites with sap flow leaf level units available.</p>
-<p>To start working with the data, simply create an RStudio project in the <code>sapfluxnet_db</code> folder and follow the following examples.</p>
+  |-- RData
+  |    |
+  |    |-- plant
+  |    |-- sapwood
+  |    |-- leaf
+  |
+  |-- csv
+  |    |
+  |    |-- plant
+  |    |-- sapwood
+  |    |-- leaf</code></pre>
+<p><code>RData</code> folder contains the RData files for each site divided by sap flow units level:</p>
+<ul>
+<li>
+<code>plant</code> sites with sap flow plant level units available.<br>
+</li>
+<li>
+<code>sapwood</code> sites with sap flow sapwood level units available.<br>
+</li>
+<li>
+<code>leaf</code> sites with sap flow leaf level units available.</li>
+</ul>
+<p><code>csv</code> folder contains the csv files (9 files, 5 of metadata, 2 of data and 2 more for the data flags) for each units level available and site. We do not provide scripts or functions to work with the csv files, only the RData objects.</p>
+<p>To start working with the data, you have two options:</p>
+<ul>
+<li><p>If working in RStudio, create a project in the data root folder (<code>0.1.3</code> in this example) and follow the examples in this vignette to get started.</p></li>
+<li><p>If not, set the data root folder (<code>0.1.3</code> in this example) as the working directory with <code>setwd</code> and follow the examples in this vignette to get started.</p></li>
+</ul>
 <blockquote>
-<p>DISCLAIMER: In order to be able to build the vignette in the CRAN tests the following examples will be based on a small subset of Sapfluxnet Data, composed by <code>ARG_TRE</code>, <code>ARG_MAZ</code> and <code>AUS_CAN_ST2_MIX</code> sites. Outputs may vary if you follow the vignette examples with the complete database.</p>
+<p>DISCLAIMER: In order to be able to build the vignette in the CRAN tests the following examples will be based on a small subset of SAPFLUXNET Data, composed by <code>ARG_TRE</code>, <code>ARG_MAZ</code> and <code>AUS_CAN_ST2_MIX</code> sites. Outputs may vary if you follow the vignette examples with the complete database.</p>
 </blockquote>
 </div>
 </div>
 <div id="inspecting-a-site" class="section level2">
 <h2 class="hasAnchor">
 <a href="#inspecting-a-site" class="anchor"></a>Inspecting a site</h2>
-<p>First, let’s get used to the data structure that Sapfluxnet provides, and for that we will choose a site and start playing with it.</p>
+<p>First, let’s get used to the data structure that SAPFLUXNET provides, and for that we will choose a site and start playing with it.</p>
 <div id="loading-a-site" class="section level3">
 <h3 class="hasAnchor">
 <a href="#loading-a-site" class="anchor"></a>Loading a site</h3>
 <p>In this example we will use the <code>ARG_MAZ</code> site, as it is small and it will be fast seeing the package capabilities. There are sites like <code>FRA_PUE</code> 100 times bigger than this, but as one can imagine, the time is also increasing when analising those bigger datasets.<br>
 So, let’s read the data in the environment:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># read the data</span></a>
-<a class="sourceLine" id="cb5-2" title="2">arg_maz &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_sfn_data.html">read_sfn_data</a></span>(<span class="st">'ARG_MAZ'</span>, <span class="dt">folder =</span> <span class="st">'test_suite/plant'</span>)</a>
+<a class="sourceLine" id="cb5-2" title="2">arg_maz &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_sfn_data.html">read_sfn_data</a></span>(<span class="st">'ARG_MAZ'</span>, <span class="dt">folder =</span> <span class="st">'RData/plant'</span>)</a>
 <a class="sourceLine" id="cb5-3" title="3"></a>
 <a class="sourceLine" id="cb5-4" title="4"><span class="co"># see a brief summary of the site:</span></a>
 <a class="sourceLine" id="cb5-5" title="5">arg_maz</a></code></pre></div>
@@ -429,11 +463,13 @@ So, let’s read the data in the environment:</p>
 <div id="aggregation-metrics" class="section level3">
 <h3 class="hasAnchor">
 <a href="#aggregation-metrics" class="anchor"></a>Aggregation metrics</h3>
-<p>Sapfluxnet data is stored as subdaily measures with different timestep between sites (ranging from 10 minutes to 2 hours) for both, sap flow and environmental data. Aggregation metrics are calculated for both kinds of data.<br><code>sapfluxnetr</code> offers some simple, yet complete aggregation functions returning some pre-defined metrics: <code>daily_metrics</code>, <code>monthly_metrics</code>, <code>predawn_metrics</code>, <code>midday_metrics</code>, <code>daylight_metrics</code> and <code>nightly_metrics</code>.<br><code>daily_metrics</code> and <code>monthly_metrics</code> perform a daily and monthly aggregation, respectively, with a set of predefined metrics. <code>predawn_metrics</code>, <code>midday_metrics</code>, <code>daylight_metrics</code> and <code>nightly_metrics</code> perform daily or monthly aggregations (controlled by the <code>period</code> argument) by hour-defined intervals, also with a set of predefined metrics.</p>
+<p>SAPFLUXNET data is stored as subdaily measures with different timestep between sites (ranging from 10 minutes to 2 hours) for both, sap flow and environmental data. Aggregation metrics are calculated for both kinds of data.<br><code>sapfluxnetr</code> offers some simple, yet complete aggregation functions returning some pre-defined metrics: <code>daily_metrics</code>, <code>monthly_metrics</code>, <code>predawn_metrics</code>, <code>midday_metrics</code>, <code>daylight_metrics</code> and <code>nightly_metrics</code>.<br><code>daily_metrics</code> and <code>monthly_metrics</code> perform a daily and monthly aggregation, respectively, with a set of predefined metrics. <code>predawn_metrics</code>, <code>midday_metrics</code>, <code>daylight_metrics</code> and <code>nightly_metrics</code> perform daily or monthly aggregations (controlled by the <code>period</code> argument) by hour-defined intervals, also with a set of predefined metrics.</p>
 <p>Predefined metrics are:</p>
 <ol style="list-style-type: decimal">
 <li><em>mean</em></li>
 <li><em>standard deviation</em></li>
+<li>
+<em>accumulated</em> for the precipitation data</li>
 <li>
 <em>data coverage</em> (percentage of period covered by the raw data)</li>
 <li><em>quantile 95</em></li>
@@ -542,7 +578,7 @@ You can change this using the <code>side</code> parameter (see <code><a href="..
 <h3 class="hasAnchor">
 <a href="#metadatadatabase" class="anchor"></a>Building the metadata database</h3>
 <p>First thing we have to do is creating a metadata database. It is not mandatory, but filtering sites by metadata can be a very time and resources consuming step if we have to temporary build the database each time we want filter sites. So, let’s create a cached metadata database. This will take some minutes, so maybe it is a good moment to prepare a hot beverage ;)</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">sfn_metadata &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_sfn_metadata.html">read_sfn_metadata</a></span>(<span class="dt">folder =</span> <span class="st">'test_suite/plant'</span>, <span class="dt">.write_cache =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">sfn_metadata &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_sfn_metadata.html">read_sfn_metadata</a></span>(<span class="dt">folder =</span> <span class="st">'RData/plant'</span>, <span class="dt">.write_cache =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>#&gt; [1] "processing site ARG_MAZ (1 of 3)"
 #&gt; [1] "processing site ARG_TRE (2 of 3)"
 #&gt; [1] "processing site AUS_CAN_ST2_MIX (3 of 3)"</code></pre>
@@ -575,10 +611,9 @@ If we take a look at <code>sfn_metadata</code> we can see a list with 5 data fra
 <h3 class="hasAnchor">
 <a href="#listing-the-sites-in-a-folder-and-filtering-by-metadata" class="anchor"></a>Listing the sites in a folder and filtering by metadata</h3>
 <p>Now that we have our metadata database built, we can inspect the site codes in a folder with <code>sfn_sites_in_folder</code>:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">folder &lt;-<span class="st"> 'test_suite/plant/'</span></a>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">folder &lt;-<span class="st"> 'RData/plant/'</span></a>
 <a class="sourceLine" id="cb22-2" title="2">sites &lt;-<span class="st"> </span><span class="kw"><a href="../reference/sfn_sites_in_folder.html">sfn_sites_in_folder</a></span>(folder)</a>
-<a class="sourceLine" id="cb22-3" title="3"></a>
-<a class="sourceLine" id="cb22-4" title="4">sites</a></code></pre></div>
+<a class="sourceLine" id="cb22-3" title="3">sites</a></code></pre></div>
 <pre><code>#&gt; [1] "ARG_MAZ"         "ARG_TRE"         "AUS_CAN_ST2_MIX"</code></pre>
 <p>We can filter these sites by any metadata variable, to select those that met some criteria. This is done with <code>filter_sites_by_md</code>. As a first try, let’s list all sites belonging to temperate forest biome (mediterranean included):</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">temperate &lt;-<span class="st"> </span><span class="kw"><a href="../reference/sfn_sites_in_folder.html">sfn_sites_in_folder</a></span>(folder) <span class="op">%&gt;%</span></a>
@@ -668,13 +703,13 @@ If we take a look at <code>sfn_metadata</code> we can see a list with 5 data fra
 <a href="#sfn_data_multi-objects" class="anchor"></a>sfn_data_multi objects</h3>
 <p>We can load all temperate sites with a simple pipe</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1">temperate_sites &lt;-<span class="st"> </span>temperate <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb29-2" title="2"><span class="st">  </span><span class="kw"><a href="../reference/read_sfn_data.html">read_sfn_data</a></span>(<span class="dt">folder =</span> <span class="st">'test_suite/plant'</span>)</a>
+<a class="sourceLine" id="cb29-2" title="2"><span class="st">  </span><span class="kw"><a href="../reference/read_sfn_data.html">read_sfn_data</a></span>(<span class="dt">folder =</span> <span class="st">'RData/plant'</span>)</a>
 <a class="sourceLine" id="cb29-3" title="3">temperate_sites</a></code></pre></div>
 <pre><code>#&gt; sfn_data_multi object
 #&gt; 3 sites: ARG_MAZ ARG_TRE AUS_CAN_ST2_MIX
 #&gt; Approximate time span (UTC) for the combined sites: 2006-06-20 10:54:42 UTC--2009-11-18 22:24:18 UTC</code></pre>
-<p>We have created a <code>sfn_data_multi</code> object, which is just a list, but adapted to contain <code>sfn_data</code> objects. Main functions of <code>sapfluxnetr</code> are adapted to work with this lists. As any list, we can access the sites:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">temperate_sites[[<span class="st">'AUS_CAN_ST2_MIX'</span>]] <span class="co"># same as temp_hr_sites[[3]]</span></a>
+<p>This creates an <code>sfn_data_multi</code> object, which is just a list, but adapted to contain <code>sfn_data</code> objects. Main functions of <code>sapfluxnetr</code> work with this type of objects. As in any list, we can access the sites:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">temperate_sites[[<span class="st">'AUS_CAN_ST2_MIX'</span>]]</a>
 <a class="sourceLine" id="cb31-2" title="2"><span class="co">#&gt; sfn_data object</span></a>
 <a class="sourceLine" id="cb31-3" title="3"><span class="co">#&gt; Data from AUS_CAN_ST2_MIX site</span></a>
 <a class="sourceLine" id="cb31-4" title="4"><span class="co">#&gt; </span></a>
@@ -702,7 +737,9 @@ If we take a look at <code>sfn_metadata</code> we can see a list with 5 data fra
 <a class="sourceLine" id="cb31-26" title="26"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb31-27" title="27"><span class="co">#&gt; Environmental data flags:</span></a>
 <a class="sourceLine" id="cb31-28" title="28"><span class="co">#&gt;   OUT_WARN   NA_ADDED CALCULATED </span></a>
-<a class="sourceLine" id="cb31-29" title="29"><span class="co">#&gt;      10826      15320      53424</span></a></code></pre></div>
+<a class="sourceLine" id="cb31-29" title="29"><span class="co">#&gt;      10826      15320      53424</span></a>
+<a class="sourceLine" id="cb31-30" title="30"><span class="co"># temperate_sites[[3]] # the same</span></a>
+<a class="sourceLine" id="cb31-31" title="31"><span class="co"># temperate_sites$AUS_CAN_ST2_MIX # the same</span></a></code></pre></div>
 </div>
 <div id="multi-aggregation" class="section level3">
 <h3 class="hasAnchor">
@@ -725,7 +762,8 @@ If we take a look at <code>sfn_metadata</code> we can see a list with 5 data fra
 <div id="tidymetrics" class="section level2">
 <h2 class="hasAnchor">
 <a href="#tidymetrics" class="anchor"></a>Tidy metrics</h2>
-<p>Most of the times it comes in handy to have a tidy dataset with all the sap flow and environmental measurements, along with the metadata for the sites aggregated, in order to work with the data in an easier way. This can be done with the <code>metrics_tidyfier</code> function (see <code><a href="../reference/metrics_tidyfier.html">?metrics_tidyfier</a></code>). But <code>daily_metrics</code> and related functions also implement the <code>tidy</code> argument. This allows for returning directly a metrics data frame combining all sites aggregated along with their metadata, saving one step in the workflow:</p>
+<p>Most of the times it comes in handy to have a tidy dataset with all the sap flow and environmental measurements, along with the metadata for the sites aggregated, in order to work with the data in an easier way. This can be done with the <code>metrics_tidyfier</code> function (see <code><a href="../reference/metrics_tidyfier.html">?metrics_tidyfier</a></code>). But <code>daily_metrics</code> and related functions also implement the <code>tidy</code> argument. For the <code>tidy</code> argument to work, we must have available the metadata, see the <a href="#metadatadatabase">“metadata section”</a> for more details about this.</p>
+<p>This allows for returning directly a metrics data frame combining all sites aggregated along with their metadata, saving one step in the workflow:</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1">temperate_tidy &lt;-<span class="st"> </span>temperate_sites <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb33-2" title="2"><span class="st">  </span><span class="kw"><a href="../reference/metrics.html">daily_metrics</a></span>(<span class="dt">tidy =</span> <span class="ot">TRUE</span>, <span class="dt">metadata =</span> sfn_metadata)</a>
 <a class="sourceLine" id="cb33-3" title="3"><span class="co">#&gt; [1] "Crunching data for ARG_MAZ. In large datasets this could take a while"</span></a>
