@@ -542,7 +542,7 @@ sfn_metrics <- function(
     sd = stats::sd(., na.rm = TRUE),
     coverage = data_coverage(., .data$timestep, .data$period_minutes),
     !!! quantile_args,
-    # accumulated = sum(., na.rm = TRUE),
+    accumulated = .accumulated_posix_aware(., na.rm = TRUE),
     # n = n(),
     # max = max(., na.rm = TRUE),
     # max_time = max_time(., .data$TIMESTAMP_coll),

@@ -1303,3 +1303,22 @@ describe_md_variable <- function(variable) {
       )
     )
 }
+
+#' acummulated function
+#' 
+#' sum for summarise_all aware of POSIX objects
+#' 
+#' @param variable the variable as it is pased to the .fixed_metrics function
+#' @param na.rm logical to pass to na.rm argument from sum
+#' 
+#' @return the sum for any other variables, but the first for POSIXct variables
+.accumulated_posix_aware <- function(variable, na.rm = FALSE) {
+  
+  if (is.numeric(variable)) {
+    res <- sum(variable, na.rm = na.rm)
+  } else {
+    res <- dplyr::first(variable)
+  }
+  
+  return(res)
+}
