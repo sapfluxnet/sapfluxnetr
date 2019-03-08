@@ -10,4 +10,5 @@ tests/testthat/big_test/
 ^data-raw$
 ^README\.Rmd$
 ^README-.*\.png$
-pkgdown/
+^pkgdown$
+^README_files$
