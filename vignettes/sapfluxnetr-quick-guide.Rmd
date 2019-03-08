@@ -29,7 +29,7 @@ some data metrics.
 ## Installing the package
 
 `sapfluxnetr` is not yet in CRAN, so the installation must be done with the
-[remotes]() package:
+[remotes](https://github.com/r-lib/remotes#readme) package:
 
 ```{r remotes_inst, eval=FALSE}
 # if (!require(remotes)) {install.packages('remotes')}
