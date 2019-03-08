@@ -1,5 +1,5 @@
 Package: sapfluxnetr
-Title: Working With Sapfluxnet Project Data
+Title: Working with Sapfluxnet Project Data
 Version: 0.0.6
 Authors@R: c(
   person("Victor", "Granda", email = "victorgrandagarcia@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0469-1991")),
