@@ -13,8 +13,14 @@ There were no ERRORs or WARNINGs or NOTEs.
 There were no ERRORs or WARNINGs
 There was 1 NOTE:
 
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: 'Victor Granda <victorgrandagarcia@gmail.com>'
+
+New submission
+
+Possibly mis-spelled words in DESCRIPTION:
+  SAPFLUXNET (2:21, 10:55)
 
 
 * This is a new release.
-* License file is the standard MIT license text with the copyright holder added
-*
+* SAPFLUXNET is not mis-spelled, is the name of the project.

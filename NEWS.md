@@ -1,4 +1,4 @@
-# sapfluxnetr 0.0.5.9000
+# sapfluxnetr 0.0.6
 
 * Updated license file to comply with CRAN policy
 * Cleaning to comply with CRAN checks in windows builds and travis CI
