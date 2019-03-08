@@ -3,6 +3,9 @@
 
 # sapfluxnetr
 
+[![Travis build
+status](https://travis-ci.org/sapfluxnet/sapfluxnetr.svg?branch=master)](https://travis-ci.org/sapfluxnet/sapfluxnetr)
+
 `sapfluxnetr` provides tools for a tidy data analysis for the first
 global database of sap flow measurements ([Sapfluxnet
 Project](http://sapfluxnet.creaf.cat/app))
@@ -32,12 +35,12 @@ You can work with individual sites:
 library(sapfluxnetr)
 # install.packages("tidyverse")
 library(tidyverse)
-#> ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ─────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ ggplot2 3.1.0     ✔ purrr   0.3.0
 #> ✔ tibble  2.0.0     ✔ dplyr   0.7.8
 #> ✔ tidyr   0.8.2     ✔ stringr 1.3.1
 #> ✔ readr   1.3.1     ✔ forcats 0.3.0
-#> ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 
@@ -49,7 +52,7 @@ data('sfn_metadata_ex', package = 'sapfluxnetr')
 sfn_plot(ARG_MAZ, formula_env = ~ vpd)
 ```
 
-![](README-example_single-1.png)<!-- -->
+![](README_files/figure-gfm/example_single-1.png)<!-- -->
 
 ``` r
 
@@ -65,7 +68,7 @@ ggplot(arg_maz_metrics, aes(x = vpd_q_95, y = sapflow_q_95, colour = pl_code)) +
   geom_point()
 ```
 
-![](README-example_single-2.png)<!-- -->
+![](README_files/figure-gfm/example_single-2.png)<!-- -->
 
 And you can work with multiple sites:
 
@@ -81,7 +84,7 @@ plots_list[['AUS_CAN_ST2_MIX']]
 #> Warning: Removed 526066 rows containing missing values (geom_point).
 ```
 
-![](README-example_multi-1.png)<!-- -->
+![](README_files/figure-gfm/example_multi-1.png)<!-- -->
 
 ``` r
 
@@ -102,4 +105,4 @@ ggplot(multi_metrics, aes(x = vpd_q_95, y = sapflow_q_95, colour = si_code)) +
 #> Warning: Removed 10966 rows containing missing values (geom_point).
 ```
 
-![](README-example_multi-2.png)<!-- -->
+![](README_files/figure-gfm/example_multi-2.png)<!-- -->

@@ -1,0 +1,32 @@
+/* from styles.css in academic theme ------*/
+
+html, body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  color: rgba(0,0,0,0.8);
+  background-color: #FFFFFF;
+}
+
+/* Hack to change the links color */
+a,
+h3.article-title a:hover {
+  color: hsl(339, 90%, 68%);
+  text-decoration: none;
+  transition: color 0.6s ease;
+}
+
+a:hover,
+a:focus {
+  color: hsl(339, 90%, 68%);
+}
+/* Hack to avoid the blue in the toc navigator */
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+  background-color: hsl(339, 90%, 68%);
+}
+
+/* Hack to make bigger the navbar */
+.navbar {
+  background-color: #141622;
+  min-height: 70px !important;
+  padding-top: 8px;
+}

@@ -7,12 +7,14 @@ output: github_document
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
+  comment = "#>"#,
+  # fig.path = "README-"
 )
 ```
 
 # sapfluxnetr
+
+[![Travis build status](https://travis-ci.org/sapfluxnet/sapfluxnetr.svg?branch=master)](https://travis-ci.org/sapfluxnet/sapfluxnetr)
 
 `sapfluxnetr` provides tools for a tidy data analysis for the first global
 database of sap flow measurements
