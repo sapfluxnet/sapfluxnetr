@@ -1,5 +1,7 @@
 # sapfluxnetr 0.0.5.9000
 
+* Cleaning to comply with CRAN checks in windows builds and travis CI
+* Added .accumulated_posix_aware helper function to avoid summing posix objects
 * Added pkgdown support
 * Added Travis CI support
 * Updated sapfluxnetr Not So Quick Guide vignette and README file
