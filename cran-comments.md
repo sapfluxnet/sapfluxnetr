@@ -18,9 +18,4 @@ Maintainer: 'Victor Granda <victorgrandagarcia@gmail.com>'
 
 New submission
 
-Possibly mis-spelled words in DESCRIPTION:
-  SAPFLUXNET (2:21, 10:55)
-
-
 * This is a new release.
-* SAPFLUXNET is not mis-spelled, is the name of the project.
