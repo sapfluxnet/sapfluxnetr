@@ -122,7 +122,7 @@ ARG_TRE_metrics[['sapf']]
 ARG_TRE_metrics[['env']]
 
 ## sfn_data_multi
-\dontrun{
+if(interactive()) {
 data('ARG_MAZ', package = 'sapfluxnetr')
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)

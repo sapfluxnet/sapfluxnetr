@@ -7,8 +7,8 @@ output: github_document
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"#,
-  # fig.path = "README-"
+  comment = "#>",
+  fig.path = "README-"
 )
 ```
 
@@ -18,23 +18,7 @@ knitr::opts_chunk$set(
 
 `sapfluxnetr` provides tools for a tidy data analysis for the first global
 database of sap flow measurements
-([Sapfluxnet Project](http://sapfluxnet.creaf.cat/app))
-
-## Installation
-
-You can install sapfluxnetr from github with the `remotes` package:
-
-```{r gh-installation, eval = FALSE}
-# if (!require(remotes)) {install.packages('remotes')}
-remotes::install_github(
-  'sapfluxnet/sapfluxnetr',
-  build_opts = c("--no-resave-data", "--no-manual", "--build-vignettes")
-)
-```
-
-Be advised, `sapfluxnetr` is in active development and can contain undiscovered
-bugs. If you find something not working as expected fill a bug at
-https://github.com/sapfluxnet/sapfluxnetr/issues
+([Sapfluxnet Project](http://sapfluxnet.creaf.cat))
 
 ## Examples
 
@@ -85,3 +69,23 @@ ggplot(multi_metrics, aes(x = vpd_q_95, y = sapflow_q_95, colour = si_code)) +
   geom_point(alpha = 0.2)
 ```
 
+## Installation
+
+You can install sapfluxnetr from github with the `remotes` package:
+
+```{r gh-installation, eval = FALSE}
+# if (!require(remotes)) {install.packages('remotes')}
+remotes::install_github(
+  'sapfluxnet/sapfluxnetr',
+  build_opts = c("--no-resave-data", "--no-manual", "--build-vignettes")
+)
+```
+
+Be advised, `sapfluxnetr` is in active development and can contain undiscovered
+bugs. If you find something not working as expected fill a bug at
+https://github.com/sapfluxnet/sapfluxnetr/issues
+
+## Overview
+
+Please see `vignette('sapfluxnetr-quick-guide', package = 'sapfluxnetr')` for
+a detailed overview of the package capabilities.

@@ -139,6 +139,7 @@ Midday metrics did not return the centroid metric.
 
 \examples{
 ## daily_metrics
+if(interactive()) {
 # data load
 data('ARG_TRE', package = 'sapfluxnetr')
 data('sfn_metadata_ex', package = 'sapfluxnetr')
@@ -152,8 +153,10 @@ ARG_TRE_daily <- daily_metrics(
   ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex
 )
 ARG_TRE_daily
+}
 
 ## monthly_metrics
+if(interactive()) {
 # data load
 data('ARG_TRE', package = 'sapfluxnetr')
 data('sfn_metadata_ex', package = 'sapfluxnetr')
@@ -167,8 +170,10 @@ ARG_TRE_monthly <- monthly_metrics(
   ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex
 )
 ARG_TRE_monthly
+}
 
 ## nightly_metrics
+if(interactive()) {
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
@@ -192,8 +197,10 @@ AUS_CAN_ST2_MIX_night_tidy <- nightly_metrics(
   tidy = TRUE, metadata = sfn_metadata_ex
 )
 AUS_CAN_ST2_MIX_night_tidy
+}
 
 ## daylight_metrics
+if(interactive()) {
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
@@ -217,8 +224,10 @@ AUS_CAN_ST2_MIX_daylight_tidy <- daylight_metrics(
   tidy = TRUE, metadata = sfn_metadata_ex
 )
 AUS_CAN_ST2_MIX_daylight_tidy
+}
 
 ## predawn_metrics
+if(interactive()) {
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
@@ -242,8 +251,10 @@ AUS_CAN_ST2_MIX_predawn_tidy <- predawn_metrics(
   tidy = TRUE, metadata = sfn_metadata_ex
 )
 AUS_CAN_ST2_MIX_predawn_tidy
+}
 
 ## midday_metrics
+if(interactive()) {
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 
@@ -267,6 +278,7 @@ AUS_CAN_ST2_MIX_midday_tidy <- midday_metrics(
   tidy = TRUE, metadata = sfn_metadata_ex
 )
 AUS_CAN_ST2_MIX_midday_tidy
+}
 
 }
 \seealso{

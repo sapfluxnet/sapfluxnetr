@@ -41,6 +41,7 @@ Transform the nested list of metrics in a tidy tibble where each observation
 has its own row
 }
 \examples{
+if(interactive()) {
 # data
 multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 data('sfn_metadata_ex', package = 'sapfluxnetr')
@@ -56,5 +57,6 @@ multi_tidy
 
 # A really easier way of doing the same
 multi_tidy_easy <- daily_metrics(multi_sfn, tidy = TRUE, metadata = sfn_metadata_ex)
+}
 
 }
