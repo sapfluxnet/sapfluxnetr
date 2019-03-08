@@ -3,6 +3,9 @@
 
 # sapfluxnetr
 
+[![Travis build
+status](https://travis-ci.org/sapfluxnet/sapfluxnetr.svg?branch=master)](https://travis-ci.org/sapfluxnet/sapfluxnetr)
+
 `sapfluxnetr` provides tools for a tidy data analysis for the first
 global database of sap flow measurements ([Sapfluxnet
 Project](http://sapfluxnet.creaf.cat/app))
@@ -32,12 +35,12 @@ You can work with individual sites:
 library(sapfluxnetr)
 # install.packages("tidyverse")
 library(tidyverse)
-#> ── Attaching packages ──────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ─────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ ggplot2 3.1.0     ✔ purrr   0.3.0
 #> ✔ tibble  2.0.0     ✔ dplyr   0.7.8
 #> ✔ tidyr   0.8.2     ✔ stringr 1.3.1
 #> ✔ readr   1.3.1     ✔ forcats 0.3.0
-#> ── Conflicts ─────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 
