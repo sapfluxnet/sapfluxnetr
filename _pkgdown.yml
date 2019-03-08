@@ -5,3 +5,73 @@ development:
 
 navbar:
   type: inverse
+
+reference:
+- title: "Example datasets"
+  desc: ~
+  contents:
+  - '`ARG_MAZ`'
+  - '`ARG_TRE`'
+  - '`AUS_CAN_ST2_MIX`'
+  - '`sfn_metadata_ex`'
+- title: "Data handling and visualization"
+  desc: ~
+  contents:
+  - '`read_sfn_data`'
+  - '`sfn_filter`'
+  - '`sfn_metrics`'
+  - '`sfn_mutate`'
+  - '`sfn_mutate_at`'
+  - '`sfn_plot`'
+- title: "Metadata handling and utilities"
+  desc: ~
+  contents:
+  - '`read_sfn_metadata`'
+  - '`describe_md_variable`'
+  - '`filter_sites_by_md`'
+  - '`get_timezone`'
+  - '`sfn_sites_in_folder`'
+  - '`sfn_vars_to_filter`'
+- title: "Metrics"
+  desc: ~
+  contents:
+  - '`metrics`'
+  - '`metrics_tidyfier`'
+  - '`summarise_by_period`'
+  - '`data_coverage`'
+  - '`diurnal_centroid`'
+  - '`norm_diurnal_centroid`'
+  - '`time_at_events`'
+- title: "sfn_data classes"
+  desc: ~
+  contents:
+  - '`as_sfn_data_multi`'
+  - '`initialize,sfn_data-method`'
+  - '`initialize,sfn_data_multi-method`'
+  - '`sfn_data-class`'
+  - '`sfn_data_multi-class`'
+  - '`sfn_data_multi_validity`'
+  - '`sfn_data_validity`'
+  - '`sfn_get_generics`'
+  - '`sfn_get_methods`'
+  - '`sfn_multi_get_methods`'
+  - '`sfn_replacement_generics`'
+  - '`sfn_replacement_methods`'
+  - '`show,sfn_data-method`'
+  - '`show,sfn_data_multi-method`'
+- title: "Other"
+  desc: ~
+  contents:
+  - '`.accumulated_posix_aware`'
+  - '`.env_vars_names`'
+  - '`.fixed_metrics_funs`'
+  - '`.flag`'
+  - '`.metadata_architecture`'
+  - '`.period_to_minutes`'
+  - '`.sapflow_tidy`'
+  - '`.timezone_dic`'
+  - '`.write_metadata_cache`'
+- title: "Imported functions"
+  desc: ~
+  contents:
+  - '`%>%`'

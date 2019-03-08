@@ -2,8 +2,7 @@
 % Please edit documentation in R/imports.R
 \name{\%>\%}
 \alias{\%>\%}
-\title{Exporting pipe operator}
+\title{Reexporting the pipe operator}
 \description{
-This makes the pipe operator available with the sapfluxnetr
-package loaded, no need to also load dplyr/tidyverse/magrittr packages.
+Imported from magrittr package
 }

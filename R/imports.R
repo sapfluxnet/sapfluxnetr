@@ -1,7 +1,6 @@
-#' Exporting pipe operator
+#' Reexporting the pipe operator
 #' 
-#' This makes the pipe operator available with the sapfluxnetr
-#' package loaded, no need to also load dplyr/tidyverse/magrittr packages.
+#' Imported from magrittr package
 #'
 #' @importFrom magrittr %>%
 #' @name %>%
