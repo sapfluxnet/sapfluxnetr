@@ -205,7 +205,7 @@ test_that('summarise_by_period dots work as intended', {
     period = 'daily',
     .funs = dplyr::funs(
       mean(., na.rm = TRUE), sd(., na.rm = TRUE),
-      accumulated = sum(., na.rm = TRUE)
+      accumulated = .accumulated_posix_aware(., na.rm = TRUE)
     )
   )
   
