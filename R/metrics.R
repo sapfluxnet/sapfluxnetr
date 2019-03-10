@@ -999,6 +999,7 @@ predawn_metrics <- function(
 #' @inheritParams sfn_metrics
 #'
 #' @examples
+#' \donttest{
 #' ## midday_metrics
 #' # data load
 #' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
@@ -1010,7 +1011,6 @@ predawn_metrics <- function(
 #' AUS_CAN_ST2_MIX_midday[['sapf']]
 #' AUS_CAN_ST2_MIX_midday[['env']]
 #'
-#' \donttest{
 #' # change the midday interval
 #' AUS_CAN_ST2_MIX_midday_short <- midday_metrics(
 #'   AUS_CAN_ST2_MIX, int_start = 8, int_end = 18 # night starting and ending hour
