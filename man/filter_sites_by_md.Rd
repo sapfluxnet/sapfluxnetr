@@ -69,7 +69,7 @@ metadata class, they are combined as 'and'.
   )
 }
 
-\donttest{
+\dontrun{
   # Let's access the plant level data, in the 'RData/plant' folder
   # (change accordingly if your data is in another location or
   # you want the leaf or sapwood unit level)

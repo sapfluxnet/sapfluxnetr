@@ -253,7 +253,6 @@ AUS_CAN_ST2_MIX_predawn_tidy <- predawn_metrics(
 AUS_CAN_ST2_MIX_predawn_tidy
 }
 
-\donttest{
 ## midday_metrics
 # data load
 data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
@@ -265,6 +264,7 @@ str(AUS_CAN_ST2_MIX_midday)
 AUS_CAN_ST2_MIX_midday[['sapf']]
 AUS_CAN_ST2_MIX_midday[['env']]
 
+\donttest{
 # change the midday interval
 AUS_CAN_ST2_MIX_midday_short <- midday_metrics(
   AUS_CAN_ST2_MIX, int_start = 8, int_end = 18 # night starting and ending hour

@@ -6,19 +6,17 @@ This is a resubmission, in this version I have:
 
 * Modified doc examples to avoid (when possible) wrapping in \dontrun:
 
-  - All \dontrun blocks have been removed or substituted by \donttest
+  - All \dontrun blocks remaining refers to examples that will fail as they
+    need a folder containing the data, provided by the user.
+    Nevertheless, these functions have been tested in the test units.
   
-  - All the \donttest blocks that still appear in the examples are beacuse
-    one or both of the following reasons:
+  - All the \donttest blocks remaining in the examples are to avoid spend more
+    than 5 seconds per .md file. They have been tested with
+    R CMD check --run-donttest returning no ERRORs or WARNINGs or NOTEs
     
-      1. They don't fit in 5 seconds.
-      2. They need the user to supply a folder containing the sapfluxnet
-         downloaded data.
+  - Toy examples have been added when needed or possible
   
-    But nevertheless, these functions had been tested in the test units.
-  
-  - \dontshow blocks have been added when possible to tests these examples
-  - toy examples have been added when possible
+  - Examples added to the functions when needed or possible
   
 
 ## Test environments
@@ -43,7 +41,6 @@ New submission
 
 Possibly mis-spelled words in DESCRIPTION:
   Sapfluxnet (2:21, 10:63)
-
 
 * This is a new release.
 * Sapfluxnet is not mis-spelled, is the name of the project.

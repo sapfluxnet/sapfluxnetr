@@ -16,7 +16,7 @@
 #'   a sfn_data_multi object containing all selected sites.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   # Let's access the plant level data, in the 'RData/plant' folder
 #'   # (change accordingly if your data is in another location or
 #'   # you want the leaf or sapwood unit level)
@@ -153,7 +153,7 @@ read_sfn_data <- function(site_codes, folder = '.') {
 #'   be written in \code{folder}.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   # Let's access the plant level data, in the 'RData/plant' folder
 #'   # (change accordingly if your data is in another location or
 #'   # you want the leaf or sapwood unit level)
@@ -257,7 +257,7 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'   )
 #' }
 #' 
-#' \donttest{
+#' \dontrun{
 #'   # Let's access the plant level data, in the 'RData/plant' folder
 #'   # (change accordingly if your data is in another location or
 #'   # you want the leaf or sapwood unit level)
@@ -384,7 +384,7 @@ filter_sites_by_md <- function(
 #'   db folder
 #' 
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Let's access the plant level data, in the 'RData/plant' folder
 #' # (change accordingly if your data is in another location or
 #' # you want the leaf or sapwood unit level)

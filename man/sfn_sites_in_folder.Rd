@@ -21,7 +21,7 @@ Retrieves the site codes in the specified folder
 If folder
 }
 \examples{
-\donttest{
+\dontrun{
 # Let's access the plant level data, in the 'RData/plant' folder
 # (change accordingly if your data is in another location or
 # you want the leaf or sapwood unit level)

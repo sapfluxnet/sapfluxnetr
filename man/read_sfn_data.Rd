@@ -22,7 +22,7 @@ Given a site code and a route, \code{read_sfn_data} will return the selected
 sfn_data object
 }
 \examples{
-\donttest{
+\dontrun{
   # Let's access the plant level data, in the 'RData/plant' folder
   # (change accordingly if your data is in another location or
   # you want the leaf or sapwood unit level)
