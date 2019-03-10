@@ -6,3 +6,8 @@
 \description{
 Imported from magrittr package
 }
+\examples{
+# piping sites
+ARG_TRE \%>\% daily_metrics()
+
+}

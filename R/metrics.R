@@ -237,7 +237,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' ARG_TRE_metrics[['env']]
 #'
 #' ## sfn_data_multi
-#' if(interactive()) {
+#' \donttest{
 #' data('ARG_MAZ', package = 'sapfluxnetr')
 #' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 #' multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
@@ -525,6 +525,12 @@ sfn_metrics <- function(
 #'
 #' @importFrom stats sd
 #' @importFrom stats quantile
+#' 
+#' @examples 
+#' sapfluxnetr:::.fixed_metrics_funs(0.95, FALSE)
+#' sapfluxnetr:::.fixed_metrics_funs(c(0.05, 0.95), TRUE)
+#' 
+#' @keywords internal
 
 .fixed_metrics_funs <- function(probs, centroid) {
 
@@ -612,7 +618,6 @@ NULL
 #'
 #' @examples
 #' ## daily_metrics
-#' if(interactive()) {
 #' # data load
 #' data('ARG_TRE', package = 'sapfluxnetr')
 #' data('sfn_metadata_ex', package = 'sapfluxnetr')
@@ -621,6 +626,7 @@ NULL
 #' ARG_TRE_raw_daily <- daily_metrics(ARG_TRE)
 #' str(ARG_TRE_raw_daily)
 #'
+#' \donttest{
 #' # tidy daily metrics
 #' ARG_TRE_daily <- daily_metrics(
 #'   ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex
@@ -677,7 +683,6 @@ daily_metrics <- function(
 #'
 #' @examples
 #' ## monthly_metrics
-#' if(interactive()) {
 #' # data load
 #' data('ARG_TRE', package = 'sapfluxnetr')
 #' data('sfn_metadata_ex', package = 'sapfluxnetr')
@@ -686,6 +691,7 @@ daily_metrics <- function(
 #' ARG_TRE_raw_monthly <- monthly_metrics(ARG_TRE)
 #' str(ARG_TRE_raw_monthly)
 #'
+#' \donttest{
 #' # tidy monthly metrics
 #' ARG_TRE_monthly <- monthly_metrics(
 #'   ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex
@@ -747,8 +753,8 @@ monthly_metrics <- function(
 #' @inheritParams sfn_metrics
 #'
 #' @examples
+#' \donttest{
 #' ## nightly_metrics
-#' if(interactive()) {
 #' # data load
 #' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 #'
@@ -829,8 +835,8 @@ nightly_metrics <- function(
 #' @inheritParams sfn_metrics
 #'
 #' @examples
+#' \donttest{
 #' ## daylight_metrics
-#' if(interactive()) {
 #' # data load
 #' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 #'
@@ -913,8 +919,8 @@ daylight_metrics <- function(
 #' @inheritParams sfn_metrics
 #'
 #' @examples
+#' \donttest{
 #' ## predawn_metrics
-#' if(interactive()) {
 #' # data load
 #' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 #'
@@ -993,8 +999,8 @@ predawn_metrics <- function(
 #' @inheritParams sfn_metrics
 #'
 #' @examples
+#' \donttest{
 #' ## midday_metrics
-#' if(interactive()) {
 #' # data load
 #' data('AUS_CAN_ST2_MIX', package = 'sapfluxnetr')
 #'
@@ -1094,7 +1100,6 @@ midday_metrics <- function(
 #'   }
 #'
 #' @examples
-#' if(interactive()) {
 #' # data
 #' multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 #' data('sfn_metadata_ex', package = 'sapfluxnetr')
@@ -1108,6 +1113,7 @@ midday_metrics <- function(
 #' )
 #' multi_tidy
 #'
+#' \donttest{
 #' # A really easier way of doing the same
 #' multi_tidy_easy <- daily_metrics(multi_sfn, tidy = TRUE, metadata = sfn_metadata_ex)
 #' }

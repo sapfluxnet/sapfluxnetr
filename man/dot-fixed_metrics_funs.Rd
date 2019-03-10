@@ -15,3 +15,9 @@
 \description{
 generates a call to dplyr::funs to capture the fixed metrics
 }
+\examples{
+sapfluxnetr:::.fixed_metrics_funs(0.95, FALSE)
+sapfluxnetr:::.fixed_metrics_funs(c(0.05, 0.95), TRUE)
+
+}
+\keyword{internal}
