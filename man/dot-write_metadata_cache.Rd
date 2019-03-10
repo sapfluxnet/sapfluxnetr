@@ -25,3 +25,4 @@ Load all data in memory to collect metadata info can be resource limiting.
 For easy and quick access to metadata, this function stores an .RData file
 in the specified folder along the data with all the metadata preloaded.
 }
+\keyword{internal}

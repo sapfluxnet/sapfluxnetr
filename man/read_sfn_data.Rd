@@ -22,13 +22,21 @@ Given a site code and a route, \code{read_sfn_data} will return the selected
 sfn_data object
 }
 \examples{
-# load one single site (it suposes a folder called Data exists and contains
-# a file called ARG_TRE.RData)
-\dontrun{
-ARG_TRE <- read_sfn_data('ARG_TRE', 'Data')
-
-# load several sites
-multi_sfn <- read_sfn_data(c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'), 'Data')
+\donttest{
+  # Let's access the plant level data, in the 'RData/plant' folder
+  # (change accordingly if your data is in another location or
+  # you want the leaf or sapwood unit level)
+  path_to_data <- file.path('RData', 'plant')
+  
+  # now we read a single site
+  ARG_TRE <- read_sfn_data('ARG_TRE', path_to_data)
+  ARG_TRE
+  
+  # or we can read multiple sites at once
+  multi_sfn <- read_sfn_data(
+    c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'), path_to_data
+  )
+  multi_sfn
 }
 
 }

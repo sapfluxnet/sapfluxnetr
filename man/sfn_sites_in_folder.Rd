@@ -21,9 +21,14 @@ Retrieves the site codes in the specified folder
 If folder
 }
 \examples{
-\dontrun{
-# list the sites available in Data folder
-sfn_sites_in_folder('Data/')
+\donttest{
+# Let's access the plant level data, in the 'RData/plant' folder
+# (change accordingly if your data is in another location or
+# you want the leaf or sapwood unit level)
+path_to_data <- file.path('RData', 'plant')
+
+# lets see the sites
+sfn_sites_in_folder(path_to_data)
 }
 
 }

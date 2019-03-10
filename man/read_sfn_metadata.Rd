@@ -28,15 +28,25 @@ in the specified folder along the data with all the metadata preloaded. Also
 it return it as an object to use in filtering and selecting sites.
 }
 \examples{
-\dontrun{
-# load the metadata for the first time, it can be a minute ;)
-sites_metadata <- read_metadata(folder = 'Data', .write.cache = TRUE)
-
-# a cached copy must have been written to "folder"
-file.exists('Data/.metadata_cache.RData') # TRUE
-
-# inspect the metadata
-sites_metadata
+\donttest{
+  # Let's access the plant level data, in the 'RData/plant' folder
+  # (change accordingly if your data is in another location or
+  # you want the leaf or sapwood unit level)
+  path_to_data <- file.path('RData', 'plant')
+  
+  # load the metadata
+  sites_metadata <- read_metadata(folder = path_to_data)
+  
+  # if it is the first time, you may want to set .write.cache to TRUE
+  # to avoid the metadata building every time:
+  sites_metadata <- read_metadata(
+    folder = path_to_data, .write.cache = TRUE
+  )
+  # a cached copy must have been written to "folder"
+  file.exists(paste0(path_to_data, '.metadata_cache.RData')) # TRUE
+  
+  # inspect the metadata
+  sites_metadata
 }
 
 }
