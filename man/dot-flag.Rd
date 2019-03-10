@@ -15,3 +15,9 @@ A vector of the same length than x with the variable flags modified
 \description{
 This function will add the "USER_MODF" flag to the data point flags
 }
+\examples{
+sapfluxnetr:::.flag('')
+sapfluxnetr:::.flag('OUT_WARNING')
+
+}
+\keyword{internal}

@@ -14,3 +14,8 @@ This function returns a nested list with the metadata, the variable and the
 values, description , units and type for it use in describe_variable,
 sfn_vars_to_filter and sfn_values_for
 }
+\examples{
+sapfluxnetr:::.metadata_architecture()
+
+}
+\keyword{internal}

@@ -15,3 +15,9 @@ A sfn_data_multi object
 \description{
 Convert any list of sfn_data objects in a sfn_data_multi object
 }
+\examples{
+sites_list <- list(ARG_TRE, ARG_MAZ)
+sapfluxnetr:::as_sfn_data_multi(sites_list)
+
+}
+\keyword{internal}

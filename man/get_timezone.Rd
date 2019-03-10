@@ -15,3 +15,8 @@ a character with the site timezone
 \description{
 Obtain the site timezone from a sfn_data/sfn_data_multi object
 }
+\examples{
+# timezone of ARG_TRE site
+get_timezone(ARG_TRE)
+
+}

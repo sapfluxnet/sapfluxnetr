@@ -17,3 +17,9 @@ the sum for any other variables, but the first for POSIXct variables
 \description{
 sum for summarise_all aware of POSIX objects
 }
+\examples{
+sapfluxnetr:::.accumulated_posix_aware(c(50,20))
+sapfluxnetr:::.accumulated_posix_aware(c(Sys.time(), Sys.time() -1))
+
+}
+\keyword{internal}

@@ -18,6 +18,6 @@ requested variable. Useful to know which values to filter or in which units
 the variables are.
 }
 \examples{
-# info avout pl_sens_meth
+# info about the method used to measure sapflow (pl_sens_meth)
 describe_md_variable('pl_sens_meth')
 }

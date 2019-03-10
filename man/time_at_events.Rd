@@ -44,3 +44,4 @@ storms \%>\%
             hour_at_min = sapfluxnetr:::min_time(wind, time = hour))
 
 }
+\keyword{internal}

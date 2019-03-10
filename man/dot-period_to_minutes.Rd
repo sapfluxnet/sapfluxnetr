@@ -33,3 +33,4 @@ sapfluxnetr:::.period_to_minutes('daily')
 # the same, but with other specification
 sapfluxnetr:::.period_to_minutes('1 day')
 }
+\keyword{internal}

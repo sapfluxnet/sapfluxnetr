@@ -23,3 +23,4 @@ GMT time zones are used, as they are day saving light time (DST) agnostic,
 and in that way the DST can setted if the metadata says so. GMT are sign
 exchanged to be compatible with ISO.
 }
+\keyword{internal}

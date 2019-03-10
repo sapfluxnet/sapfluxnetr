@@ -12,3 +12,8 @@ a character vector with env vars names
 \description{
 helper to return all environmental variable names
 }
+\examples{
+sapfluxnetr:::.env_vars_names()
+
+}
+\keyword{internal}

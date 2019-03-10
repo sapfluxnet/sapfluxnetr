@@ -10,5 +10,7 @@
 \item{data}{site sapflow metrics dataframe}
 }
 \description{
-.sapflow_tidy helper
+This helper is in charge of putting in shape the sapflow metrics, creating
+the pl_code column.
 }
+\keyword{internal}

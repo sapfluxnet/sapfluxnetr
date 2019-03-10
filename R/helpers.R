@@ -43,6 +43,8 @@ data_coverage <- function(x, timestep, period_minutes) {
 #'   with the boundaries for irregular periods
 #' @param timestamp timestamp vector obtained from data
 #' @param timestep numeric with the timestep in minutes, obtained from metadata
+#' 
+#' @keywords internal
 #'
 #' @examples
 #'
@@ -151,6 +153,8 @@ data_coverage <- function(x, timestep, period_minutes) {
 #' @param time a POSIXct or character vector with the TIMESTAMP values
 #'
 #' @return a single value (POSIXct) with the TIMESTAMP value.
+#' 
+#' @keywords internal
 #'
 #' @examples
 #' library(dplyr)
@@ -344,6 +348,7 @@ norm_diurnal_centroid <- function(sapf_var, rad_var) {
 #'
 #' @return A character vector with the timezone code compatible with lubridate
 #'   and as.POSIXct
+#' @keywords internal
 
 # START
 # Function declaration
@@ -454,6 +459,10 @@ norm_diurnal_centroid <- function(sapf_var, rad_var) {
 #' @param sfn_data An sfn_data or sfn_data_multi object
 #'
 #' @return a character with the site timezone
+#' 
+#' @examples
+#' # timezone of ARG_TRE site
+#' get_timezone(ARG_TRE)
 #'
 #' @export
 
@@ -471,6 +480,12 @@ get_timezone <- function(
 #' @param x A list of sfn_data objects
 #'
 #' @return A sfn_data_multi object
+#' 
+#' @examples
+#' sites_list <- list(ARG_TRE, ARG_MAZ)
+#' sapfluxnetr:::as_sfn_data_multi(sites_list)
+#' 
+#' @keywords internal
 
 as_sfn_data_multi <- function(x) {
 
@@ -485,7 +500,11 @@ as_sfn_data_multi <- function(x) {
 #' values, description , units and type for it use in describe_variable,
 #' sfn_vars_to_filter and sfn_values_for
 #'
+#' @examples 
+#' sapfluxnetr:::.metadata_architecture()
+#' 
 #' @return a list with the metadata architecture
+#' @keywords internal
 
 .metadata_architecture <- function() {
 
@@ -1193,7 +1212,7 @@ sfn_vars_to_filter <- function() {
 #' @export
 #'
 #' @examples
-#' # info avout pl_sens_meth
+#' # info about the method used to measure sapflow (pl_sens_meth)
 #' describe_md_variable('pl_sens_meth')
 
 describe_md_variable <- function(variable) {
@@ -1234,8 +1253,13 @@ describe_md_variable <- function(variable) {
 #' This function will add the "USER_MODF" flag to the data point flags
 #'
 #' @param x variable to flag
+#' 
+#' @examples
+#' sapfluxnetr:::.flag('')
+#' sapfluxnetr:::.flag('OUT_WARNING')
 #'
 #' @return A vector of the same length than x with the variable flags modified
+#' @keywords internal
 
 .flag <- function(x) {
   dplyr::case_when(
@@ -1247,6 +1271,10 @@ describe_md_variable <- function(variable) {
 #' helper to return all environmental variable names
 #'
 #' @return a character vector with env vars names
+#' @examples 
+#' sapfluxnetr:::.env_vars_names()
+#' 
+#' @keywords internal
 
 .env_vars_names <- function() {
   c('ta', 'rh', 'vpd', 'sw_in', 'ppfd_in', 'netrad', 'ext_rad',
@@ -1254,8 +1282,12 @@ describe_md_variable <- function(variable) {
 }
 
 #' .sapflow_tidy helper
+#' 
+#' This helper is in charge of putting in shape the sapflow metrics, creating
+#' the pl_code column.
 #'
 #' @param data site sapflow metrics dataframe
+#' @keywords internal
 .sapflow_tidy <- function(data) {
 
   # hack for cran check not comply about global undefined
@@ -1311,7 +1343,12 @@ describe_md_variable <- function(variable) {
 #' @param variable the variable as it is pased to the .fixed_metrics function
 #' @param na.rm logical to pass to na.rm argument from sum
 #' 
+#' @examples 
+#' sapfluxnetr:::.accumulated_posix_aware(c(50,20))
+#' sapfluxnetr:::.accumulated_posix_aware(c(Sys.time(), Sys.time() -1))
+#' 
 #' @return the sum for any other variables, but the first for POSIXct variables
+#' @keywords internal
 .accumulated_posix_aware <- function(variable, na.rm = FALSE) {
   
   if (is.numeric(variable)) {
