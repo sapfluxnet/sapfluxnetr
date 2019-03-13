@@ -1,5 +1,5 @@
 Package: sapfluxnetr
-Title: Working with Sapfluxnet Project Data
+Title: Working with 'Sapfluxnet' Project Data
 Version: 0.0.6
 Authors@R: c(
   person("Victor", "Granda", email = "victorgrandagarcia@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0469-1991")),
@@ -8,7 +8,7 @@ Authors@R: c(
   person("Jacob", "Nelson", email = "", role = 'ctb', comment = c(ORCID = "0000-0002-4663-2420")),
   person("Sapfluxnet Core Team", email = "sapfluxnet@creaf.uab.cat", role = 'cph')
   )
-Description: Access, modify, aggregate and plot data from the Sapfluxnet Project
+Description: Access, modify, aggregate and plot data from the 'Sapfluxnet' project
   (<http:sapfluxnet.creaf.cat>), the first global database of sap flow measurements.
 Depends: R (>= 3.4.0)
 License: MIT + file LICENSE
