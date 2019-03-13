@@ -28,25 +28,24 @@ in the specified folder along the data with all the metadata preloaded. Also
 it return it as an object to use in filtering and selecting sites.
 }
 \examples{
-\dontrun{
-  # Let's access the plant level data, in the 'RData/plant' folder
-  # (change accordingly if your data is in another location or
-  # you want the leaf or sapwood unit level)
-  path_to_data <- file.path('RData', 'plant')
-  
-  # load the metadata
-  sites_metadata <- read_metadata(folder = path_to_data)
-  
-  # if it is the first time, you may want to set .write.cache to TRUE
-  # to avoid the metadata building every time:
-  sites_metadata <- read_metadata(
-    folder = path_to_data, .write.cache = TRUE
-  )
-  # a cached copy must have been written to "folder"
-  file.exists(paste0(path_to_data, '.metadata_cache.RData')) # TRUE
-  
-  # inspect the metadata
-  sites_metadata
-}
+# Let's access the data in "folder". This typically is the folder where the
+# sapflow data at the desired unit level is (i.e. "RData/plant"), but in this
+# example we will create a temporal folder with some data to test the function
+folder <- tempdir()
+save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+
+# create and load the metadata. The first time we use .write_cache = TRUE,
+# to ensure creating a file containing the metadata for speed the process
+# for the next times
+read_sfn_metadata(
+  folder = folder, .write_cache = TRUE
+)
+# a cached copy must have been written to "folder"
+file.exists(paste0(folder, '.metadata_cache.RData')) # TRUE
+
+# after that, we only need to especify the folder
+sites_metadata <- read_sfn_metadata(folder = folder) # quicker than before
+sites_metadata
 
 }

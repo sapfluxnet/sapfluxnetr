@@ -56,9 +56,13 @@ test_that('as_sfn_data_multi helper works as intended', {
 #### read_sfn_metadata tests ####
 test_that('.write_sfn_metadata writes correctly the file', {
 
-  testthat::skip_on_cran()
-
-  folder <- 'Data'
+  #testthat::skip_on_cran()
+  
+  folder <- tempdir()
+  save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+  save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+  save(AUS_CAN_ST2_MIX, file = file.path(folder, 'AUS_CAN_ST2_MIX.RData'))
+  
   sfn_metadata <- sapfluxnetr:::.write_metadata_cache(folder, .dry = TRUE)
 
   expect_false(file.exists(file.path(folder, '.metadata_cache.RData')))
@@ -81,7 +85,10 @@ test_that('.write_sfn_metadata writes correctly the file', {
 
 test_that('read_sfn_metadata works as intended', {
 
-  folder <- 'Data'
+  folder <- tempdir()
+  save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+  save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+  save(AUS_CAN_ST2_MIX, file = file.path(folder, 'AUS_CAN_ST2_MIX.RData'))
 
   expect_error(
     read_sfn_metadata(folder = folder), 'metadata cache file not found at'

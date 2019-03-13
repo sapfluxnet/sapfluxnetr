@@ -21,14 +21,15 @@ Retrieves the site codes in the specified folder
 If folder
 }
 \examples{
-\dontrun{
-# Let's access the plant level data, in the 'RData/plant' folder
-# (change accordingly if your data is in another location or
-# you want the leaf or sapwood unit level)
-path_to_data <- file.path('RData', 'plant')
+# Let's access the data in "folder". This typically is the folder where the
+# sapflow data at the desired unit level is (i.e. "RData/plant"), but in this
+# example we will create a temporal folder with some data to test the function
+folder <- tempdir()
+save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+save(AUS_CAN_ST2_MIX, file = file.path(folder, 'AUS_EUC_ST2_MIX.RData'))
 
 # lets see the sites
-sfn_sites_in_folder(path_to_data)
-}
+sites <- sfn_sites_in_folder(folder)
 
 }

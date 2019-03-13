@@ -16,22 +16,22 @@
 #'   a sfn_data_multi object containing all selected sites.
 #'
 #' @examples
-#' \dontrun{
-#'   # Let's access the plant level data, in the 'RData/plant' folder
-#'   # (change accordingly if your data is in another location or
-#'   # you want the leaf or sapwood unit level)
-#'   path_to_data <- file.path('RData', 'plant')
-#'   
-#'   # now we read a single site
-#'   ARG_TRE <- read_sfn_data('ARG_TRE', path_to_data)
-#'   ARG_TRE
-#'   
-#'   # or we can read multiple sites at once
-#'   multi_sfn <- read_sfn_data(
-#'     c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'), path_to_data
-#'   )
-#'   multi_sfn
-#' }
+#' # Let's access the data in "folder". This typically is the folder where the
+#' # sapflow data at the desired unit level is (i.e. "RData/plant"), but in this
+#' # example we will create a temporal folder with some data to test the function
+#' folder <- tempdir()
+#' save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+#' save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+#' 
+#' # now we read a single site
+#' ARG_TRE_test <- read_sfn_data('ARG_TRE', folder)
+#' ARG_TRE_test
+#' 
+#' # or we can read multiple sites at once
+#' multi_sfn <- read_sfn_data(
+#'   c('ARG_TRE', 'ARG_MAZ'), folder
+#' )
+#' multi_sfn
 #'
 #' @export
 
@@ -73,6 +73,18 @@ read_sfn_data <- function(site_codes, folder = '.') {
 #'   directory
 #'
 #' @param .dry Dry run. Metadata is loaded and readed, but no cache is written
+#' 
+#' @examples
+#' # Let's access the data in "folder". This typically is the folder where the
+#' # sapflow data at the desired unit level is (i.e. "RData/plant"), but in this
+#' # example we will create a temporal folder with some data to test the function
+#' folder <- tempdir()
+#' save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+#' save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+#' 
+#' # lets create the metadata cache file
+#' sapfluxnetr:::.write_metadata_cache(folder, .dry = FALSE)#' 
+#' file.exists(file.path(folder, '.metadata_cache.RData')) # TRUE
 #'
 #' @return A list of tibbles with the five metadata classes (site, stand,
 #'   species, plant and environmental)
@@ -153,26 +165,25 @@ read_sfn_data <- function(site_codes, folder = '.') {
 #'   be written in \code{folder}.
 #'
 #' @examples
-#' \dontrun{
-#'   # Let's access the plant level data, in the 'RData/plant' folder
-#'   # (change accordingly if your data is in another location or
-#'   # you want the leaf or sapwood unit level)
-#'   path_to_data <- file.path('RData', 'plant')
-#'   
-#'   # load the metadata
-#'   sites_metadata <- read_metadata(folder = path_to_data)
-#'   
-#'   # if it is the first time, you may want to set .write.cache to TRUE
-#'   # to avoid the metadata building every time:
-#'   sites_metadata <- read_metadata(
-#'     folder = path_to_data, .write.cache = TRUE
-#'   )
-#'   # a cached copy must have been written to "folder"
-#'   file.exists(paste0(path_to_data, '.metadata_cache.RData')) # TRUE
-#'   
-#'   # inspect the metadata
-#'   sites_metadata
-#' }
+#' # Let's access the data in "folder". This typically is the folder where the
+#' # sapflow data at the desired unit level is (i.e. "RData/plant"), but in this
+#' # example we will create a temporal folder with some data to test the function
+#' folder <- tempdir()
+#' save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+#' save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+#' 
+#' # create and load the metadata. The first time we use .write_cache = TRUE,
+#' # to ensure creating a file containing the metadata for speed the process
+#' # for the next times
+#' read_sfn_metadata(
+#'   folder = folder, .write_cache = TRUE
+#' )
+#' # a cached copy must have been written to "folder"
+#' file.exists(paste0(folder, '.metadata_cache.RData')) # TRUE
+#' 
+#' # after that, we only need to especify the folder
+#' sites_metadata <- read_sfn_metadata(folder = folder) # quicker than before
+#' sites_metadata
 #'
 #' @return A list of tibbles with the five metadata classes (site, stand,
 #'   species, plant and environmental)
@@ -222,78 +233,44 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #' @param .join Character indicating how to filter the sites, see details.
 #'
 #' @examples
-#' \dontshow{
-#'   library('sapfluxnetr')
-#'   data('sfn_metadata_ex')
-#'   filter_sites_by_md(
-#'     pl_sens_meth == 'HR',
-#'     sites = c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX'),
-#'     metadata = sfn_metadata_ex
-#'   )
-#'  
-#'   # Both, Heat Ratio and Heat Dissipation
-#'   filter_sites_by_md(
-#'     pl_sens_meth %in% c('HR', 'HD'),
-#'     sites = c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX'),
-#'     metadata = sfn_metadata_ex
-#'   )
-#'  
-#'   # more complex, Heat Ratio method AND Mediterranean biome
-#'   filter_sites_by_md(
-#'     pl_sens_meth == 'HR',
-#'     si_biome == 'Mediterranean',
-#'     sites = c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX'),
-#'     metadata = sfn_metadata_ex,
-#'     .join = 'and' # default
-#'   )
-#'  
-#'   # join = 'or' returns sites that meet any condition
-#'   filter_sites_by_md(
-#'     pl_sens_meth == 'HR',
-#'     si_biome == 'Mediterranean',
-#'     sites = c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX'),
-#'     metadata = sfn_metadata_ex,
-#'     .join = 'or'
-#'   )
-#' }
+#' # Let's access the data in "folder". This typically is the folder where the
+#' # sapflow data at the desired unit level is (i.e. "RData/plant"), but in this
+#' # example we will create a temporal folder with some data to test the function
+#' folder <- tempdir()
+#' save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+#' save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+#' save(AUS_CAN_ST2_MIX, file = file.path(folder, 'AUS_CAN_ST2_MIX.RData'))
 #' 
-#' \dontrun{
-#'   # Let's access the plant level data, in the 'RData/plant' folder
-#'   # (change accordingly if your data is in another location or
-#'   # you want the leaf or sapwood unit level)
-#'   path_to_data <- file.path('RData', 'plant')
-#'   
-#'   # No we want to know which sites are using the Heat Ratio method
-#'   # to measure the sap flow.
-#'   sites <- sfn_sites_in_folder(path_to_data)
-#'   metadata <- read_sfn_metadata(path_to_data)
-#'   
-#'   filter_sites_by_md(
-#'     pl_sens_meth == 'HR', sites = sites, metadata = metadata
-#'   )
-#'  
-#'   # Both, Heat Ratio and Heat Dissipation
-#'   filter_sites_by_md(
-#'     pl_sens_meth %in% c('HR', 'HD'),
-#'     sites = sites, metadata = metadata
-#'   )
-#'  
-#'   # more complex, Heat Ratio method AND Mediterranean biome
-#'   filter_sites_by_md(
-#'     pl_sens_meth == 'HR',
-#'     si_biome == 'Mediterranean',
-#'     sites = sites, metadata = metadata,
-#'     .join = 'and' # default
-#'   )
-#'  
-#'   # join = 'or' returns sites that meet any condition
-#'   filter_sites_by_md(
-#'     pl_sens_meth == 'HR',
-#'     si_biome == 'Mediterranean',
-#'     sites = sites, metadata = metadata,
-#'     .join = 'or'
-#'   )
-#' }
+#' # we need the metadata and the site names
+#' metadata <- read_sfn_metadata(folder = folder, .write_cache = TRUE)
+#' sites <- sfn_sites_in_folder(folder)
+#' 
+#' # Filter by Heat Ratio method
+#' filter_sites_by_md(
+#'   pl_sens_meth == 'HR', sites = sites, metadata = metadata
+#' )
+#'
+#' # Both, Heat Ratio and Heat Dissipation
+#' filter_sites_by_md(
+#'   pl_sens_meth %in% c('HR', 'HD'),
+#'   sites = sites, metadata = metadata
+#' )
+#'
+#' # more complex, Heat Ratio method AND Mediterranean biome
+#' filter_sites_by_md(
+#'   pl_sens_meth == 'HR',
+#'   si_biome == 'Mediterranean',
+#'   sites = sites, metadata = metadata,
+#'   .join = 'and' # default
+#' )
+#'
+#' # join = 'or' returns sites that meet any condition
+#' filter_sites_by_md(
+#'   pl_sens_meth == 'HR',
+#'   si_biome == 'Mediterranean',
+#'   sites = sites, metadata = metadata,
+#'   .join = 'or'
+#' )
 #'
 #' @return A character vector with the sites fullfilling the premises
 #'
@@ -384,15 +361,16 @@ filter_sites_by_md <- function(
 #'   db folder
 #' 
 #' @examples
-#' \dontrun{
-#' # Let's access the plant level data, in the 'RData/plant' folder
-#' # (change accordingly if your data is in another location or
-#' # you want the leaf or sapwood unit level)
-#' path_to_data <- file.path('RData', 'plant')
+#' # Let's access the data in "folder". This typically is the folder where the
+#' # sapflow data at the desired unit level is (i.e. "RData/plant"), but in this
+#' # example we will create a temporal folder with some data to test the function
+#' folder <- tempdir()
+#' save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+#' save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+#' save(AUS_CAN_ST2_MIX, file = file.path(folder, 'AUS_EUC_ST2_MIX.RData'))
 #' 
 #' # lets see the sites
-#' sfn_sites_in_folder(path_to_data)
-#' }
+#' sites <- sfn_sites_in_folder(folder)
 #' 
 #' @return A character vector with the site codes present in the folder, an
 #'   error if the folder is not valid or does not contain any site data file.

@@ -34,77 +34,43 @@ condition between classes are returned. For two or more filtes of the same
 metadata class, they are combined as 'and'.
 }
 \examples{
-\dontshow{
-  library('sapfluxnetr')
-  data('sfn_metadata_ex')
-  filter_sites_by_md(
-    pl_sens_meth == 'HR',
-    sites = c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX'),
-    metadata = sfn_metadata_ex
-  )
- 
-  # Both, Heat Ratio and Heat Dissipation
-  filter_sites_by_md(
-    pl_sens_meth \%in\% c('HR', 'HD'),
-    sites = c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX'),
-    metadata = sfn_metadata_ex
-  )
- 
-  # more complex, Heat Ratio method AND Mediterranean biome
-  filter_sites_by_md(
-    pl_sens_meth == 'HR',
-    si_biome == 'Mediterranean',
-    sites = c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX'),
-    metadata = sfn_metadata_ex,
-    .join = 'and' # default
-  )
- 
-  # join = 'or' returns sites that meet any condition
-  filter_sites_by_md(
-    pl_sens_meth == 'HR',
-    si_biome == 'Mediterranean',
-    sites = c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX'),
-    metadata = sfn_metadata_ex,
-    .join = 'or'
-  )
-}
+# Let's access the data in "folder". This typically is the folder where the
+# sapflow data at the desired unit level is (i.e. "RData/plant"), but in this
+# example we will create a temporal folder with some data to test the function
+folder <- tempdir()
+save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+save(AUS_CAN_ST2_MIX, file = file.path(folder, 'AUS_CAN_ST2_MIX.RData'))
 
-\dontrun{
-  # Let's access the plant level data, in the 'RData/plant' folder
-  # (change accordingly if your data is in another location or
-  # you want the leaf or sapwood unit level)
-  path_to_data <- file.path('RData', 'plant')
-  
-  # No we want to know which sites are using the Heat Ratio method
-  # to measure the sap flow.
-  sites <- sfn_sites_in_folder(path_to_data)
-  metadata <- read_sfn_metadata(path_to_data)
-  
-  filter_sites_by_md(
-    pl_sens_meth == 'HR', sites = sites, metadata = metadata
-  )
- 
-  # Both, Heat Ratio and Heat Dissipation
-  filter_sites_by_md(
-    pl_sens_meth \%in\% c('HR', 'HD'),
-    sites = sites, metadata = metadata
-  )
- 
-  # more complex, Heat Ratio method AND Mediterranean biome
-  filter_sites_by_md(
-    pl_sens_meth == 'HR',
-    si_biome == 'Mediterranean',
-    sites = sites, metadata = metadata,
-    .join = 'and' # default
-  )
- 
-  # join = 'or' returns sites that meet any condition
-  filter_sites_by_md(
-    pl_sens_meth == 'HR',
-    si_biome == 'Mediterranean',
-    sites = sites, metadata = metadata,
-    .join = 'or'
-  )
-}
+# we need the metadata and the site names
+metadata <- read_sfn_metadata(folder = folder, .write_cache = TRUE)
+sites <- sfn_sites_in_folder(folder)
+
+# Filter by Heat Ratio method
+filter_sites_by_md(
+  pl_sens_meth == 'HR', sites = sites, metadata = metadata
+)
+
+# Both, Heat Ratio and Heat Dissipation
+filter_sites_by_md(
+  pl_sens_meth \%in\% c('HR', 'HD'),
+  sites = sites, metadata = metadata
+)
+
+# more complex, Heat Ratio method AND Mediterranean biome
+filter_sites_by_md(
+  pl_sens_meth == 'HR',
+  si_biome == 'Mediterranean',
+  sites = sites, metadata = metadata,
+  .join = 'and' # default
+)
+
+# join = 'or' returns sites that meet any condition
+filter_sites_by_md(
+  pl_sens_meth == 'HR',
+  si_biome == 'Mediterranean',
+  sites = sites, metadata = metadata,
+  .join = 'or'
+)
 
 }

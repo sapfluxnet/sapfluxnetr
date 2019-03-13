@@ -25,4 +25,17 @@ Load all data in memory to collect metadata info can be resource limiting.
 For easy and quick access to metadata, this function stores an .RData file
 in the specified folder along the data with all the metadata preloaded.
 }
+\examples{
+# Let's access the data in "folder". This typically is the folder where the
+# sapflow data at the desired unit level is (i.e. "RData/plant"), but in this
+# example we will create a temporal folder with some data to test the function
+folder <- tempdir()
+save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
+save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
+
+# lets create the metadata cache file
+sapfluxnetr:::.write_metadata_cache(folder, .dry = FALSE)#' 
+file.exists(file.path(folder, '.metadata_cache.RData')) # TRUE
+
+}
 \keyword{internal}
