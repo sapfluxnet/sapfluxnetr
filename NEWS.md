@@ -1,5 +1,6 @@
 # sapfluxnetr 0.0.6
 
+* Improved examples in the functions help
 * Updated license file to comply with CRAN policy
 * Cleaning to comply with CRAN checks in windows builds and travis CI
 * Added .accumulated_posix_aware helper function to avoid summing posix objects
