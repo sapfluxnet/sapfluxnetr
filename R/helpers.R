@@ -54,6 +54,11 @@ data_coverage <- function(x, timestep, period_minutes) {
 #' # the same, but with other specification
 #' sapfluxnetr:::.period_to_minutes('1 day')
 .period_to_minutes <- function(period, timestamp, timestep){
+  
+  # # validate period
+  # .assert_that_period_is_valid(period)
+  # 
+  # #
 
   # if the period is a custom period,
   if (

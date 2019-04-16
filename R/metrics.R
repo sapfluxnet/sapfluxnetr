@@ -1256,23 +1256,32 @@ metrics_tidyfier <- function(
 # TODO
 .collapse_timestamp <- function(timestamp, period, side, ...) {
   
-  # checks
-  .assert_that_period_is_valid(period)
-  assertthat::assert_that(
-    assertthat::is.string(side),
-    assertthat::are_equal(length(side), 1),
-    side %in% c('start', 'end'),
-    msg = "'side' must be a character vector of length one with accepted values 'start' or 'end'"
-  )
+  dots_list <- rlang::quos(...)
   
-  if (side == 'start') {
-    collapsed_timestamp <- lubridate::floor_date(timestamp, period, ...)
+  if (rlang::is_function(period)) {
+    collapsed_timestamp <- period(timestamp, !!! dots_list)
   } else {
-    collapsed_timestamp <- lubridate::ceiling_date(timestamp, period, ...)
+    # checks
+    .assert_that_period_is_valid(period)
+    assertthat::assert_that(
+      assertthat::is.string(side),
+      assertthat::are_equal(length(side), 1),
+      side %in% c('start', 'end'),
+      msg = "'side' must be a character vector of length one with accepted values 'start' or 'end'"
+    )
+    
+    if (side == 'start') {
+      collapsed_timestamp <- lubridate::floor_date(
+        timestamp, period, !!! dots_list
+      )
+    } else {
+      collapsed_timestamp <- lubridate::ceiling_date(
+        timestamp, period, !!! dots_list
+      )
+    }
   }
   
   return(collapsed_timestamp)
-  
 }
 
 # .parse_period
