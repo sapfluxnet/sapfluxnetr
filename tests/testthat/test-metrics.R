@@ -240,35 +240,69 @@ test_that('data_coverage works as intended', {
 })
 
 #### .period_to_minutes tests ####
-test_that('helper .period_to_minutes works with tibbletime periods', {
-  expect_equal(sapfluxnetr:::.period_to_minutes('daily'), 1440)
+test_that('helper .period_to_minutes works with lubridate periods', {
+  expect_equal(sapfluxnetr:::.period_to_minutes('2 days'), 1440*2)
   expect_equal(sapfluxnetr:::.period_to_minutes('1 day'), 1440)
-  expect_equal(sapfluxnetr:::.period_to_minutes('monthly'), 43830)
+  expect_equal(sapfluxnetr:::.period_to_minutes('3 months'), 43830*3)
   expect_equal(sapfluxnetr:::.period_to_minutes('1 year'), 525960)
+  expect_equal(sapfluxnetr:::.period_to_minutes('1 hour'), 60)
 })
 
-test_that('.period_to_minutes works with custom POSIXct periods', {
-  
+# test_that('helper .period_to_minutes works with tibbletime periods', {
+#   expect_equal(sapfluxnetr:::.period_to_minutes('daily'), 1440)
+#   expect_equal(sapfluxnetr:::.period_to_minutes('1 day'), 1440)
+#   expect_equal(sapfluxnetr:::.period_to_minutes('monthly'), 43830)
+#   expect_equal(sapfluxnetr:::.period_to_minutes('1 year'), 525960)
+# })
+
+test_that('.period_to_minutes works with custom functions as periods', {
+  ## TODO
   timestamp_vec <- get_timestamp(ARG_MAZ)
-  period_vec <- c(timestamp_vec[49], timestamp_vec[73], timestamp_vec[193])
   timestep_val <- 60
+  period_fun <- lubridate::as_date
   
+  expect_warning(
+    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val),
+    "when using a custom function as period, coverage calculation"
+  )
   expect_equal(
     length(
-      sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
+      sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)
     ),
     length(timestamp_vec)
   )
   expect_equal(
-    length(
-      unique(
-        sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
-      )
-    ),
-    4
+    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)[1],
+    1440
   )
-  
+  expect_equal(
+    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)[288],
+    1440
+  )
 })
+
+# test_that('.period_to_minutes works with custom POSIXct periods', {
+#   
+#   timestamp_vec <- get_timestamp(ARG_MAZ)
+#   period_vec <- c(timestamp_vec[49], timestamp_vec[73], timestamp_vec[193])
+#   timestep_val <- 60
+#   
+#   expect_equal(
+#     length(
+#       sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
+#     ),
+#     length(timestamp_vec)
+#   )
+#   expect_equal(
+#     length(
+#       unique(
+#         sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
+#       )
+#     ),
+#     4
+#   )
+#   
+# })
 
 #### diurnal_centroid tests ####
 test_that('diurnal_centroid function works with even data', {

@@ -4,7 +4,7 @@
 \alias{.period_to_minutes}
 \title{transform period as in tibbletime period argument in minutes}
 \usage{
-.period_to_minutes(period, timestamp, timestep)
+.period_to_minutes(period, timestamp, timestep, ...)
 }
 \arguments{
 \item{period}{character indicating the period to summarise or POSIX vector
@@ -13,6 +13,8 @@ with the boundaries for irregular periods}
 \item{timestamp}{timestamp vector obtained from data}
 
 \item{timestep}{numeric with the timestep in minutes, obtained from metadata}
+
+\item{...}{extra arguments for period if it is a function}
 }
 \value{
 An integer with the period value in minutes
