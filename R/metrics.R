@@ -1228,7 +1228,52 @@ metrics_tidyfier <- function(
 #### Utils for substituting tibbletime dependencies ####
 
 # collapse_timestamp
+# 
+# Util to collapse the index using lubridate::*_date functions
+# 
+# Periods accepted in the "number period" format:
+# 
+#   - hours (exs. "1 hour", "12 hours")
+#   - days (exs. "1 day", "3 days")
+#   - weeks (exs. "1 week", "4 weeks")
+#   - months (exs. "1 month", "6 months")
+#   - years (exs. "1 year", "7 years")
+#   - Also a custom function can be supplied, one that transforms the TIMESTAMP
+#     variable to the collapsed timestamp desired
+# 
+# Side "start" lubridate::floor_date; "end" lubridate::ceiling_date. Important
+# see lubridate::ceiling_date for details about ceiling dates
+# 
+# ... are arguments to be passed to lubridate::floor_date or
+# lubridate::celiing_date
+# 
+# return a vector of the same length as TIMESTAMP, with the collapse timestamp
+# with the same tz
+# 
+# examples
+# sapfluxnetr::.collapse_timestamp(period = "1 day", side = 'start')
+# 
 # TODO
+.collapse_timestamp <- function(timestamp, period, side, ...) {
+  
+  # checks
+  .assert_that_period_is_valid(period)
+  assertthat::assert_that(
+    assertthat::is.string(side),
+    assertthat::are_equal(length(side), 1),
+    side %in% c('start', 'end'),
+    msg = "'side' must be a character vector of length one with accepted values 'start' or 'end'"
+  )
+  
+  if (side == 'start') {
+    collapsed_timestamp <- lubridate::floor_date(timestamp, period, ...)
+  } else {
+    collapsed_timestamp <- lubridate::ceiling_date(timestamp, period, ...)
+  }
+  
+  return(collapsed_timestamp)
+  
+}
 
 # .parse_period
 # 
@@ -1246,6 +1291,21 @@ metrics_tidyfier <- function(
 # return a function call as an rlang::expr
 .parse_period <- function(period) {
   
+  .assert_that_period_is_valid(period)
+  
+  # split string
+  splitted_period <- period %>%
+    stringr::str_split(' ') %>%
+    purrr::flatten_chr()
+  
+  period_freq <- as.numeric(period_split[1])
+  period_char <- period_split[2]
+  
+  list(freq = period_freq, period = period_char)
+  
+}
+
+.assert_that_period_is_valid <- function(period) {
   # check for character and length
   assertthat::assert_that(
     assertthat::is.string(period),
@@ -1270,10 +1330,4 @@ metrics_tidyfier <- function(
     suppressWarnings(!is.na(as.numeric(splitted_period[1]))),
     msg = "Frequency must be coercible to numeric."
   )
-  
-  period_freq <- as.numeric(period_split[1])
-  period_char <- period_split[2]
-  
-  list(freq = period_freq, period = period_char)
-  
 }
