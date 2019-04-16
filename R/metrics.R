@@ -1254,12 +1254,15 @@ metrics_tidyfier <- function(
 # sapfluxnetr::.collapse_timestamp(period = "1 day", side = 'start')
 # 
 # TODO
-.collapse_timestamp <- function(timestamp, period, side, ...) {
-  
-  dots_list <- rlang::quos(...)
+.collapse_timestamp <- function(timestamp, ..., period, side = 'start') {
   
   if (rlang::is_function(period)) {
-    collapsed_timestamp <- period(timestamp, !!! dots_list)
+    # if (rlang::is_empty(dots_list)) {
+    #   collapsed_timestamp <- period(timestamp)
+    # } else {
+    #   collapsed_timestamp <- period(timestamp, !!! dots_list)
+    # }
+    collapsed_timestamp <- period(timestamp, ...)
   } else {
     # checks
     .assert_that_period_is_valid(period)
@@ -1272,11 +1275,11 @@ metrics_tidyfier <- function(
     
     if (side == 'start') {
       collapsed_timestamp <- lubridate::floor_date(
-        timestamp, period, !!! dots_list
+        timestamp, period, ...
       )
     } else {
       collapsed_timestamp <- lubridate::ceiling_date(
-        timestamp, period, !!! dots_list
+        timestamp, period, ...
       )
     }
   }
@@ -1307,8 +1310,8 @@ metrics_tidyfier <- function(
     stringr::str_split(' ') %>%
     purrr::flatten_chr()
   
-  period_freq <- as.numeric(period_split[1])
-  period_char <- period_split[2]
+  period_freq <- as.numeric(splitted_period[1])
+  period_char <- splitted_period[2]
   
   list(freq = period_freq, period = period_char)
   

@@ -922,3 +922,131 @@ test_that('metrics_tidyfier works when supplied custom metrics', {
   
   expect_equal(nrow(test_expr), 4*3) # trees * weeks
 })
+
+#### metrics utils #####
+test_that('.assert_that_period_is_valid works as intended', {
+  
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('1 day'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('3 days'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('1 month'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('6 months'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('1 hour'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('1 week'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('2 years'))
+  
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid(5),
+    'must be character string of length 1'
+  )
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid(c("1", "day")),
+    'must be character string of length 1'
+  )
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid("1  day"),
+    'must consist of a frequency and a period'
+  )
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid("1 day long"),
+    'must consist of a frequency and a period'
+  )
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid("one day"),
+    'must be coercible to numeric'
+  )
+})
+
+test_that(".parse_period works as intended", {
+  
+  expect_is(sapfluxnetr:::.parse_period("2 days"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("2 days")$freq, 2)
+  expect_equal(sapfluxnetr:::.parse_period("2 days")$period, 'days')
+  expect_is(sapfluxnetr:::.parse_period("1 day"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("1 day")$freq, 1)
+  expect_equal(sapfluxnetr:::.parse_period("1 day")$period, 'day')
+  expect_is(sapfluxnetr:::.parse_period("2 months"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("2 months")$freq, 2)
+  expect_equal(sapfluxnetr:::.parse_period("2 months")$period, 'months')
+  expect_is(sapfluxnetr:::.parse_period("1 month"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("1 month")$freq, 1)
+  expect_equal(sapfluxnetr:::.parse_period("1 month")$period, 'month')
+  expect_is(sapfluxnetr:::.parse_period("2 years"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("2 years")$freq, 2)
+  expect_equal(sapfluxnetr:::.parse_period("2 years")$period, 'years')
+  expect_is(sapfluxnetr:::.parse_period("1 year"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("1 year")$freq, 1)
+  expect_equal(sapfluxnetr:::.parse_period("1 year")$period, 'year')
+  
+  expect_error(
+    sapfluxnetr:::.parse_period("2 day s"),
+    'must consist of a frequency and a period'
+  )
+  expect_error(
+    sapfluxnetr:::.parse_period(mean),
+    'must be character string of length 1'
+  )
+  
+})
+
+test_that(".collapse_timestamp works as intended", {
+  TIMESTAMP <- ARG_TRE %>%
+    get_timestamp()
+  
+  expect_equal(
+    length(sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 day', side = 'start')),
+    length(TIMESTAMP)
+  )
+  expect_equal(
+    length(
+      sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 day', side = 'start') %>%
+        unique()
+    ),
+    13
+  )
+  expect_identical(
+    lubridate::day(
+      sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 day', side = 'start') %>%
+        magrittr::extract(1)
+    ),
+    lubridate::day(TIMESTAMP[1])
+  )
+  expect_identical(
+    sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 week', side = 'start') %>%
+      magrittr::extract(1) %>%
+      as.character(),
+    "2009-11-15"
+  )
+  expect_identical(
+    sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 week', side = 'start', week_start = 1) %>%
+      magrittr::extract(1) %>%
+      as.character(),
+    "2009-11-16"
+  )
+  
+  mean_sapf <- function(x, na.rm = TRUE) {
+    length_out <- length(x)
+    rep(mean(x, na.rm = na.rm), length_out)
+  }
+  
+  expect_identical(
+    length(sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = mean_sapf, side = 'start')),
+    length(TIMESTAMP)
+  )
+  expect_identical(
+    length(sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = mean_sapf, side = 'start', na.rm = FALSE)),
+    length(TIMESTAMP)
+  )
+  expect_equal(
+    length(
+      sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = mean_sapf, side = 'start') %>%
+        unique()
+    ),
+    1
+  )
+  expect_identical(
+    sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = mean_sapf, side = 'start') %>%
+      magrittr::extract(1) %>%
+      as.character(),
+    "2009-11-24 11:30:00"
+  )
+})
