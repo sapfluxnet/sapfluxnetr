@@ -29,7 +29,8 @@ Imports:
     tibble,
     tibbletime,
     tidyr,
-    utils
+    utils,
+    assertthat
 RoxygenNote: 6.1.1
 Collate:
     'data.R'

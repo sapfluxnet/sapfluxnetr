@@ -1223,3 +1223,57 @@ metrics_tidyfier <- function(
   return(whole_data)
   
 }
+
+
+#### Utils for substituting tibbletime dependencies ####
+
+# collapse_timestamp
+# TODO
+
+# .parse_period
+# 
+# Util to parse the period supplied to the function call to
+# create the collapsed timestamp
+# 
+# Periods accepted in the "number period" format:
+# 
+#   - hours (exs. "1 hour", "12 hours")
+#   - days (exs. "1 day", "3 days")
+#   - weeks (exs. "1 week", "4 weeks")
+#   - months (exs. "1 month", "6 months")
+#   - years (exs. "1 year", "7 years")
+# 
+# return a function call as an rlang::expr
+.parse_period <- function(period) {
+  
+  # check for character and length
+  assertthat::assert_that(
+    assertthat::is.string(period),
+    assertthat::are_equal(length(period), 1),
+    msg = '"period" must be character string of length 1. See help for more details'
+  )
+  
+  # split string
+  splitted_period <- period %>%
+    stringr::str_split(' ') %>%
+    purrr::flatten_chr()
+  
+  ## check that we have length 2
+  assertthat::assert_that(
+    assertthat::are_equal(length(splitted_period), 2),
+    msg = '"period" must consist of a frequency and a period in the style: "2 days"'
+  )
+  
+  ## check that 
+  assertthat::assert_that(
+    # Coercing to numeric should give a number, not NA
+    suppressWarnings(!is.na(as.numeric(splitted_period[1]))),
+    msg = "Frequency must be coercible to numeric."
+  )
+  
+  period_freq <- as.numeric(period_split[1])
+  period_char <- period_split[2]
+  
+  list(freq = period_freq, period = period_char)
+  
+}
