@@ -565,6 +565,7 @@ sfn_metrics <- function(
 #'   \item{centroid: Diurnal centroid value (hours passed until the half of
 #'         the summed daily value was reached). Only returned for sapflow
 #'         measures when period is '1 day'}
+#'   \item{accumulated: Accumulated values for precipitation only}
 #' }
 #'
 #' @param probs numeric vector of probabilities for
@@ -575,6 +576,9 @@ sfn_metrics <- function(
 #'
 #' @param metadata metadata object, usually the result of
 #'   \code{\link{read_sfn_metadata}}. Only used if tidy is TRUE.
+#'
+#' @param ... additional arguments to be passed to \code{\link{.collapse_timestamp}}
+#'   or \code{\link[lubridate]{floor_date}} or \code{\link[lubridate]{ceiling_date}}.
 #'
 #' @family metrics
 #'
@@ -1205,34 +1209,38 @@ metrics_tidyfier <- function(
 
 
 #### Utils for substituting tibbletime dependencies ####
-
-# collapse_timestamp
-# 
-# Util to collapse the index using lubridate::*_date functions
-# 
-# Periods accepted in the "number period" format:
-# 
-#   - hours (exs. "1 hour", "12 hours")
-#   - days (exs. "1 day", "3 days")
-#   - weeks (exs. "1 week", "4 weeks")
-#   - months (exs. "1 month", "6 months")
-#   - years (exs. "1 year", "7 years")
-#   - Also a custom function can be supplied, one that transforms the TIMESTAMP
-#     variable to the collapsed timestamp desired
-# 
-# Side "start" lubridate::floor_date; "end" lubridate::ceiling_date. Important
-# see lubridate::ceiling_date for details about ceiling dates
-# 
-# ... are arguments to be passed to lubridate::floor_date or
-# lubridate::celiing_date
-# 
-# return a vector of the same length as TIMESTAMP, with the collapse timestamp
-# with the same tz
-# 
-# examples
-# sapfluxnetr::.collapse_timestamp(period = "1 day", side = 'start')
-# 
-# TODO
+#' .collapse_timestamp helper
+#' 
+#' Util to collapse the TIMESTAMP using lubridate::*_date functions
+#' 
+#' @section Period:
+#' Periods accepted are in the "number period" format, as in
+#' \code{\link[lubridate]{floor_date}} or a custom function name without quotes:
+#' \itemize{
+#'   \item{hours (exs. "1 hour", "12 hours")}
+#'   \item{days (exs. "1 day", "3 days")}
+#'   \item{weeks (exs. "1 week", "4 weeks")}
+#'   \item{months (exs. "1 month", "6 months")}
+#'   \item{years (exs. "1 year", "7 years")}
+#'   \item{Also a custom function can be supplied, one that transforms the
+#'   TIMESTAMP variable to the collapsed timestamp desired. See
+#'   \code{\link{sfn_metrics}} for details}
+#' }
+#' 
+#' @section Side:
+#' Side indicates if using \code{\link[lubridate]{floor_date}} (side = "start) or
+#' \code{\link[lubridate]{ceiling_date}} (side = 'end'). Ceiling dates is not
+#' trivial, see \code{\link[lubridate]{ceiling_date}} for information on how
+#' the date will be ceiled.
+#' 
+#' @return A vector of the same length as TIMESTAMP, with the collapsed timestamp
+#'   with the same tz as the original one.
+#'   
+#' @examples
+#' arg_tre_timestamp <- get_timestamp(ARG_TRE)
+#' sapfluxnetr::.collapse_timestamp(
+#'   arg_tre_timestamp, period = "1 day", side = 'start'
+#' )
 .collapse_timestamp <- function(timestamp, ..., period, side = 'start') {
   
   if (rlang::is_function(period)) {
@@ -1266,20 +1274,18 @@ metrics_tidyfier <- function(
   return(collapsed_timestamp)
 }
 
-# .parse_period
-# 
-# Util to parse the period supplied to the function call to
-# create the collapsed timestamp
-# 
-# Periods accepted in the "number period" format:
-# 
-#   - hours (exs. "1 hour", "12 hours")
-#   - days (exs. "1 day", "3 days")
-#   - weeks (exs. "1 week", "4 weeks")
-#   - months (exs. "1 month", "6 months")
-#   - years (exs. "1 year", "7 years")
-# 
-# return a function call as an rlang::expr
+#' .parse_period
+#' 
+#' Util to parse the period supplied to the function call to
+#' create the collapsed timestamp
+#' 
+#' @param period Period in the "number period" format
+#' 
+#' @examples 
+#' sapfluxnetr:::.parse_period('1 day')
+#' 
+#' @return  a list, with the freq value as numeric and the period value as
+#'   character
 .parse_period <- function(period) {
   
   .assert_that_period_is_valid(period)
@@ -1296,6 +1302,16 @@ metrics_tidyfier <- function(
   
 }
 
+
+#' test for character period
+#' 
+#' @param period "frequency period"
+#' @examples 
+#' sapfluxnetr:::.assert_that_period_is_valid('1 day') # TRUE
+#' # not run
+#' # sapfluxnetr:::.assert_that_period_is_valid('1day') # error
+#' 
+#' @return TRUE if is valid, informative error if not.
 .assert_that_period_is_valid <- function(period) {
   # check for character and length
   assertthat::assert_that(
@@ -1323,10 +1339,18 @@ metrics_tidyfier <- function(
   )
 }
 
-# nightly period custom function
-# 
-# this function will substitute period daily when needed
-# 
+#' Period custom function
+#' 
+#' nightly period custom function, to use with nightly_metrics
+#' 
+#' This function will be supplied as "period" argument to summarise_by_period
+#' when daily nightly metrics are requested.
+#' 
+#' @param timestamp TIMESTAMP
+#' @param night_data as it comes inside of sfn_metrics
+#' @param int_start interval start as supplied to sfn_metrics
+#' 
+#' @return a vector of the same length as TIMESTAMP with the collapsed values.
 .nightly_daily_cf <- function(
   timestamp,
   night_data, int_start

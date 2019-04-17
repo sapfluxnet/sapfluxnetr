@@ -48,8 +48,8 @@ format (a long tibble, each observation in its own row)}
 \item{metadata}{metadata object, usually the result of
 \code{\link{read_sfn_metadata}}. Only used if tidy is TRUE.}
 
-\item{...}{optional arguments to pass to methods used
-(i.e. .collapse_timestamp or summarise funs extra arguments)}
+\item{...}{additional arguments to be passed to \code{\link{.collapse_timestamp}}
+or \code{\link[lubridate]{floor_date}} or \code{\link[lubridate]{ceiling_date}}.}
 
 \item{period}{Time period to aggregate data by. See period section for an
 explanation about the periods ('1 day', '1 month', '1 year', ...)}
@@ -86,6 +86,7 @@ set of fixed arguments.
   \item{centroid: Diurnal centroid value (hours passed until the half of
         the summed daily value was reached). Only returned for sapflow
         measures when period is '1 day'}
+  \item{accumulated: Accumulated values for precipitation only}
 }
 }
 \section{daily_metrics}{
