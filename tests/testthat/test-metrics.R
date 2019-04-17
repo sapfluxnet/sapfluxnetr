@@ -265,17 +265,17 @@ test_that('.period_to_minutes works with custom functions as periods', {
     "when using a custom function as period, coverage calculation"
   )
   expect_equal(
-    length(
+    length(suppressWarnings(
       sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)
-    ),
+    )),
     length(timestamp_vec)
   )
-  expect_equal(
-    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)[1],
+  expect_equal(suppressWarnings(
+    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)[1]),
     1440
   )
-  expect_equal(
-    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)[288],
+  expect_equal(suppressWarnings(
+    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)[288]),
     1440
   )
 })
@@ -367,21 +367,21 @@ test_that('sfn_metrics for general metrics works', {
     interval = 'general'
   )
   
-  test_expr3 <- sfn_metrics(
+  test_expr3 <- suppressWarnings(sfn_metrics(
     ARG_TRE,
     period = lubridate::as_date,
     .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = FALSE,
     interval = 'general'
-  )
+  ))
   
-  test_expr4 <- sfn_metrics(
+  test_expr4 <- suppressWarnings(sfn_metrics(
     multi_sfn,
     period = lubridate::as_date,
     .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = FALSE,
     interval = 'general'
-  )
+  ))
 
   # test sfn_data
   expect_true(is.list(test_expr))
