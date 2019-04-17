@@ -366,23 +366,50 @@ test_that('sfn_metrics for general metrics works', {
     solar = FALSE,
     interval = 'general'
   )
+  
+  test_expr3 <- sfn_metrics(
+    ARG_TRE,
+    period = lubridate::as_date,
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
+    solar = FALSE,
+    interval = 'general'
+  )
+  
+  test_expr4 <- sfn_metrics(
+    multi_sfn,
+    period = lubridate::as_date,
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
+    solar = FALSE,
+    interval = 'general'
+  )
 
   # test sfn_data
   expect_true(is.list(test_expr))
   expect_identical(names(test_expr), c('sapf', 'env'))
   expect_s3_class(test_expr[['sapf']], 'tbl')
   expect_s3_class(test_expr[['env']], 'tbl')
+  
+  expect_true(is.list(test_expr3))
+  expect_identical(names(test_expr3), c('sapf', 'env'))
+  expect_s3_class(test_expr3[['sapf']], 'tbl')
+  expect_s3_class(test_expr3[['env']], 'tbl')
 
   # test sfn_data_multi
   expect_true(is.list(test_expr2))
   expect_identical(names(test_expr2), c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'))
   expect_s3_class(test_expr2[['ARG_MAZ']][['sapf']], 'tbl')
   expect_s3_class(test_expr2[['ARG_MAZ']][['env']], 'tbl')
+  
+  expect_true(is.list(test_expr4))
+  expect_identical(names(test_expr4), c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'))
+  expect_s3_class(test_expr4[['ARG_MAZ']][['sapf']], 'tbl')
+  expect_s3_class(test_expr4[['ARG_MAZ']][['env']], 'tbl')
 
   # sfn_data and sfn_data_multi returns the same results for the same sites
   expect_equal(test_expr[['sapf']], test_expr2[['ARG_TRE']][['sapf']])
   expect_equal(test_expr[['env']], test_expr2[['ARG_TRE']][['env']])
-
+  expect_equal(test_expr3[['sapf']], test_expr4[['ARG_TRE']][['sapf']])
+  expect_equal(test_expr3[['env']], test_expr4[['ARG_TRE']][['env']])
 })
 
 test_that('sfn_metrics for predawn metrics works', {
