@@ -54,7 +54,7 @@ data('ARG_TRE', package = 'sapfluxnetr')
 
 sfn_metrics(
   ARG_TRE,
-  period = 'daily',
+  period = '1 day',
   .funs = funs(diurnal_centroid(.),
                data_coverage(., timestep, period_minutes)),
   solar = FALSE,

@@ -21,3 +21,4 @@ sapfluxnetr:::.assert_that_period_is_valid('1 day') # TRUE
 # sapfluxnetr:::.assert_that_period_is_valid('1day') # error
 
 }
+\keyword{internal}

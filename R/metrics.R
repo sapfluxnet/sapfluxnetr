@@ -121,7 +121,8 @@ summarise_by_period <- function(data, period, .funs, ...) {
     dplyr::mutate(
       TIMESTAMP_coll = .data$TIMESTAMP,
       TIMESTAMP = .collapse_timestamp(
-        TIMESTAMP, !!! dots_collapse_timestamp, period = period, side = side_val
+        .data$TIMESTAMP, !!! dots_collapse_timestamp,
+        period = period, side = side_val
       )
     ) %>%
     dplyr::group_by(.data$TIMESTAMP) %>%
@@ -1235,10 +1236,12 @@ metrics_tidyfier <- function(
 #' 
 #' @return A vector of the same length as TIMESTAMP, with the collapsed timestamp
 #'   with the same tz as the original one.
-#'   
+#' 
+#' @keywords internal
+#' 
 #' @examples
 #' arg_tre_timestamp <- get_timestamp(ARG_TRE)
-#' sapfluxnetr::.collapse_timestamp(
+#' sapfluxnetr:::.collapse_timestamp(
 #'   arg_tre_timestamp, period = "1 day", side = 'start'
 #' )
 .collapse_timestamp <- function(timestamp, ..., period, side = 'start') {
@@ -1286,6 +1289,8 @@ metrics_tidyfier <- function(
 #' 
 #' @return  a list, with the freq value as numeric and the period value as
 #'   character
+#'
+#' @keywords internal
 .parse_period <- function(period) {
   
   .assert_that_period_is_valid(period)
@@ -1312,6 +1317,7 @@ metrics_tidyfier <- function(
 #' # sapfluxnetr:::.assert_that_period_is_valid('1day') # error
 #' 
 #' @return TRUE if is valid, informative error if not.
+#' @keywords internal
 .assert_that_period_is_valid <- function(period) {
   # check for character and length
   assertthat::assert_that(
@@ -1351,6 +1357,7 @@ metrics_tidyfier <- function(
 #' @param int_start interval start as supplied to sfn_metrics
 #' 
 #' @return a vector of the same length as TIMESTAMP with the collapsed values.
+#' @keywords internal
 .nightly_daily_cf <- function(
   timestamp,
   night_data, int_start
@@ -1359,7 +1366,7 @@ metrics_tidyfier <- function(
   night_data[['sapf']] %>%
     dplyr::mutate(
       coll = .collapse_timestamp(
-        TIMESTAMP,
+        .data$TIMESTAMP,
         period = '1 day',
         side = 'start'
       )
@@ -1370,12 +1377,12 @@ metrics_tidyfier <- function(
       custom_dates = .data$TIMESTAMP[which.min(
         abs(lubridate::hour(.data$TIMESTAMP) - int_start)
       )],
-      TIMESTAMP = custom_dates
+      TIMESTAMP = .data$custom_dates
     ) %>%
     dplyr::right_join(
-      night_data[['sapf']] %>% select(TIMESTAMP), by = 'TIMESTAMP'
+      night_data[['sapf']] %>% dplyr::select(.data$TIMESTAMP), by = 'TIMESTAMP'
     ) %>%
-    tidyr::fill(custom_dates) %>%
-    dplyr::pull(custom_dates) %>%
+    tidyr::fill(.data$custom_dates) %>%
+    dplyr::pull(.data$custom_dates) %>%
     lubridate::floor_date(unit = 'hour')
 }

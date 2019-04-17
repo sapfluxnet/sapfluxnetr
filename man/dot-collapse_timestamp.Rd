@@ -39,7 +39,8 @@ the date will be ceiled.
 
 \examples{
 arg_tre_timestamp <- get_timestamp(ARG_TRE)
-sapfluxnetr::.collapse_timestamp(
+sapfluxnetr:::.collapse_timestamp(
   arg_tre_timestamp, period = "1 day", side = 'start'
 )
 }
+\keyword{internal}

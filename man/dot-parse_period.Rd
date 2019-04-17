@@ -21,3 +21,4 @@ create the collapsed timestamp
 sapfluxnetr:::.parse_period('1 day')
 
 }
+\keyword{internal}

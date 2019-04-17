@@ -53,10 +53,10 @@ Methods to get the data and metadata from the sfn_data class slots
 }
 \details{
 \code{get_sapf_data} and \code{get_env_data} methods retrieve sapflow or environmental
-tibbletime object to create a functional dataset to work with.
+tibbles to create a functional dataset to work with.
 
 \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
-environmental flags as tibbletime objects.
+environmental flags as tibbles.
 
 \code{get_timestamp} and \code{get_solar_timestamp} methods retrieve only the
 timestamp as POSIXct vector.

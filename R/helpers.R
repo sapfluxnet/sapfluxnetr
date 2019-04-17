@@ -29,18 +29,17 @@ data_coverage <- function(x, timestep, period_minutes) {
 
 }
 
-#' transform period as in tibbletime period argument in minutes
+#' transform period to minutes
 #'
 #' helper for data_coverage
 #'
-#' This function uses tibbletime and lubirdate functions to convert the period
-#' supplied into minutes to calculate the expected timesteps in the coverage
-#' calculation.
+#' This function converts the period supplied into minutes to use it in the
+#' coverage calculation.
 #'
 #' @return An integer with the period value in minutes
 #'
-#' @param period character indicating the period to summarise or POSIX vector
-#'   with the boundaries for irregular periods
+#' @param period character indicating the period to summarise or a custom
+#'  function name (without quotes).
 #' @param timestamp timestamp vector obtained from data
 #' @param timestep numeric with the timestep in minutes, obtained from metadata
 #' @param ... extra arguments for period if it is a function
@@ -50,10 +49,12 @@ data_coverage <- function(x, timestep, period_minutes) {
 #' @examples
 #'
 #' # daily period, expected 1440 minutes
-#' sapfluxnetr:::.period_to_minutes('daily')
-#'
-#' # the same, but with other specification
 #' sapfluxnetr:::.period_to_minutes('1 day')
+#'
+#' # Using a custom function, we need timestamp and timestep
+#' sapfluxnetr:::.period_to_minutes(
+#'   lubridate::as_date, get_timestamp(ARG_TRE), 30
+#' )
 .period_to_minutes <- function(period, timestamp, timestep, ...){
   
   # if the period is a custom function,
@@ -68,18 +69,18 @@ data_coverage <- function(x, timestep, period_minutes) {
       timestamp = timestamp,
       timestamp_collapsed = period(timestamp, ...) # remember the dots
     ) %>%
-      dplyr::group_by(timestamp_collapsed) %>%
+      dplyr::group_by(.data$timestamp_collapsed) %>%
       dplyr::mutate(
         diff_minutes = lubridate::as.duration(
-          (dplyr::last(timestamp) + timestep*60) - dplyr::first(timestamp)
+          (dplyr::last(.data$timestamp) + timestep*60) - dplyr::first(.data$timestamp)
         )@.Data / 60
       ) %>%
-      dplyr::pull(diff_minutes)
+      dplyr::pull(.data$diff_minutes)
     
     return(period_min)
     
   } else {
-    # parse the period using tibbletime
+    # parse the period using .parse_period util
     period_parsed <- .parse_period(period)
     # transform to minutes (duration returns seconds, so dividing by 60 is
     # mandatory)
@@ -90,87 +91,6 @@ data_coverage <- function(x, timestep, period_minutes) {
     # we return one value, to create a column for the summarise function
     return(period_min)
   }
-  
-  # if (
-  #   inherits(period, c("Date", "POSIXct", "POSIXt", "yearmon", "yearqtr", "hms"))
-  # ) {
-  # 
-  #   # First, we obtain the boundaries for calculating the intervals in minutes.
-  #   # For that we profit from collapse_index, as it allows to get these
-  #   # boundaries as well as use it to get the n(), used later to create the
-  #   # repeated vector
-  # 
-  #   # if the custom period starts after the start of the timestamp, default
-  #   # behaviour of collapse_index
-  #   if (dplyr::first(timestamp) <= dplyr::first(period)) {
-  #     periods_info <- data.frame(TIMESTAMP = timestamp) %>% dplyr::mutate(
-  #       boundaries = tibbletime::collapse_index(
-  #         index = .data$TIMESTAMP,
-  #         period = period,
-  #         side = 'start'
-  #       )
-  #     ) %>%
-  #       dplyr::group_by(boundaries) %>%
-  #       dplyr::summarise(n = n())
-  # 
-  #   } else {
-  #     # if custom period starts before the timestamp, we need to set that as the
-  #     # start date for collapse index
-  #     periods_info <- data.frame(TIMESTAMP = timestamp) %>% dplyr::mutate(
-  #       boundaries = tibbletime::collapse_index(
-  #         index = .data$TIMESTAMP,
-  #         period = period,
-  #         side = 'start',
-  #         start_date = period[1]
-  #       )
-  #     ) %>%
-  #       dplyr::group_by(boundaries) %>%
-  #       dplyr::summarise(n = n())
-  #   }
-  # 
-  #   # modify the boundaries to add the last value, as we will use them to
-  #   # calculate the intervals length in minutes
-  #   if (dplyr::last(timestamp) >= dplyr::last(period)) {
-  #     boundaries <- c(
-  #       periods_info$boundaries,
-  #       dplyr::last(timestamp) + lubridate::minutes(timestep)
-  #     )
-  #   } else {
-  #     boundaries <- c(
-  #       periods_info$boundaries,
-  #       dplyr::last(period)
-  #     )
-  #   }
-  # 
-  #   # calculate the lenght of each interval between the boundaries
-  #   loop_res <- c()
-  #   for (i in 1:(length(boundaries) - 1)) {
-  #     period_min <- lubridate::int_length(
-  #       lubridate::interval(boundaries[i], boundaries[i+1])
-  #     ) / 60
-  # 
-  #     loop_res <- c(loop_res, period_min)
-  #   }
-  # 
-  #   # we need a vector of length equal to timestamp, but with the values of
-  #   # minutes repeated to use it in the summarise function. We use here the n
-  #   # calculated before
-  #   res <- rep(loop_res, times = periods_info$n)
-  # 
-  #   return(res)
-  # 
-  # } else {
-  #   # parse the period using tibbletime
-  #   period_parsed <- tibbletime::parse_period(period)
-  #   # transform to minutes (duration returns seconds, so dividing by 60 is
-  #   # mandatory)
-  #   period_min <- lubridate::duration(
-  #     glue::glue('{period_parsed$freq} {period_parsed$period}')
-  #   )@.Data / 60
-  # 
-  #   # we return one value, to create a column for the summarise function
-  #   return(period_min)
-  # }
 
 }
 
@@ -273,7 +193,7 @@ min_time <- function(x, time) {
 #'
 #' sfn_metrics(
 #'   ARG_TRE,
-#'   period = 'daily',
+#'   period = '1 day',
 #'   .funs = funs(diurnal_centroid(.),
 #'                data_coverage(., timestep, period_minutes)),
 #'   solar = FALSE,
@@ -1331,7 +1251,7 @@ describe_md_variable <- function(variable) {
   . <- NULL
 
   data %>%
-    # converting to tibble to get rid of tibbletime corrupted index after gather
+    # converting to tibble
     tibble::as_tibble() %>%
 
     # wide to long, because we want to extract tree and metric

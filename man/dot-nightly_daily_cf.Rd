@@ -23,3 +23,4 @@ nightly period custom function, to use with nightly_metrics
 This function will be supplied as "period" argument to summarise_by_period
 when daily nightly metrics are requested.
 }
+\keyword{internal}

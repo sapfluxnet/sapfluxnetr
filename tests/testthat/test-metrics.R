@@ -247,13 +247,6 @@ test_that('helper .period_to_minutes works with lubridate periods', {
   expect_equal(sapfluxnetr:::.period_to_minutes('1 hour'), 60)
 })
 
-# test_that('helper .period_to_minutes works with tibbletime periods', {
-#   expect_equal(sapfluxnetr:::.period_to_minutes('1 day'), 1440)
-#   expect_equal(sapfluxnetr:::.period_to_minutes('1 day'), 1440)
-#   expect_equal(sapfluxnetr:::.period_to_minutes('monthly'), 43830)
-#   expect_equal(sapfluxnetr:::.period_to_minutes('1 year'), 525960)
-# })
-
 test_that('.period_to_minutes works with custom functions as periods', {
   ## TODO
   timestamp_vec <- get_timestamp(ARG_MAZ)
