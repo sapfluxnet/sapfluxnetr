@@ -49,10 +49,10 @@ format (a long tibble, each observation in its own row)}
 \code{\link{read_sfn_metadata}}. Only used if tidy is TRUE.}
 
 \item{...}{optional arguments to pass to methods used
-(i.e. tibbletime::collapse_index or summarise funs extra arguments)}
+(i.e. .collapse_timestamp or summarise funs extra arguments)}
 
 \item{period}{Time period to aggregate data by. See period section for an
-explanation about the periods ('1 day', '1 month', 'yearly', ...)}
+explanation about the periods ('1 day', '1 month', '1 year', ...)}
 
 \item{int_start}{Integer value indicating the starting hour of the special
 interval in 24h format. See Interval section in details.}

@@ -3,22 +3,22 @@
 #' This function collapse the TIMESTAMP to the desired period (day, month...)
 #' by setting the same value to all timestamps within the period. This modified
 #' TIMESTAMP is used to group by and summarise the data.
-#'
-#' This function uses internally \code{\link[tibbletime]{collapse_index}} and
-#' \code{\link[dplyr]{summarise_all}} and arguments to control these functions
+#' 
+#' This function uses internally \code{\link{.collapse_timestamp}} and
+#' \code{\link[dplyr]{summarise_all}}. Arguments to control these functions
 #' can be passed as `...`. Arguments for each function are spliced and applied
 #' when needed. Be advised that all arguments passed to the summarise_all function
 #' will be applied to all the summarising functions used, so it will fail if any
 #' of that functions does not accept that argument. To complex function-argument
 #' relationships, indicate each summary function call within the \code{.funs}
-#' argument with \code{\link[dplyr]{funs}}:
+#' argument as explained here \code{\link[dplyr]{summarise_all}}:
 #' \preformatted{
 #' # This will fail beacuse na.rm argument will be also passed to the n function,
 #' # which does not accept any argument:
 #' summarise_by_period(
 #'   data = get_sapf_data(ARG_TRE),
 #'   period = '7 days',
-#'   .funs = funs(mean, sd, n),
+#'   .funs = list(mean, sd, n()),
 #'   na.rm = TRUE
 #' )
 #'
@@ -26,7 +26,7 @@
 #' summarise_by_period(
 #'   data = get_sapf_data(ARG_TRE),
 #'   period = '7 days',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
 #' )
 #' }
 #'
@@ -44,19 +44,19 @@
 #'     summarise_by_period(
 #'       data = get_sapf_data(ARG_TRE),
 #'       period = '1 day',
-#'       .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
+#'       .funs = list(~ min_time(., time = TIMESTAMP_coll)) # Not TIMESTAMP
 #'     )
 #'   }
 #'
 #' @param data sapflow or environmental data as obtained by \code{\link{get_sapf_data}}
 #'   and \code{\link{get_env_data}}. Must have a column named TIMESTAMP
-#' @param period tibbletime::collapse_index period
-#' @param .funs dplyr::summarise_all funs
-#' @param ... optional arguments for \code{link{summarise_by_period}}
+#' @param period period to collapse by. See \code{\link{sfn_metrics}} for details.
+#' @param .funs funs to summarise the data. See details.
+#' @param ... optional arguments. See details
 #'
-#' @return A `tbl_time` object with the metrics results. The names of the columns
+#' @return A `tbl_df` object with the metrics results. The names of the columns
 #'   indicate the original variable (tree or environmental variable) and the
-#'   metric calculated (i.e. `vpd_mean`)
+#'   metric calculated (i.e. `vpd_mean`), separated by underscore
 #'
 #' @examples
 #' library(dplyr)
@@ -131,40 +131,6 @@ summarise_by_period <- function(data, period, .funs, ...) {
       -dplyr::contains('accumulated'),
       dplyr::contains('precip_accumulated')
     ) -> res
-  
-  
-  # dots_collapse_index <- dots[names(dots) %in%
-  #                               methods::formalArgs(tibbletime::collapse_index)]
-  # dots_summarise_all <- dots[!(names(dots) %in%
-  #                                methods::formalArgs(tibbletime::collapse_index))]
-  # 
-  # # TODO set clean = TRUE and side "start" for the collapse, except if they are
-  # # setted by the user.
-  # if (is.null(dots_collapse_index[['side']])) {
-  #   dots_collapse_index[['side']] <- rlang::quo('start')
-  # }
-  # 
-  # if (is.null(dots_collapse_index[['clean']])) {
-  #   dots_collapse_index[['clean']] <- rlang::quo(TRUE)
-  # }
-  # 
-  # data %>%
-  #   # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
-  #   dplyr::mutate(
-  #     TIMESTAMP_coll = .data$TIMESTAMP,
-  #     TIMESTAMP = tibbletime::collapse_index(
-  #       index = .data$TIMESTAMP,
-  #       period = period,
-  #       !!! dots_collapse_index
-  #     )
-  #   ) %>%
-  #   dplyr::group_by(.data$TIMESTAMP) %>%
-  #   dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
-  #   dplyr::select(
-  #     -dplyr::contains('_coll_'),
-  #     -dplyr::contains('accumulated'),
-  #     dplyr::contains('precip_accumulated')
-  #   ) -> res
 
   return(res)
 
@@ -176,43 +142,43 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' Generate metrics from a site/s data for the period indicated
 #'
 #' @section Period:
-#' \code{period} argument is piped to \code{tibbletime::collapse_index} function
-#' with \code{side = 'start', clean = TRUE} options. See
-#' \code{\link[tibbletime]{collapse_index}} for a detailed explanation, but in
-#' short:
+#' \code{period} argument is used by internal function
+#' \code{\link{.collapse_timestamp}} and it can be stated in two ways:
 #' \itemize{
-#'   \item{\emph{frequency period} format: "1 day", "7 day", "1 month",
-#'         "1 year"}
-#'   \item{\emph{shorthand} format: "hourly", "daily", "monthly", "yearly"}
-#'   \item{\emph{custom} format: a vector of dates to use as custom and more
-#'         flexible boundaries}
+#'   \item{\emph{frequency period} format: "1 day", "7 days", "1 month", "3 hours"}
+#'   \item{As a \emph{custom function}. This will be the name of a function,
+#'   without quotes, that accepts as the first argument the timestamp to collapse.
+#'   The result of the function must be a vector of collapsed TIMESTAMPs of the
+#'   same length than the original TIMESTAMP which will be used to group by and
+#'   summarise the data. Additional arguments to this function, if needed, can
+#'   be passed in the \code{...} argument.}
 #' }
-#' Also, you can override the default behaviour of \code{sfn_metrics}, providing
-#' \code{side = 'end'} or \code{clean = FALSE}.
+#' \code{\link{.collapse_timestamp}} also accepts the \code{side} argument to
+#' collapse by the starting timestamp or the ending timestamp of each group. This
+#' can be supplied in the \code{...} argument.
 #'
 #' @section .funs:
 #' \code{.funs} argument uses the same method as the \code{.funs} argument in the
 #' \code{\link[dplyr]{summarise_all}} function of \code{dplyr} package. Basically
-#' it accepts a list of function calls generated by funs(), or a character vector
-#' of function names, or simply a function. If you want to pass on a custom
-#' function you can specify it here. See details in
+#' it accepts a list of function calls generated by list(). If you want to pass
+#' on a custom function you can specify it here. See details in
 #' \code{\link{summarise_by_period}} for more complex summarising functions
 #' declaration.
 #'
 #' @section Interval:
 #' Previously to the metrics summary, data can be filtered by an special
-#' interval (predawn for example). This filtering can be specified with the
-#'  \code{interval} argument this:
+#' interval (i.e. predawn or nightly). This filtering can be specified with the
+#'  \code{interval} argument as this:
 #' \itemize{
-#'   \item{\code{general} (default). No special interval is used, and metrics
+#'   \item{\code{"general"} (default). No special interval is used, and metrics
 #'         are performed with all the data}.
-#'   \item{\code{predawn}. Data is filtered for predawn interval. In this case
+#'   \item{\code{"predawn"}. Data is filtered for predawn interval. In this case
 #'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#'   \item{\code{midday}. Data is filtered for midday interval. In this case
+#'   \item{\code{"midday"}. Data is filtered for midday interval. In this case
 #'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#'   \item{\code{night}. Data is filtered for night interval. In this case
+#'   \item{\code{"night"}. Data is filtered for night interval. In this case
 #'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#'   \item{\code{daylight}. Data is filtered for daylight interval. In this case
+#'   \item{\code{"daylight"}. Data is filtered for daylight interval. In this case
 #'         \code{int_start} and \code{int_end} must be specified as 24h value}
 #' }
 #'
@@ -220,10 +186,10 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'   to obtain the metrics from
 #'
 #' @param period Time period to aggregate data by. See period section for an
-#'   explanation about the periods ('1 day', '1 month', 'yearly', ...)
+#'   explanation about the periods ('1 day', '1 month', '1 year', ...)
 #'
-#' @param .funs List of function calls to summarise the data by, usually the 
-#'   result of calling \code{\link[dplyr]{funs}} 
+#' @param .funs List of function calls to summarise the data by, see .funs
+#'   section for more details.
 #'
 #' @param solar Logical indicating if the solarTIMESTAMP must be used instead of
 #'   the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).
@@ -238,18 +204,18 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'   interval in 24h format. See Interval section in details.
 #'
 #' @param ... optional arguments to pass to methods used
-#'   (i.e. tibbletime::collapse_index or summarise funs extra arguments)
+#'   (i.e. .collapse_timestamp or summarise funs extra arguments)
 #'
 #' @family metrics
 #'
-#' @return For \code{\link{sfn_data}} objects, a list of tbl_time objects
+#' @return For \code{\link{sfn_data}} objects, a list of tbl_df objects
 #'   with the following structure:
 #'   \itemize{
 #'     \item{$sapf: metrics for the sapflow data}
 #'     \item{$env: metrics for the environmental data}
 #'   }
 #'
-#'   For \code{\link{sfn_data_multi}} objects, a list of lists of tbl_time objects
+#'   For \code{\link{sfn_data_multi}} objects, a list of lists of tbl_df objects
 #'   with the metrics for each site:
 #'   \itemize{
 #'     \item{$SITE_CODE
