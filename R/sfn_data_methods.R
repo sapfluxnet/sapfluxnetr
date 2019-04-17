@@ -580,7 +580,7 @@ setMethod(
 
     # combining both
     res <- cbind(TIMESTAMP, .sapf) %>%
-      tibbletime::as_tbl_time(index = TIMESTAMP)
+      tibble::as_tibble()
 
     # return
     return(res)
@@ -604,7 +604,7 @@ setMethod(
 
     # combining both
     res <- cbind(TIMESTAMP, .env) %>%
-      tibbletime::as_tbl_time(index = TIMESTAMP)
+      tibble::as_tibble()
 
     # return
     return(res)
@@ -627,7 +627,7 @@ setMethod(
 
     # combining both
     res <- cbind(TIMESTAMP, .sapf_flags) %>%
-      tibbletime::as_tbl_time(index = TIMESTAMP)
+      tibble::as_tibble()
 
     # return
     return(res)
@@ -650,7 +650,7 @@ setMethod(
 
     # combining both
     res <- cbind(TIMESTAMP, .env_flags) %>%
-      tibbletime::as_tbl_time(index = TIMESTAMP)
+      tibble::as_tibble()
 
     # return
     return(res)
@@ -798,7 +798,7 @@ setMethod(
     res <- TIMESTAMP %>%
       purrr::map2(.sapf, cbind) %>%
       purrr::map(dplyr::rename, TIMESTAMP = ".x[[i]]") %>%
-      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+      purrr::map(~ tibble::as_tibble(.x))
     
     # return
     return(res)
@@ -827,7 +827,7 @@ setMethod(
     res <- TIMESTAMP %>%
       purrr::map2(.env, cbind) %>%
       purrr::map(dplyr::rename, TIMESTAMP = ".x[[i]]") %>%
-      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+      purrr::map(~ tibble::as_tibble(.x))
     
     # return
     return(res)
@@ -856,7 +856,7 @@ setMethod(
     res <- TIMESTAMP %>%
       purrr::map2(.flags, cbind) %>%
       purrr::map(dplyr::rename, TIMESTAMP = ".x[[i]]") %>%
-      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+      purrr::map(~ tibble::as_tibble(.x))
     
     # return
     return(res)
@@ -885,7 +885,7 @@ setMethod(
     res <- TIMESTAMP %>%
       purrr::map2(.flags, cbind) %>%
       purrr::map(dplyr::rename, TIMESTAMP = ".x[[i]]") %>%
-      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+      purrr::map(~ tibble::as_tibble(.x))
     
     # return
     return(res)

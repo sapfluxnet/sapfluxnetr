@@ -18,7 +18,7 @@ test_that('summarise_by_period function example works', {
       period = '7 days',
       .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   expect_s3_class(
@@ -27,7 +27,7 @@ test_that('summarise_by_period function example works', {
       period = '7 days',
       .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   test_expr <- summarise_by_period(
@@ -66,7 +66,7 @@ test_that('summarise_by_period dots work as intended', {
       na.rm = TRUE, # for summarise
       side = "start" # for collapse_index
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   test_expr <- summarise_by_period(
@@ -89,7 +89,7 @@ test_that('summarise_by_period dots work as intended', {
   #     side = "start", # for collapse_index
   #     clean = TRUE # for collapse_index
   #   ),
-  #   'tbl_time'
+  #   'tbl_df'
   # )
   # 
   # test_expr2 <- summarise_by_period(
@@ -111,7 +111,7 @@ test_that('summarise_by_period dots work as intended', {
       .funs = dplyr::funs(mean, sd),
       side = "start" # for collapse_index
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   test_expr3 <- summarise_by_period(
@@ -132,7 +132,7 @@ test_that('summarise_by_period dots work as intended', {
   #     side = "start", # for collapse_index
   #     clean = TRUE # for collapse_index
   #   ),
-  #   'tbl_time'
+  #   'tbl_df'
   # )
   # 
   # test_expr4 <- summarise_by_period(
@@ -153,7 +153,7 @@ test_that('summarise_by_period dots work as intended', {
       .funs = dplyr::funs(mean, sd),
       na.rm = TRUE # for summarise
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   test_expr5 <- summarise_by_period(
