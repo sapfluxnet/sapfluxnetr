@@ -13,7 +13,7 @@ sfn_metrics(sfn_data, period, .funs, solar, interval = c("general",
 to obtain the metrics from}
 
 \item{period}{Time period to aggregate data by. See period section for an
-explanation about the periods ('daily', 'monthly', 'yearly', ...)}
+explanation about the periods ('1 day', '1 month', 'yearly', ...)}
 
 \item{.funs}{List of function calls to summarise the data by, usually the 
 result of calling \code{\link[dplyr]{funs}}}
@@ -143,7 +143,7 @@ multi_metrics[['ARG_TRE']][['sapf']]
 ### midday metrics
 ARG_TRE_midday <- sfn_metrics(
   ARG_TRE,
-  period = 'daily',
+  period = '1 day',
   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
   solar = TRUE,
   interval = 'midday', int_start = 11, int_end = 13

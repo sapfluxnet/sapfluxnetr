@@ -497,14 +497,14 @@ test_that('sfn_metrics for nightly metrics works', {
     interval = 'night', int_start = 20, int_end = 6
   )
 
-  test_expr3 <- sfn_metrics(
-    ARG_TRE,
-    period = '1 day',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-    solar = TRUE,
-    interval = 'night', int_start = 20, int_end = 6,
-    clean = FALSE
-  )
+  # test_expr3 <- sfn_metrics(
+  #   ARG_TRE,
+  #   period = '1 day',
+  #   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+  #   solar = TRUE,
+  #   interval = 'night', int_start = 20, int_end = 6,
+  #   clean = FALSE
+  # )
 
   # test sfn_data
   expect_true(is.list(test_expr))
@@ -551,27 +551,27 @@ test_that('sfn_metrics for nightly metrics works', {
 
   # lets be sure that without clean the hours are cutted where they must be
   # cutted
-  expect_identical(names(test_expr3), c('sapf', 'env'))
-  expect_s3_class(test_expr3[['sapf']], 'tbl')
-  expect_s3_class(test_expr3[['env']], 'tbl')
-
-  sapf_night_timestamp_3 <- test_expr3[['sapf']][['TIMESTAMP_night']]
-  env_night_timestamp_3 <- test_expr3[['env']][['TIMESTAMP_night']]
-
-  good_sapf_night_first_3 <- "2009-11-17 22:24:58"
-  good_sapf_night_second_3 <- "2009-11-18 20:24:43"
-  good_sapf_night_last_3 <- "2009-11-30 20:20:48"
-
-  good_env_night_first_3 <- "2009-11-17 22:24:58"
-  good_env_night_second_3 <- "2009-11-18 20:24:43"
-  good_env_night_last_3 <- "2009-11-30 20:20:48"
-
-  expect_equal(as.character(sapf_night_timestamp_3[1]), good_sapf_night_first_3)
-  expect_equal(as.character(sapf_night_timestamp_3[2]), good_sapf_night_second_3)
-  expect_equal(as.character(sapf_night_timestamp_3[14]), good_sapf_night_last_3)
-  expect_equal(as.character(env_night_timestamp_3[1]), good_env_night_first_3)
-  expect_equal(as.character(env_night_timestamp_3[2]), good_env_night_second_3)
-  expect_equal(as.character(env_night_timestamp_3[14]), good_env_night_last_3)
+  # expect_identical(names(test_expr3), c('sapf', 'env'))
+  # expect_s3_class(test_expr3[['sapf']], 'tbl')
+  # expect_s3_class(test_expr3[['env']], 'tbl')
+  # 
+  # sapf_night_timestamp_3 <- test_expr3[['sapf']][['TIMESTAMP_night']]
+  # env_night_timestamp_3 <- test_expr3[['env']][['TIMESTAMP_night']]
+  # 
+  # good_sapf_night_first_3 <- "2009-11-17 22:24:58"
+  # good_sapf_night_second_3 <- "2009-11-18 20:24:43"
+  # good_sapf_night_last_3 <- "2009-11-30 20:20:48"
+  # 
+  # good_env_night_first_3 <- "2009-11-17 22:24:58"
+  # good_env_night_second_3 <- "2009-11-18 20:24:43"
+  # good_env_night_last_3 <- "2009-11-30 20:20:48"
+  # 
+  # expect_equal(as.character(sapf_night_timestamp_3[1]), good_sapf_night_first_3)
+  # expect_equal(as.character(sapf_night_timestamp_3[2]), good_sapf_night_second_3)
+  # expect_equal(as.character(sapf_night_timestamp_3[14]), good_sapf_night_last_3)
+  # expect_equal(as.character(env_night_timestamp_3[1]), good_env_night_first_3)
+  # expect_equal(as.character(env_night_timestamp_3[2]), good_env_night_second_3)
+  # expect_equal(as.character(env_night_timestamp_3[14]), good_env_night_last_3)
 
 })
 
@@ -751,12 +751,12 @@ test_that('midday metrics examples work', {
 
 test_that('*_metrics functions with ... work', {
 
-  expect_true(is.list(daily_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(monthly_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(nightly_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(daylight_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(predawn_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(midday_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(daily_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(monthly_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(nightly_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(daylight_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(predawn_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(midday_metrics(ARG_TRE, clean = FALSE)))
   expect_true(is.list(daily_metrics(ARG_TRE, side = 'end')))
   expect_true(is.list(monthly_metrics(ARG_TRE, side = 'end')))
   expect_true(is.list(nightly_metrics(ARG_TRE, side = 'end')))
@@ -764,30 +764,30 @@ test_that('*_metrics functions with ... work', {
   expect_true(is.list(predawn_metrics(ARG_TRE, side = 'end')))
   expect_true(is.list(midday_metrics(ARG_TRE, side = 'end')))
   
-  expect_s3_class(
-    daily_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    monthly_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    nightly_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    daylight_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    predawn_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    midday_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
+  # expect_s3_class(
+  #   daily_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   monthly_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   nightly_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   daylight_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   predawn_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   midday_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
   expect_s3_class(
     daily_metrics(ARG_TRE, side = 'end', tidy = TRUE, metadata = sfn_metadata_ex),
     'tbl'

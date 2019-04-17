@@ -43,7 +43,7 @@
 #'
 #'     summarise_by_period(
 #'       data = get_sapf_data(ARG_TRE),
-#'       period = 'daily',
+#'       period = '1 day',
 #'       .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
 #'     )
 #'   }
@@ -220,7 +220,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'   to obtain the metrics from
 #'
 #' @param period Time period to aggregate data by. See period section for an
-#'   explanation about the periods ('daily', 'monthly', 'yearly', ...)
+#'   explanation about the periods ('1 day', '1 month', 'yearly', ...)
 #'
 #' @param .funs List of function calls to summarise the data by, usually the 
 #'   result of calling \code{\link[dplyr]{funs}} 
@@ -301,7 +301,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' ### midday metrics
 #' ARG_TRE_midday <- sfn_metrics(
 #'   ARG_TRE,
-#'   period = 'daily',
+#'   period = '1 day',
 #'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
 #'   solar = TRUE,
 #'   interval = 'midday', int_start = 11, int_end = 13
@@ -408,45 +408,48 @@ sfn_metrics <- function(
         period_minutes = new_period_minutes
       )
 
-    if (period == 'daily') {
+    if (period == '1 day') {
 
-      night_boundaries <- night_data[['sapf']] %>%
-        dplyr::mutate(
-          coll = tibbletime::collapse_index(
-            index = .data$TIMESTAMP,
-            period = period,
-            side = 'start'
-          )
-        ) %>%
-        dplyr::group_by(.data$coll) %>%
-        # closest to night start timestamp
-        dplyr::summarise(
-          custom_dates = .data$TIMESTAMP[which.min(
-            abs(lubridate::hour(.data$TIMESTAMP) - int_start)
-          )]
-        ) %>%
-        dplyr::pull(.data$custom_dates)
-
-      night_boundaries <- night_boundaries %>%
-        lubridate::floor_date(unit = 'hours')
-
-      # workaround the two nights in one day problem (sites that start at
-      # 00:00:00 have two nights in the same day, the first one corresponds to
-      # the previous day and we have to fix it)
-      margins <- 60*60*24
-      extra_start_boundary <- night_boundaries[[1]] - margins
-      extra_end_boundary <- night_boundaries[[length(night_boundaries)]] + margins
-      night_boundaries <- as.POSIXct(
-        c(
-          as.character(extra_start_boundary),
-          as.character(night_boundaries),
-          as.character(extra_end_boundary)
-        ),
-        tz = attr(extra_start_boundary, 'tz')
-      )
-
+      # night_boundaries <- night_data[['sapf']] %>%
+      #   dplyr::mutate(
+      #     coll = tibbletime::collapse_index(
+      #       index = .data$TIMESTAMP,
+      #       period = period,
+      #       side = 'start'
+      #     )
+      #   ) %>%
+      #   dplyr::group_by(.data$coll) %>%
+      #   # closest to night start timestamp
+      #   dplyr::summarise(
+      #     custom_dates = .data$TIMESTAMP[which.min(
+      #       abs(lubridate::hour(.data$TIMESTAMP) - int_start)
+      #     )]
+      #   ) %>%
+      #   dplyr::pull(.data$custom_dates)
+      # 
+      # night_boundaries <- night_boundaries %>%
+      #   lubridate::floor_date(unit = 'hours')
+      # 
+      # # workaround the two nights in one day problem (sites that start at
+      # # 00:00:00 have two nights in the same day, the first one corresponds to
+      # # the previous day and we have to fix it)
+      # margins <- 60*60*24
+      # extra_start_boundary <- night_boundaries[[1]] - margins
+      # extra_end_boundary <- night_boundaries[[length(night_boundaries)]] + margins
+      # night_boundaries <- as.POSIXct(
+      #   c(
+      #     as.character(extra_start_boundary),
+      #     as.character(night_boundaries),
+      #     as.character(extra_end_boundary)
+      #   ),
+      #   tz = attr(extra_start_boundary, 'tz')
+      # )
+      
+      # TODO nightly_daily_fun
+      
+      
       period_summary <- night_data %>%
-        purrr::map(summarise_by_period, night_boundaries, .funs, ...)
+        purrr::map(summarise_by_period, '1 day', .funs, ...)
 
     } else {
 
@@ -492,7 +495,7 @@ sfn_metrics <- function(
         lubridate::hours(int_end - int_start)
       )@.Data / 60
       
-      if (period != 'daily') {
+      if (period != '1 day') {
         new_period_minutes <- new_period_minutes * 30
       }
 
@@ -628,7 +631,7 @@ sfn_metrics <- function(
 #'   \item{q_XX: 0.XX quantile value for the period}
 #'   \item{centroid: Diurnal centroid value (hours passed until the half of
 #'         the summed daily value was reached). Only returned for sapflow
-#'         measures when period is 'daily'}
+#'         measures when period is '1 day'}
 #' }
 #'
 #' @param probs numeric vector of probabilities for
@@ -692,7 +695,7 @@ daily_metrics <- function(
   . <- NULL
 
   # hardcoded values
-  period <- 'daily'
+  period <- '1 day'
 
   # default funs
   .funs <- .fixed_metrics_funs(probs, TRUE)
@@ -756,7 +759,7 @@ monthly_metrics <- function(
   . <- NULL
 
   # hardcoded values
-  period <- 'monthly'
+  period <- '1 month'
 
   # default funs
   .funs <- .fixed_metrics_funs(probs, FALSE)
@@ -827,7 +830,7 @@ monthly_metrics <- function(
 
 nightly_metrics <- function(
   sfn_data,
-  period = c('daily', 'monthly'),
+  period = c('1 day', '1 month'),
   solar = TRUE,
   int_start = 20,
   int_end = 6,
@@ -842,7 +845,7 @@ nightly_metrics <- function(
   period <- match.arg(period)
 
   # default funs
-  if (period == 'daily') {
+  if (period == '1 day') {
     .funs <- .fixed_metrics_funs(probs, TRUE)
   } else {
     .funs <- .fixed_metrics_funs(probs, FALSE)
@@ -909,7 +912,7 @@ nightly_metrics <- function(
 
 daylight_metrics <- function(
   sfn_data,
-  period = c('daily', 'monthly'),
+  period = c('1 day', '1 month'),
   solar = TRUE,
   int_start = 6,
   int_end = 20,
@@ -924,7 +927,7 @@ daylight_metrics <- function(
   period <- match.arg(period)
 
   # default funs
-  if (period == 'daily') {
+  if (period == '1 day') {
     .funs <- .fixed_metrics_funs(probs, TRUE)
   } else {
     .funs <- .fixed_metrics_funs(probs, FALSE)
@@ -993,7 +996,7 @@ daylight_metrics <- function(
 
 predawn_metrics <- function(
   sfn_data,
-  period = c('daily', 'monthly'),
+  period = c('1 day', '1 month'),
   solar = TRUE,
   int_start = 4,
   int_end = 6,
@@ -1073,7 +1076,7 @@ predawn_metrics <- function(
 
 midday_metrics <- function(
   sfn_data,
-  period = c('daily', 'monthly'),
+  period = c('1 day', '1 month'),
   solar = TRUE,
   int_start = 11,
   int_end = 13,

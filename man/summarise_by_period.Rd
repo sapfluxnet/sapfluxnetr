@@ -67,7 +67,7 @@ summarise_by_period(
 
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
-      period = 'daily',
+      period = '1 day',
       .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
     )
   }
