@@ -324,13 +324,9 @@ sfn_metrics <- function(
 ) {
 
   # argument checks
-  # if (!(class(sfn_data) %in% c('sfn_data', 'sfn_data_multi'))) {
-  #   stop(
-  #     'sfn_metrics only works with sfn_data and sfn_data_multi object classes'
-  #   )
-  # }
-  stopifnot(
-    inherits(sfn_data, c('sfn_data', 'sfn_data_multi'))
+  assertthat::assert_that(
+    inherits(sfn_data, c('sfn_data', 'sfn_data_multi')),
+    msg = 'sfn_data must be a sfn_Data or sfn_data_multi object'
   )
 
   # we need to check if multi and then repeat the function for each element
@@ -410,46 +406,17 @@ sfn_metrics <- function(
 
     if (period == '1 day') {
 
-      # night_boundaries <- night_data[['sapf']] %>%
-      #   dplyr::mutate(
-      #     coll = tibbletime::collapse_index(
-      #       index = .data$TIMESTAMP,
-      #       period = period,
-      #       side = 'start'
-      #     )
-      #   ) %>%
-      #   dplyr::group_by(.data$coll) %>%
-      #   # closest to night start timestamp
-      #   dplyr::summarise(
-      #     custom_dates = .data$TIMESTAMP[which.min(
-      #       abs(lubridate::hour(.data$TIMESTAMP) - int_start)
-      #     )]
-      #   ) %>%
-      #   dplyr::pull(.data$custom_dates)
-      # 
-      # night_boundaries <- night_boundaries %>%
-      #   lubridate::floor_date(unit = 'hours')
-      # 
-      # # workaround the two nights in one day problem (sites that start at
-      # # 00:00:00 have two nights in the same day, the first one corresponds to
-      # # the previous day and we have to fix it)
-      # margins <- 60*60*24
-      # extra_start_boundary <- night_boundaries[[1]] - margins
-      # extra_end_boundary <- night_boundaries[[length(night_boundaries)]] + margins
-      # night_boundaries <- as.POSIXct(
-      #   c(
-      #     as.character(extra_start_boundary),
-      #     as.character(night_boundaries),
-      #     as.character(extra_end_boundary)
-      #   ),
-      #   tz = attr(extra_start_boundary, 'tz')
-      # )
-      
       # TODO nightly_daily_fun
-      
-      
       period_summary <- night_data %>%
-        purrr::map(summarise_by_period, '1 day', .funs, ...)
+        purrr::map(
+          summarise_by_period,
+          .nightly_daily_cf,
+          .funs,
+          # .nightly_daily_cf args
+          night_data = night_data, int_start = int_start,
+          # dots
+          ...
+        )
 
     } else {
 
@@ -1388,4 +1355,37 @@ metrics_tidyfier <- function(
     suppressWarnings(!is.na(as.numeric(splitted_period[1]))),
     msg = "Frequency must be coercible to numeric."
   )
+}
+
+# nightly period custom function
+# 
+# this function will substitute period daily when needed
+# 
+.nightly_daily_cf <- function(
+  timestamp,
+  night_data, int_start
+) {
+  
+  night_data[['sapf']] %>%
+    dplyr::mutate(
+      coll = .collapse_timestamp(
+        TIMESTAMP,
+        period = '1 day',
+        side = 'start'
+      )
+    ) %>%
+    dplyr::group_by(.data$coll) %>%
+    # closest to night start timestamp
+    dplyr::summarise(
+      custom_dates = .data$TIMESTAMP[which.min(
+        abs(lubridate::hour(.data$TIMESTAMP) - int_start)
+      )],
+      TIMESTAMP = custom_dates
+    ) %>%
+    dplyr::right_join(
+      night_data[['sapf']] %>% select(TIMESTAMP), by = 'TIMESTAMP'
+    ) %>%
+    tidyr::fill(custom_dates) %>%
+    dplyr::pull(custom_dates) %>%
+    lubridate::floor_date(unit = 'hour')
 }
