@@ -1,5 +1,9 @@
 # sapfluxnetr 0.0.6.9000
 
+* Removed all dependencies on 'tibbletime' package
+* Added utils internal functions: .collapse_timestamp and .parse_period
+* Added installation from CRAN to vignette and readme
+
 # sapfluxnetr 0.0.6
 
 * Improved examples in the functions help
