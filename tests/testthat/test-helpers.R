@@ -17,7 +17,7 @@ test_that("accumulated metric helper function works", {
   expect_identical(
     sapfluxnetr:::.accumulated_posix_aware(data$TIMESTAMP), data$TIMESTAMP[1]
   )
-  expect_identical(
+  expect_equal(
     sapfluxnetr:::.accumulated_posix_aware(data$precip), 38.5
   )
   expect_identical(
@@ -29,5 +29,5 @@ test_that("accumulated metric helper function works", {
   expect_s3_class(data_summ, 'tbl')
   expect_identical(names(data_summ), c('TIMESTAMP', 'precip'))
   expect_identical(data_summ[['TIMESTAMP']][1], data$TIMESTAMP[1])
-  expect_identical(data_summ[['precip']][1], 38.5)
+  expect_equal(data_summ[['precip']][1], 38.5)
 })
