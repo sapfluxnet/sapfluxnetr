@@ -76,7 +76,7 @@
 #' @export
 
 summarise_by_period <- function(data, period, .funs, ...) {
-
+  
   # modificate .funs if data is environmental (no centroids).
   if (any(names(data) %in% .env_vars_names())) {
 
@@ -295,6 +295,23 @@ sfn_metrics <- function(
     inherits(sfn_data, c('sfn_data', 'sfn_data_multi')),
     msg = 'sfn_data must be a sfn_Data or sfn_data_multi object'
   )
+  
+  ## period style deprecated conversion ####
+  if (is.character(period) && period %in% c('daily', 'hourly', 'monthly', 'yearly', 'weekly')) {
+    
+    warning("especifying period as '***ly' format (i.e. 'daily', 'monthly')
+            is soft-deprecated since 0.0.6.9000 version. Please use the
+            'frequency period' format instead: '1 day', '1 month'")
+    
+    period <- switch(
+      period,
+      'daily' = '1 day',
+      'weekly' = '1 week',
+      'monthly' = '1 month',
+      'yearly' = '1 year',
+      'hourly' = '1 hour'
+    )
+  }
 
   # we need to check if multi and then repeat the function for each element
   if (inherits(sfn_data, 'sfn_data_multi')) {
