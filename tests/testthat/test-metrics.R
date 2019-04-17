@@ -61,7 +61,7 @@ test_that('summarise_by_period dots work as intended', {
   expect_s3_class(
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
-      period = 'daily',
+      period = '1 day',
       .funs = dplyr::funs(mean, sd),
       na.rm = TRUE, # for summarise
       side = "start" # for collapse_index
@@ -71,7 +71,7 @@ test_that('summarise_by_period dots work as intended', {
 
   test_expr <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
+    period = '1 day',
     .funs = dplyr::funs(mean, sd),
     na.rm = TRUE, # for summarise
     side = "start" # for collapse_index
@@ -80,34 +80,34 @@ test_that('summarise_by_period dots work as intended', {
   expect_match(names(test_expr), regexp = '_mean', all = FALSE)
   expect_match(names(test_expr), regexp = '_sd', all = FALSE)
 
+  # expect_s3_class(
+  #   summarise_by_period(
+  #     data = get_sapf_data(ARG_TRE),
+  #     period = '1 day',
+  #     .funs = dplyr::funs(mean, sd),
+  #     na.rm = TRUE, # for summarise
+  #     side = "start", # for collapse_index
+  #     clean = TRUE # for collapse_index
+  #   ),
+  #   'tbl_time'
+  # )
+  # 
+  # test_expr2 <- summarise_by_period(
+  #   data = get_sapf_data(ARG_TRE),
+  #   period = '1 day',
+  #   .funs = dplyr::funs(mean, sd),
+  #   na.rm = TRUE, # for summarise
+  #   side = "start", # for collapse_index
+  #   clean = TRUE # for collapse_index
+  # )
+  # 
+  # expect_match(names(test_expr2), regexp = '_mean', all = FALSE)
+  # expect_match(names(test_expr2), regexp = '_sd', all = FALSE)
+
   expect_s3_class(
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      na.rm = TRUE, # for summarise
-      side = "start", # for collapse_index
-      clean = TRUE # for collapse_index
-    ),
-    'tbl_time'
-  )
-
-  test_expr2 <- summarise_by_period(
-    data = get_sapf_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(mean, sd),
-    na.rm = TRUE, # for summarise
-    side = "start", # for collapse_index
-    clean = TRUE # for collapse_index
-  )
-
-  expect_match(names(test_expr2), regexp = '_mean', all = FALSE)
-  expect_match(names(test_expr2), regexp = '_sd', all = FALSE)
-
-  expect_s3_class(
-    summarise_by_period(
-      data = get_sapf_data(ARG_TRE),
-      period = 'daily',
+      period = '1 day',
       .funs = dplyr::funs(mean, sd),
       side = "start" # for collapse_index
     ),
@@ -116,7 +116,7 @@ test_that('summarise_by_period dots work as intended', {
 
   test_expr3 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
+    period = '1 day',
     .funs = dplyr::funs(mean, sd),
     side = "start" # for collapse_index
   )
@@ -124,32 +124,32 @@ test_that('summarise_by_period dots work as intended', {
   expect_match(names(test_expr3), regexp = '_mean', all = FALSE)
   expect_match(names(test_expr3), regexp = '_sd', all = FALSE)
 
+  # expect_s3_class(
+  #   summarise_by_period(
+  #     data = get_sapf_data(ARG_TRE),
+  #     period = '1 day',
+  #     .funs = dplyr::funs(mean, sd),
+  #     side = "start", # for collapse_index
+  #     clean = TRUE # for collapse_index
+  #   ),
+  #   'tbl_time'
+  # )
+  # 
+  # test_expr4 <- summarise_by_period(
+  #   data = get_sapf_data(ARG_TRE),
+  #   period = '1 day',
+  #   .funs = dplyr::funs(mean, sd),
+  #   side = "start", # for collapse_index
+  #   clean = TRUE # for collapse_index
+  # )
+  # 
+  # expect_match(names(test_expr4), regexp = '_mean', all = FALSE)
+  # expect_match(names(test_expr4), regexp = '_sd', all = FALSE)
+
   expect_s3_class(
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      side = "start", # for collapse_index
-      clean = TRUE # for collapse_index
-    ),
-    'tbl_time'
-  )
-
-  test_expr4 <- summarise_by_period(
-    data = get_sapf_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(mean, sd),
-    side = "start", # for collapse_index
-    clean = TRUE # for collapse_index
-  )
-
-  expect_match(names(test_expr4), regexp = '_mean', all = FALSE)
-  expect_match(names(test_expr4), regexp = '_sd', all = FALSE)
-
-  expect_s3_class(
-    summarise_by_period(
-      data = get_sapf_data(ARG_TRE),
-      period = 'daily',
+      period = '1 day',
       .funs = dplyr::funs(mean, sd),
       na.rm = TRUE # for summarise
     ),
@@ -158,18 +158,17 @@ test_that('summarise_by_period dots work as intended', {
 
   test_expr5 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
+    period = '1 day',
     .funs = dplyr::funs(mean, sd),
     na.rm = TRUE # for summarise
   )
 
   expect_match(names(test_expr5), regexp = '_mean', all = FALSE)
-
   expect_match(names(test_expr5), regexp = '_sd', all = FALSE)
 
   test_expr6 <- summarise_by_period(
     data = get_env_data(ARG_TRE),
-    period = 'daily',
+    period = '1 day',
     .funs = dplyr::funs(
       mean(., na.rm = TRUE), sd(., na.rm = TRUE), centroid = diurnal_centroid(.)
     )
@@ -181,7 +180,7 @@ test_that('summarise_by_period dots work as intended', {
 
   test_expr7 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
+    period = '1 day',
     .funs = dplyr::funs(
       mean(., na.rm = TRUE), sd(., na.rm = TRUE), centroid = diurnal_centroid(.)
     )
@@ -191,7 +190,7 @@ test_that('summarise_by_period dots work as intended', {
   
   test_expr8 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
+    period = '1 day',
     .funs = dplyr::funs(
       mean(., na.rm = TRUE), sd(., na.rm = TRUE),
       accumulated = .accumulated_posix_aware(., na.rm = TRUE)
@@ -202,7 +201,7 @@ test_that('summarise_by_period dots work as intended', {
   
   test_expr9 <- summarise_by_period(
     data = get_env_data(ARG_TRE),
-    period = 'daily',
+    period = '1 day',
     .funs = dplyr::funs(
       mean(., na.rm = TRUE), sd(., na.rm = TRUE),
       accumulated = .accumulated_posix_aware(., na.rm = TRUE)
@@ -249,7 +248,7 @@ test_that('helper .period_to_minutes works with lubridate periods', {
 })
 
 # test_that('helper .period_to_minutes works with tibbletime periods', {
-#   expect_equal(sapfluxnetr:::.period_to_minutes('daily'), 1440)
+#   expect_equal(sapfluxnetr:::.period_to_minutes('1 day'), 1440)
 #   expect_equal(sapfluxnetr:::.period_to_minutes('1 day'), 1440)
 #   expect_equal(sapfluxnetr:::.period_to_minutes('monthly'), 43830)
 #   expect_equal(sapfluxnetr:::.period_to_minutes('1 year'), 525960)
@@ -392,7 +391,7 @@ test_that('sfn_metrics for predawn metrics works', {
 
   test_expr <- sfn_metrics(
     ARG_TRE,
-    period = 'daily',
+    period = '1 day',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = TRUE,
     interval = 'predawn', int_start = 4, int_end = 6
@@ -400,7 +399,7 @@ test_that('sfn_metrics for predawn metrics works', {
 
   test_expr2 <- sfn_metrics(
     multi_sfn,
-    period = 'daily',
+    period = '1 day',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = TRUE,
     interval = 'predawn', int_start = 4, int_end = 6
@@ -438,7 +437,7 @@ test_that('sfn_metrics for midday metrics works', {
 
   test_expr <- sfn_metrics(
     ARG_TRE,
-    period = 'daily',
+    period = '1 day',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = TRUE,
     interval = 'midday', int_start = 11, int_end = 13
@@ -446,7 +445,7 @@ test_that('sfn_metrics for midday metrics works', {
 
   test_expr2 <- sfn_metrics(
     multi_sfn,
-    period = 'daily',
+    period = '1 day',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = TRUE,
     interval = 'midday', int_start = 11, int_end = 13
@@ -484,7 +483,7 @@ test_that('sfn_metrics for nightly metrics works', {
 
   test_expr <- sfn_metrics(
     ARG_TRE,
-    period = 'daily',
+    period = '1 day',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = TRUE,
     interval = 'night', int_start = 20, int_end = 6
@@ -492,7 +491,7 @@ test_that('sfn_metrics for nightly metrics works', {
 
   test_expr2 <- sfn_metrics(
     multi_sfn,
-    period = 'daily',
+    period = '1 day',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = TRUE,
     interval = 'night', int_start = 20, int_end = 6
@@ -500,7 +499,7 @@ test_that('sfn_metrics for nightly metrics works', {
 
   test_expr3 <- sfn_metrics(
     ARG_TRE,
-    period = 'daily',
+    period = '1 day',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = TRUE,
     interval = 'night', int_start = 20, int_end = 6,
@@ -582,7 +581,7 @@ test_that('sfn_metrics for daylight metrics works', {
 
   test_expr <- sfn_metrics(
     ARG_TRE,
-    period = 'daily',
+    period = '1 day',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = TRUE,
     interval = 'daylight', int_start = 6, int_end = 20
@@ -590,7 +589,7 @@ test_that('sfn_metrics for daylight metrics works', {
 
   test_expr2 <- sfn_metrics(
     multi_sfn,
-    period = 'daily',
+    period = '1 day',
     .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
     solar = TRUE,
     interval = 'daylight', int_start = 6, int_end = 20

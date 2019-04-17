@@ -90,29 +90,38 @@ summarise_by_period <- function(data, period, .funs, ...) {
 
   # we will need the extra arguments (...) if any, just in case
   dots <- rlang::quos(...)
-  dots_collapse_index <- dots[names(dots) %in%
-                                methods::formalArgs(tibbletime::collapse_index)]
-  dots_summarise_all <- dots[!(names(dots) %in%
-                                 methods::formalArgs(tibbletime::collapse_index))]
-
-  # TODO set clean = TRUE and side "start" for the collapse, except if they are
-  # setted by the user.
-  if (is.null(dots_collapse_index[['side']])) {
-    dots_collapse_index[['side']] <- rlang::quo('start')
+  
+  if (rlang::is_function(period)) {
+    # if period is a custom function, remove side argument if it exists
+    # and dispatch each argument in dots to the corresponding function
+    # (period custom function or summarise_all)
+    dots['side'] <- NULL
+    side_val <- 'start'
+    dots_collapse_timestamp <- dots[names(dots) %in%
+                                      methods::formalArgs(period)]
+    dots_summarise_all <- dots[!(names(dots) %in%
+                                   methods::formalArgs(period))]
+  } else {
+    # if period is a character vector, then the collapse timestamp arguments
+    # are for *_date from lubridate
+    args_date_funs <- c(
+      methods::formalArgs(lubridate::floor_date),
+      methods::formalArgs(lubridate::ceiling_date)
+    )
+    
+    side_val <- rlang::eval_tidy(dots[['side']])
+    if (is.null(side_val)) {side_val <- 'start'}
+    dots['side'] <- NULL
+    dots_collapse_timestamp <- dots[names(dots) %in% args_date_funs]
+    dots_summarise_all <- dots[!(names(dots) %in% args_date_funs)]
   }
-
-  if (is.null(dots_collapse_index[['clean']])) {
-    dots_collapse_index[['clean']] <- rlang::quo(TRUE)
-  }
-
+  
+  # data processing
   data %>%
-    # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
     dplyr::mutate(
       TIMESTAMP_coll = .data$TIMESTAMP,
-      TIMESTAMP = tibbletime::collapse_index(
-        index = .data$TIMESTAMP,
-        period = period,
-        !!! dots_collapse_index
+      TIMESTAMP = .collapse_timestamp(
+        TIMESTAMP, !!! dots_collapse_timestamp, period = period, side = side_val
       )
     ) %>%
     dplyr::group_by(.data$TIMESTAMP) %>%
@@ -122,6 +131,40 @@ summarise_by_period <- function(data, period, .funs, ...) {
       -dplyr::contains('accumulated'),
       dplyr::contains('precip_accumulated')
     ) -> res
+  
+  
+  # dots_collapse_index <- dots[names(dots) %in%
+  #                               methods::formalArgs(tibbletime::collapse_index)]
+  # dots_summarise_all <- dots[!(names(dots) %in%
+  #                                methods::formalArgs(tibbletime::collapse_index))]
+  # 
+  # # TODO set clean = TRUE and side "start" for the collapse, except if they are
+  # # setted by the user.
+  # if (is.null(dots_collapse_index[['side']])) {
+  #   dots_collapse_index[['side']] <- rlang::quo('start')
+  # }
+  # 
+  # if (is.null(dots_collapse_index[['clean']])) {
+  #   dots_collapse_index[['clean']] <- rlang::quo(TRUE)
+  # }
+  # 
+  # data %>%
+  #   # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
+  #   dplyr::mutate(
+  #     TIMESTAMP_coll = .data$TIMESTAMP,
+  #     TIMESTAMP = tibbletime::collapse_index(
+  #       index = .data$TIMESTAMP,
+  #       period = period,
+  #       !!! dots_collapse_index
+  #     )
+  #   ) %>%
+  #   dplyr::group_by(.data$TIMESTAMP) %>%
+  #   dplyr::summarise_all(.funs = .funs, !!! dots_summarise_all) %>%
+  #   dplyr::select(
+  #     -dplyr::contains('_coll_'),
+  #     -dplyr::contains('accumulated'),
+  #     dplyr::contains('precip_accumulated')
+  #   ) -> res
 
   return(res)
 
