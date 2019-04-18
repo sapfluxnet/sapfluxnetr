@@ -112,7 +112,7 @@ data('ARG_TRE', package = 'sapfluxnetr')
 ARG_TRE_metrics <- sfn_metrics(
   ARG_TRE,
   period = '7 days',
-  .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+  .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
   solar = FALSE,
   interval = 'general'
 )
@@ -130,7 +130,7 @@ multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 multi_metrics <- sfn_metrics(
   multi_sfn,
   period = '7 days',
-  .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+  .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
   solar = FALSE,
   interval = 'general'
 )
@@ -144,7 +144,7 @@ multi_metrics[['ARG_TRE']][['sapf']]
 ARG_TRE_midday <- sfn_metrics(
   ARG_TRE,
   period = '1 day',
-  .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+  .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
   solar = TRUE,
   interval = 'midday', int_start = 11, int_end = 13
 )

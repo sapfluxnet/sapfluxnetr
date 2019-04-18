@@ -16,7 +16,7 @@ test_that('summarise_by_period function example works', {
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
       period = '7 days',
-      .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+      .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
     ),
     'tbl_df'
   )
@@ -25,7 +25,7 @@ test_that('summarise_by_period function example works', {
     summarise_by_period(
       data = get_env_data(ARG_TRE),
       period = '7 days',
-      .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+      .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
     ),
     'tbl_df'
   )
@@ -33,7 +33,7 @@ test_that('summarise_by_period function example works', {
   test_expr <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '7 days',
-    .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
   )
 
   expect_match(
@@ -62,7 +62,7 @@ test_that('summarise_by_period dots work as intended', {
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
       period = '1 day',
-      .funs = dplyr::funs(mean, sd),
+      .funs = list(~ mean, ~ sd),
       na.rm = TRUE, # for summarise
       side = "start" # for collapse_index
     ),
@@ -72,7 +72,7 @@ test_that('summarise_by_period dots work as intended', {
   test_expr <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '1 day',
-    .funs = dplyr::funs(mean, sd),
+    .funs = list(~ mean, ~ sd),
     na.rm = TRUE, # for summarise
     side = "start" # for collapse_index
   )
@@ -84,7 +84,7 @@ test_that('summarise_by_period dots work as intended', {
   #   summarise_by_period(
   #     data = get_sapf_data(ARG_TRE),
   #     period = '1 day',
-  #     .funs = dplyr::funs(mean, sd),
+  #     .funs = list(~ mean, ~ sd),
   #     na.rm = TRUE, # for summarise
   #     side = "start", # for collapse_index
   #     clean = TRUE # for collapse_index
@@ -95,7 +95,7 @@ test_that('summarise_by_period dots work as intended', {
   # test_expr2 <- summarise_by_period(
   #   data = get_sapf_data(ARG_TRE),
   #   period = '1 day',
-  #   .funs = dplyr::funs(mean, sd),
+  #   .funs = list(~ mean, ~ sd),
   #   na.rm = TRUE, # for summarise
   #   side = "start", # for collapse_index
   #   clean = TRUE # for collapse_index
@@ -108,7 +108,7 @@ test_that('summarise_by_period dots work as intended', {
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
       period = '1 day',
-      .funs = dplyr::funs(mean, sd),
+      .funs = list(~ mean, ~ sd),
       side = "start" # for collapse_index
     ),
     'tbl_df'
@@ -117,7 +117,7 @@ test_that('summarise_by_period dots work as intended', {
   test_expr3 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '1 day',
-    .funs = dplyr::funs(mean, sd),
+    .funs = list(~ mean, ~ sd),
     side = "start" # for collapse_index
   )
 
@@ -128,7 +128,7 @@ test_that('summarise_by_period dots work as intended', {
   #   summarise_by_period(
   #     data = get_sapf_data(ARG_TRE),
   #     period = '1 day',
-  #     .funs = dplyr::funs(mean, sd),
+  #     .funs = list(~ mean, ~ sd),
   #     side = "start", # for collapse_index
   #     clean = TRUE # for collapse_index
   #   ),
@@ -138,7 +138,7 @@ test_that('summarise_by_period dots work as intended', {
   # test_expr4 <- summarise_by_period(
   #   data = get_sapf_data(ARG_TRE),
   #   period = '1 day',
-  #   .funs = dplyr::funs(mean, sd),
+  #   .funs = list(~ mean, ~ sd),
   #   side = "start", # for collapse_index
   #   clean = TRUE # for collapse_index
   # )
@@ -150,7 +150,7 @@ test_that('summarise_by_period dots work as intended', {
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
       period = '1 day',
-      .funs = dplyr::funs(mean, sd),
+      .funs = list(~ mean, ~ sd),
       na.rm = TRUE # for summarise
     ),
     'tbl_df'
@@ -159,7 +159,7 @@ test_that('summarise_by_period dots work as intended', {
   test_expr5 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '1 day',
-    .funs = dplyr::funs(mean, sd),
+    .funs = list(~ mean, ~ sd),
     na.rm = TRUE # for summarise
   )
 
@@ -169,8 +169,8 @@ test_that('summarise_by_period dots work as intended', {
   test_expr6 <- summarise_by_period(
     data = get_env_data(ARG_TRE),
     period = '1 day',
-    .funs = dplyr::funs(
-      mean(., na.rm = TRUE), sd(., na.rm = TRUE), centroid = diurnal_centroid(.)
+    .funs = list(
+      ~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), centroid = ~ diurnal_centroid(.)
     )
   )
 
@@ -181,8 +181,8 @@ test_that('summarise_by_period dots work as intended', {
   test_expr7 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '1 day',
-    .funs = dplyr::funs(
-      mean(., na.rm = TRUE), sd(., na.rm = TRUE), centroid = diurnal_centroid(.)
+    .funs = list(
+      ~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), centroid = ~ diurnal_centroid(.)
     )
   )
 
@@ -191,9 +191,9 @@ test_that('summarise_by_period dots work as intended', {
   test_expr8 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '1 day',
-    .funs = dplyr::funs(
-      mean(., na.rm = TRUE), sd(., na.rm = TRUE),
-      accumulated = .accumulated_posix_aware(., na.rm = TRUE)
+    .funs = list(
+      ~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE),
+      accumulated = ~ .accumulated_posix_aware(., na.rm = TRUE)
     )
   )
   
@@ -202,9 +202,9 @@ test_that('summarise_by_period dots work as intended', {
   test_expr9 <- summarise_by_period(
     data = get_env_data(ARG_TRE),
     period = '1 day',
-    .funs = dplyr::funs(
-      mean(., na.rm = TRUE), sd(., na.rm = TRUE),
-      accumulated = .accumulated_posix_aware(., na.rm = TRUE)
+    .funs = list(
+      ~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE),
+      accumulated = ~ .accumulated_posix_aware(., na.rm = TRUE)
     )
   )
   
@@ -347,7 +347,7 @@ test_that('sfn_metrics for general metrics works', {
   test_expr <- sfn_metrics(
     ARG_TRE,
     period = '7 days',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = FALSE,
     interval = 'general'
   )
@@ -355,7 +355,7 @@ test_that('sfn_metrics for general metrics works', {
   test_expr2 <- sfn_metrics(
     multi_sfn,
     period = '7 days',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = FALSE,
     interval = 'general'
   )
@@ -412,7 +412,7 @@ test_that('sfn_metrics for predawn metrics works', {
   test_expr <- sfn_metrics(
     ARG_TRE,
     period = '1 day',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'predawn', int_start = 4, int_end = 6
   )
@@ -420,7 +420,7 @@ test_that('sfn_metrics for predawn metrics works', {
   test_expr2 <- sfn_metrics(
     multi_sfn,
     period = '1 day',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'predawn', int_start = 4, int_end = 6
   )
@@ -458,7 +458,7 @@ test_that('sfn_metrics for midday metrics works', {
   test_expr <- sfn_metrics(
     ARG_TRE,
     period = '1 day',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'midday', int_start = 11, int_end = 13
   )
@@ -466,7 +466,7 @@ test_that('sfn_metrics for midday metrics works', {
   test_expr2 <- sfn_metrics(
     multi_sfn,
     period = '1 day',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'midday', int_start = 11, int_end = 13
   )
@@ -504,7 +504,7 @@ test_that('sfn_metrics for nightly metrics works', {
   test_expr <- sfn_metrics(
     ARG_TRE,
     period = '1 day',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'night', int_start = 20, int_end = 6
   )
@@ -512,7 +512,7 @@ test_that('sfn_metrics for nightly metrics works', {
   test_expr2 <- sfn_metrics(
     multi_sfn,
     period = '1 day',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'night', int_start = 20, int_end = 6
   )
@@ -520,7 +520,7 @@ test_that('sfn_metrics for nightly metrics works', {
   # test_expr3 <- sfn_metrics(
   #   ARG_TRE,
   #   period = '1 day',
-  #   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+  #   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
   #   solar = TRUE,
   #   interval = 'night', int_start = 20, int_end = 6,
   #   clean = FALSE
@@ -602,7 +602,7 @@ test_that('sfn_metrics for daylight metrics works', {
   test_expr <- sfn_metrics(
     ARG_TRE,
     period = '1 day',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'daylight', int_start = 6, int_end = 20
   )
@@ -610,7 +610,7 @@ test_that('sfn_metrics for daylight metrics works', {
   test_expr2 <- sfn_metrics(
     multi_sfn,
     period = '1 day',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'daylight', int_start = 6, int_end = 20
   )
@@ -950,7 +950,7 @@ test_that('metrics_tidyfier works when supplied custom metrics', {
   
   test_expr <- sfn_metrics(
     ARG_TRE, '7 days',
-    dplyr::funs(mean = mean(., na.rm = TRUE)),
+    list(mean = ~ mean(., na.rm = TRUE)),
     solar = TRUE,
     interval = 'general'
   ) %>%

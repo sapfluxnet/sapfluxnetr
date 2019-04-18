@@ -58,7 +58,7 @@ test_that('each site can be loaded, completly summarised and plotted', {
       sfn_mutated_at <- sfn_mutate_at(
         sfn_data,
         .vars = dplyr::vars(-TIMESTAMP, -dplyr::one_of(env_vars)),
-        .funs = dplyr::funs(dplyr::case_when(
+        .funs = list(~ dplyr::case_when(
           ta > 10 ~ NA_real_,
           ta < 0 ~ NA_real_,
           TRUE ~ .
@@ -67,17 +67,17 @@ test_that('each site can be loaded, completly summarised and plotted', {
 
       metrics <- sfn_metrics(
         sfn_data, period = 'daily',
-        .funs = dplyr::funs(
-          mean = mean(., na.rm = TRUE),
-          n = n(),
-          coverage = data_coverage(.),
-          q_95 = stats::quantile(., 0.95, na.rm = TRUE),
-          q_99 = stats::quantile(., 0.99, na.rm = TRUE),
-          max = max(., na.rm = TRUE),
-          max_time = max_time(., .data$TIMESTAMP_coll),
-          min = min(., na.rm = TRUE),
-          min_time = min_time(., .data$TIMESTAMP_coll),
-          centroid = diurnal_centroid(.)
+        .funs = list(
+          mean = ~ mean(., na.rm = TRUE),
+          n = ~ n(),
+          coverage = ~ data_coverage(.),
+          q_95 = ~ stats::quantile(., 0.95, na.rm = TRUE),
+          q_99 = ~ stats::quantile(., 0.99, na.rm = TRUE),
+          max = ~ max(., na.rm = TRUE),
+          max_time = ~ max_time(., .data$TIMESTAMP_coll),
+          min = ~ min(., na.rm = TRUE),
+          min_time = ~ min_time(., .data$TIMESTAMP_coll),
+          centroid = ~ diurnal_centroid(.)
         ),
         solar = TRUE, general = TRUE,
         predawn = TRUE, midday = TRUE, nighttime = TRUE,

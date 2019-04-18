@@ -194,8 +194,8 @@ min_time <- function(x, time) {
 #' sfn_metrics(
 #'   ARG_TRE,
 #'   period = '1 day',
-#'   .funs = funs(diurnal_centroid(.),
-#'                data_coverage(., timestep, period_minutes)),
+#'   .funs = list(~ diurnal_centroid(.),
+#'                ~ data_coverage(., timestep, period_minutes)),
 #'   solar = FALSE,
 #'   interval = 'general'
 #' )
@@ -1282,8 +1282,8 @@ describe_md_variable <- function(variable) {
         dplyr::contains('sapflow_min_time'),
         dplyr::contains('sapflow_max_time')
       ),
-      dplyr::funs(
-        as.POSIXct(
+      list(
+        ~ as.POSIXct(
           ., tz = attr(.data[[1]], 'tz'),
           origin = lubridate::origin
         )

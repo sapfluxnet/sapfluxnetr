@@ -83,7 +83,7 @@ data('ARG_TRE', package = 'sapfluxnetr')
 summarise_by_period(
   data = get_sapf_data(ARG_TRE),
   period = '7 days',
-  .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+  .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
 )
 
 }

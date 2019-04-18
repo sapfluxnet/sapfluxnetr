@@ -68,7 +68,7 @@
 #' summarise_by_period(
 #'   data = get_sapf_data(ARG_TRE),
 #'   period = '7 days',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
 #' )
 #'
 #' @importFrom rlang .data
@@ -237,7 +237,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' ARG_TRE_metrics <- sfn_metrics(
 #'   ARG_TRE,
 #'   period = '7 days',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
 #'   solar = FALSE,
 #'   interval = 'general'
 #' )
@@ -255,7 +255,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' multi_metrics <- sfn_metrics(
 #'   multi_sfn,
 #'   period = '7 days',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
 #'   solar = FALSE,
 #'   interval = 'general'
 #' )
@@ -269,7 +269,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' ARG_TRE_midday <- sfn_metrics(
 #'   ARG_TRE,
 #'   period = '1 day',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
 #'   solar = TRUE,
 #'   interval = 'midday', int_start = 11, int_end = 13
 #' )
@@ -513,7 +513,8 @@ sfn_metrics <- function(
 
 #' helper function to generate the fixed metrics
 #'
-#' generates a call to dplyr::funs to capture the fixed metrics
+#' generates a call to list to capture the fixed metrics in a quosure lambda
+#' style
 #'
 #' @param probs probs vector for quantile
 #'
@@ -540,18 +541,13 @@ sfn_metrics <- function(
     purrr::map(function(x) {dplyr::quo(quantile(., probs = x, na.rm = TRUE))})
   names(quantile_args) <- paste0('q_', round(probs*100, 0))
 
-  .funs <- dplyr::funs(
-    mean = mean(., na.rm = TRUE),
-    sd = stats::sd(., na.rm = TRUE),
-    coverage = data_coverage(., .data$timestep, .data$period_minutes),
+  .funs <- list(
+    mean = ~ mean(., na.rm = TRUE),
+    sd = ~ stats::sd(., na.rm = TRUE),
+    coverage = ~ data_coverage(., .data$timestep, .data$period_minutes),
     !!! quantile_args,
-    accumulated = .accumulated_posix_aware(., na.rm = TRUE),
-    # n = n(),
-    # max = max(., na.rm = TRUE),
-    # max_time = max_time(., .data$TIMESTAMP_coll),
-    # min = min(., na.rm = TRUE),
-    # min_time = min_time(., .data$TIMESTAMP_coll),
-    centroid = diurnal_centroid(.)
+    accumulated = ~ .accumulated_posix_aware(., na.rm = TRUE),
+    centroid = ~ diurnal_centroid(.)
   )
 
   if (!centroid) {

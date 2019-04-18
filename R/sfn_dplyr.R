@@ -321,8 +321,8 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
 #' sfn_mutate_at(
 #'   ARG_TRE,
 #'   .vars = vars(one_of(vars_to_mutate)),
-#'   .funs = funs(
-#'     case_when(
+#'   .funs = list(
+#'     ~ case_when(
 #'       ws > ws_threshold ~ NA_real_,
 #'       TRUE ~ .
 #'     )
@@ -340,8 +340,8 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
 #' multi_sfn_mutated <- sfn_mutate_at(
 #'   multi_sfn,
 #'   .vars = vars(-one_of(vars_to_not_mutate)), # we use -
-#'   .funs = funs(
-#'     case_when(
+#'   .funs = list(
+#'     ~ case_when(
 #'       ws > ws_threshold ~ NA_real_,
 #'       TRUE ~ .
 #'     )

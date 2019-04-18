@@ -25,7 +25,7 @@ ARG_TRE_timestamp <- get_timestamp(ARG_TRE)
 # site md
 ARG_TRE_site_md <- get_site_md(ARG_TRE) %>%
   mutate_at(vars(contains('email')),
-            funs(if_else(is.character(.), NA_character_, NA_character_, NA_character_)))
+            list(~ if_else(is.character(.), NA_character_, NA_character_, NA_character_)))
 
 ARG_TRE_stand_md <- get_stand_md(ARG_TRE)
 ARG_TRE_species_md <- get_species_md(ARG_TRE)
@@ -75,7 +75,7 @@ ARG_MAZ_timestamp <- get_timestamp(ARG_MAZ)
 # site md
 ARG_MAZ_site_md <- get_site_md(ARG_MAZ) %>%
   mutate_at(vars(contains('email')),
-            funs(if_else(is.character(.), NA_character_, NA_character_, NA_character_)))
+            list(~ if_else(is.character(.), NA_character_, NA_character_, NA_character_)))
 
 ARG_MAZ_stand_md <- get_stand_md(ARG_MAZ)
 ARG_MAZ_species_md <- get_species_md(ARG_MAZ)
@@ -125,7 +125,7 @@ AUS_CAN_ST2_MIX_timestamp <- get_timestamp(AUS_CAN_ST2_MIX)
 # site md
 AUS_CAN_ST2_MIX_site_md <- get_site_md(AUS_CAN_ST2_MIX) %>%
   mutate_at(vars(contains('email')),
-            funs(if_else(is.character(.), NA_character_, NA_character_, NA_character_)))
+            list(~ if_else(is.character(.), NA_character_, NA_character_, NA_character_)))
 
 AUS_CAN_ST2_MIX_stand_md <- get_stand_md(AUS_CAN_ST2_MIX)
 AUS_CAN_ST2_MIX_species_md <- get_species_md(AUS_CAN_ST2_MIX)
