@@ -840,7 +840,7 @@ test_that('.fixed_metrics_funs works', {
 
   .funs <- sapfluxnetr:::.fixed_metrics_funs(probs = c(0.95), TRUE)
 
-  expect_s3_class(.funs, 'fun_list')
+  expect_is(.funs, 'list')
   expect_identical(
     names(.funs),
     c('mean', 'sd', 'coverage', 'q_95', 'accumulated', 'centroid')
@@ -850,7 +850,7 @@ test_that('.fixed_metrics_funs works', {
     probs = c(0.1), FALSE
   )
 
-  expect_s3_class(.funs_no_centroid, 'fun_list')
+  expect_is(.funs_no_centroid, 'list')
   expect_identical(
     names(.funs_no_centroid),
     c('mean', 'sd', 'coverage', 'q_10', 'accumulated')

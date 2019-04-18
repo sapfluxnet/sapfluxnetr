@@ -541,7 +541,8 @@ sfn_metrics <- function(
     purrr::map(function(x) {dplyr::quo(quantile(., probs = x, na.rm = TRUE))})
   names(quantile_args) <- paste0('q_', round(probs*100, 0))
 
-  .funs <- list(
+  # we use rlang::list2 as we need the quantile spliced and evaluated with !!!
+  .funs <- rlang::list2(
     mean = ~ mean(., na.rm = TRUE),
     sd = ~ stats::sd(., na.rm = TRUE),
     coverage = ~ data_coverage(., .data$timestep, .data$period_minutes),
