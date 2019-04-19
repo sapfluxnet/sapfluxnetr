@@ -62,7 +62,7 @@ test_that('summarise_by_period dots work as intended', {
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
       period = '1 day',
-      .funs = list(mean = ~ mean, sd = ~ sd),
+      .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
       na.rm = TRUE, # for summarise
       side = "start" # for collapse_index
     ),
@@ -72,7 +72,7 @@ test_that('summarise_by_period dots work as intended', {
   test_expr <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '1 day',
-    .funs = list(mean = ~ mean, sd = ~ sd),
+    .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
     na.rm = TRUE, # for summarise
     side = "start" # for collapse_index
   )
@@ -84,7 +84,7 @@ test_that('summarise_by_period dots work as intended', {
   #   summarise_by_period(
   #     data = get_sapf_data(ARG_TRE),
   #     period = '1 day',
-  #     .funs = list(mean = ~ mean, sd = ~ sd),
+  #     .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
   #     na.rm = TRUE, # for summarise
   #     side = "start", # for collapse_index
   #     clean = TRUE # for collapse_index
@@ -95,7 +95,7 @@ test_that('summarise_by_period dots work as intended', {
   # test_expr2 <- summarise_by_period(
   #   data = get_sapf_data(ARG_TRE),
   #   period = '1 day',
-  #   .funs = list(mean = ~ mean, sd = ~ sd),
+  #   .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
   #   na.rm = TRUE, # for summarise
   #   side = "start", # for collapse_index
   #   clean = TRUE # for collapse_index
@@ -108,7 +108,7 @@ test_that('summarise_by_period dots work as intended', {
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
       period = '1 day',
-      .funs = list(mean = ~ mean, sd = ~ sd),
+      .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
       side = "start" # for collapse_index
     ),
     'tbl_df'
@@ -117,7 +117,7 @@ test_that('summarise_by_period dots work as intended', {
   test_expr3 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '1 day',
-    .funs = list(mean = ~ mean, sd = ~ sd),
+    .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
     side = "start" # for collapse_index
   )
 
@@ -128,7 +128,7 @@ test_that('summarise_by_period dots work as intended', {
   #   summarise_by_period(
   #     data = get_sapf_data(ARG_TRE),
   #     period = '1 day',
-  #     .funs = list(mean = ~ mean, sd = ~ sd),
+  #     .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
   #     side = "start", # for collapse_index
   #     clean = TRUE # for collapse_index
   #   ),
@@ -138,7 +138,7 @@ test_that('summarise_by_period dots work as intended', {
   # test_expr4 <- summarise_by_period(
   #   data = get_sapf_data(ARG_TRE),
   #   period = '1 day',
-  #   .funs = list(mean = ~ mean, sd = ~ sd),
+  #   .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
   #   side = "start", # for collapse_index
   #   clean = TRUE # for collapse_index
   # )
@@ -150,7 +150,7 @@ test_that('summarise_by_period dots work as intended', {
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
       period = '1 day',
-      .funs = list(mean = ~ mean, sd = ~ sd),
+      .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
       na.rm = TRUE # for summarise
     ),
     'tbl_df'
@@ -159,7 +159,7 @@ test_that('summarise_by_period dots work as intended', {
   test_expr5 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '1 day',
-    .funs = list(mean = ~ mean, sd = ~ sd),
+    .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
     na.rm = TRUE # for summarise
   )
 
