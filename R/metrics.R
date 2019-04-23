@@ -309,7 +309,8 @@ sfn_metrics <- function(
       'weekly' = '1 week',
       'monthly' = '1 month',
       'yearly' = '1 year',
-      'hourly' = '1 hour'
+      'hourly' = '1 hour',
+      period
     )
   }
 
