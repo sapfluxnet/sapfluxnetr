@@ -1,5 +1,5 @@
 development:
-  mode: development
+  mode: devel
   version_label: danger
   version_tooltip: "Not yet in CRAN"
 
