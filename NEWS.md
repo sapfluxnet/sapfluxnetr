@@ -1,4 +1,4 @@
-# sapfluxnetr 0.0.6.9000
+# sapfluxnetr 0.0.7
 
 * Replaced calls of dplyr::funs with list (or rlang::list2 if splicing is needed)
   as the former is soft deprecated in dplyr 0.8.0
