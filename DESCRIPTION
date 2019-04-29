@@ -9,7 +9,7 @@ Authors@R: c(
   person("Sapfluxnet Core Team", email = "sapfluxnet@creaf.uab.cat", role = 'cph')
   )
 Description: Access, modify, aggregate and plot data from the 'Sapfluxnet' project
-  (<http:sapfluxnet.creaf.cat>), the first global database of sap flow measurements.
+  (<http://sapfluxnet.creaf.cat>), the first global database of sap flow measurements.
 Depends: R (>= 3.4.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
