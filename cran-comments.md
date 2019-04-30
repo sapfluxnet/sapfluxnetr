@@ -1,7 +1,3 @@
-## Submission
-This is a version update (0.0.7) for sapfluxnetr package. NEWS.md file contains
-the changes made to this version
-
 ## Test environments
 * local antergos install, R 3.6.0
 * ubuntu 14.04 (on travis-ci), R 3.5.3
