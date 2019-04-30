@@ -1291,7 +1291,7 @@ describe_md_variable <- function(variable) {
     )
 }
 
-#' acummulated function
+#' accumulated function
 #' 
 #' sum for summarise_all aware of POSIX objects
 #' 

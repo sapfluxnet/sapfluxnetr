@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 Data flags indicate comments on individual data points raised in the quality
-control assesment of site data. They are useful to understand the original
+control assessment of site data. They are useful to understand the original
 data and to track analysis problems to their origins.  
 
 Possible values for flags when data comes from Sapfluxnet project are as follow:
