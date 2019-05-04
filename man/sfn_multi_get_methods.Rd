@@ -57,11 +57,11 @@ Methods to get the data and metadata from the sfn_data class slots
 }
 \details{
 \code{get_sapf_data} and \code{get_env_data} methods retrieve sapflow or
-environmental tibbletimes from the sfn_data objects contained in the 
+environmental tibbles from the sfn_data objects contained in the 
 sfn_data_multi and return them in a list.
 
 \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
-environmental flags tibbletimes from the sfn_data objects contained in the 
+environmental flags tibbles from the sfn_data objects contained in the 
 sfn_data_multi and return them in a list.
 
 \code{get_timestamp} and \code{get_solar_timestamp} methods retrieve only the

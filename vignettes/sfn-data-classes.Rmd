@@ -49,7 +49,7 @@ sites data and metadata.
      timestamp values.
   
   7. **solar_timestamp**: POSIXct vector of length equal to `nrow(sapf_data)`
-     with the aparent solar timestamp.
+     with the apparent solar timestamp.
   
   8. **site_md**: Tibble with the site metadata. See `sfn_vars_to_filter()` for
      a list of possible metadata variables. This variables are not mandatory,
@@ -249,7 +249,7 @@ values when an environmental variable exceeds some threshold. See
 foo_mutated_2 <- sfn_mutate_at(
   ARG_TRE,
   vars(one_of(names(get_sapf_data(ARG_TRE)[,-1]))),
-  funs(case_when(
+  list(~ case_when(
     ws > 25 ~ NA_real_,
     TRUE ~ .
   ))
@@ -350,7 +350,7 @@ vars_to_not_mutate <- c(
 multi_mutated_2 <- sfn_mutate_at(
   multi_sfn,
   vars(-one_of(vars_to_not_mutate)),
-  funs(case_when(
+  list(~ case_when(
     ws > 25 ~ NA_real_,
     TRUE ~ .
   ))

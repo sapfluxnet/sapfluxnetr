@@ -16,24 +16,24 @@ test_that('summarise_by_period function example works', {
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
       period = '7 days',
-      .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+      .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   expect_s3_class(
     summarise_by_period(
       data = get_env_data(ARG_TRE),
       period = '7 days',
-      .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+      .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   test_expr <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
     period = '7 days',
-    .funs = dplyr::funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
   )
 
   expect_match(
@@ -61,18 +61,18 @@ test_that('summarise_by_period dots work as intended', {
   expect_s3_class(
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
+      period = '1 day',
+      .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
       na.rm = TRUE, # for summarise
       side = "start" # for collapse_index
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   test_expr <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(mean, sd),
+    period = '1 day',
+    .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
     na.rm = TRUE, # for summarise
     side = "start" # for collapse_index
   )
@@ -80,98 +80,97 @@ test_that('summarise_by_period dots work as intended', {
   expect_match(names(test_expr), regexp = '_mean', all = FALSE)
   expect_match(names(test_expr), regexp = '_sd', all = FALSE)
 
+  # expect_s3_class(
+  #   summarise_by_period(
+  #     data = get_sapf_data(ARG_TRE),
+  #     period = '1 day',
+  #     .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
+  #     na.rm = TRUE, # for summarise
+  #     side = "start", # for collapse_index
+  #     clean = TRUE # for collapse_index
+  #   ),
+  #   'tbl_df'
+  # )
+  # 
+  # test_expr2 <- summarise_by_period(
+  #   data = get_sapf_data(ARG_TRE),
+  #   period = '1 day',
+  #   .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
+  #   na.rm = TRUE, # for summarise
+  #   side = "start", # for collapse_index
+  #   clean = TRUE # for collapse_index
+  # )
+  # 
+  # expect_match(names(test_expr2), regexp = '_mean', all = FALSE)
+  # expect_match(names(test_expr2), regexp = '_sd', all = FALSE)
+
   expect_s3_class(
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      na.rm = TRUE, # for summarise
-      side = "start", # for collapse_index
-      clean = TRUE # for collapse_index
-    ),
-    'tbl_time'
-  )
-
-  test_expr2 <- summarise_by_period(
-    data = get_sapf_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(mean, sd),
-    na.rm = TRUE, # for summarise
-    side = "start", # for collapse_index
-    clean = TRUE # for collapse_index
-  )
-
-  expect_match(names(test_expr2), regexp = '_mean', all = FALSE)
-  expect_match(names(test_expr2), regexp = '_sd', all = FALSE)
-
-  expect_s3_class(
-    summarise_by_period(
-      data = get_sapf_data(ARG_TRE),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
+      period = '1 day',
+      .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
       side = "start" # for collapse_index
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   test_expr3 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(mean, sd),
+    period = '1 day',
+    .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
     side = "start" # for collapse_index
   )
 
   expect_match(names(test_expr3), regexp = '_mean', all = FALSE)
   expect_match(names(test_expr3), regexp = '_sd', all = FALSE)
 
+  # expect_s3_class(
+  #   summarise_by_period(
+  #     data = get_sapf_data(ARG_TRE),
+  #     period = '1 day',
+  #     .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
+  #     side = "start", # for collapse_index
+  #     clean = TRUE # for collapse_index
+  #   ),
+  #   'tbl_df'
+  # )
+  # 
+  # test_expr4 <- summarise_by_period(
+  #   data = get_sapf_data(ARG_TRE),
+  #   period = '1 day',
+  #   .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
+  #   side = "start", # for collapse_index
+  #   clean = TRUE # for collapse_index
+  # )
+  # 
+  # expect_match(names(test_expr4), regexp = '_mean', all = FALSE)
+  # expect_match(names(test_expr4), regexp = '_sd', all = FALSE)
+
   expect_s3_class(
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
-      side = "start", # for collapse_index
-      clean = TRUE # for collapse_index
-    ),
-    'tbl_time'
-  )
-
-  test_expr4 <- summarise_by_period(
-    data = get_sapf_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(mean, sd),
-    side = "start", # for collapse_index
-    clean = TRUE # for collapse_index
-  )
-
-  expect_match(names(test_expr4), regexp = '_mean', all = FALSE)
-  expect_match(names(test_expr4), regexp = '_sd', all = FALSE)
-
-  expect_s3_class(
-    summarise_by_period(
-      data = get_sapf_data(ARG_TRE),
-      period = 'daily',
-      .funs = dplyr::funs(mean, sd),
+      period = '1 day',
+      .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
       na.rm = TRUE # for summarise
     ),
-    'tbl_time'
+    'tbl_df'
   )
 
   test_expr5 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(mean, sd),
+    period = '1 day',
+    .funs = list(mean = ~ mean(.), sd = ~ sd(.)),
     na.rm = TRUE # for summarise
   )
 
   expect_match(names(test_expr5), regexp = '_mean', all = FALSE)
-
   expect_match(names(test_expr5), regexp = '_sd', all = FALSE)
 
   test_expr6 <- summarise_by_period(
     data = get_env_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(
-      mean(., na.rm = TRUE), sd(., na.rm = TRUE), centroid = diurnal_centroid(.)
+    period = '1 day',
+    .funs = list(
+      ~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), centroid = ~ diurnal_centroid(.)
     )
   )
 
@@ -181,9 +180,9 @@ test_that('summarise_by_period dots work as intended', {
 
   test_expr7 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(
-      mean(., na.rm = TRUE), sd(., na.rm = TRUE), centroid = diurnal_centroid(.)
+    period = '1 day',
+    .funs = list(
+      ~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), centroid = ~ diurnal_centroid(.)
     )
   )
 
@@ -191,10 +190,10 @@ test_that('summarise_by_period dots work as intended', {
   
   test_expr8 <- summarise_by_period(
     data = get_sapf_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(
-      mean(., na.rm = TRUE), sd(., na.rm = TRUE),
-      accumulated = .accumulated_posix_aware(., na.rm = TRUE)
+    period = '1 day',
+    .funs = list(
+      ~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE),
+      accumulated = ~ .accumulated_posix_aware(., na.rm = TRUE)
     )
   )
   
@@ -202,10 +201,10 @@ test_that('summarise_by_period dots work as intended', {
   
   test_expr9 <- summarise_by_period(
     data = get_env_data(ARG_TRE),
-    period = 'daily',
-    .funs = dplyr::funs(
-      mean(., na.rm = TRUE), sd(., na.rm = TRUE),
-      accumulated = .accumulated_posix_aware(., na.rm = TRUE)
+    period = '1 day',
+    .funs = list(
+      ~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE),
+      accumulated = ~ .accumulated_posix_aware(., na.rm = TRUE)
     )
   )
   
@@ -240,35 +239,62 @@ test_that('data_coverage works as intended', {
 })
 
 #### .period_to_minutes tests ####
-test_that('helper .period_to_minutes works with tibbletime periods', {
-  expect_equal(sapfluxnetr:::.period_to_minutes('daily'), 1440)
+test_that('helper .period_to_minutes works with lubridate periods', {
+  expect_equal(sapfluxnetr:::.period_to_minutes('2 days'), 1440*2)
   expect_equal(sapfluxnetr:::.period_to_minutes('1 day'), 1440)
-  expect_equal(sapfluxnetr:::.period_to_minutes('monthly'), 43830)
+  expect_equal(sapfluxnetr:::.period_to_minutes('3 months'), 43830*3)
   expect_equal(sapfluxnetr:::.period_to_minutes('1 year'), 525960)
+  expect_equal(sapfluxnetr:::.period_to_minutes('1 hour'), 60)
 })
 
-test_that('.period_to_minutes works with custom POSIXct periods', {
-  
+test_that('.period_to_minutes works with custom functions as periods', {
+  ## TODO
   timestamp_vec <- get_timestamp(ARG_MAZ)
-  period_vec <- c(timestamp_vec[49], timestamp_vec[73], timestamp_vec[193])
   timestep_val <- 60
+  period_fun <- lubridate::as_date
   
+  expect_warning(
+    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val),
+    "when using a custom function as period, coverage calculation"
+  )
   expect_equal(
-    length(
-      sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
-    ),
+    length(suppressWarnings(
+      sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)
+    )),
     length(timestamp_vec)
   )
-  expect_equal(
-    length(
-      unique(
-        sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
-      )
-    ),
-    4
+  expect_equal(suppressWarnings(
+    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)[1]),
+    1440
   )
-  
+  expect_equal(suppressWarnings(
+    sapfluxnetr:::.period_to_minutes(period_fun, timestamp_vec, timestep_val)[288]),
+    1440
+  )
 })
+
+# test_that('.period_to_minutes works with custom POSIXct periods', {
+#   
+#   timestamp_vec <- get_timestamp(ARG_MAZ)
+#   period_vec <- c(timestamp_vec[49], timestamp_vec[73], timestamp_vec[193])
+#   timestep_val <- 60
+#   
+#   expect_equal(
+#     length(
+#       sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
+#     ),
+#     length(timestamp_vec)
+#   )
+#   expect_equal(
+#     length(
+#       unique(
+#         sapfluxnetr:::.period_to_minutes(period_vec, timestamp_vec, timestep_val)
+#       )
+#     ),
+#     4
+#   )
+#   
+# })
 
 #### diurnal_centroid tests ####
 test_that('diurnal_centroid function works with even data', {
@@ -321,7 +347,7 @@ test_that('sfn_metrics for general metrics works', {
   test_expr <- sfn_metrics(
     ARG_TRE,
     period = '7 days',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = FALSE,
     interval = 'general'
   )
@@ -329,27 +355,54 @@ test_that('sfn_metrics for general metrics works', {
   test_expr2 <- sfn_metrics(
     multi_sfn,
     period = '7 days',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = FALSE,
     interval = 'general'
   )
+  
+  test_expr3 <- suppressWarnings(sfn_metrics(
+    ARG_TRE,
+    period = lubridate::as_date,
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
+    solar = FALSE,
+    interval = 'general'
+  ))
+  
+  test_expr4 <- suppressWarnings(sfn_metrics(
+    multi_sfn,
+    period = lubridate::as_date,
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
+    solar = FALSE,
+    interval = 'general'
+  ))
 
   # test sfn_data
   expect_true(is.list(test_expr))
   expect_identical(names(test_expr), c('sapf', 'env'))
   expect_s3_class(test_expr[['sapf']], 'tbl')
   expect_s3_class(test_expr[['env']], 'tbl')
+  
+  expect_true(is.list(test_expr3))
+  expect_identical(names(test_expr3), c('sapf', 'env'))
+  expect_s3_class(test_expr3[['sapf']], 'tbl')
+  expect_s3_class(test_expr3[['env']], 'tbl')
 
   # test sfn_data_multi
   expect_true(is.list(test_expr2))
   expect_identical(names(test_expr2), c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'))
   expect_s3_class(test_expr2[['ARG_MAZ']][['sapf']], 'tbl')
   expect_s3_class(test_expr2[['ARG_MAZ']][['env']], 'tbl')
+  
+  expect_true(is.list(test_expr4))
+  expect_identical(names(test_expr4), c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'))
+  expect_s3_class(test_expr4[['ARG_MAZ']][['sapf']], 'tbl')
+  expect_s3_class(test_expr4[['ARG_MAZ']][['env']], 'tbl')
 
   # sfn_data and sfn_data_multi returns the same results for the same sites
   expect_equal(test_expr[['sapf']], test_expr2[['ARG_TRE']][['sapf']])
   expect_equal(test_expr[['env']], test_expr2[['ARG_TRE']][['env']])
-
+  expect_equal(test_expr3[['sapf']], test_expr4[['ARG_TRE']][['sapf']])
+  expect_equal(test_expr3[['env']], test_expr4[['ARG_TRE']][['env']])
 })
 
 test_that('sfn_metrics for predawn metrics works', {
@@ -358,16 +411,16 @@ test_that('sfn_metrics for predawn metrics works', {
 
   test_expr <- sfn_metrics(
     ARG_TRE,
-    period = 'daily',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    period = '1 day',
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'predawn', int_start = 4, int_end = 6
   )
 
   test_expr2 <- sfn_metrics(
     multi_sfn,
-    period = 'daily',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    period = '1 day',
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'predawn', int_start = 4, int_end = 6
   )
@@ -404,16 +457,16 @@ test_that('sfn_metrics for midday metrics works', {
 
   test_expr <- sfn_metrics(
     ARG_TRE,
-    period = 'daily',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    period = '1 day',
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'midday', int_start = 11, int_end = 13
   )
 
   test_expr2 <- sfn_metrics(
     multi_sfn,
-    period = 'daily',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    period = '1 day',
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'midday', int_start = 11, int_end = 13
   )
@@ -450,28 +503,28 @@ test_that('sfn_metrics for nightly metrics works', {
 
   test_expr <- sfn_metrics(
     ARG_TRE,
-    period = 'daily',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    period = '1 day',
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'night', int_start = 20, int_end = 6
   )
 
   test_expr2 <- sfn_metrics(
     multi_sfn,
-    period = 'daily',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    period = '1 day',
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'night', int_start = 20, int_end = 6
   )
 
-  test_expr3 <- sfn_metrics(
-    ARG_TRE,
-    period = 'daily',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
-    solar = TRUE,
-    interval = 'night', int_start = 20, int_end = 6,
-    clean = FALSE
-  )
+  # test_expr3 <- sfn_metrics(
+  #   ARG_TRE,
+  #   period = '1 day',
+  #   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
+  #   solar = TRUE,
+  #   interval = 'night', int_start = 20, int_end = 6,
+  #   clean = FALSE
+  # )
 
   # test sfn_data
   expect_true(is.list(test_expr))
@@ -518,27 +571,27 @@ test_that('sfn_metrics for nightly metrics works', {
 
   # lets be sure that without clean the hours are cutted where they must be
   # cutted
-  expect_identical(names(test_expr3), c('sapf', 'env'))
-  expect_s3_class(test_expr3[['sapf']], 'tbl')
-  expect_s3_class(test_expr3[['env']], 'tbl')
-
-  sapf_night_timestamp_3 <- test_expr3[['sapf']][['TIMESTAMP_night']]
-  env_night_timestamp_3 <- test_expr3[['env']][['TIMESTAMP_night']]
-
-  good_sapf_night_first_3 <- "2009-11-17 22:24:58"
-  good_sapf_night_second_3 <- "2009-11-18 20:24:43"
-  good_sapf_night_last_3 <- "2009-11-30 20:20:48"
-
-  good_env_night_first_3 <- "2009-11-17 22:24:58"
-  good_env_night_second_3 <- "2009-11-18 20:24:43"
-  good_env_night_last_3 <- "2009-11-30 20:20:48"
-
-  expect_equal(as.character(sapf_night_timestamp_3[1]), good_sapf_night_first_3)
-  expect_equal(as.character(sapf_night_timestamp_3[2]), good_sapf_night_second_3)
-  expect_equal(as.character(sapf_night_timestamp_3[14]), good_sapf_night_last_3)
-  expect_equal(as.character(env_night_timestamp_3[1]), good_env_night_first_3)
-  expect_equal(as.character(env_night_timestamp_3[2]), good_env_night_second_3)
-  expect_equal(as.character(env_night_timestamp_3[14]), good_env_night_last_3)
+  # expect_identical(names(test_expr3), c('sapf', 'env'))
+  # expect_s3_class(test_expr3[['sapf']], 'tbl')
+  # expect_s3_class(test_expr3[['env']], 'tbl')
+  # 
+  # sapf_night_timestamp_3 <- test_expr3[['sapf']][['TIMESTAMP_night']]
+  # env_night_timestamp_3 <- test_expr3[['env']][['TIMESTAMP_night']]
+  # 
+  # good_sapf_night_first_3 <- "2009-11-17 22:24:58"
+  # good_sapf_night_second_3 <- "2009-11-18 20:24:43"
+  # good_sapf_night_last_3 <- "2009-11-30 20:20:48"
+  # 
+  # good_env_night_first_3 <- "2009-11-17 22:24:58"
+  # good_env_night_second_3 <- "2009-11-18 20:24:43"
+  # good_env_night_last_3 <- "2009-11-30 20:20:48"
+  # 
+  # expect_equal(as.character(sapf_night_timestamp_3[1]), good_sapf_night_first_3)
+  # expect_equal(as.character(sapf_night_timestamp_3[2]), good_sapf_night_second_3)
+  # expect_equal(as.character(sapf_night_timestamp_3[14]), good_sapf_night_last_3)
+  # expect_equal(as.character(env_night_timestamp_3[1]), good_env_night_first_3)
+  # expect_equal(as.character(env_night_timestamp_3[2]), good_env_night_second_3)
+  # expect_equal(as.character(env_night_timestamp_3[14]), good_env_night_last_3)
 
 })
 
@@ -548,16 +601,16 @@ test_that('sfn_metrics for daylight metrics works', {
 
   test_expr <- sfn_metrics(
     ARG_TRE,
-    period = 'daily',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    period = '1 day',
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'daylight', int_start = 6, int_end = 20
   )
 
   test_expr2 <- sfn_metrics(
     multi_sfn,
-    period = 'daily',
-    .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+    period = '1 day',
+    .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
     solar = TRUE,
     interval = 'daylight', int_start = 6, int_end = 20
   )
@@ -718,12 +771,12 @@ test_that('midday metrics examples work', {
 
 test_that('*_metrics functions with ... work', {
 
-  expect_true(is.list(daily_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(monthly_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(nightly_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(daylight_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(predawn_metrics(ARG_TRE, clean = FALSE)))
-  expect_true(is.list(midday_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(daily_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(monthly_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(nightly_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(daylight_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(predawn_metrics(ARG_TRE, clean = FALSE)))
+  # expect_true(is.list(midday_metrics(ARG_TRE, clean = FALSE)))
   expect_true(is.list(daily_metrics(ARG_TRE, side = 'end')))
   expect_true(is.list(monthly_metrics(ARG_TRE, side = 'end')))
   expect_true(is.list(nightly_metrics(ARG_TRE, side = 'end')))
@@ -731,30 +784,30 @@ test_that('*_metrics functions with ... work', {
   expect_true(is.list(predawn_metrics(ARG_TRE, side = 'end')))
   expect_true(is.list(midday_metrics(ARG_TRE, side = 'end')))
   
-  expect_s3_class(
-    daily_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    monthly_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    nightly_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    daylight_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    predawn_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
-  expect_s3_class(
-    midday_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
-    'tbl'
-  )
+  # expect_s3_class(
+  #   daily_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   monthly_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   nightly_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   daylight_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   predawn_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
+  # expect_s3_class(
+  #   midday_metrics(ARG_TRE, clean = FALSE, tidy = TRUE, metadata = sfn_metadata_ex),
+  #   'tbl'
+  # )
   expect_s3_class(
     daily_metrics(ARG_TRE, side = 'end', tidy = TRUE, metadata = sfn_metadata_ex),
     'tbl'
@@ -787,7 +840,7 @@ test_that('.fixed_metrics_funs works', {
 
   .funs <- sapfluxnetr:::.fixed_metrics_funs(probs = c(0.95), TRUE)
 
-  expect_s3_class(.funs, 'fun_list')
+  expect_is(.funs, 'list')
   expect_identical(
     names(.funs),
     c('mean', 'sd', 'coverage', 'q_95', 'accumulated', 'centroid')
@@ -797,7 +850,7 @@ test_that('.fixed_metrics_funs works', {
     probs = c(0.1), FALSE
   )
 
-  expect_s3_class(.funs_no_centroid, 'fun_list')
+  expect_is(.funs_no_centroid, 'list')
   expect_identical(
     names(.funs_no_centroid),
     c('mean', 'sd', 'coverage', 'q_10', 'accumulated')
@@ -897,7 +950,7 @@ test_that('metrics_tidyfier works when supplied custom metrics', {
   
   test_expr <- sfn_metrics(
     ARG_TRE, '7 days',
-    dplyr::funs(mean = mean(., na.rm = TRUE)),
+    list(mean = ~ mean(., na.rm = TRUE)),
     solar = TRUE,
     interval = 'general'
   ) %>%
@@ -921,4 +974,132 @@ test_that('metrics_tidyfier works when supplied custom metrics', {
   expect_true(any(env_vars %in% names(test_expr)))
   
   expect_equal(nrow(test_expr), 4*3) # trees * weeks
+})
+
+#### metrics utils #####
+test_that('.assert_that_period_is_valid works as intended', {
+  
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('1 day'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('3 days'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('1 month'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('6 months'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('1 hour'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('1 week'))
+  expect_true(sapfluxnetr:::.assert_that_period_is_valid('2 years'))
+  
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid(5),
+    'must be character string of length 1'
+  )
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid(c("1", "day")),
+    'must be character string of length 1'
+  )
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid("1  day"),
+    'must consist of a frequency and a period'
+  )
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid("1 day long"),
+    'must consist of a frequency and a period'
+  )
+  expect_error(
+    sapfluxnetr:::.assert_that_period_is_valid("one day"),
+    'must be coercible to numeric'
+  )
+})
+
+test_that(".parse_period works as intended", {
+  
+  expect_is(sapfluxnetr:::.parse_period("2 days"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("2 days")$freq, 2)
+  expect_equal(sapfluxnetr:::.parse_period("2 days")$period, 'days')
+  expect_is(sapfluxnetr:::.parse_period("1 day"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("1 day")$freq, 1)
+  expect_equal(sapfluxnetr:::.parse_period("1 day")$period, 'day')
+  expect_is(sapfluxnetr:::.parse_period("2 months"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("2 months")$freq, 2)
+  expect_equal(sapfluxnetr:::.parse_period("2 months")$period, 'months')
+  expect_is(sapfluxnetr:::.parse_period("1 month"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("1 month")$freq, 1)
+  expect_equal(sapfluxnetr:::.parse_period("1 month")$period, 'month')
+  expect_is(sapfluxnetr:::.parse_period("2 years"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("2 years")$freq, 2)
+  expect_equal(sapfluxnetr:::.parse_period("2 years")$period, 'years')
+  expect_is(sapfluxnetr:::.parse_period("1 year"), 'list')
+  expect_equal(sapfluxnetr:::.parse_period("1 year")$freq, 1)
+  expect_equal(sapfluxnetr:::.parse_period("1 year")$period, 'year')
+  
+  expect_error(
+    sapfluxnetr:::.parse_period("2 day s"),
+    'must consist of a frequency and a period'
+  )
+  expect_error(
+    sapfluxnetr:::.parse_period(mean),
+    'must be character string of length 1'
+  )
+  
+})
+
+test_that(".collapse_timestamp works as intended", {
+  TIMESTAMP <- ARG_TRE %>%
+    get_timestamp()
+  
+  expect_equal(
+    length(sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 day', side = 'start')),
+    length(TIMESTAMP)
+  )
+  expect_equal(
+    length(
+      sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 day', side = 'start') %>%
+        unique()
+    ),
+    13
+  )
+  expect_identical(
+    lubridate::day(
+      sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 day', side = 'start') %>%
+        magrittr::extract(1)
+    ),
+    lubridate::day(TIMESTAMP[1])
+  )
+  expect_identical(
+    sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 week', side = 'start') %>%
+      magrittr::extract(1) %>%
+      as.character(),
+    "2009-11-15"
+  )
+  expect_identical(
+    sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = '1 week', side = 'start', week_start = 1) %>%
+      magrittr::extract(1) %>%
+      as.character(),
+    "2009-11-16"
+  )
+  
+  mean_sapf <- function(x, na.rm = TRUE) {
+    length_out <- length(x)
+    rep(mean(x, na.rm = na.rm), length_out)
+  }
+  
+  expect_identical(
+    length(sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = mean_sapf, side = 'start')),
+    length(TIMESTAMP)
+  )
+  expect_identical(
+    length(sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = mean_sapf, side = 'start', na.rm = FALSE)),
+    length(TIMESTAMP)
+  )
+  expect_equal(
+    length(
+      sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = mean_sapf, side = 'start') %>%
+        unique()
+    ),
+    1
+  )
+  expect_identical(
+    sapfluxnetr:::.collapse_timestamp(TIMESTAMP, period = mean_sapf, side = 'start') %>%
+      magrittr::extract(1) %>%
+      as.character(),
+    "2009-11-24 11:30:00"
+  )
 })

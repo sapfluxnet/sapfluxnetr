@@ -198,75 +198,75 @@ setMethod(
 
     ## Coerce to tibble, fail if not possible
     # sapf_data
-    if (any(class(sapf_data) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+    if (any(class(sapf_data) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
       sapf_data_tbl <- tibble::as_tibble(sapf_data)
     } else {
       stop('sapf_data must be a tibble or an object coercible to one',
-           ' (data.frame, tbl_df, tbl, tbl_time)')
+           ' (data.frame, tbl_df, tbl, tbl_ts)')
     }
 
     # env_data
-    if (any(class(env_data) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+    if (any(class(env_data) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
       env_data_tbl <- tibble::as_tibble(env_data)
     } else {
       stop('env_data must be a tibble or an object coercible to one',
-           ' (data.frame, tbl_df, tbl, tbl_time)')
+           ' (data.frame, tbl_df, tbl, tbl_ts)')
     }
 
     # sapf_flags
-    if (any(class(sapf_flags) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+    if (any(class(sapf_flags) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
       sapf_flags_tbl <- tibble::as_tibble(sapf_flags)
     } else {
       stop('sapf_flags must be a tibble or an object coercible to one',
-           ' (data.frame, tbl_df, tbl, tbl_time)')
+           ' (data.frame, tbl_df, tbl, tbl_ts)')
     }
 
     # env_flags
-    if (any(class(env_flags) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+    if (any(class(env_flags) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
       env_flags_tbl <- tibble::as_tibble(env_flags)
     } else {
       stop('env_flags must be a tibble or an object coercible to one',
-           ' (data.frame, tbl_df, tbl, tbl_time)')
+           ' (data.frame, tbl_df, tbl, tbl_ts)')
     }
 
     # site_md
-    if (any(class(site_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+    if (any(class(site_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
       site_md_tbl <- tibble::as_tibble(site_md)
     } else {
       stop('site_md must be a tibble or an object coercible to one',
-           ' (data.frame, tbl_df, tbl, tbl_time)')
+           ' (data.frame, tbl_df, tbl, tbl_ts)')
     }
 
     # stand_md
-    if (any(class(stand_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+    if (any(class(stand_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
       stand_md_tbl <- tibble::as_tibble(stand_md)
     } else {
       stop('stand_md must be a tibble or an object coercible to one',
-           ' (data.frame, tbl_df, tbl, tbl_time)')
+           ' (data.frame, tbl_df, tbl, tbl_ts)')
     }
 
     # species_md
-    if (any(class(species_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+    if (any(class(species_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
       species_md_tbl <- tibble::as_tibble(species_md)
     } else {
       stop('species_md must be a tibble or an object coercible to one',
-           ' (data.frame, tbl_df, tbl, tbl_time)')
+           ' (data.frame, tbl_df, tbl, tbl_ts)')
     }
 
     # plant_md
-    if (any(class(plant_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+    if (any(class(plant_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
       plant_md_tbl <- tibble::as_tibble(plant_md)
     } else {
       stop('plant_md must be a tibble or an object coercible to one',
-           ' (data.frame, tbl_df, tbl, tbl_time)')
+           ' (data.frame, tbl_df, tbl, tbl_ts)')
     }
 
     # env_md
-    if (any(class(env_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_time'))) {
+    if (any(class(env_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
       env_md_tbl <- tibble::as_tibble(env_md)
     } else {
       stop('env_md must be a tibble or an object coercible to one',
-           ' (data.frame, tbl_df, tbl, tbl_time)')
+           ' (data.frame, tbl_df, tbl, tbl_ts)')
     }
 
     .Object <- callNextMethod(
@@ -524,10 +524,10 @@ setMethod(
 #' Methods to get the data and metadata from the sfn_data class slots
 #'
 #' \code{get_sapf_data} and \code{get_env_data} methods retrieve sapflow or environmental
-#' tibbletime object to create a functional dataset to work with.
+#' tibbles to create a functional dataset to work with.
 #'
 #' \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
-#' environmental flags as tibbletime objects.
+#' environmental flags as tibbles.
 #'
 #' \code{get_timestamp} and \code{get_solar_timestamp} methods retrieve only the
 #' timestamp as POSIXct vector.
@@ -580,7 +580,7 @@ setMethod(
 
     # combining both
     res <- cbind(TIMESTAMP, .sapf) %>%
-      tibbletime::as_tbl_time(index = TIMESTAMP)
+      tibble::as_tibble()
 
     # return
     return(res)
@@ -604,7 +604,7 @@ setMethod(
 
     # combining both
     res <- cbind(TIMESTAMP, .env) %>%
-      tibbletime::as_tbl_time(index = TIMESTAMP)
+      tibble::as_tibble()
 
     # return
     return(res)
@@ -627,7 +627,7 @@ setMethod(
 
     # combining both
     res <- cbind(TIMESTAMP, .sapf_flags) %>%
-      tibbletime::as_tbl_time(index = TIMESTAMP)
+      tibble::as_tibble()
 
     # return
     return(res)
@@ -650,7 +650,7 @@ setMethod(
 
     # combining both
     res <- cbind(TIMESTAMP, .env_flags) %>%
-      tibbletime::as_tbl_time(index = TIMESTAMP)
+      tibble::as_tibble()
 
     # return
     return(res)
@@ -740,11 +740,11 @@ setMethod(
 #' Methods to get the data and metadata from the sfn_data class slots
 #'
 #' \code{get_sapf_data} and \code{get_env_data} methods retrieve sapflow or
-#' environmental tibbletimes from the sfn_data objects contained in the 
+#' environmental tibbles from the sfn_data objects contained in the 
 #' sfn_data_multi and return them in a list.
 #'
 #' \code{get_sapf_flags} and \code{get_env_flags} methods retrieve sapflow or
-#' environmental flags tibbletimes from the sfn_data objects contained in the 
+#' environmental flags tibbles from the sfn_data objects contained in the 
 #' sfn_data_multi and return them in a list.
 #'
 #' \code{get_timestamp} and \code{get_solar_timestamp} methods retrieve only the
@@ -798,7 +798,7 @@ setMethod(
     res <- TIMESTAMP %>%
       purrr::map2(.sapf, cbind) %>%
       purrr::map(dplyr::rename, TIMESTAMP = ".x[[i]]") %>%
-      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+      purrr::map(~ tibble::as_tibble(.x))
     
     # return
     return(res)
@@ -827,7 +827,7 @@ setMethod(
     res <- TIMESTAMP %>%
       purrr::map2(.env, cbind) %>%
       purrr::map(dplyr::rename, TIMESTAMP = ".x[[i]]") %>%
-      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+      purrr::map(~ tibble::as_tibble(.x))
     
     # return
     return(res)
@@ -856,7 +856,7 @@ setMethod(
     res <- TIMESTAMP %>%
       purrr::map2(.flags, cbind) %>%
       purrr::map(dplyr::rename, TIMESTAMP = ".x[[i]]") %>%
-      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+      purrr::map(~ tibble::as_tibble(.x))
     
     # return
     return(res)
@@ -885,7 +885,7 @@ setMethod(
     res <- TIMESTAMP %>%
       purrr::map2(.flags, cbind) %>%
       purrr::map(dplyr::rename, TIMESTAMP = ".x[[i]]") %>%
-      purrr::map(~ tibbletime::as_tbl_time(.x, index = TIMESTAMP))
+      purrr::map(~ tibble::as_tibble(.x))
     
     # return
     return(res)

@@ -140,8 +140,8 @@ test_that('sfn_mutate_at returns correct results', {
   foo_mutated <- sfn_mutate_at(
     ARG_TRE,
     .vars = dplyr::vars(dplyr::one_of(vars_to_mutate)),
-    .funs = dplyr::funs(
-      dplyr::case_when(
+    .funs = list(
+      ~ dplyr::case_when(
         ws > 25 ~ NA_real_,
         TRUE ~ .
       )
@@ -153,8 +153,8 @@ test_that('sfn_mutate_at returns correct results', {
   multi_mutated <- suppressWarnings(sfn_mutate_at(
     multi_sfn,
     .vars = dplyr::vars(-dplyr::one_of(vars_to_not_mutate)), # we use -
-    .funs = dplyr::funs(
-      dplyr::case_when(
+    .funs = list(
+      ~ dplyr::case_when(
         ws > 25 ~ NA_real_,
         TRUE ~ .
       )

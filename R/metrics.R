@@ -3,22 +3,22 @@
 #' This function collapse the TIMESTAMP to the desired period (day, month...)
 #' by setting the same value to all timestamps within the period. This modified
 #' TIMESTAMP is used to group by and summarise the data.
-#'
-#' This function uses internally \code{\link[tibbletime]{collapse_index}} and
-#' \code{\link[dplyr]{summarise_all}} and arguments to control these functions
+#' 
+#' This function uses internally \code{\link{.collapse_timestamp}} and
+#' \code{\link[dplyr]{summarise_all}}. Arguments to control these functions
 #' can be passed as `...`. Arguments for each function are spliced and applied
 #' when needed. Be advised that all arguments passed to the summarise_all function
 #' will be applied to all the summarising functions used, so it will fail if any
 #' of that functions does not accept that argument. To complex function-argument
 #' relationships, indicate each summary function call within the \code{.funs}
-#' argument with \code{\link[dplyr]{funs}}:
+#' argument as explained here \code{\link[dplyr]{summarise_all}}:
 #' \preformatted{
 #' # This will fail beacuse na.rm argument will be also passed to the n function,
 #' # which does not accept any argument:
 #' summarise_by_period(
 #'   data = get_sapf_data(ARG_TRE),
 #'   period = '7 days',
-#'   .funs = funs(mean, sd, n),
+#'   .funs = list(mean, sd, n()),
 #'   na.rm = TRUE
 #' )
 #'
@@ -26,7 +26,7 @@
 #' summarise_by_period(
 #'   data = get_sapf_data(ARG_TRE),
 #'   period = '7 days',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
 #' )
 #' }
 #'
@@ -43,20 +43,20 @@
 #'
 #'     summarise_by_period(
 #'       data = get_sapf_data(ARG_TRE),
-#'       period = 'daily',
-#'       .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
+#'       period = '1 day',
+#'       .funs = list(~ min_time(., time = TIMESTAMP_coll)) # Not TIMESTAMP
 #'     )
 #'   }
 #'
 #' @param data sapflow or environmental data as obtained by \code{\link{get_sapf_data}}
 #'   and \code{\link{get_env_data}}. Must have a column named TIMESTAMP
-#' @param period tibbletime::collapse_index period
-#' @param .funs dplyr::summarise_all funs
-#' @param ... optional arguments for \code{link{summarise_by_period}}
+#' @param period period to collapse by. See \code{\link{sfn_metrics}} for details.
+#' @param .funs funs to summarise the data. See details.
+#' @param ... optional arguments. See details
 #'
-#' @return A `tbl_time` object with the metrics results. The names of the columns
+#' @return A `tbl_df` object with the metrics results. The names of the columns
 #'   indicate the original variable (tree or environmental variable) and the
-#'   metric calculated (i.e. `vpd_mean`)
+#'   metric calculated (i.e. `vpd_mean`), separated by underscore
 #'
 #' @examples
 #' library(dplyr)
@@ -68,7 +68,7 @@
 #' summarise_by_period(
 #'   data = get_sapf_data(ARG_TRE),
 #'   period = '7 days',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
 #' )
 #'
 #' @importFrom rlang .data
@@ -76,7 +76,7 @@
 #' @export
 
 summarise_by_period <- function(data, period, .funs, ...) {
-
+  
   # modificate .funs if data is environmental (no centroids).
   if (any(names(data) %in% .env_vars_names())) {
 
@@ -90,29 +90,39 @@ summarise_by_period <- function(data, period, .funs, ...) {
 
   # we will need the extra arguments (...) if any, just in case
   dots <- rlang::quos(...)
-  dots_collapse_index <- dots[names(dots) %in%
-                                methods::formalArgs(tibbletime::collapse_index)]
-  dots_summarise_all <- dots[!(names(dots) %in%
-                                 methods::formalArgs(tibbletime::collapse_index))]
-
-  # TODO set clean = TRUE and side "start" for the collapse, except if they are
-  # setted by the user.
-  if (is.null(dots_collapse_index[['side']])) {
-    dots_collapse_index[['side']] <- rlang::quo('start')
+  
+  if (rlang::is_function(period)) {
+    # if period is a custom function, remove side argument if it exists
+    # and dispatch each argument in dots to the corresponding function
+    # (period custom function or summarise_all)
+    dots['side'] <- NULL
+    side_val <- 'start'
+    dots_collapse_timestamp <- dots[names(dots) %in%
+                                      methods::formalArgs(period)]
+    dots_summarise_all <- dots[!(names(dots) %in%
+                                   methods::formalArgs(period))]
+  } else {
+    # if period is a character vector, then the collapse timestamp arguments
+    # are for *_date from lubridate
+    args_date_funs <- c(
+      methods::formalArgs(lubridate::floor_date),
+      methods::formalArgs(lubridate::ceiling_date)
+    )
+    
+    side_val <- rlang::eval_tidy(dots[['side']])
+    if (is.null(side_val)) {side_val <- 'start'}
+    dots['side'] <- NULL
+    dots_collapse_timestamp <- dots[names(dots) %in% args_date_funs]
+    dots_summarise_all <- dots[!(names(dots) %in% args_date_funs)]
   }
-
-  if (is.null(dots_collapse_index[['clean']])) {
-    dots_collapse_index[['clean']] <- rlang::quo(TRUE)
-  }
-
+  
+  # data processing
   data %>%
-    # tibbletime::as_tbl_time(index = TIMESTAMP) %>%
     dplyr::mutate(
       TIMESTAMP_coll = .data$TIMESTAMP,
-      TIMESTAMP = tibbletime::collapse_index(
-        index = .data$TIMESTAMP,
-        period = period,
-        !!! dots_collapse_index
+      TIMESTAMP = .collapse_timestamp(
+        .data$TIMESTAMP, !!! dots_collapse_timestamp,
+        period = period, side = side_val
       )
     ) %>%
     dplyr::group_by(.data$TIMESTAMP) %>%
@@ -133,43 +143,43 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' Generate metrics from a site/s data for the period indicated
 #'
 #' @section Period:
-#' \code{period} argument is piped to \code{tibbletime::collapse_index} function
-#' with \code{side = 'start', clean = TRUE} options. See
-#' \code{\link[tibbletime]{collapse_index}} for a detailed explanation, but in
-#' short:
+#' \code{period} argument is used by internal function
+#' \code{\link{.collapse_timestamp}} and it can be stated in two ways:
 #' \itemize{
-#'   \item{\emph{frequency period} format: "1 day", "7 day", "1 month",
-#'         "1 year"}
-#'   \item{\emph{shorthand} format: "hourly", "daily", "monthly", "yearly"}
-#'   \item{\emph{custom} format: a vector of dates to use as custom and more
-#'         flexible boundaries}
+#'   \item{\emph{frequency period} format: "1 day", "7 days", "1 month", "3 hours"}
+#'   \item{As a \emph{custom function}. This will be the name of a function,
+#'   without quotes, that accepts as the first argument the timestamp to collapse.
+#'   The result of the function must be a vector of collapsed TIMESTAMPs of the
+#'   same length than the original TIMESTAMP which will be used to group by and
+#'   summarise the data. Additional arguments to this function, if needed, can
+#'   be passed in the \code{...} argument.}
 #' }
-#' Also, you can override the default behaviour of \code{sfn_metrics}, providing
-#' \code{side = 'end'} or \code{clean = FALSE}.
+#' \code{\link{.collapse_timestamp}} also accepts the \code{side} argument to
+#' collapse by the starting timestamp or the ending timestamp of each group. This
+#' can be supplied in the \code{...} argument.
 #'
 #' @section .funs:
 #' \code{.funs} argument uses the same method as the \code{.funs} argument in the
 #' \code{\link[dplyr]{summarise_all}} function of \code{dplyr} package. Basically
-#' it accepts a list of function calls generated by funs(), or a character vector
-#' of function names, or simply a function. If you want to pass on a custom
-#' function you can specify it here. See details in
+#' it accepts a list of function calls generated by list(). If you want to pass
+#' on a custom function you can specify it here. See details in
 #' \code{\link{summarise_by_period}} for more complex summarising functions
 #' declaration.
 #'
 #' @section Interval:
 #' Previously to the metrics summary, data can be filtered by an special
-#' interval (predawn for example). This filtering can be specified with the
-#'  \code{interval} argument this:
+#' interval (i.e. predawn or nightly). This filtering can be specified with the
+#'  \code{interval} argument as this:
 #' \itemize{
-#'   \item{\code{general} (default). No special interval is used, and metrics
+#'   \item{\code{"general"} (default). No special interval is used, and metrics
 #'         are performed with all the data}.
-#'   \item{\code{predawn}. Data is filtered for predawn interval. In this case
+#'   \item{\code{"predawn"}. Data is filtered for predawn interval. In this case
 #'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#'   \item{\code{midday}. Data is filtered for midday interval. In this case
+#'   \item{\code{"midday"}. Data is filtered for midday interval. In this case
 #'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#'   \item{\code{night}. Data is filtered for night interval. In this case
+#'   \item{\code{"night"}. Data is filtered for night interval. In this case
 #'         \code{int_start} and \code{int_end} must be specified as 24h value}
-#'   \item{\code{daylight}. Data is filtered for daylight interval. In this case
+#'   \item{\code{"daylight"}. Data is filtered for daylight interval. In this case
 #'         \code{int_start} and \code{int_end} must be specified as 24h value}
 #' }
 #'
@@ -177,10 +187,10 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'   to obtain the metrics from
 #'
 #' @param period Time period to aggregate data by. See period section for an
-#'   explanation about the periods ('daily', 'monthly', 'yearly', ...)
+#'   explanation about the periods ('1 day', '1 month', '1 year', ...)
 #'
-#' @param .funs List of function calls to summarise the data by, usually the 
-#'   result of calling \code{\link[dplyr]{funs}} 
+#' @param .funs List of function calls to summarise the data by, see .funs
+#'   section for more details.
 #'
 #' @param solar Logical indicating if the solarTIMESTAMP must be used instead of
 #'   the site local TIMESTAMP. Default to TRUE (use solarTIMESTAMP).
@@ -195,18 +205,18 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #'   interval in 24h format. See Interval section in details.
 #'
 #' @param ... optional arguments to pass to methods used
-#'   (i.e. tibbletime::collapse_index or summarise funs extra arguments)
+#'   (i.e. .collapse_timestamp or summarise funs extra arguments)
 #'
 #' @family metrics
 #'
-#' @return For \code{\link{sfn_data}} objects, a list of tbl_time objects
+#' @return For \code{\link{sfn_data}} objects, a list of tbl_df objects
 #'   with the following structure:
 #'   \itemize{
 #'     \item{$sapf: metrics for the sapflow data}
 #'     \item{$env: metrics for the environmental data}
 #'   }
 #'
-#'   For \code{\link{sfn_data_multi}} objects, a list of lists of tbl_time objects
+#'   For \code{\link{sfn_data_multi}} objects, a list of lists of tbl_df objects
 #'   with the metrics for each site:
 #'   \itemize{
 #'     \item{$SITE_CODE
@@ -227,7 +237,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' ARG_TRE_metrics <- sfn_metrics(
 #'   ARG_TRE,
 #'   period = '7 days',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
 #'   solar = FALSE,
 #'   interval = 'general'
 #' )
@@ -245,7 +255,7 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' multi_metrics <- sfn_metrics(
 #'   multi_sfn,
 #'   period = '7 days',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
 #'   solar = FALSE,
 #'   interval = 'general'
 #' )
@@ -258,8 +268,8 @@ summarise_by_period <- function(data, period, .funs, ...) {
 #' ### midday metrics
 #' ARG_TRE_midday <- sfn_metrics(
 #'   ARG_TRE,
-#'   period = 'daily',
-#'   .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n()),
+#'   period = '1 day',
+#'   .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n()),
 #'   solar = TRUE,
 #'   interval = 'midday', int_start = 11, int_end = 13
 #' )
@@ -281,14 +291,28 @@ sfn_metrics <- function(
 ) {
 
   # argument checks
-  # if (!(class(sfn_data) %in% c('sfn_data', 'sfn_data_multi'))) {
-  #   stop(
-  #     'sfn_metrics only works with sfn_data and sfn_data_multi object classes'
-  #   )
-  # }
-  stopifnot(
-    inherits(sfn_data, c('sfn_data', 'sfn_data_multi'))
+  assertthat::assert_that(
+    inherits(sfn_data, c('sfn_data', 'sfn_data_multi')),
+    msg = 'sfn_data must be a sfn_Data or sfn_data_multi object'
   )
+  
+  ## period style deprecated conversion ####
+  if (is.character(period) && period %in% c('daily', 'hourly', 'monthly', 'yearly', 'weekly')) {
+    
+    warning("especifying period as '***ly' format (i.e. 'daily', 'monthly')
+            is soft-deprecated since 0.0.6.9000 version. Please use the
+            'frequency period' format instead: '1 day', '1 month'")
+    
+    period <- switch(
+      period,
+      'daily' = '1 day',
+      'weekly' = '1 week',
+      'monthly' = '1 month',
+      'yearly' = '1 year',
+      'hourly' = '1 hour',
+      period
+    )
+  }
 
   # we need to check if multi and then repeat the function for each element
   if (inherits(sfn_data, 'sfn_data_multi')) {
@@ -365,45 +389,19 @@ sfn_metrics <- function(
         period_minutes = new_period_minutes
       )
 
-    if (period == 'daily') {
+    if (period == '1 day') {
 
-      night_boundaries <- night_data[['sapf']] %>%
-        dplyr::mutate(
-          coll = tibbletime::collapse_index(
-            index = .data$TIMESTAMP,
-            period = period,
-            side = 'start'
-          )
-        ) %>%
-        dplyr::group_by(.data$coll) %>%
-        # closest to night start timestamp
-        dplyr::summarise(
-          custom_dates = .data$TIMESTAMP[which.min(
-            abs(lubridate::hour(.data$TIMESTAMP) - int_start)
-          )]
-        ) %>%
-        dplyr::pull(.data$custom_dates)
-
-      night_boundaries <- night_boundaries %>%
-        lubridate::floor_date(unit = 'hours')
-
-      # workaround the two nights in one day problem (sites that start at
-      # 00:00:00 have two nights in the same day, the first one corresponds to
-      # the previous day and we have to fix it)
-      margins <- 60*60*24
-      extra_start_boundary <- night_boundaries[[1]] - margins
-      extra_end_boundary <- night_boundaries[[length(night_boundaries)]] + margins
-      night_boundaries <- as.POSIXct(
-        c(
-          as.character(extra_start_boundary),
-          as.character(night_boundaries),
-          as.character(extra_end_boundary)
-        ),
-        tz = attr(extra_start_boundary, 'tz')
-      )
-
+      # TODO nightly_daily_fun
       period_summary <- night_data %>%
-        purrr::map(summarise_by_period, night_boundaries, .funs, ...)
+        purrr::map(
+          summarise_by_period,
+          .nightly_daily_cf,
+          .funs,
+          # .nightly_daily_cf args
+          night_data = night_data, int_start = int_start,
+          # dots
+          ...
+        )
 
     } else {
 
@@ -449,7 +447,7 @@ sfn_metrics <- function(
         lubridate::hours(int_end - int_start)
       )@.Data / 60
       
-      if (period != 'daily') {
+      if (period != '1 day') {
         new_period_minutes <- new_period_minutes * 30
       }
 
@@ -516,7 +514,8 @@ sfn_metrics <- function(
 
 #' helper function to generate the fixed metrics
 #'
-#' generates a call to dplyr::funs to capture the fixed metrics
+#' generates a call to list to capture the fixed metrics in a quosure lambda
+#' style
 #'
 #' @param probs probs vector for quantile
 #'
@@ -543,18 +542,14 @@ sfn_metrics <- function(
     purrr::map(function(x) {dplyr::quo(quantile(., probs = x, na.rm = TRUE))})
   names(quantile_args) <- paste0('q_', round(probs*100, 0))
 
-  .funs <- dplyr::funs(
-    mean = mean(., na.rm = TRUE),
-    sd = stats::sd(., na.rm = TRUE),
-    coverage = data_coverage(., .data$timestep, .data$period_minutes),
+  # we use rlang::list2 as we need the quantile spliced and evaluated with !!!
+  .funs <- rlang::list2(
+    mean = ~ mean(., na.rm = TRUE),
+    sd = ~ stats::sd(., na.rm = TRUE),
+    coverage = ~ data_coverage(., .data$timestep, .data$period_minutes),
     !!! quantile_args,
-    accumulated = .accumulated_posix_aware(., na.rm = TRUE),
-    # n = n(),
-    # max = max(., na.rm = TRUE),
-    # max_time = max_time(., .data$TIMESTAMP_coll),
-    # min = min(., na.rm = TRUE),
-    # min_time = min_time(., .data$TIMESTAMP_coll),
-    centroid = diurnal_centroid(.)
+    accumulated = ~ .accumulated_posix_aware(., na.rm = TRUE),
+    centroid = ~ diurnal_centroid(.)
   )
 
   if (!centroid) {
@@ -585,7 +580,8 @@ sfn_metrics <- function(
 #'   \item{q_XX: 0.XX quantile value for the period}
 #'   \item{centroid: Diurnal centroid value (hours passed until the half of
 #'         the summed daily value was reached). Only returned for sapflow
-#'         measures when period is 'daily'}
+#'         measures when period is '1 day'}
+#'   \item{accumulated: Accumulated values for precipitation only}
 #' }
 #'
 #' @param probs numeric vector of probabilities for
@@ -596,6 +592,9 @@ sfn_metrics <- function(
 #'
 #' @param metadata metadata object, usually the result of
 #'   \code{\link{read_sfn_metadata}}. Only used if tidy is TRUE.
+#'
+#' @param ... additional arguments to be passed to \code{\link{.collapse_timestamp}}
+#'   or \code{\link[lubridate]{floor_date}} or \code{\link[lubridate]{ceiling_date}}.
 #'
 #' @family metrics
 #'
@@ -649,7 +648,7 @@ daily_metrics <- function(
   . <- NULL
 
   # hardcoded values
-  period <- 'daily'
+  period <- '1 day'
 
   # default funs
   .funs <- .fixed_metrics_funs(probs, TRUE)
@@ -713,7 +712,7 @@ monthly_metrics <- function(
   . <- NULL
 
   # hardcoded values
-  period <- 'monthly'
+  period <- '1 month'
 
   # default funs
   .funs <- .fixed_metrics_funs(probs, FALSE)
@@ -784,7 +783,7 @@ monthly_metrics <- function(
 
 nightly_metrics <- function(
   sfn_data,
-  period = c('daily', 'monthly'),
+  period = c('1 day', '1 month'),
   solar = TRUE,
   int_start = 20,
   int_end = 6,
@@ -799,7 +798,7 @@ nightly_metrics <- function(
   period <- match.arg(period)
 
   # default funs
-  if (period == 'daily') {
+  if (period == '1 day') {
     .funs <- .fixed_metrics_funs(probs, TRUE)
   } else {
     .funs <- .fixed_metrics_funs(probs, FALSE)
@@ -866,7 +865,7 @@ nightly_metrics <- function(
 
 daylight_metrics <- function(
   sfn_data,
-  period = c('daily', 'monthly'),
+  period = c('1 day', '1 month'),
   solar = TRUE,
   int_start = 6,
   int_end = 20,
@@ -881,7 +880,7 @@ daylight_metrics <- function(
   period <- match.arg(period)
 
   # default funs
-  if (period == 'daily') {
+  if (period == '1 day') {
     .funs <- .fixed_metrics_funs(probs, TRUE)
   } else {
     .funs <- .fixed_metrics_funs(probs, FALSE)
@@ -950,7 +949,7 @@ daylight_metrics <- function(
 
 predawn_metrics <- function(
   sfn_data,
-  period = c('daily', 'monthly'),
+  period = c('1 day', '1 month'),
   solar = TRUE,
   int_start = 4,
   int_end = 6,
@@ -1030,7 +1029,7 @@ predawn_metrics <- function(
 
 midday_metrics <- function(
   sfn_data,
-  period = c('daily', 'monthly'),
+  period = c('1 day', '1 month'),
   solar = TRUE,
   int_start = 11,
   int_end = 13,
@@ -1222,4 +1221,183 @@ metrics_tidyfier <- function(
   
   return(whole_data)
   
+}
+
+
+#### Utils for substituting tibbletime dependencies ####
+#' .collapse_timestamp helper
+#' 
+#' Util to collapse the TIMESTAMP using lubridate::*_date functions
+#' 
+#' @section Period:
+#' Periods accepted are in the "number period" format, as in
+#' \code{\link[lubridate]{floor_date}} or a custom function name without quotes:
+#' \itemize{
+#'   \item{hours (exs. "1 hour", "12 hours")}
+#'   \item{days (exs. "1 day", "3 days")}
+#'   \item{weeks (exs. "1 week", "4 weeks")}
+#'   \item{months (exs. "1 month", "6 months")}
+#'   \item{years (exs. "1 year", "7 years")}
+#'   \item{Also a custom function can be supplied, one that transforms the
+#'   TIMESTAMP variable to the collapsed timestamp desired. See
+#'   \code{\link{sfn_metrics}} for details}
+#' }
+#' 
+#' @section Side:
+#' Side indicates if using \code{\link[lubridate]{floor_date}} (side = "start) or
+#' \code{\link[lubridate]{ceiling_date}} (side = 'end'). Ceiling dates is not
+#' trivial, see \code{\link[lubridate]{ceiling_date}} for information on how
+#' the date will be ceiled.
+#' 
+#' @return A vector of the same length as TIMESTAMP, with the collapsed timestamp
+#'   with the same tz as the original one.
+#' 
+#' @keywords internal
+#' 
+#' @examples
+#' arg_tre_timestamp <- get_timestamp(ARG_TRE)
+#' sapfluxnetr:::.collapse_timestamp(
+#'   arg_tre_timestamp, period = "1 day", side = 'start'
+#' )
+.collapse_timestamp <- function(timestamp, ..., period, side = 'start') {
+  
+  if (rlang::is_function(period)) {
+    # if (rlang::is_empty(dots_list)) {
+    #   collapsed_timestamp <- period(timestamp)
+    # } else {
+    #   collapsed_timestamp <- period(timestamp, !!! dots_list)
+    # }
+    collapsed_timestamp <- period(timestamp, ...)
+  } else {
+    # checks
+    .assert_that_period_is_valid(period)
+    assertthat::assert_that(
+      assertthat::is.string(side),
+      assertthat::are_equal(length(side), 1),
+      side %in% c('start', 'end'),
+      msg = "'side' must be a character vector of length one with accepted values 'start' or 'end'"
+    )
+    
+    if (side == 'start') {
+      collapsed_timestamp <- lubridate::floor_date(
+        timestamp, period, ...
+      )
+    } else {
+      collapsed_timestamp <- lubridate::ceiling_date(
+        timestamp, period, ...
+      )
+    }
+  }
+  
+  return(collapsed_timestamp)
+}
+
+#' .parse_period
+#' 
+#' Util to parse the period supplied to the function call to
+#' create the collapsed timestamp
+#' 
+#' @param period Period in the "number period" format
+#' 
+#' @examples 
+#' sapfluxnetr:::.parse_period('1 day')
+#' 
+#' @return  a list, with the freq value as numeric and the period value as
+#'   character
+#'
+#' @keywords internal
+.parse_period <- function(period) {
+  
+  .assert_that_period_is_valid(period)
+  
+  # split string
+  splitted_period <- period %>%
+    stringr::str_split(' ') %>%
+    purrr::flatten_chr()
+  
+  period_freq <- as.numeric(splitted_period[1])
+  period_char <- splitted_period[2]
+  
+  list(freq = period_freq, period = period_char)
+  
+}
+
+
+#' test for character period
+#' 
+#' @param period "frequency period"
+#' @examples 
+#' sapfluxnetr:::.assert_that_period_is_valid('1 day') # TRUE
+#' # not run
+#' # sapfluxnetr:::.assert_that_period_is_valid('1day') # error
+#' 
+#' @return TRUE if is valid, informative error if not.
+#' @keywords internal
+.assert_that_period_is_valid <- function(period) {
+  # check for character and length
+  assertthat::assert_that(
+    assertthat::is.string(period),
+    assertthat::are_equal(length(period), 1),
+    msg = '"period" must be character string of length 1. See help for more details'
+  )
+  
+  # split string
+  splitted_period <- period %>%
+    stringr::str_split(' ') %>%
+    purrr::flatten_chr()
+  
+  ## check that we have length 2
+  assertthat::assert_that(
+    assertthat::are_equal(length(splitted_period), 2),
+    msg = '"period" must consist of a frequency and a period in the style: "2 days"'
+  )
+  
+  ## check that 
+  assertthat::assert_that(
+    # Coercing to numeric should give a number, not NA
+    suppressWarnings(!is.na(as.numeric(splitted_period[1]))),
+    msg = "Frequency must be coercible to numeric."
+  )
+}
+
+#' Period custom function
+#' 
+#' nightly period custom function, to use with nightly_metrics
+#' 
+#' This function will be supplied as "period" argument to summarise_by_period
+#' when daily nightly metrics are requested.
+#' 
+#' @param timestamp TIMESTAMP
+#' @param night_data as it comes inside of sfn_metrics
+#' @param int_start interval start as supplied to sfn_metrics
+#' 
+#' @return a vector of the same length as TIMESTAMP with the collapsed values.
+#' @keywords internal
+.nightly_daily_cf <- function(
+  timestamp,
+  night_data, int_start
+) {
+  
+  night_data[['sapf']] %>%
+    dplyr::mutate(
+      coll = .collapse_timestamp(
+        .data$TIMESTAMP,
+        period = '1 day',
+        side = 'start'
+      )
+    ) %>%
+    dplyr::group_by(.data$coll) %>%
+    # closest to night start timestamp
+    dplyr::summarise(
+      custom_dates = .data$TIMESTAMP[which.min(
+        abs(lubridate::hour(.data$TIMESTAMP) - int_start)
+      )],
+      TIMESTAMP = .data$custom_dates
+    ) %>%
+    dplyr::right_join(
+      night_data[['sapf']] %>% dplyr::select(.data$TIMESTAMP), by = 'TIMESTAMP'
+    ) %>%
+    tidyr::fill(.data$custom_dates) %>%
+    dplyr::pull(.data$custom_dates) %>%
+    lubridate::floor_date(unit = 'hour')
 }

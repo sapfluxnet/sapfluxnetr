@@ -1,6 +1,6 @@
 Package: sapfluxnetr
 Title: Working with 'Sapfluxnet' Project Data
-Version: 0.0.6
+Version: 0.0.7
 Authors@R: c(
   person("Victor", "Granda", email = "victorgrandagarcia@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0469-1991")),
   person("Rafael", "Poyatos", email = "r.poyatos@creaf.uab.cat", role = "aut", comment = c(ORCID = "0000-0003-0521-2523")),
@@ -9,12 +9,13 @@ Authors@R: c(
   person("Sapfluxnet Core Team", email = "sapfluxnet@creaf.uab.cat", role = 'cph')
   )
 Description: Access, modify, aggregate and plot data from the 'Sapfluxnet' project
-  (<http:sapfluxnet.creaf.cat>), the first global database of sap flow measurements.
+  (<http://sapfluxnet.creaf.cat>), the first global database of sap flow measurements.
 Depends: R (>= 3.4.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
+    assertthat,
     dplyr,
     furrr,
     ggplot2,
@@ -27,9 +28,7 @@ Imports:
     stats,
     stringr,
     tibble,
-    tibbletime,
-    tidyr,
-    utils
+    tidyr
 RoxygenNote: 6.1.1
 Collate:
     'data.R'

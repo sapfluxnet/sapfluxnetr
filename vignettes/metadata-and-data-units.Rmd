@@ -99,7 +99,7 @@ bind_rows(
 
 ### Sap flow units
 
-Sap flow units depends on the database level choosen:
+Sap flow units depends on the database level chosen:
 
 $$Plant:~\frac{cm³}{s}$$
 $$Sapwood:~\frac{cm³}{cm²_{sa}·s}$$

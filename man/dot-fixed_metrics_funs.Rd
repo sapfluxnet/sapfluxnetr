@@ -13,7 +13,8 @@
 (i.e. in monthly metrics, the centroid calculation is not needed)}
 }
 \description{
-generates a call to dplyr::funs to capture the fixed metrics
+generates a call to list to capture the fixed metrics in a quosure lambda
+style
 }
 \examples{
 sapfluxnetr:::.fixed_metrics_funs(0.95, FALSE)

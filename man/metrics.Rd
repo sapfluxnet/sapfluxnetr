@@ -16,19 +16,19 @@ daily_metrics(sfn_data, solar = TRUE, probs = c(0.95), tidy = FALSE,
 monthly_metrics(sfn_data, solar = TRUE, probs = c(0.95),
   tidy = FALSE, metadata = NULL, ...)
 
-nightly_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
+nightly_metrics(sfn_data, period = c("1 day", "1 month"), solar = TRUE,
   int_start = 20, int_end = 6, probs = c(0.95), tidy = FALSE,
   metadata = NULL, ...)
 
-daylight_metrics(sfn_data, period = c("daily", "monthly"),
+daylight_metrics(sfn_data, period = c("1 day", "1 month"),
   solar = TRUE, int_start = 6, int_end = 20, probs = c(0.95),
   tidy = FALSE, metadata = NULL, ...)
 
-predawn_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
+predawn_metrics(sfn_data, period = c("1 day", "1 month"), solar = TRUE,
   int_start = 4, int_end = 6, probs = c(0.95), tidy = FALSE,
   metadata = NULL, ...)
 
-midday_metrics(sfn_data, period = c("daily", "monthly"), solar = TRUE,
+midday_metrics(sfn_data, period = c("1 day", "1 month"), solar = TRUE,
   int_start = 11, int_end = 13, probs = c(0.95), tidy = FALSE,
   metadata = NULL, ...)
 }
@@ -48,11 +48,11 @@ format (a long tibble, each observation in its own row)}
 \item{metadata}{metadata object, usually the result of
 \code{\link{read_sfn_metadata}}. Only used if tidy is TRUE.}
 
-\item{...}{optional arguments to pass to methods used
-(i.e. tibbletime::collapse_index or summarise funs extra arguments)}
+\item{...}{additional arguments to be passed to \code{\link{.collapse_timestamp}}
+or \code{\link[lubridate]{floor_date}} or \code{\link[lubridate]{ceiling_date}}.}
 
 \item{period}{Time period to aggregate data by. See period section for an
-explanation about the periods ('daily', 'monthly', 'yearly', ...)}
+explanation about the periods ('1 day', '1 month', '1 year', ...)}
 
 \item{int_start}{Integer value indicating the starting hour of the special
 interval in 24h format. See Interval section in details.}
@@ -85,7 +85,8 @@ set of fixed arguments.
   \item{q_XX: 0.XX quantile value for the period}
   \item{centroid: Diurnal centroid value (hours passed until the half of
         the summed daily value was reached). Only returned for sapflow
-        measures when period is 'daily'}
+        measures when period is '1 day'}
+  \item{accumulated: Accumulated values for precipitation only}
 }
 }
 \section{daily_metrics}{

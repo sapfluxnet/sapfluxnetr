@@ -2,7 +2,7 @@
 
 ##### sfn_data #################################################################
 # set old class for S$ to recognize tbl as data.frames
-setOldClass(c("tbl_time", "tbl_df", "tbl", "data.frame"))
+setOldClass(c("tbl_df", "tbl", "data.frame"))
 
 
 #' S4 class for sapfluxnet site data

@@ -1,3 +1,13 @@
+# sapfluxnetr 0.0.7
+
+* Replaced calls of dplyr::funs with list (or rlang::list2 if splicing is needed)
+  as the former is soft deprecated in dplyr 0.8.0
+* One word periods ('daily', 'monthly'...) in `sfn_metrics` function are
+  **soft deprecated**. Please use '1 day', '1 month'... instead. 
+* Removed all dependencies on 'tibbletime' package
+* Added utils internal functions: .collapse_timestamp and .parse_period
+* Added installation from CRAN to vignette and readme
+
 # sapfluxnetr 0.0.6
 
 * Improved examples in the functions help

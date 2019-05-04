@@ -15,13 +15,12 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-
-`sapfluxnetr` package offers a very flexible but powerful system based on
-`tidyverse` and `tibbletime` packages to aggregate and summarise the site/s data
-in the form of the `sfn_metrics` functions. All the metrics family of functions
-(`?metrics`) make use of `sfn_metrics` under the hood. If you want full control
-to the statistics returned and aggregation periodswe recommend you to use this
-main function. This vignette will show you how.
+`sapfluxnetr` package offers a very flexible but powerful API based on the
+`tidyverse` packages to aggregate and summarise the site/s data in the form
+of the `sfn_metrics` function. All the metrics family of functions (`?metrics`)
+make use of the `sfn_metrics` funcion under the hood. If you want full control
+to the statistics returned and aggregation periods, we recommend you to use this
+API. This vignette will show you how.
 
 ## Pre-fixed summarising functions
 
@@ -37,10 +36,13 @@ See each function help for a detailed description and examples of use.
 ## Custom summarising functions
 
 `daily_metrics` and related functions return a complete set of metrics ready for
-use, but if you want simpler metrics and/or avoid the computational burden of
-returning all the pre-fixed metrics you can supply your own summarising functions
-using the `funs` function belonging to the `dplyr` package in the `tidyverse`
-suite:
+use, but if you want simpler metrics and/or different metrics you can supply
+your own summarising functions using the `.funs` argument.  
+The correct way of especifying the functions are as described in the
+`summarise_all` help (`help(dplyr::summarise_all)`), function names, quosure
+style lambda functions or a list of either form. We **recommend** a list of
+quosure style lamda functions, as is easier to add the corresponding arguments
+for each function:
 
 ```{r}
 # libraries
@@ -51,13 +53,13 @@ library(dplyr)
 # data
 data('ARG_TRE', package = 'sapfluxnetr')
 
-# summarising funs (built with funs function from dplyr package)
-custom_funs <- funs(mean = mean(., na.rm = TRUE), std_dev = sd(., na.rm = TRUE))
+# summarising funs (built with quosure style lambdas list)
+custom_funs <- list(mean = ~ mean(., na.rm = TRUE), std_dev = ~ sd(., na.rm = TRUE))
 
 # metrics
 foo_simpler_metrics <- sfn_metrics(
   ARG_TRE,
-  period = 'daily',
+  period = '1 day',
   .funs = custom_funs,
   solar = TRUE,
   interval = 'general'
@@ -66,14 +68,20 @@ foo_simpler_metrics <- sfn_metrics(
 foo_simpler_metrics[['sapf']]
 ```
 
-You can also select if the "special interest" intervals (predawn, midday,
+> When supplying only one function to .funs, names of variables are not changed to
+  contain the metric name at the end, as the summary function returns the
+  same columns as the original data
+
+## Special interest intervals
+
+You can also choose if the "special interest" intervals (predawn, midday,
 nighttime or daylight) are calculated or not. For example, if you are only
 interested in the midday interval you can use:
 
 ```{r}
 foo_simpler_metrics_midday <- sfn_metrics(
   ARG_TRE,
-  period = 'daily',
+  period = '1 day',
   .funs = custom_funs,
   solar = TRUE,
   interval = 'midday', int_start = 11, int_end = 13
@@ -82,17 +90,13 @@ foo_simpler_metrics_midday <- sfn_metrics(
 foo_simpler_metrics_midday[['sapf']]
 ```
 
-> When supplying only one function names of variables are not changed to
-  contain the metric name at the end, as the summary function returns the
-  same columns as the original data
-
 ## Custom aggregation periods
 
-`period` argument in `sfn_metrics` is passed to `collapse_index` function in the
-`tibbletime` package, and so, it can use the same input:
+`period` argument in `sfn_metrics` is passed to `.collapse_timestamp` function,
+and so, it can use the same input:
 
   + "frequency period" format, where frequency is a number and period is an
-    interval as character (i.e. "1 year" same as "yearly", "7 days")
+    interval as character (i.e. "1 year", "7 days")
 
 ```{r}
 # weekly
@@ -107,22 +111,24 @@ foo_weekly <- sfn_metrics(
 foo_weekly[['env']]
 ```
 
- + A vector of dates as period boundaries. This way you can build irregular
+ + A custom function name (without quotes). This way you can build irregular
    or custom periods.
+   This function first argument must always be the timestamp to be collapsed, and
+   can have other arguments that will be supplied in the dots (`...`) argument
+   of `sfn_metrics`. Also, this function always must return a vector of timestamps
+   of the same length as the original timestamp.  
+   For example, if you want to summarise by quarters we can use the `quarter`
+   function from the lubridate package:
 
 ```{r}
-# custom
 foo_custom <- sfn_metrics(
-  ARG_TRE,
-  period = as.POSIXct(
-    c('2009-11-17 00:00:00', '2009-11-22 14:00:00', '2009-11-30 23:59:00'),
-                      tz = 'UTC'
-  ),
+  AUS_CAN_ST2_MIX,
+  period = lubridate::quarter, # period is the name of the function now
   .funs = custom_funs,
   solar = TRUE,
-  interval = 'general'
+  interval = 'general',
+  with_year = TRUE # argument for lubridate::quarter
 )
-foo_custom[['sapf']]
 ```
 
 ## Extra parameters
@@ -130,28 +136,24 @@ foo_custom[['sapf']]
 `sfn_metrics` has a `...` parameter intended to supply additional parameters to
 the internal functions used:
 
-  1. `tibbletime::collapse_index` accepts the following extra arguments:
+  1. `.collapse_timestamp` accepts the following extra arguments:
      
-     - `start_date`  
-        NULL by default in the sfn_metrics implementation
      - `side`  
         "start" by default in the sfn_metrics implementation
-     - `clean`  
-        TRUE by default in the sfn_metrics implementation
   
   1. `dplyr::summarise_all` accepts extra arguments intended to be applied to
      the summarising functions provided (to **all**, so they all must have the
      argument provided or an error will be raised). That's the reason because we
-     recommend to use the `funs` function from `dplyr`, as the arguments are
-     specified for the individual functions.
+     recommend to use the list way, as the arguments are specified for the
+     individual functions.
 
 For example, if we want the TIMESTAMPs after aggregation to show the end of the
-period instead the beggining (default) we can do the following:
+period instead the begining (default) we can do the following:
 
 ```{r}
 foo_simpler_metrics_end <- sfn_metrics(
   ARG_TRE,
-  period = 'daily',
+  period = '1 day',
   .funs = custom_funs,
   solar = TRUE,
   interval = 'general',
@@ -164,6 +166,10 @@ foo_simpler_metrics_end[['sapf']]
 If it is compared with the `foo_simpler_metrics` calculated before, now the
 period is identified in the TIMESTAMP by the ending of the period (daily in this
 case).
+
+> When supplying custom functions as "period" argument, the default coverage
+  statistic is not reliable as there is no way of knowing beforehand the
+  period/s in minutes.
 
 ## Temporary columns helpers
 
@@ -200,11 +206,11 @@ max_time <- function(x, time) {
   }
 }
 
-custom_funs <- funs(max = max(., na.rm = TRUE), max_time(., TIMESTAMP_coll))
+custom_funs <- list(max = ~ max(., na.rm = TRUE), ~ max_time(., TIMESTAMP_coll))
 
 max_time_metrics <- sfn_metrics(
   ARG_TRE,
-  period = 'daily',
+  period = '1 day',
   .funs = custom_funs,
   solar = TRUE,
   interval = 'general'

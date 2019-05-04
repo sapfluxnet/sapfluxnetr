@@ -61,10 +61,12 @@ reference:
   desc: ~
   contents:
   - '`.accumulated_posix_aware`'
+  - '`.collapse_timestamp`'
   - '`.env_vars_names`'
   - '`.fixed_metrics_funs`'
   - '`.flag`'
   - '`.metadata_architecture`'
+  - '`.parse_period`'
   - '`.period_to_minutes`'
   - '`.sapflow_tidy`'
   - '`.timezone_dic`'

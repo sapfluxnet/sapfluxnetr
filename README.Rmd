@@ -71,14 +71,10 @@ ggplot(multi_metrics, aes(x = vpd_q_95, y = sapflow_q_95, colour = si_code)) +
 
 ## Installation
 
-You can install sapfluxnetr from github with the `remotes` package:
+You can install sapfluxnetr from CRAN:
 
-```{r gh-installation, eval = FALSE}
-# if (!require(remotes)) {install.packages('remotes')}
-remotes::install_github(
-  'sapfluxnet/sapfluxnetr',
-  build_opts = c("--no-resave-data", "--no-manual", "--build-vignettes")
-)
+```{r cran-installation, eval = FALSE}
+install.packages('sapfluxnetr')
 ```
 
 Be advised, `sapfluxnetr` is in active development and can contain undiscovered

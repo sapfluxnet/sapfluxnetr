@@ -10,24 +10,24 @@ test_that("describe_md_variable works", {
 
 test_that("accumulated metric helper function works", {
   
-  # testthat::skip_on_cran()
+  # skip_on_cran()
   
   data <- get_env_data(ARG_TRE) %>% dplyr::select(TIMESTAMP, precip)
   
-  testthat::expect_identical(
+  expect_identical(
     sapfluxnetr:::.accumulated_posix_aware(data$TIMESTAMP), data$TIMESTAMP[1]
   )
-  testthat::expect_identical(
+  expect_equal(
     sapfluxnetr:::.accumulated_posix_aware(data$precip), 38.5
   )
-  testthat::expect_identical(
+  expect_identical(
     sapfluxnetr:::.accumulated_posix_aware(data$precip), sum(data$precip)
   )
   
   data_summ <- data %>% dplyr::summarise_all(sapfluxnetr:::.accumulated_posix_aware)
   
-  testthat::expect_s3_class(data_summ, 'tbl')
+  expect_s3_class(data_summ, 'tbl')
   expect_identical(names(data_summ), c('TIMESTAMP', 'precip'))
   expect_identical(data_summ[['TIMESTAMP']][1], data$TIMESTAMP[1])
-  expect_identical(data_summ[['precip']][1], 38.5)
+  expect_equal(data_summ[['precip']][1], 38.5)
 })

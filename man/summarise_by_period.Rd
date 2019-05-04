@@ -10,16 +10,16 @@ summarise_by_period(data, period, .funs, ...)
 \item{data}{sapflow or environmental data as obtained by \code{\link{get_sapf_data}}
 and \code{\link{get_env_data}}. Must have a column named TIMESTAMP}
 
-\item{period}{tibbletime::collapse_index period}
+\item{period}{period to collapse by. See \code{\link{sfn_metrics}} for details.}
 
-\item{.funs}{dplyr::summarise_all funs}
+\item{.funs}{funs to summarise the data. See details.}
 
-\item{...}{optional arguments for \code{link{summarise_by_period}}}
+\item{...}{optional arguments. See details}
 }
 \value{
-A `tbl_time` object with the metrics results. The names of the columns
+A `tbl_df` object with the metrics results. The names of the columns
   indicate the original variable (tree or environmental variable) and the
-  metric calculated (i.e. `vpd_mean`)
+  metric calculated (i.e. `vpd_mean`), separated by underscore
 }
 \description{
 This function collapse the TIMESTAMP to the desired period (day, month...)
@@ -27,21 +27,21 @@ by setting the same value to all timestamps within the period. This modified
 TIMESTAMP is used to group by and summarise the data.
 }
 \details{
-This function uses internally \code{\link[tibbletime]{collapse_index}} and
-\code{\link[dplyr]{summarise_all}} and arguments to control these functions
+This function uses internally \code{\link{.collapse_timestamp}} and
+\code{\link[dplyr]{summarise_all}}. Arguments to control these functions
 can be passed as `...`. Arguments for each function are spliced and applied
 when needed. Be advised that all arguments passed to the summarise_all function
 will be applied to all the summarising functions used, so it will fail if any
 of that functions does not accept that argument. To complex function-argument
 relationships, indicate each summary function call within the \code{.funs}
-argument with \code{\link[dplyr]{funs}}:
+argument as explained here \code{\link[dplyr]{summarise_all}}:
 \preformatted{
 # This will fail beacuse na.rm argument will be also passed to the n function,
 # which does not accept any argument:
 summarise_by_period(
   data = get_sapf_data(ARG_TRE),
   period = '7 days',
-  .funs = funs(mean, sd, n),
+  .funs = list(mean, sd, n()),
   na.rm = TRUE
 )
 
@@ -49,7 +49,7 @@ summarise_by_period(
 summarise_by_period(
   data = get_sapf_data(ARG_TRE),
   period = '7 days',
-  .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+  .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
 )
 }
 }
@@ -67,8 +67,8 @@ summarise_by_period(
 
     summarise_by_period(
       data = get_sapf_data(ARG_TRE),
-      period = 'daily',
-      .funs = funs(min_time, time = TIMESTAMP_coll) # Not TIMESTAMP
+      period = '1 day',
+      .funs = list(~ min_time(., time = TIMESTAMP_coll)) # Not TIMESTAMP
     )
   }
 }
@@ -83,7 +83,7 @@ data('ARG_TRE', package = 'sapfluxnetr')
 summarise_by_period(
   data = get_sapf_data(ARG_TRE),
   period = '7 days',
-  .funs = funs(mean(., na.rm = TRUE), sd(., na.rm = TRUE), n())
+  .funs = list(~ mean(., na.rm = TRUE), ~ sd(., na.rm = TRUE), ~ n())
 )
 
 }

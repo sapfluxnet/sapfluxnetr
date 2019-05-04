@@ -47,8 +47,8 @@ vars_to_mutate <- names(get_sapf_data(ARG_TRE)[,-1]) # no TIMESTAMP
 sfn_mutate_at(
   ARG_TRE,
   .vars = vars(one_of(vars_to_mutate)),
-  .funs = funs(
-    case_when(
+  .funs = list(
+    ~ case_when(
       ws > ws_threshold ~ NA_real_,
       TRUE ~ .
     )
@@ -66,8 +66,8 @@ vars_to_not_mutate <- names(get_env_data(ARG_TRE)) # all the environmental
 multi_sfn_mutated <- sfn_mutate_at(
   multi_sfn,
   .vars = vars(-one_of(vars_to_not_mutate)), # we use -
-  .funs = funs(
-    case_when(
+  .funs = list(
+    ~ case_when(
       ws > ws_threshold ~ NA_real_,
       TRUE ~ .
     )

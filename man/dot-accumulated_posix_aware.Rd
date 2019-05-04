@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{.accumulated_posix_aware}
 \alias{.accumulated_posix_aware}
-\title{acummulated function}
+\title{accumulated function}
 \usage{
 .accumulated_posix_aware(variable, na.rm = FALSE)
 }
