@@ -1,3 +1,5 @@
+# sapfluxnetr (development version)
+
 # sapfluxnetr 0.0.7
 
 * Replaced calls of dplyr::funs with list (or rlang::list2 if splicing is needed)

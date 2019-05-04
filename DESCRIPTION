@@ -1,6 +1,6 @@
 Package: sapfluxnetr
 Title: Working with 'Sapfluxnet' Project Data
-Version: 0.0.7
+Version: 0.0.7.9000
 Authors@R: c(
   person("Victor", "Granda", email = "victorgrandagarcia@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0469-1991")),
   person("Rafael", "Poyatos", email = "r.poyatos@creaf.uab.cat", role = "aut", comment = c(ORCID = "0000-0003-0521-2523")),
