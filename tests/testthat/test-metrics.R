@@ -1,5 +1,3 @@
-context("metrics")
-
 # data
 data('ARG_TRE', package = 'sapfluxnetr')
 data('ARG_MAZ', package = 'sapfluxnetr')

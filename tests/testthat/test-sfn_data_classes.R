@@ -1,6 +1,4 @@
 #### sfn_data_classes tests ####
-context("sfn_data_classes")
-
 load('ARG_TRE.RData')
 load('ARG_MAZ.RData')
 load('AUS_CAN_ST2_MIX.RData')

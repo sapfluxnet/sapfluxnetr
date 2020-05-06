@@ -1,5 +1,3 @@
-context("helpers")
-
 test_that("describe_md_variable works", {
   expect_output(describe_md_variable('pl_sens_meth'), 'Type:')
   expect_output(describe_md_variable('st_age'), 'Values:')

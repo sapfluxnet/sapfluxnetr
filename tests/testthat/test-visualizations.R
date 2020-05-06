@@ -1,5 +1,3 @@
-context("visualizations")
-
 data("ARG_TRE", package = 'sapfluxnetr')
 data("ARG_MAZ", package = 'sapfluxnetr')
 data("AUS_CAN_ST2_MIX", package = 'sapfluxnetr')

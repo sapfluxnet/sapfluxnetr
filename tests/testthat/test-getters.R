@@ -1,5 +1,3 @@
-context("getters")
-
 #### read_sfn_data tests ####
 test_that('read_sfn_data load the objects correctly', {
 
