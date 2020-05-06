@@ -4,7 +4,9 @@
 \name{sfn_metadata_ex}
 \alias{sfn_metadata_ex}
 \title{sfn_metadata cache file for example data (ARG_MAZ, ARG_TRE and AUS_CAN_ST2_MIX)}
-\format{A list with five elements, each of one a metadata type.}
+\format{
+A list with five elements, each of one a metadata type.
+}
 \usage{
 sfn_metadata_ex
 }

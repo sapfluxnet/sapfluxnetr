@@ -4,7 +4,9 @@
 \name{AUS_CAN_ST2_MIX}
 \alias{AUS_CAN_ST2_MIX}
 \title{AUS_CAN_ST2_MIX sapfluxnet site}
-\format{An sfn_data class object with the data and metadata for AUS_CAN_ST2_MIX site}
+\format{
+An sfn_data class object with the data and metadata for AUS_CAN_ST2_MIX site
+}
 \usage{
 AUS_CAN_ST2_MIX
 }

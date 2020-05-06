@@ -4,7 +4,9 @@
 \name{ARG_MAZ}
 \alias{ARG_MAZ}
 \title{ARG_MAZ sapfluxnet site}
-\format{An sfn_data class object with the data and metadata for ARG_MAZ site}
+\format{
+An sfn_data class object with the data and metadata for ARG_MAZ site
+}
 \usage{
 ARG_MAZ
 }

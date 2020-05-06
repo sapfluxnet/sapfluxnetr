@@ -25,7 +25,6 @@ metric calculation results in extra memory needed:
 
 ```{r memory_all, eval=FALSE}
 library(sapfluxnetr)
-library(tidyverse)
 
 # This will need at least 5GB of memory during the process
 folder <- 'RData/plant'
@@ -48,7 +47,6 @@ subsets of sites (25-30) and join the tidy results afterwards:
 
 ```{r memory_steps, eval = FALSE}
 library(sapfluxnetr)
-library(tidyverse)
 
 folder <- 'RData/plant'
 metadata <- read_sfn_metadata(folder)

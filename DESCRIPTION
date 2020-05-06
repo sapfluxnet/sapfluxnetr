@@ -29,7 +29,7 @@ Imports:
     stringr,
     tibble,
     tidyr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Collate:
     'data.R'
     'getters.R'
@@ -47,7 +47,6 @@ Suggests:
     remotes,
     rmarkdown,
     testthat,
-    tidyverse,
     xtable
 VignetteBuilder: knitr
 URL: https://github.com/sapfluxnet/sapfluxnetr

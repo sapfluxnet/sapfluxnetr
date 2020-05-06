@@ -4,9 +4,14 @@
 \alias{sfn_plot}
 \title{plot method for sfn_data class}
 \usage{
-sfn_plot(sfn_data, type = c("sapf", "env", "ta", "rh", "vpd", "ppfd_in",
-  "netrad", "sw_in", "ext_rad", "ws", "precip", "swc_shallow", "swc_deep"),
-  formula_env = NULL, solar = TRUE, ...)
+sfn_plot(
+  sfn_data,
+  type = c("sapf", "env", "ta", "rh", "vpd", "ppfd_in", "netrad", "sw_in", "ext_rad",
+    "ws", "precip", "swc_shallow", "swc_deep"),
+  formula_env = NULL,
+  solar = TRUE,
+  ...
+)
 }
 \arguments{
 \item{sfn_data}{sfn_data object to plot. It can be also an sfn_data_multi

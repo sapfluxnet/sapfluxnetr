@@ -48,7 +48,7 @@ remotes::install_github(
 )
 ```
 
-Now you can load the package, along with the `tidyverse` related packages, as 
+Now you can load the package, along with the `tidyverse`-related packages, as 
 they will be needed later:
 
 ```{r pkg_load}

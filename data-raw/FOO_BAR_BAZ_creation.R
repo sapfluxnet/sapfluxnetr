@@ -1,4 +1,4 @@
-library(tidyverse)
+library(dplyr)
 library(sapfluxnetr)
 
 load(file = 'tests/testthat/big_test/plant/ARG_TRE.RData')
@@ -43,7 +43,7 @@ get_site_md(ARG_TRE) <- ARG_TRE_site_md
 
 
 save(ARG_TRE, file = 'tests/testthat/Data/ARG_TRE.RData')
-devtools::use_data(ARG_TRE, overwrite = TRUE)
+usethis::use_data(ARG_TRE, overwrite = TRUE)
 rm(list = c('ARG_TRE'))
 save.image(file = 'tests/testthat/ARG_TRE.RData')
 
@@ -93,7 +93,7 @@ get_site_md(ARG_MAZ) <- ARG_MAZ_site_md
 
 
 save(ARG_MAZ, file = 'tests/testthat/Data/ARG_MAZ.RData')
-devtools::use_data(ARG_MAZ, overwrite = TRUE)
+usethis::use_data(ARG_MAZ, overwrite = TRUE)
 rm(list = c('ARG_MAZ'))
 save.image(file = 'tests/testthat/ARG_MAZ.RData')
 
@@ -143,7 +143,7 @@ get_site_md(AUS_CAN_ST2_MIX) <- AUS_CAN_ST2_MIX_site_md
 
 
 save(AUS_CAN_ST2_MIX, file = 'tests/testthat/Data/AUS_CAN_ST2_MIX.RData')
-devtools::use_data(AUS_CAN_ST2_MIX, overwrite = TRUE)
+usethis::use_data(AUS_CAN_ST2_MIX, overwrite = TRUE)
 rm(list = c('AUS_CAN_ST2_MIX'))
 save.image(file = 'tests/testthat/AUS_CAN_ST2_MIX.RData')
 
@@ -154,4 +154,4 @@ rm(list = ls())
 sfn_metadata_ex <- sapfluxnetr:::.write_metadata_cache('tests/testthat/Data',
                                                     .dry = TRUE)
 
-devtools::use_data(sfn_metadata_ex, overwrite = TRUE)
+usethis::use_data(sfn_metadata_ex, overwrite = TRUE)

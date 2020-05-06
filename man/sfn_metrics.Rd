@@ -4,9 +4,16 @@
 \alias{sfn_metrics}
 \title{Metrics summary function}
 \usage{
-sfn_metrics(sfn_data, period, .funs, solar, interval = c("general",
-  "predawn", "midday", "night", "daylight"), int_start = NULL,
-  int_end = NULL, ...)
+sfn_metrics(
+  sfn_data,
+  period,
+  .funs,
+  solar,
+  interval = c("general", "predawn", "midday", "night", "daylight"),
+  int_start = NULL,
+  int_end = NULL,
+  ...
+)
 }
 \arguments{
 \item{sfn_data}{\code{\link{sfn_data}} or \code{\link{sfn_data_multi}} object
@@ -154,6 +161,7 @@ ARG_TRE_midday[['sapf']]
 
 }
 \seealso{
-Other metrics: \code{\link{metrics}}
+Other metrics: 
+\code{\link{metrics}}
 }
 \concept{metrics}

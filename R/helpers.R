@@ -272,7 +272,7 @@ norm_diurnal_centroid <- function(sapf_var, rad_var) {
 # #'   transformed to characters
 # #'
 # #' @examples
-# #' library(tidyverse)
+# #' library(dplyr)
 # #' # pipe example, not efficient
 # #' iris %>%
 # #'   pull(Sepal.Length) %>%

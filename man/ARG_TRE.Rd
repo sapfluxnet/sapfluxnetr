@@ -4,7 +4,9 @@
 \name{ARG_TRE}
 \alias{ARG_TRE}
 \title{ARG_TRE sapfluxnet site}
-\format{An sfn_data class object with the data and metadata for ARG_TRE site}
+\format{
+An sfn_data class object with the data and metadata for ARG_TRE site
+}
 \usage{
 ARG_TRE
 }
