@@ -4,7 +4,7 @@ author: "Victor Granda (Sapfluxnet Team)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{"Metadata and Data units}
+  %\VignetteIndexEntry{Metadata and Data units}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 

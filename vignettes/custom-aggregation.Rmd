@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Custom aggregation}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -15,6 +17,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
 `sapfluxnetr` package offers a very flexible but powerful API based on the
 `tidyverse` packages to aggregate and summarise the site/s data in the form
 of the `sfn_metrics` function. All the metrics family of functions (`?metrics`)
@@ -24,12 +27,12 @@ API. This vignette will show you how.
 
 ## Pre-fixed summarising functions
 
-1. `daily_metrics`
-1. `monthly_metrics`
-1. `predawn_metrics`
-1. `midday_metrics`
-1. `nightly_metrics`
-1. `daylight_metrics`
+  1. `daily_metrics`
+  1. `monthly_metrics`
+  1. `predawn_metrics`
+  1. `midday_metrics`
+  1. `nightly_metrics`
+  1. `daylight_metrics`
 
 See each function help for a detailed description and examples of use.
 
@@ -38,13 +41,11 @@ See each function help for a detailed description and examples of use.
 `daily_metrics` and related functions return a complete set of metrics ready for
 use, but if you want simpler metrics and/or different metrics you can supply
 your own summarising functions using the `.funs` argument.  
-The correct way of especifying the functions are as described in the
-`summarise_all` help (`help(dplyr::summarise_all)`), function names, quosure
-style lambda functions or a list of either form. We **recommend** a list of
-quosure style lamda functions, as is easier to add the corresponding arguments
-for each function:
+The correct way of specifying the functions to use is described in
+the `summarise_all` help (`?dplyr::summarise_all`). The recommended way is a
+list of formulas with the function call:
 
-```{r}
+```{r custom_summ}
 # libraries
 library(sapfluxnetr)
 library(dplyr)
@@ -53,7 +54,7 @@ library(dplyr)
 # data
 data('ARG_TRE', package = 'sapfluxnetr')
 
-# summarising funs (built with quosure style lambdas list)
+# summarising funs (as a list of formulas)
 custom_funs <- list(mean = ~ mean(., na.rm = TRUE), std_dev = ~ sd(., na.rm = TRUE))
 
 # metrics
@@ -78,7 +79,7 @@ You can also choose if the "special interest" intervals (predawn, midday,
 nighttime or daylight) are calculated or not. For example, if you are only
 interested in the midday interval you can use:
 
-```{r}
+```{r special_intervals}
 foo_simpler_metrics_midday <- sfn_metrics(
   ARG_TRE,
   period = '1 day',
@@ -98,7 +99,7 @@ and so, it can use the same input:
   + "frequency period" format, where frequency is a number and period is an
     interval as character (i.e. "1 year", "7 days")
 
-```{r}
+```{r custom_aggregation}
 # weekly
 foo_weekly <- sfn_metrics(
   ARG_TRE,
@@ -120,7 +121,7 @@ foo_weekly[['env']]
    For example, if you want to summarise by quarters we can use the `quarter`
    function from the lubridate package:
 
-```{r}
+```{r custom_aggregation_2}
 foo_custom <- sfn_metrics(
   AUS_CAN_ST2_MIX,
   period = lubridate::quarter, # period is the name of the function now
@@ -150,7 +151,7 @@ the internal functions used:
 For example, if we want the TIMESTAMPs after aggregation to show the end of the
 period instead the begining (default) we can do the following:
 
-```{r}
+```{r extra_params}
 foo_simpler_metrics_end <- sfn_metrics(
   ARG_TRE,
   period = '1 day',
