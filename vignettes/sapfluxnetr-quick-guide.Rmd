@@ -48,40 +48,51 @@ remotes::install_github(
 )
 ```
 
-Now you can load the package, along with the `tidyverse` package, as it will be
-needed later:
+Now you can load the package, along with the `tidyverse` related packages, as 
+they will be needed later:
 
 ```{r pkg_load}
 library(sapfluxnetr)
-# if (!require(tidyverse)) {install.packages('tidyverse')}
-library(tidyverse)
+# tidyverse
+library(dplyr)
+library(ggplot2)
 ```
 
 
 ## Download the data
 
+  > *.zip* file is about 3GB. Unzipped folders use about 24GB of disk space.
+    Please check that you have enough space available before downloading and
+    unzipping the files.
+
+
 ### Zenodo
 
-During the embargo period (2019-03-05 to 2020-03-05) only the data contributors
-can access the data. If you are a data contributor willing to access the data,
-follow these steps:
+Data is publicly available on [Zenodo](https://zenodo.org/record/3697807) to
+download. You can manually download the data or use a *programmatic* approach:
 
-  1. Go to SAPFLUXNET repository in Zenodo (https://zenodo.org/record/2530798)
-  1. Click in the `Request access` button, fill the form and click the
-     `Send request` button.
-  1. SAPFLUXNET Team will send you an email with the link to activate your
-     access to the Zenodo repository.
-  1. Follow the link and click in the download button. This will download a
-     zip file
-  1. Unzip the file in any location
-  1. You are ready to go ;)
+    
+```{r downzip, eval = FALSE}
+# download the data
+download.file(
+  url = "https://zenodo.org/record/3697807/files/0.1.4.zip?download=1",
+  destfile = '0.1.4.zip'
+)
+# unzip the data
+# BE SURE YOU HAVE AT LEAST 24GB OF DISK SPACE
+unzip("0.1.4.zip")
+# check if files are present
+list.files(file.path('0.1.4', 'RData', 'plant'))
+list.files(file.path('0.1.4', 'csv', 'plant'))
+```
+
 
 ### SAPFLUXNET Data estructure
 
 SAPFLUXNET database estrucuture is as follows:
 
 ```
-0.1.3 (database version number)
+0.1.4 (database version number)
   |
   |-- RData
   |    |
@@ -109,10 +120,10 @@ scripts or functions to work with the csv files, only the RData objects.
 
 To start working with the data, you have two options:
 
-  - If working in RStudio, create a project in the data root folder (`0.1.3` in
+  - If working in RStudio, create a project in the data root folder (`0.1.4` in
     this example) and follow the examples in this vignette to get started.
   
-  - If not, set the data root folder (`0.1.3` in this example) as the working
+  - If not, set the data root folder (`0.1.4` in this example) as the working
     directory with `setwd` and follow the examples in this vignette to get
     started.
 
@@ -274,21 +285,21 @@ sfn_plot(arg_maz, formula_env = ~vpd, solar = TRUE) +
   theme(legend.position = 'none')
 ```
 
-### Aggregation metrics
+### Aggregation 
 
-SAPFLUXNET data is stored as subdaily measures with different timestep between
-sites (ranging from 10 minutes to 2 hours) for both, sap flow and environmental
-data. Aggregation metrics are calculated for both kinds of data.  
-`sapfluxnetr` offers some simple, yet complete aggregation functions returning
-some pre-defined metrics: `daily_metrics`, `monthly_metrics`, `predawn_metrics`,
+SAPFLUXET data is stored as sub-daily measures with different timestep between
+sites (ranging from 10 minutes to 2 hours).  
+`sapfluxnetr``offers some simple, yet powerful aggregation functions returning
+pre-defined statistics: `daily_metrics`, `monthly_metrics`, `predawn_metrics`,
 `midday_metrics`, `daylight_metrics` and `nightly_metrics`.  
 `daily_metrics` and `monthly_metrics` perform a daily and monthly aggregation,
-respectively, with a set of predefined metrics. `predawn_metrics`,
-`midday_metrics`, `daylight_metrics` and `nightly_metrics` perform daily or
-monthly aggregations (controlled by the `period` argument) by hour-defined
-intervals, also with a set of predefined metrics.  
+respectively. `predawn_metrics`, `midday_metrics`, `daylight_metrics` and
+`nightly_metrics` perform daily or monthly aggregations (controlled by the
+`period` argument) only by hour-defined intervals. All the aggregations are
+performed both for sapflow and environmental data.  
 
-Predefined metrics are:
+
+Predefined calculated statistics are:
 
 1. *mean*
 1. *standard deviation*
@@ -480,9 +491,9 @@ contain `sfn_data` objects. Main functions of `sapfluxnetr` work with this type
 of objects. As in any list, we can access the sites:
 
 ```{r mutil_site}
+# the following is the same as temperate_sites[[3]] or
+# temperate_sites$AUS_CAN_ST2_MIX
 temperate_sites[['AUS_CAN_ST2_MIX']]
-# temperate_sites[[3]] # the same
-# temperate_sites$AUS_CAN_ST2_MIX # the same
 ```
 
 ### Multi aggregation

@@ -27,8 +27,7 @@ You can work with individual sites:
 ```{r example_single}
 # load packages
 library(sapfluxnetr)
-# install.packages("tidyverse")
-library(tidyverse)
+library(ggplot2)
 
 # ARG_MAZ example site data
 data('ARG_MAZ', package = 'sapfluxnetr')
@@ -47,7 +46,7 @@ ggplot(arg_maz_metrics, aes(x = vpd_q_95, y = sapflow_q_95, colour = pl_code)) +
   geom_point()
 ```
 
-And you can work with multiple sites:
+You can work with multiple sites also:
 
 ```{r example_multi}
 # ARG_TRE and AUS_CAN_ST2_MIX example sites

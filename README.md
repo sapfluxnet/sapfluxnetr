@@ -17,16 +17,7 @@ You can work with individual sites:
 ``` r
 # load packages
 library(sapfluxnetr)
-# install.packages("tidyverse")
-library(tidyverse)
-#> ── Attaching packages ─────────────────────────── tidyverse 1.2.1 ──
-#> ✔ ggplot2 3.1.0       ✔ purrr   0.3.2  
-#> ✔ tibble  2.1.1       ✔ dplyr   0.8.0.1
-#> ✔ tidyr   0.8.3       ✔ stringr 1.4.0  
-#> ✔ readr   1.3.1       ✔ forcats 0.4.0
-#> ── Conflicts ────────────────────────────── tidyverse_conflicts() ──
-#> ✖ dplyr::filter() masks stats::filter()
-#> ✖ dplyr::lag()    masks stats::lag()
+library(ggplot2)
 
 # ARG_MAZ example site data
 data('ARG_MAZ', package = 'sapfluxnetr')
@@ -54,7 +45,7 @@ ggplot(arg_maz_metrics, aes(x = vpd_q_95, y = sapflow_q_95, colour = pl_code)) +
 
 <img src="man/figures/README-example_single-2.png" width="100%" />
 
-And you can work with multiple sites:
+You can work with multiple sites also:
 
 ``` r
 # ARG_TRE and AUS_CAN_ST2_MIX example sites
