@@ -539,13 +539,23 @@ sfn_metrics <- function(
   # we need magic to add the quantiles as they return more than one value
   # (usually). So lets play with quasiquotation
   quantile_args <- probs %>%
-    purrr::map(function(x) {dplyr::quo(quantile(., probs = x, na.rm = TRUE))})
+    purrr::map(
+      function(x) {
+        quantile_quo <- dplyr::quo(quantile(., probs = !!x, na.rm = TRUE))
+        # dplyr .funs argument expect a list of formulas, not quosures:
+        rlang::new_formula(
+          NULL,
+          rlang::quo_squash(quantile_quo),
+          rlang::quo_get_env(quantile_quo)
+        )
+      }
+    )
   names(quantile_args) <- paste0('q_', round(probs*100, 0))
 
   # we use rlang::list2 as we need the quantile spliced and evaluated with !!!
   .funs <- rlang::list2(
     mean = ~ mean(., na.rm = TRUE),
-    sd = ~ stats::sd(., na.rm = TRUE),
+    sd = ~ sd(., na.rm = TRUE),
     coverage = ~ data_coverage(., .data$timestep, .data$period_minutes),
     !!! quantile_args,
     accumulated = ~ .accumulated_posix_aware(., na.rm = TRUE),
