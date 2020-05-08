@@ -14,3 +14,4 @@ tests/testthat/big_test/
 ^README-.*\.png$
 ^pkgdown$
 ^README_files$
+^tic\.R$
