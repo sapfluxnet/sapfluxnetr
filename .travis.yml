@@ -49,3 +49,9 @@ after_failure: R -q -e 'tic::after_failure()'
 after_script: R -q -e 'tic::after_script()'
 
 # Custom user code -------------------------------------------------------------
+
+# safelist
+branches:
+  only:
+  - master
+  - devel
