@@ -3,8 +3,15 @@
 
 # sapfluxnetr
 
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/sapfluxnetr)](https://CRAN.R-project.org/package=sapfluxnetr)
+[![CRAN RStudio mirror
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/sapfluxnetr?color=blue)](https://r-pkg.org/pkg/sapfluxnetr)
 [![Travis build
 status](https://travis-ci.org/sapfluxnet/sapfluxnetr.svg?branch=master)](https://travis-ci.org/sapfluxnet/sapfluxnetr)
+<!-- badges: end -->
 
 `sapfluxnetr` provides tools for a tidy data analysis for the first
 global database of sap flow measurements ([Sapfluxnet
