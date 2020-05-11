@@ -55,3 +55,4 @@ branches:
   only:
   - master
   - devel
+  - cran_submission
