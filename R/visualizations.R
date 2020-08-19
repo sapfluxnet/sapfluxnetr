@@ -121,9 +121,14 @@ sfn_plot <- function(
     )
 
     res_plot <- data %>%
-      tidyr::gather(
-        key = 'Tree', value = 'Sapflow',
-        -.data$TIMESTAMP, -!!rlang::get_expr(formula_env)
+      # tidyr::gather(
+      #   key = 'Tree', value = 'Sapflow',
+      #   -.data$TIMESTAMP, -!!rlang::get_expr(formula_env)
+      # ) %>%
+      tidyr::pivot_longer(
+        !dplyr::contains(rlang::get_expr(formula_env) %>% as.character) &
+          !dplyr::contains('TIMESTAMP'),
+        names_to = 'Tree', values_to = 'Sapflow'
       ) %>%
       ggplot(aes_(x = formula_env, y = ~Sapflow, colour = ~Tree)) +
       geom_point(...) +
@@ -147,7 +152,10 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        tidyr::gather(key = 'Tree', value = 'Sapflow', -.data$TIMESTAMP) %>%
+        # tidyr::gather(key = 'Tree', value = 'Sapflow', -.data$TIMESTAMP) %>%
+        tidyr::pivot_longer(
+          -.data$TIMESTAMP, names_to = 'Tree', values_to = 'Sapflow'
+        ) %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~Sapflow, colour = ~Tree)) +
         geom_point(...) +
         labs(y = paste0('Sapflow [', units_char, ']')) +
@@ -160,7 +168,11 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        tidyr::gather(key = 'Variable', value = 'Value', -.data$TIMESTAMP) %>%
+        # tidyr::gather(key = 'Variable', value = 'Value', -.data$TIMESTAMP) %>%
+        tidyr::pivot_longer(
+          -.data$TIMESTAMP,
+          names_to = 'Variable', values_to = 'Value'
+        ) %>%
         ggplot(aes_(x = ~TIMESTAMP, y = ~Value, colour = ~Variable)) +
         geom_point(...) +
         scale_x_datetime()

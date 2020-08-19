@@ -1283,7 +1283,7 @@ describe_md_variable <- function(variable) {
     ) %>%
 
     # fix the sapflow_min_time and sapflow_max_time, because with the
-    # gather/spread steps posixct becomes numerical
+    # pivot steps posixct becomes numerical
     dplyr::mutate_at(
       dplyr::vars(
         dplyr::contains('sapflow_min_time'),
