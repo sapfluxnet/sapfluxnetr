@@ -1255,7 +1255,11 @@ describe_md_variable <- function(variable) {
     tibble::as_tibble() %>%
 
     # wide to long, because we want to extract tree and metric
-    tidyr::gather(tree, value, -dplyr::starts_with('TIMESTAMP')) %>%
+    # tidyr::gather(tree, value, -dplyr::starts_with('TIMESTAMP')) %>%
+    
+    tidyr::pivot_longer(
+      -dplyr::starts_with('TIMESTAMP'), names_to = 'tree', values_to = 'value'
+    ) %>% 
 
     # mutate to get the plant code. Is tricky as we have to separate the metric
     # and interval labels at the end of the tree column and rename tree as
@@ -1273,7 +1277,10 @@ describe_md_variable <- function(variable) {
     # resources consuming step here!
     # now we have the spread (long to wide) the sapflow values by metric,
     # replicating the trees, as each sapflow metric is a variable
-    tidyr::spread(.data$sapflow, .data$value, sep = '_') %>%
+    # tidyr::spread(.data$sapflow, .data$value, sep = '_') %>%
+    tidyr::pivot_wider(
+      names_from = 'sapflow', values_from = 'value', names_prefix = 'sapflow_'
+    ) %>%
 
     # fix the sapflow_min_time and sapflow_max_time, because with the
     # gather/spread steps posixct becomes numerical

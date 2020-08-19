@@ -1,5 +1,8 @@
 # sapfluxnetr (development version)
 
+* Remove `gather` and `spread` calls, substituting them with the now recommended
+  `pivot_longer` and `pivot_wide` calls
+
 # sapfluxnetr 0.1.0
 
 * Removed `tidyverse` dependency from *suggests*.
