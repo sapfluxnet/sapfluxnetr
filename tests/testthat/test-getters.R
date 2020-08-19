@@ -178,7 +178,8 @@ test_that('filter_sites_by_md combines all metadata correctly', {
   # )
   expect_error(
     filter_sites_by_md(sites, sfn_metadata_ex, !!!filters),
-    'env_nonexistentname'
+    class = 'dplyr_error'
+    # 'env_nonexistentname'
   )
 
   # TODO tests con los diferentes metadatas por separado, tests con combinaciones
