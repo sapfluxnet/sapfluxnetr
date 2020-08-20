@@ -30,3 +30,8 @@ a:focus {
   min-height: 70px !important;
   padding-top: 8px;
 }
+
+/* Hack to make text smaler in the toc sidebar */
+nav[data-toggle='toc'] .nav > li > a {
+  font-size: 18px;
+}

@@ -1,5 +1,5 @@
 development:
-  mode: development
+  mode: release
 
 navbar:
   type: inverse
