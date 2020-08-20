@@ -1,4 +1,4 @@
-# sapfluxnetr (development version)
+# sapfluxnetr 0.1.1
 
 * Remove `tidyr::gather` and `tidyr::spread` calls, replacing them with the now
   recommended `tidyr::pivot_longer` and `tidyr::pivot_wide` calls.
