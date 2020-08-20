@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 `sapfluxnetr` package offers a very flexible but powerful API based on the
 `tidyverse` packages to aggregate and summarise the site/s data in the form
 of the `sfn_metrics` function. All the metrics family of functions (`?metrics`)
-make use of the `sfn_metrics` funcion under the hood. If you want full control
+make use of the `sfn_metrics` function under the hood. If you want full control
 to the statistics returned and aggregation periods, we recommend you to use this
 API. This vignette will show you how.
 
@@ -39,8 +39,8 @@ See each function help for a detailed description and examples of use.
 ## Custom summarising functions
 
 `daily_metrics` and related functions return a complete set of metrics ready for
-use, but if you want simpler metrics and/or different metrics you can supply
-your own summarising functions using the `.funs` argument.  
+use, but if you want different metrics you can supply your own summarising
+functions using the `.funs` argument.  
 The correct way of specifying the functions to use is described in
 the `summarise_all` help (`?dplyr::summarise_all`). The recommended way is a
 list of formulas with the function call:
@@ -124,12 +124,13 @@ foo_weekly[['env']]
 ```{r custom_aggregation_2}
 foo_custom <- sfn_metrics(
   AUS_CAN_ST2_MIX,
-  period = lubridate::quarter, # period is the name of the function now
+  period = lubridate::quarter,
   .funs = custom_funs,
   solar = TRUE,
   interval = 'general',
   with_year = TRUE # argument for lubridate::quarter
 )
+foo_custom['env']
 ```
 
 ## Extra parameters

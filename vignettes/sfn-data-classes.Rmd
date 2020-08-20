@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{sfn_data classes}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -18,7 +20,7 @@ knitr::opts_chunk$set(
 
 # `sfn_data`
 
-`snf_data` is an S4 class designed for store and interact with sapflow data
+`snf_data` is an S4 class designed for store and interact with sap flow data
 at individual plant level (not raw data), primarily from Sapfluxnet project
 sites data and metadata.
 
@@ -26,7 +28,7 @@ sites data and metadata.
 
 `sfn_data` class has twelve different slots:
 
-  1. **sapf_data**: Tibble containing the sapflow data, each column representing
+  1. **sapf_data**: Tibble containing the sap flow data, each column representing
      an individual tree, **without** any TIMESTAMP variable.
   
   2. **env_data**: Tibble containing the environmental data, each column an
@@ -163,7 +165,7 @@ get_site_md(ARG_TRE)[['si_biome']]
     objects without metadata...)
     
 ```{r validation, error=TRUE, purl=FALSE, collapse=FALSE}
-# get sapflow data
+# get sap flow data
 foo_bad_sapf <- get_sapf_data(ARG_TRE)
 # pull a row, now it has diferent dimensions than
 foo_bad_sapf <- foo_bad_sapf[-1,]
@@ -211,7 +213,7 @@ sfn_plot(ARG_TRE, formula_env = ~ vpd) +
 
 This function emulates `filter` function from `dplyr` package for `sfn_data`
 objects. Useful to filter by some especific timestamp. Be advised, using this
-funcion to filter by sapflow or environmental variables can create TIMESTAMP
+funcion to filter by sap flow or environmental variables can create TIMESTAMP
 gaps. See `sfn_filter` for more details.
     
 ```{r sfn_filter}
@@ -241,7 +243,7 @@ get_env_data(foo_mutated)[['ws']][1:10]
 ### `sfn_mutate_at`
 
 This function mutates all variables declared with the function provided. Useful
-when you need to conditionally transform the data, i.e. converting to NA sapflow
+when you need to conditionally transform the data, i.e. converting to NA sap flow
 values when an environmental variable exceeds some threshold. See
 `sfn_mutate_at` for more details.
     
@@ -301,7 +303,7 @@ multi_sfn
     `sfn_data_multi` object as elements.
 
 ```{r get_multi}
-# get sapflow data
+# get sap flow data
 get_sapf_data(multi_sfn)
 # get plant metadata
 get_plant_md(multi_sfn)

@@ -32,7 +32,7 @@ sfn_metadata <- read_sfn_metadata(folder)
 
 daily_results <- sfn_sites_in_folder(folder) %>%
   filter_sites_by_md(
-    si_biome %in% c("Temperate forest", 'Mediterranean'),
+    si_biome %in% c("Temperate forest", 'Woodland/Shrubland'),
     sites = sites, metadata = sfn_metadata
   ) %>%
   read_sfn_data(folder) %>%
@@ -52,7 +52,7 @@ folder <- 'RData/plant'
 metadata <- read_sfn_metadata(folder)
 sites <- sfn_sites_in_folder(folder) %>%
   filter_sites_by_md(
-    si_biome %in% c("Temperate forest", 'Mediterranean'),
+    si_biome %in% c("Temperate forest", 'Woodland/Shrubland'),
     sites = sites, metadata = sfn_metadata
   )
 
@@ -78,8 +78,8 @@ save(daily_results_steps, file = 'daily_results_steps.RData')
 
 `sapfluxnetr` includes tha capability to parallelize the metrics calculation
 when performed on a `sfn_data_multi` object. This is made thanks to the
-[furrr](https://github.com/DavisVaughan/furrr) package (which uses the
-[future](https://github.com/HenrikBengtsson/future) package behind the scenes).
+[furrr](https://github.com/DavisVaughan/furrr) package, which uses the
+[future](https://github.com/HenrikBengtsson/future) package behind the scenes.
 By default, the code will run in a sequential process, which is the usual way
 the R code runs. But setting the `future::plan` to `multicore` (in Linux),
 `multisession` (in Windows) or `multiprocess` (automatically choose between the
@@ -88,7 +88,7 @@ the sites between the available cores.
 
     > Be advised, parallelization usually means more RAM used, so in systems
       with less than 16GB maybe is not a good idea.
-      Also, the time benefits start to show when analysing 10 sites or above.
+      Also, the time benefits start to show when analysing 10 sites or more.
 
 ```{r parallelizations, eval = FALSE}
 # loading future package
@@ -100,7 +100,7 @@ plan('multiprocess')
 # metrics!!
 daily_results_parallel <- sfn_sites_in_folder(folder) %>%
   filter_sites_by_md(
-    si_biome %in% c("Temperate forest", 'Mediterranean'),
+    si_biome %in% c("Temperate forest", 'Woodland/Shrubland'),
     sites = sites, metadata = sfn_metadata
   ) %>%
   read_sfn_data(folder) %>%
@@ -133,7 +133,7 @@ options('future.globals.maxSize' = 1014*1024^2)
 # do the metrics
 daily_results_limit <- sfn_sites_in_folder(folder) %>%
   filter_sites_by_md(
-    si_biome %in% c("Temperate forest", 'Mediterranean'),
+    si_biome %in% c("Temperate forest", 'Woodland/Shrubland'),
     sites = sites, metadata = sfn_metadata
   ) %>%
   read_sfn_data(folder) %>%

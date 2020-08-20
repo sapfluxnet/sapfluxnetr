@@ -2,6 +2,9 @@
 
 * Remove `gather` and `spread` calls, substituting them with the now recommended
   `pivot_longer` and `pivot_wide` calls
+* Following the new database available, *"Mediterranean"* biome is replaced
+  by *"Woodland/Shrubland"* in all vignettes and function examples where it was
+  used.
 
 # sapfluxnetr 0.1.0
 

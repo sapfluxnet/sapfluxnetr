@@ -8,7 +8,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -75,15 +75,15 @@ download. You can manually download the data or use a *programmatic* approach:
 ```{r downzip, eval = FALSE}
 # download the data
 download.file(
-  url = "https://zenodo.org/record/3697807/files/0.1.4.zip?download=1",
-  destfile = '0.1.4.zip'
+  url = "https://zenodo.org/record/3971689/files/0.1.5.zip?download=1",
+  destfile = '0.1.5.zip'
 )
 # unzip the data
 # BE SURE YOU HAVE AT LEAST 24GB OF DISK SPACE
-unzip("0.1.4.zip")
+unzip("0.1.5.zip")
 # check if files are present
-list.files(file.path('0.1.4', 'RData', 'plant'))
-list.files(file.path('0.1.4', 'csv', 'plant'))
+list.files(file.path('0.1.5', 'RData', 'plant'))
+list.files(file.path('0.1.5', 'csv', 'plant'))
 ```
 
 
@@ -92,7 +92,7 @@ list.files(file.path('0.1.4', 'csv', 'plant'))
 SAPFLUXNET database estrucuture is as follows:
 
 ```
-0.1.4 (database version number)
+0.1.5 (database version number)
   |
   |-- RData
   |    |
@@ -120,17 +120,18 @@ scripts or functions to work with the csv files, only the RData objects.
 
 To start working with the data, you have two options:
 
-  - If working in RStudio, create a project in the data root folder (`0.1.4` in
+  - If working in RStudio, create a project in the data root folder (`0.1.5` in
     this example) and follow the examples in this vignette to get started.
   
-  - If not, set the data root folder (`0.1.4` in this example) as the working
+  - If not, set the data root folder (`0.1.5` in this example) as the working
     directory with `setwd` and follow the examples in this vignette to get
     started.
 
 >DISCLAIMER: In order to be able to build the vignette in the CRAN tests
  the following examples will be based on a small subset of SAPFLUXNET Data,
  composed by `ARG_TRE`, `ARG_MAZ` and `AUS_CAN_ST2_MIX` sites.
- Outputs may vary if you follow the vignette examples with the complete database.
+ Outputs will vary if you follow the vignette examples with the complete
+ database.
 
 ## Inspecting a site
 
@@ -172,7 +173,7 @@ environmental data has some flags (more on that later).
 ### Accessing the data and the metadata
 
 `sfn_data` objects have different slots containing the different data, each of
-one has an accessor function (see `?sfn_get_methods` and
+one has a getter function (see `?sfn_get_methods` and
 `vignette('sfn-data-classes', package = 'sapfluxnetr'` for detailed info):
 
 ```{r accesors_data}
@@ -215,7 +216,7 @@ describe_md_variable('env_ta')
 describe_md_variable('pl_species')
 ```
 
-There is also some accessors that can come in handy sometimes. `get_timestamp` and
+There is also some getters that can come in handy sometimes. `get_timestamp` and
 `get_solar_timestamp` access to the original timestamp and the apparent solar
 time timestamp. `get_si_code` access to the site code. See
 `vignette('sfn-data-classes', package = 'sapfluxnetr'` for more info.
@@ -233,7 +234,7 @@ arg_maz_env_flags <- get_env_flags(arg_maz, solar = TRUE)
 arg_maz_env_flags
 ```
 
-This datsets store any flag that each data point may have (possible outlier,
+This datasets store any flag that each data point may have (possible outlier,
 data removed in the Quality Check of the data...). For a complete list of
 flags possible values see `vignette('data-flags', package = 'sapfluxnetr')`.
 As an example, let's see which values are marked as "RANGE_WARN" (a warning
@@ -264,12 +265,14 @@ return `ggplot` objects that can be modified afterwards:
 
 ```{r sapf_plot, fig.width=6}
 sfn_plot(arg_maz, type = 'sapf', solar = TRUE) +
-  facet_wrap(~ Tree) + theme(legend.position = 'none')
+  facet_wrap(~ Tree) +
+  theme(legend.position = 'none')
 ```
 
 ```{r env_plot, fig.width=6, fig.height=4}
 sfn_plot(arg_maz, type = 'env', solar = TRUE) +
-  facet_wrap(~ Variable, scales = 'free_y') + theme(legend.position = 'none')
+  facet_wrap(~ Variable, scales = 'free_y') +
+  theme(legend.position = 'none')
 ```
 
 We can also plot environmental variables individually (with the `type` argument),
@@ -287,16 +290,16 @@ sfn_plot(arg_maz, formula_env = ~vpd, solar = TRUE) +
 
 ### Aggregation 
 
-SAPFLUXET data is stored as sub-daily measures with different timestep between
+SAPFLUXET data is stored as sub-daily measures with different time step between
 sites (ranging from 10 minutes to 2 hours).  
-`sapfluxnetr``offers some simple, yet powerful aggregation functions returning
+`sapfluxnetr` offers some simple, yet powerful aggregation functions returning
 pre-defined statistics: `daily_metrics`, `monthly_metrics`, `predawn_metrics`,
 `midday_metrics`, `daylight_metrics` and `nightly_metrics`.  
 `daily_metrics` and `monthly_metrics` perform a daily and monthly aggregation,
 respectively. `predawn_metrics`, `midday_metrics`, `daylight_metrics` and
 `nightly_metrics` perform daily or monthly aggregations (controlled by the
 `period` argument) only by hour-defined intervals. All the aggregations are
-performed both for sapflow and environmental data.  
+performed both for sap flow and environmental data.  
 
 
 Predefined calculated statistics are:
@@ -322,7 +325,7 @@ names(arg_maz_daily[['env']])
 
 We can see that results are divided in `sapf` and `env` and inside each of them
 the metrics are indicated by the end of the variable names.  
-This way we can select specific variables, for example the 0.95 quantiles of sap
+This way we can select specific variables, for example the 0.95 quantile of sap
 flow measures:
 
 ```{r daily_sapf_gen_q99}
@@ -352,11 +355,11 @@ You can change this using the `side` parameter (see `?sfn_metrics`)
 
 #### Tidy metrics
 
-The default returned object for this aggregation functions is a list with
+The default returned object for the aggregation functions is a list with
 the sap flow and the environmental data, but given that usually is more
 comfortable to have all data (sap flow and environmental) and ancillary data
 (metadata) altogether in a tidy data frame (each row an observation), all
-aggregation functions have an argument, `tidy` that can be setted to *TRUE*
+aggregation functions have an argument, `tidy` that can be set to *TRUE*
 to obtain this kind of data frame. We will cover this in the
 ["Tidy metrics"](#tidymetrics) section.
 
@@ -364,13 +367,13 @@ to obtain this kind of data frame. We will cover this in the
 
 Getting the insights about one site is interesting, but getting the insights
 of a common group of sites could be even more interesting. `sapfluxnetr` allows
-filtering sites by metadata values (biomes, countries, species...) and work
+filtering sites by metadata values (biome, country, species...) and work
 with them as a unique set.
 
 ### Building the metadata database {#metadatadatabase}
 
 First thing we have to do is creating a metadata database. It is not mandatory,
-but filtering sites by metadata can be a very time and resources consuming step
+but filtering sites by metadata can be a time/resources consuming step
 if we have to temporary build the database each time we want filter sites. So,
 let's create a cached metadata database. This will take some minutes, so maybe
 it is a good moment to prepare a hot beverage ;)
@@ -415,12 +418,12 @@ sites
 
 We can filter these sites by any metadata variable, to select those that met
 some criteria. This is done with `filter_sites_by_md`. As a first try, let's
-list all sites belonging to temperate forest biome (mediterranean included):
+list all sites belonging to temperate forests (woodland/shrubland included):
 
 ```{r filtering_by_md, eval=FALSE}
 temperate <- sfn_sites_in_folder(folder) %>%
   filter_sites_by_md(
-    si_biome %in% c('Mediterranean', 'Temperate forest'),
+    si_biome %in% c('Woodland/Shrubland', 'Temperate forest'),
     metadata = sfn_metadata
   )
 
@@ -430,7 +433,7 @@ temperate
 ```{r filtering_by_md_real, echo=FALSE, warning=FALSE}
 temperate <- sfn_sites_in_folder(folder) %>%
   filter_sites_by_md(
-    si_biome %in% c('Mediterranean', 'Temperate forest'),
+    si_biome %in% c('Woodland/Shrubland', 'Temperate forest'),
     metadata = sfn_metadata
   )
 temperate
@@ -441,7 +444,7 @@ You can combine all filters you want:
 ```{r filters_combined, eval=FALSE}
 temperate_hr <- sfn_sites_in_folder(folder) %>%
   filter_sites_by_md(
-    si_biome %in% c('Mediterranean', 'Temperate forest'),
+    si_biome %in% c('Woodland/Shrubland', 'Temperate forest'),
     pl_sens_meth == 'HR',
     metadata = sfn_metadata
   )
@@ -452,7 +455,7 @@ temperate_hr
 ```{r filters_combined_real, echo=FALSE, warning=FALSE}
 temperate_hr <- sfn_sites_in_folder(folder) %>%
   filter_sites_by_md(
-    si_biome %in% c('Mediterranean', 'Temperate forest'),
+    si_biome %in% c('Woodland/Shrubland', 'Temperate forest'),
     pl_sens_meth == 'HR',
     metadata = sfn_metadata
   )
@@ -530,9 +533,9 @@ temperate_tidy <- temperate_sites %>%
 temperate_tidy
 ```
 
-Now we can start analyzing, modelling, etc.  
-For example, to look for site effects in the relationship between sapflow and
-vpd, using the 0.95 quantiles as maximum values of sapflow and the plant sapwood
+Now we can start analyzing, modeling, etc.  
+For example, to look for site effects in the relationship between sap flow and
+vpd, using the 0.95 quantile as maximum values of sap flow and the plant sapwood
 area as a third variable:
 
 ```{r ex_1_plot, fig.width=7, fig.height=4.3}

@@ -643,7 +643,7 @@ as_sfn_data_multi <- function(x) {
       ),
       si_biome = list(
         values = c(
-          'Subtropical desert', 'Temperate grassland desert', 'Mediterranean',
+          'Subtropical desert', 'Temperate grassland desert', 'Woodland/Shrubland',
           'Temperate forest', 'Boreal forest', 'Temperate rain forest',
           'Tropical rain forest', 'Tropical forest savanna', 'Tundra'
         ),

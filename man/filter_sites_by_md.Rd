@@ -57,10 +57,10 @@ filter_sites_by_md(
   sites = sites, metadata = metadata
 )
 
-# more complex, Heat Ratio method AND Mediterranean biome
+# more complex, Heat Ratio method AND Woodland/Shrubland biome
 filter_sites_by_md(
   pl_sens_meth == 'HR',
-  si_biome == 'Mediterranean',
+  si_biome == 'Woodland/Shrubland',
   sites = sites, metadata = metadata,
   .join = 'and' # default
 )
@@ -68,7 +68,7 @@ filter_sites_by_md(
 # join = 'or' returns sites that meet any condition
 filter_sites_by_md(
   pl_sens_meth == 'HR',
-  si_biome == 'Mediterranean',
+  si_biome == 'Woodland/Shrubland',
   sites = sites, metadata = metadata,
   .join = 'or'
 )
