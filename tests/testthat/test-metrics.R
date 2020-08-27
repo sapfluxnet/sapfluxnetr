@@ -52,6 +52,8 @@ test_that('summarise_by_period function example works', {
 })
 
 test_that('summarise_by_period dots work as intended', {
+  
+  # skip_on_cran()
 
   # there are no tests based on values as the tests are intended to be data
   # agnostic
@@ -339,6 +341,8 @@ test_that('max and min_time functions return NA when all values are NA', {
 
 #### sfn_metrics tests ####
 test_that('sfn_metrics for general metrics works', {
+  
+  skip_on_cran()
 
   library(dplyr)
 
@@ -405,6 +409,7 @@ test_that('sfn_metrics for general metrics works', {
 
 test_that('sfn_metrics for predawn metrics works', {
 
+  skip_on_cran()
   library(dplyr)
 
   test_expr <- sfn_metrics(
@@ -451,6 +456,7 @@ test_that('sfn_metrics for predawn metrics works', {
 
 test_that('sfn_metrics for midday metrics works', {
 
+  skip_on_cran()
   library(dplyr)
 
   test_expr <- sfn_metrics(
@@ -497,6 +503,7 @@ test_that('sfn_metrics for midday metrics works', {
 
 test_that('sfn_metrics for nightly metrics works', {
 
+  skip_on_cran()
   library(dplyr)
 
   test_expr <- sfn_metrics(
@@ -595,6 +602,7 @@ test_that('sfn_metrics for nightly metrics works', {
 
 test_that('sfn_metrics for daylight metrics works', {
 
+  skip_on_cran()
   library(dplyr)
 
   test_expr <- sfn_metrics(
@@ -661,6 +669,7 @@ test_that('sfn_metrics for daylight metrics works', {
 #### daily_metrics ####
 test_that('daily metrics examples work', {
   
+  skip_on_cran()
   test_expr <- daily_metrics(ARG_TRE)
   test_expr2 <- daily_metrics(ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex)
   test_expr3 <- daily_metrics(multi_sfn)
@@ -679,6 +688,7 @@ test_that('daily metrics examples work', {
 
 test_that('monthly metrics examples work', {
   
+  skip_on_cran()
   test_expr <- monthly_metrics(ARG_TRE)
   test_expr2 <- monthly_metrics(ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex)
   test_expr3 <- monthly_metrics(multi_sfn)
@@ -697,6 +707,7 @@ test_that('monthly metrics examples work', {
 
 test_that('nightly metrics examples work', {
   
+  skip_on_cran()
   test_expr <- nightly_metrics(ARG_TRE)
   test_expr2 <- nightly_metrics(ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex)
   test_expr3 <- nightly_metrics(multi_sfn)
@@ -715,6 +726,7 @@ test_that('nightly metrics examples work', {
 
 test_that('daylight metrics examples work', {
   
+  skip_on_cran()
   test_expr <- daylight_metrics(ARG_TRE)
   test_expr2 <- daylight_metrics(ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex)
   test_expr3 <- daylight_metrics(multi_sfn)
@@ -733,6 +745,7 @@ test_that('daylight metrics examples work', {
 
 test_that('predawn metrics examples work', {
   
+  skip_on_cran()
   test_expr <- predawn_metrics(ARG_TRE)
   test_expr2 <- predawn_metrics(ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex)
   test_expr3 <- predawn_metrics(multi_sfn)
@@ -751,6 +764,7 @@ test_that('predawn metrics examples work', {
 
 test_that('midday metrics examples work', {
   
+  skip_on_cran()
   test_expr <- midday_metrics(ARG_TRE)
   test_expr2 <- midday_metrics(ARG_TRE, tidy = TRUE, metadata = sfn_metadata_ex)
   test_expr3 <- midday_metrics(multi_sfn)
@@ -769,6 +783,7 @@ test_that('midday metrics examples work', {
 
 test_that('*_metrics functions with ... work', {
 
+  skip_on_cran()
   # expect_true(is.list(daily_metrics(ARG_TRE, clean = FALSE)))
   # expect_true(is.list(monthly_metrics(ARG_TRE, clean = FALSE)))
   # expect_true(is.list(nightly_metrics(ARG_TRE, clean = FALSE)))
@@ -835,6 +850,8 @@ test_that('*_metrics functions with ... work', {
 
 #### .fixed_metrics_funs ####
 test_that('.fixed_metrics_funs works', {
+  
+  skip_on_cran()
 
   .funs <- sapfluxnetr:::.fixed_metrics_funs(probs = c(0.95), TRUE)
 
@@ -858,6 +875,8 @@ test_that('.fixed_metrics_funs works', {
 
 #### metrics_tidyfier #####
 test_that('metrics_tidyfier returns the expected object for single metrics', {
+  
+  skip_on_cran()
   
   test_expr <- metrics_tidyfier(
     daily_metrics(ARG_TRE), sfn_metadata_ex, 'general'
@@ -946,6 +965,8 @@ test_that('metrics_tidyfier returns the expected object for single metrics', {
 
 test_that('metrics_tidyfier works when supplied custom metrics', {
   
+  skip_on_cran()
+  
   test_expr <- sfn_metrics(
     ARG_TRE, '7 days',
     list(mean = ~ mean(., na.rm = TRUE)),
@@ -976,6 +997,8 @@ test_that('metrics_tidyfier works when supplied custom metrics', {
 
 #### metrics utils #####
 test_that('.assert_that_period_is_valid works as intended', {
+  
+  skip_on_cran()
   
   expect_true(sapfluxnetr:::.assert_that_period_is_valid('1 day'))
   expect_true(sapfluxnetr:::.assert_that_period_is_valid('3 days'))
@@ -1009,6 +1032,8 @@ test_that('.assert_that_period_is_valid works as intended', {
 
 test_that(".parse_period works as intended", {
   
+  skip_on_cran()
+  
   expect_is(sapfluxnetr:::.parse_period("2 days"), 'list')
   expect_equal(sapfluxnetr:::.parse_period("2 days")$freq, 2)
   expect_equal(sapfluxnetr:::.parse_period("2 days")$period, 'days')
@@ -1040,6 +1065,9 @@ test_that(".parse_period works as intended", {
 })
 
 test_that(".collapse_timestamp works as intended", {
+  
+  skip_on_cran()
+  
   TIMESTAMP <- ARG_TRE %>%
     get_timestamp()
   
