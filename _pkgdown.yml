@@ -17,7 +17,6 @@ reference:
   contents:
   - '`read_sfn_data`'
   - '`sfn_filter`'
-  - '`sfn_metrics`'
   - '`sfn_mutate`'
   - '`sfn_mutate_at`'
   - '`sfn_plot`'
@@ -33,6 +32,7 @@ reference:
 - title: "Metrics"
   desc: ~
   contents:
+  - '`sfn_metrics`'
   - '`metrics`'
   - '`metrics_tidyfier`'
   - '`summarise_by_period`'
