@@ -101,9 +101,9 @@ bind_rows(
 
 Sap flow units depends on the database level chosen:
 
-$$Plant:~\frac{cm³}{s}$$
-$$Sapwood:~\frac{cm³}{cm²_{sa}·s}$$
-$$Leaf:~\frac{cm³}{cm²_{la}·s}$$
+$$Plant:~\frac{cm³}{h}$$
+$$Sapwood:~\frac{cm³}{cm²_{sa}·h}$$
+$$Leaf:~\frac{cm³}{cm²_{la}·h}$$
 
 ### Environmental variables
 
