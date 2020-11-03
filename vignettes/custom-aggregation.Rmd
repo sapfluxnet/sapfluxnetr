@@ -221,3 +221,24 @@ max_time_metrics <- sfn_metrics(
 max_time_metrics[['sapf']]
 ```
 
+## Sub-daily aggregations
+
+`sfn_metrics` allows to perform sub-daily aggregations, by means of the `period`
+parameter. Ssapfluxnet datasets have sub-daily data usually in the range of 30
+minutes to 2 hours. This means that data can be aggregated in periods above 2
+hours. We can aggregate to a 3 hours period easily:
+
+```{r subdaily_periods}
+custom_funs <- list(max = ~ max(., na.rm = TRUE))
+
+three_hours_agg <- sfn_metrics(
+  ARG_TRE,
+  period = '3 hours',
+  .funs = custom_funs,
+  solar = TRUE,
+  interval = 'general'
+)
+
+three_hours_agg[['sapf']]
+```
+
