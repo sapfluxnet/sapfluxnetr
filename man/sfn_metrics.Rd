@@ -20,7 +20,7 @@ sfn_metrics(
 to obtain the metrics from}
 
 \item{period}{Time period to aggregate data by. See period section for an
-explanation about the periods ('1 day', '1 month', '1 year', ...)}
+explanation about the periods ('3 hours', '1 day', '1 month', '1 year', ...)}
 
 \item{.funs}{List of function calls to summarise the data by, see .funs
 section for more details.}
@@ -68,7 +68,7 @@ Generate metrics from a site/s data for the period indicated
 \code{period} argument is used by internal function
 \code{\link{.collapse_timestamp}} and it can be stated in two ways:
 \itemize{
-  \item{\emph{frequency period} format: "1 day", "7 days", "1 month", "3 hours"}
+  \item{\emph{frequency period} format: "3 hours", "1 day", "7 days", "1 month"}
   \item{As a \emph{custom function}. This will be the name of a function,
   without quotes, that accepts as the first argument the timestamp to collapse.
   The result of the function must be a vector of collapsed TIMESTAMPs of the

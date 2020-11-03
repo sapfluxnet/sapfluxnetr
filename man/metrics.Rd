@@ -96,7 +96,7 @@ format (a long tibble, each observation in its own row)}
 or \code{\link[lubridate]{floor_date}} or \code{\link[lubridate]{ceiling_date}}.}
 
 \item{period}{Time period to aggregate data by. See period section for an
-explanation about the periods ('1 day', '1 month', '1 year', ...)}
+explanation about the periods ('3 hours', '1 day', '1 month', '1 year', ...)}
 
 \item{int_start}{Integer value indicating the starting hour of the special
 interval in 24h format. See Interval section in details.}

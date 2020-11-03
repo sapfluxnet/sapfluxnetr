@@ -16,6 +16,23 @@
 generates a call to list to capture the fixed metrics in a quosure lambda
 style
 }
+\section{Metrics}{
+
+Calculated metrics are as follow:
+
+\itemize{
+  \item{mean: Mean value for the selected period}
+  \item{sd: Standard deviation for the selected period}
+  \item{coverage: Percentage of coverage as the percentage of no NAs in the
+  expected legth of the period, stated by the site timestep}
+  \item{q*: q95 by default. Quantile value for the selected period. Quantiles to
+  calculate are stated in the probs argument}
+  \item{accumulated: Accumulated value on the selected period}
+  \item{centroid: daily centroid value in the selected period, calculated
+  only if centroid argument is TRUE}
+}
+}
+
 \examples{
 sapfluxnetr:::.fixed_metrics_funs(0.95, FALSE)
 sapfluxnetr:::.fixed_metrics_funs(c(0.05, 0.95), TRUE)
