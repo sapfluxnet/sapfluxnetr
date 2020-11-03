@@ -1,5 +1,7 @@
 # sapfluxnetr (development version)
 
+* Improved docs (sub-daily aggregations, default metrics...)
+
 # sapfluxnetr 0.1.1
 
 * Remove `tidyr::gather` and `tidyr::spread` calls, replacing them with the now
