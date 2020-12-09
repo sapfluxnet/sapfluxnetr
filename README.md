@@ -9,8 +9,6 @@
 status](https://www.r-pkg.org/badges/version/sapfluxnetr)](https://CRAN.R-project.org/package=sapfluxnetr)
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/sapfluxnetr?color=blue)](https://r-pkg.org/pkg/sapfluxnetr)
-[![Travis build
-status](https://travis-ci.org/sapfluxnet/sapfluxnetr.svg?branch=master)](https://travis-ci.org/sapfluxnet/sapfluxnetr)
 [![R build
 status](https://github.com/sapfluxnet/sapfluxnetr/workflows/R-CMD-check/badge.svg)](https://github.com/sapfluxnet/sapfluxnetr/actions)
 <!-- badges: end -->
