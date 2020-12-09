@@ -15,3 +15,4 @@ tests/testthat/big_test/
 ^pkgdown$
 ^README_files$
 ^tic\.R$
+^\.github$

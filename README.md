@@ -11,6 +11,8 @@ status](https://www.r-pkg.org/badges/version/sapfluxnetr)](https://CRAN.R-projec
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/sapfluxnetr?color=blue)](https://r-pkg.org/pkg/sapfluxnetr)
 [![Travis build
 status](https://travis-ci.org/sapfluxnet/sapfluxnetr.svg?branch=master)](https://travis-ci.org/sapfluxnet/sapfluxnetr)
+[![R build
+status](https://github.com/sapfluxnet/sapfluxnetr/workflows/R-CMD-check/badge.svg)](https://github.com/sapfluxnet/sapfluxnetr/actions)
 <!-- badges: end -->
 
 `sapfluxnetr` provides tools for a tidy data analysis for the first
@@ -37,7 +39,6 @@ sfn_plot(ARG_MAZ, formula_env = ~ vpd)
 <img src="man/figures/README-example_single-1.png" width="100%" />
 
 ``` r
-
 # daily sapflow and environmental metrics
 arg_maz_metrics <- daily_metrics(
   ARG_MAZ, tidy = TRUE, metadata = sfn_metadata_ex
@@ -69,7 +70,6 @@ plots_list[['AUS_CAN_ST2_MIX']]
 <img src="man/figures/README-example_multi-1.png" width="100%" />
 
 ``` r
-
 # daily sapflow standard metrics
 multi_metrics <- daily_metrics(
   multi_sfn, tidy = TRUE, metadata = sfn_metadata_ex
@@ -103,5 +103,6 @@ bug at <https://github.com/sapfluxnet/sapfluxnetr/issues>
 
 ## Overview
 
-Please see `vignette('sapfluxnetr-quick-guide', package =
-'sapfluxnetr')` for a detailed overview of the package capabilities.
+Please see
+`vignette('sapfluxnetr-quick-guide', package = 'sapfluxnetr')` for a
+detailed overview of the package capabilities.
