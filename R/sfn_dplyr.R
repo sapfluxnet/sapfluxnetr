@@ -221,14 +221,8 @@ sfn_mutate <- function(sfn_data, ..., solar = FALSE) {
   env_data_mod <- dplyr::select(mutated_data, names(env_data))
 
   # get the differences between old and new and flag the variables mutated
-  sapf_data_vars_mod <- names(base::setdiff(
-    as.data.frame(sapf_data_mod),
-    as.data.frame(sapf_data)
-  ))
-  env_data_vars_mod <- names(base::setdiff(
-    as.data.frame(env_data_mod),
-    as.data.frame(env_data)
-  ))
+  sapf_data_vars_mod <- names(sapf_data_mod[!(sapf_data_mod %in% sapf_data)])
+  env_data_vars_mod <- names(env_data_mod[!(env_data_mod %in% env_data)])
 
   if (length(sapf_data_vars_mod) > 0) {
     sapf_flags_mod <- get_sapf_flags(sfn_data) %>%
@@ -380,14 +374,8 @@ sfn_mutate_at <- function(sfn_data, .vars, .funs, ..., solar = FALSE) {
   env_data_mod <- dplyr::select(mutated_data, names(env_data))
 
   # look for differences between old and new to flag the variables changed
-  sapf_data_vars_mod <- names(base::setdiff(
-    as.data.frame(sapf_data_mod),
-    as.data.frame(sapf_data)
-  ))
-  env_data_vars_mod <- names(base::setdiff(
-    as.data.frame(env_data_mod),
-    as.data.frame(env_data)
-  ))
+  sapf_data_vars_mod <- names(sapf_data_mod[!(sapf_data_mod %in% sapf_data)])
+  env_data_vars_mod <- names(env_data_mod[!(env_data_mod %in% env_data)])
 
   # flag the variables mutated (all values) (.flag is documented in helpers.R)
   if (length(sapf_data_vars_mod) > 0) {
