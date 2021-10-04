@@ -1,6 +1,7 @@
-# sapfluxnetr (development version)
+# sapfluxnetr 0.1.2
 
 * Improved docs (sub-daily aggregations, default metrics...)
+* Fix use of `setdiff` to check differences between data frames, not working on devel R versions
 
 # sapfluxnetr 0.1.1
 
