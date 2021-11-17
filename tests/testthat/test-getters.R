@@ -55,12 +55,12 @@ test_that('as_sfn_data_multi helper works as intended', {
 test_that('.write_sfn_metadata writes correctly the file', {
 
   #testthat::skip_on_cran()
-  
+
   folder <- tempdir()
   save(ARG_TRE, file = file.path(folder, 'ARG_TRE.RData'))
   save(ARG_MAZ, file = file.path(folder, 'ARG_MAZ.RData'))
   save(AUS_CAN_ST2_MIX, file = file.path(folder, 'AUS_CAN_ST2_MIX.RData'))
-  
+
   sfn_metadata <- sapfluxnetr:::.write_metadata_cache(folder, .dry = TRUE)
 
   expect_false(file.exists(file.path(folder, '.metadata_cache.RData')))
@@ -177,8 +177,7 @@ test_that('filter_sites_by_md combines all metadata correctly', {
   #   'env_nonexistentname'
   # )
   expect_error(
-    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters),
-    class = 'dplyr_error'
+    filter_sites_by_md(sites, sfn_metadata_ex, !!!filters)
     # 'env_nonexistentname'
   )
 
@@ -188,17 +187,17 @@ test_that('filter_sites_by_md combines all metadata correctly', {
 
 #### sfn_sites_in_folder ####
 test_that('sfn_sites_in_folder returns the expected results', {
-  
+
   expect_true(is.character(sfn_sites_in_folder('Data')))
   expect_length(sfn_sites_in_folder('Data'), 3)
   expect_identical(
     sfn_sites_in_folder('Data'), c('ARG_MAZ', 'ARG_TRE', 'AUS_CAN_ST2_MIX')
   )
-  
+
   # errors
   expect_error(sfn_sites_in_folder('NonExistentFolder'))
   expect_error(sfn_sites_in_folder(53))
-  
+
 })
 
 #### teardown
