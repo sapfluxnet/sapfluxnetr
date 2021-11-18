@@ -1,3 +1,7 @@
+# sapfluxnetr 0.1.3
+
+* Fixed tests to comply with next version of dplyr dependency (1.0.8)
+
 # sapfluxnetr 0.1.2
 
 * Improved docs (sub-daily aggregations, default metrics...)
