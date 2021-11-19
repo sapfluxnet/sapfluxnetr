@@ -35,7 +35,7 @@ TIMESTAMP, so it is possible to mutate variables conditionally between
 sapflow and environmental measures (i.e. mutate sapflow when wind is high or
 radiation is zero). Due to this, at the moment any new variable is dropped
 when building the final results, so this is ONLY intended to mutate
-exisiting variables without changing the names.
+existing variables without changing the names.
 }
 
 \examples{

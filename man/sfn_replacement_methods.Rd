@@ -59,7 +59,7 @@ The replacement object must be a valid object for that slot:
         vector of length == nrow(sapf/env_data)}
   \item{For \code{get_si_code} a character vector}
 }
-Validity is automatically checked before modifing the sfn_data object, and
+Validity is automatically checked before modifying the sfn_data object, and
 an error is raised if not valid
 }
 \examples{

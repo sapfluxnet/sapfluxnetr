@@ -5,10 +5,10 @@
 #'
 #' Validation checks for generating sfn_data class objects
 #'
-#' This method is used internally when creating and/or modifing sfn_data class
+#' This method is used internally when creating and/or modifying sfn_data class
 #' objects to ensure that the object returned is correct in terms of content
 #' classes and dimensions (i.e. sapflow data and environmental data has the
-#' same lenght)
+#' same length)
 #'
 #' @name sfn_data_validity
 
@@ -107,7 +107,7 @@ setValidity(
 #'
 #' Validation checks for generating sfn_data_multi class objects
 #'
-#' This method is used internally to ensure the correctnes of the sfn_data_multi
+#' This method is used internally to ensure the correctness of the sfn_data_multi
 #' object. Basically ensures that the object returned is a list of sfn_data
 #' class objects
 #'
@@ -1037,7 +1037,7 @@ setMethod(
 #'         vector of length == nrow(sapf/env_data)}
 #'   \item{For \code{get_si_code} a character vector}
 #' }
-#' Validity is automatically checked before modifing the sfn_data object, and
+#' Validity is automatically checked before modifying the sfn_data object, and
 #' an error is raised if not valid
 #'
 #' @param object sfn_data containing the slot to replace

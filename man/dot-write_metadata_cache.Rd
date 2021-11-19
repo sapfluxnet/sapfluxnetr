@@ -10,7 +10,7 @@
 \item{folder}{Route to the folder containing the data. Default to working
 directory}
 
-\item{.dry}{Dry run. Metadata is loaded and readed, but no cache is written}
+\item{.dry}{Dry run. Metadata is loaded and read, but no cache is written}
 }
 \value{
 A list of tibbles with the five metadata classes (site, stand,

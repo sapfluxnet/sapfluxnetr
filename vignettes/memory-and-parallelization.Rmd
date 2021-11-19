@@ -76,8 +76,8 @@ save(daily_results_steps, file = 'daily_results_steps.RData')
 
 ## Parallelization
 
-`sapfluxnetr` includes tha capability to parallelize the metrics calculation
-when performed on a `sfn_data_multi` object. This is made thanks to the
+`sapfluxnetr` includes the capability to parallelize the metrics calculation
+when performed on a `sfn_data_multi` object. This is made thenks to the
 [furrr](https://github.com/DavisVaughan/furrr) package, which uses the
 [future](https://github.com/HenrikBengtsson/future) package behind the scenes.
 By default, the code will run in a sequential process, which is the usual way
@@ -87,7 +87,7 @@ previous plans depending on the system) will run the code in parallel, dividing
 the sites between the available cores.
 
     > Be advised, parallelization usually means more RAM used, so in systems
-      with less than 16GB maybe is not a good idea.
+      with less then 16GB maybe is not a good idea.
       Also, the time benefits start to show when analysing 10 sites or more.
 
 ```{r parallelizations, eval = FALSE}

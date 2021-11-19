@@ -7,7 +7,7 @@
 .accumulated_posix_aware(variable, na.rm = FALSE)
 }
 \arguments{
-\item{variable}{the variable as it is pased to the .fixed_metrics function}
+\item{variable}{the variable as it is passed to the .fixed_metrics function}
 
 \item{na.rm}{logical to pass to na.rm argument from sum}
 }

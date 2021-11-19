@@ -23,7 +23,7 @@ helper for sfn_metrics
 \details{
 This helper function calculates the coverage percentage in a vector, and is
 designed to be used inside a dplyr summarise statement. It calculates the
-coverage as the percentage of no NAs in the expected lenght of the summarising
+coverage as the percentage of no NAs in the expected length of the summarising
 period stated by the timestep.
 }
 \examples{

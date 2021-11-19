@@ -66,7 +66,7 @@ Plot the desired data from a site object
 \section{Formula}{
 
   \code{formula} argument can be used to select an environmental variable to
-  plot versus all the sapflow measurements. Any envirinmental variable is
+  plot versus all the sapflow measurements. Any environmental variable is
   allowed, if it exist in the site provided.
 }
 

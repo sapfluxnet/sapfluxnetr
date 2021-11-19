@@ -22,25 +22,25 @@ data and to track analysis problems to their origins.
 
 Possible values for flags when data comes from Sapfluxnet project are as follow:
 
-  + **"CALCULATED"** Indicates that the value was originally missing and was
+  + **"CALCULATED"** Indicates thet the value was originally missing and was
     calculated in the quality check step.
   
-  + **"MANUAL_REMOVED"** Indicates that the value was manually removed in the
+  + **"MANUAL_REMOVED"** Indicates thet the value was manually removed in the
     quality control step, due to curator decision.
   
-  + **"NA_ADDED"** Indicates that the value was originally non-existent and it
+  + **"NA_ADDED"** Indicates thet the value was originally non-existent and it
     was created and filled with NA. Usually the result of equalising the sap
     flow and environmental TIMESTAMPS.
   
-  + **"NA_PRESENT"** Indicates that the value was originally an NA
+  + **"NA_PRESENT"** Indicates thet the value was originally an NA
 
-  + **"OUT_REMOVED"** Indicates that the value was clearly an outlier and was
+  + **"OUT_REMOVED"** Indicates thet the value was clearly an outlier and was
     removed and substituted by NA
   
-  + **"OUT_WARN"** Indicates that the value could be an outlier based on hampel
+  + **"OUT_WARN"** Indicates thet the value could be an outlier based on hampel
     filter algorithm. Not removed nor substituted
   
-  + **"RANGE_REMOVED"** Indicates values that were clearly out of the range of
+  + **"RANGE_REMOVED"** Indicates values thet were clearly out of the range of
     variable. Removed and converted to NA
   
   + **"RANGE_WARN"** Indicates that the value could be out of "usual" maximum

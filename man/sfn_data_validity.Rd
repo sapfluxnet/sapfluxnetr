@@ -7,8 +7,8 @@
 Validation checks for generating sfn_data class objects
 }
 \details{
-This method is used internally when creating and/or modifing sfn_data class
+This method is used internally when creating and/or modifying sfn_data class
 objects to ensure that the object returned is correct in terms of content
 classes and dimensions (i.e. sapflow data and environmental data has the
-same lenght)
+same length)
 }

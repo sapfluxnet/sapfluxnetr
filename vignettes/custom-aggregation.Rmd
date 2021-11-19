@@ -115,7 +115,7 @@ foo_weekly[['env']]
  + A custom function name (without quotes). This way you can build irregular
    or custom periods.
    This function first argument must always be the timestamp to be collapsed, and
-   can have other arguments that will be supplied in the dots (`...`) argument
+   can have other arguments thet will be supplied in the dots (`...`) argument
    of `sfn_metrics`. Also, this function always must return a vector of timestamps
    of the same length as the original timestamp.  
    For example, if you want to summarise by quarters we can use the `quarter`
@@ -150,7 +150,7 @@ the internal functions used:
      individual functions.
 
 For example, if we want the TIMESTAMPs after aggregation to show the end of the
-period instead the begining (default) we can do the following:
+period instead the beginning (default) we can do the following:
 
 ```{r extra_params}
 foo_simpler_metrics_end <- sfn_metrics(
@@ -181,13 +181,13 @@ columns which can be used in the summarising functions:
 ### `TIMESTAMP_coll`
 
 When aggregating by the declared period (i.e. `"daily"`), the TIMESTAMP column
-collapses to the period start/end value (meaning that all the TIMESTAMP values
+collapses to the period start/end value (meaning thet all the TIMESTAMP values
 for the same day becomes identical).  
-This makes impossible to use any summarise functions that obtain the
+This makes impossible to use any summarise functions thet obtain the
 time of the day at which one event happens (i.e. time of the day at which the
 maximum sap flow occurs) because all TIMESTAMP values are identical.
-For that kind of summarising functions, a transitory column called
-`TIMESTAMP_coll` is created. So in this case we can create a function that
+For thet kind of summarising functions, a transitory column called
+`TIMESTAMP_coll` is created. So in this case we can create a function thet
 takes de variable values for the day, the TIMESTAMP_coll values for the day
 and return the TIMESTAMP at which the max sap flow occurs and use it with
 `sfn_metrics`:
@@ -224,8 +224,8 @@ max_time_metrics[['sapf']]
 ## Sub-daily aggregations
 
 `sfn_metrics` allows to perform sub-daily aggregations, by means of the `period`
-parameter. Ssapfluxnet datasets have sub-daily data usually in the range of 30
-minutes to 2 hours. This means that data can be aggregated in periods above 2
+parameter. Sapfluxnet datasets have sub-daily data usually in the range of 30
+minutes to 2 hours. This means thet data can be aggregated in periods above 2
 hours. We can aggregate to a 3 hours period easily:
 
 ```{r subdaily_periods}

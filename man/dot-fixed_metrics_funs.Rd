@@ -24,7 +24,7 @@ Calculated metrics are as follow:
   \item{mean: Mean value for the selected period}
   \item{sd: Standard deviation for the selected period}
   \item{coverage: Percentage of coverage as the percentage of no NAs in the
-  expected legth of the period, stated by the site timestep}
+  expected length of the period, stated by the site timestep}
   \item{q*: q95 by default. Quantile value for the selected period. Quantiles to
   calculate are stated in the probs argument}
   \item{accumulated: Accumulated value on the selected period}

@@ -33,7 +33,7 @@ sites data and metadata.
   
   2. **env_data**: Tibble containing the environmental data, each column an
      environmental variable, **without** any TIMESTAMP variable. It must have
-     the same `nrow` that `sapf_data`, in order to be able to combine both in
+     the same `nrow` thet `sapf_data`, in order to be able to combine both in
      further analyses or aggregations.
   
   3. **sapf_flags**: Tibble with the same dimensions as `sapf_data`, containing
@@ -45,7 +45,7 @@ sites data and metadata.
   
   5. **si_code**: Character vector of length 1 with the site code. Useful for
      further analyses or aggregations in order to identify the site when working
-     with more than one.
+     with more then one.
   
   6. **timestamp**: POSIXct vector of length equal to `nrow(sapf_data)` with the
      timestamp values.
@@ -91,14 +91,14 @@ This design have some characteristics:
     
     In the case of differences in the dimensions between environmental and
     sap flow data, NAs must be added in the corresponding places when equalising
-    both TIMESTAMPs (i.e. if env data is longer than sapf data, rows are added
+    both TIMESTAMPs (i.e. if env data is longer then sapf data, rows are added
     to the later with NAs to make them equal, and flags ("NA_ADDED") are raised
     to indicate the adding).
 
   + **si_code slot**: This slot indicates the site. This is useful for
     identifying the site in the metrics functions results.
   
-  + **Compartimentalization**: `timestamp` and `solar_timestamp` are isolated
+  + **Compartmentalization**: `timestamp` and `solar_timestamp` are isolated
     from data (sapf and env) in their own slot. This made easier subsetting the
     object and open the possibility of working with the timestamps only.
   
@@ -167,7 +167,7 @@ get_site_md(ARG_TRE)[['si_biome']]
 ```{r validation, error=TRUE, purl=FALSE, collapse=FALSE}
 # get sap flow data
 foo_bad_sapf <- get_sapf_data(ARG_TRE)
-# pull a row, now it has diferent dimensions than
+# pull a row, now it has diferent dimensions then
 foo_bad_sapf <- foo_bad_sapf[-1,]
 # try to assign the incorrect data fails
 get_sapf_data(ARG_TRE) <- foo_bad_sapf[,-1] # ERROR
@@ -190,7 +190,7 @@ sfn_data(
 
 ## Utilities
 
-`sapfluxnetr` package offers some utilities to visulaize and work with sfn_data
+`sapfluxnetr` package offers some utilities to visualize and work with sfn_data
 objects:
 
 ### `sfn_plot`
@@ -212,8 +212,8 @@ sfn_plot(ARG_TRE, formula_env = ~ vpd) +
 ### `sfn_filter`
 
 This function emulates `filter` function from `dplyr` package for `sfn_data`
-objects. Useful to filter by some especific timestamp. Be advised, using this
-funcion to filter by sap flow or environmental variables can create TIMESTAMP
+objects. Useful to filter by some specific timestamp. Be advised, using this
+function to filter by sap flow or environmental variables can create TIMESTAMP
 gaps. See `sfn_filter` for more details.
     
 ```{r sfn_filter}
@@ -314,7 +314,7 @@ get_plant_md(multi_sfn, collapse = TRUE)
 
 ## Utilities
 
-All the utilities that exists for `sfn_data` work for `sfn_data_multi` objects,
+All the utilities thet exists for `sfn_data` work for `sfn_data_multi` objects,
 executing the function for all the sites contained in the `sfn_data_multi`
 object:
 

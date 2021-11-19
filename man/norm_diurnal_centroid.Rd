@@ -23,7 +23,7 @@ Calculate the normalized diurnal centroid for sapflow variables
 \details{
 The code for this function has been kindly provided by Jacob Nelson in python
 (see https://github.com/jnelson18/FluxnetTools/blob/master/FileS3.py) and has
-been translated to a tidy data phylosophy in R to be used inside a
+been translated to a tidy data philosophy in R to be used inside a
 \code{\link[dplyr]{summarise}} statement.
 }
 \section{Normalized diurnal centroid algorithm}{

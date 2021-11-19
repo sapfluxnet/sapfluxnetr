@@ -7,7 +7,7 @@
 Validation checks for generating sfn_data_multi class objects
 }
 \details{
-This method is used internally to ensure the correctnes of the sfn_data_multi
+This method is used internally to ensure the correctness of the sfn_data_multi
 object. Basically ensures that the object returned is a list of sfn_data
 class objects
 }

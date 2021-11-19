@@ -15,7 +15,7 @@ A character vector with the timezone code compatible with lubridate
   and as.POSIXct
 }
 \description{
-Tranforms timezone ISO code to character vector compatible with lubridate and
+Transforms timezone ISO code to character vector compatible with lubridate and
 POSIXct
 }
 \details{

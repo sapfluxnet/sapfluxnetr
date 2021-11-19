@@ -369,7 +369,7 @@ sfn_metrics <- function(
     # progress to not scare seeming like freezed in large datasets
     print(paste0('Nighttime data for ', get_si_code(sfn_data)))
 
-    # period_minutes modification especific for night intervals calculations
+    # period_minutes modification specific for night intervals calculations
     new_period_minutes <- lubridate::as.duration(
       lubridate::hours(24 - (int_start - int_end))
     )@.Data / 60
@@ -442,7 +442,7 @@ sfn_metrics <- function(
       # progress to not scare seeming like freezed
       print(paste0(interval, ' data for ', get_si_code(sfn_data)))
       
-      # period_minutes modification especific for daytime intervals calculations
+      # period_minutes modification specific for daytime intervals calculations
       new_period_minutes <- lubridate::as.duration(
         lubridate::hours(int_end - int_start)
       )@.Data / 60
@@ -524,7 +524,7 @@ sfn_metrics <- function(
 #'   \item{mean: Mean value for the selected period}
 #'   \item{sd: Standard deviation for the selected period}
 #'   \item{coverage: Percentage of coverage as the percentage of no NAs in the
-#'   expected legth of the period, stated by the site timestep}
+#'   expected length of the period, stated by the site timestep}
 #'   \item{q*: q95 by default. Quantile value for the selected period. Quantiles to
 #'   calculate are stated in the probs argument}
 #'   \item{accumulated: Accumulated value on the selected period}
@@ -598,7 +598,7 @@ sfn_metrics <- function(
 #' \itemize{
 #'   \item{mean: mean of variable (tree or environmental variable) for the
 #'         given period. NAs are removed}
-#'   \item{sd: standard deviation of the variable for the givn period. NAs are
+#'   \item{sd: standard deviation of the variable for the given period. NAs are
 #'         removed}
 #'   \item{coverage: Data coverage percentage (percentage of measures without
 #'         NAs)}
@@ -1213,7 +1213,7 @@ metrics_tidyfier <- function(
     dplyr::filter(.data$si_code %in% sites_codes)
   
   
-  # we start modifing the sapflow data
+  # we start modifying the sapflow data
   whole_data <- sapf_data %>%
     purrr::map(.sapflow_tidy) %>%
   

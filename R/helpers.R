@@ -4,7 +4,7 @@
 #'
 #' This helper function calculates the coverage percentage in a vector, and is
 #' designed to be used inside a dplyr summarise statement. It calculates the
-#' coverage as the percentage of no NAs in the expected lenght of the summarising
+#' coverage as the percentage of no NAs in the expected length of the summarising
 #' period stated by the timestep.
 #'
 #' @param x a vector, usually a variable in the sapflow or environmental data.
@@ -157,7 +157,7 @@ min_time <- function(x, time) {
 #'
 #' The code for this function has been kindly provided by Jacob Nelson in python
 #' (see https://github.com/jnelson18/FluxnetTools/blob/master/FileS3.py) and has
-#' been translated to a tidy data phylosophy in R to be used inside a
+#' been translated to a tidy data philosophy in R to be used inside a
 #' \code{\link[dplyr]{summarise}} statement.
 #'
 #' @section Diurnal centroid algorithm:
@@ -226,7 +226,7 @@ diurnal_centroid <- function(variable) {
 #'
 #' The code for this function has been kindly provided by Jacob Nelson in python
 #' (see https://github.com/jnelson18/FluxnetTools/blob/master/FileS3.py) and has
-#' been translated to a tidy data phylosophy in R to be used inside a
+#' been translated to a tidy data philosophy in R to be used inside a
 #' \code{\link[dplyr]{summarise}} statement.
 #'
 #' @section Normalized diurnal centroid algorithm:
@@ -291,7 +291,7 @@ norm_diurnal_centroid <- function(sapf_var, rad_var) {
 
 #' Timezones dictionary
 #'
-#' Tranforms timezone ISO code to character vector compatible with lubridate and
+#' Transforms timezone ISO code to character vector compatible with lubridate and
 #' POSIXct
 #'
 #' GMT time zones are used, as they are day saving light time (DST) agnostic,
@@ -1302,7 +1302,7 @@ describe_md_variable <- function(variable) {
 #' 
 #' sum for summarise_all aware of POSIX objects
 #' 
-#' @param variable the variable as it is pased to the .fixed_metrics function
+#' @param variable the variable as it is passed to the .fixed_metrics function
 #' @param na.rm logical to pass to na.rm argument from sum
 #' 
 #' @examples 

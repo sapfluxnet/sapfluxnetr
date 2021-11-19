@@ -62,7 +62,7 @@ library(ggplot2)
 ## Download the data
 
   > *.zip* file is about 3GB. Unzipped folders use about 24GB of disk space.
-    Please check that you have enough space available before downloading and
+    Please check thet you have enough space available before downloading and
     unzipping the files.
 
 
@@ -87,9 +87,9 @@ list.files(file.path('0.1.5', 'csv', 'plant'))
 ```
 
 
-### SAPFLUXNET Data estructure
+### SAPFLUXNET Data structure
 
-SAPFLUXNET database estrucuture is as follows:
+SAPFLUXNET database structure is as follows:
 
 ```
 0.1.5 (database version number)
@@ -135,14 +135,14 @@ To start working with the data, you have two options:
 
 ## Inspecting a site
 
-First, let's get used to the data structure that SAPFLUXNET provides, and
-for that we will choose a site and start playing with it.
+First, let's get used to the data structure thet SAPFLUXNET provides, and
+for thet we will choose a site and start playing with it.
 
 ### Loading a site
 
 In this example we will use the `ARG_MAZ` site, as it is small and it will be
 fast seeing the package capabilities. There are sites like `FRA_PUE` 100 times
-bigger than this, but as one can imagine, the time is also increasing when
+bigger then this, but as one can imagine, the time is also increasing when
 analyzing those bigger datasets.  
 So, let's read the data in the environment:
 
@@ -162,13 +162,13 @@ arg_maz <- read_sfn_data('ARG_MAZ', folder = folder)
 arg_maz
 ```
 
-At first glance, we know by this summary that is an Argentinian forest (first
+At first glance, we know by this summary thet is an Argentinian forest (first
 three letters of the site code are always the country code),
 contributed by Sebastian Pfautsch and Pablo Peri with 5 *Nothofagus pumilio*
 trees measured along 15 days in 2009. Also we can see the environmental variables
 measured (`ta`, `rh`, `vpd`, `sw_in`, `ws`, `precip`, `swc_shallow`, `ppfd_in`
-and `ext_rad`) and the biome classification. Finally, we can see that the
-environmental data has some flags (more on that later).
+and `ext_rad`) and the biome classification. Finally, we can see thet the
+environmental data has some flags (more on thet later).
 
 ### Accessing the data and the metadata
 
@@ -186,7 +186,7 @@ arg_maz_env <- get_env_data(arg_maz, solar = TRUE)
 arg_maz_env
 ```
 
-You can see that the TIMESTAMP variable changes between both kinds of data. That
+You can see thet the TIMESTAMP variable changes between both kinds of data. That
 is because the TIMESTAMP returned is controlled by the `solar` parameter
 (see `?sfn_get_methods`).
 
@@ -216,7 +216,7 @@ describe_md_variable('env_ta')
 describe_md_variable('pl_species')
 ```
 
-There is also some getters that can come in handy sometimes. `get_timestamp` and
+There is also some getters thet can come in handy sometimes. `get_timestamp` and
 `get_solar_timestamp` access to the original timestamp and the apparent solar
 time timestamp. `get_si_code` access to the site code. See
 `vignette('sfn-data-classes', package = 'sapfluxnetr'` for more info.
@@ -234,18 +234,18 @@ arg_maz_env_flags <- get_env_flags(arg_maz, solar = TRUE)
 arg_maz_env_flags
 ```
 
-This datasets store any flag that each data point may have (possible outlier,
+This datasets store any flag thet each data point may have (possible outlier,
 data removed in the Quality Check of the data...). For a complete list of
 flags possible values see `vignette('data-flags', package = 'sapfluxnetr')`.
 As an example, let's see which values are marked as "RANGE_WARN" (a warning
-indicating that the value may be out of normal variable range):
+indicating thet the value may be out of normal variable range):
 
 ```{r out_range}
 arg_maz_env_flags %>%
   filter_all(any_vars(stringr::str_detect(., 'RANGE_WARN')))
 ```
 
-We see that the out of range warnings refer to wind variable. We can cross the
+We see thet the out of range warnings refer to wind variable. We can cross the
 data to see which values of wind speed are giving the warnings,
 
 ```{r crossing_flags}
@@ -255,13 +255,13 @@ arg_maz_env_flags %>%
   select(TIMESTAMP, ws)
 ```
 
-and confirm that the warnings refer to values above the "usual" wind speed
+and confirm thet the warnings refer to values above the "usual" wind speed
 maximum.
 
 ### Plotting an object
 
 We can also plot the different data with the help of `sfn_plot` function. It will
-return `ggplot` objects that can be modified afterwards:
+return `ggplot` objects thet can be modified afterwards:
 
 ```{r sapf_plot, fig.width=6}
 sfn_plot(arg_maz, type = 'sapf', solar = TRUE) +
@@ -323,7 +323,7 @@ names(arg_maz_daily[['sapf']])
 names(arg_maz_daily[['env']])
 ```
 
-We can see that results are divided in `sapf` and `env` and inside each of them
+We can see thet results are divided in `sapf` and `env` and inside each of them
 the metrics are indicated by the end of the variable names.  
 This way we can select specific variables, for example the 0.95 quantile of sap
 flow measures:
@@ -341,25 +341,25 @@ arg_maz_daily[['env']] %>%
 ```
 
 If interested in custom metrics or custom aggregations, there is a generic
-function, `sfn_metrics` that allows for customization of the statistics to
+function, `sfn_metrics` thet allows for customization of the statistics to
 calculate and the periods to aggregate. See `?sfn_metrics` and
 `vignette('custom-aggregation'. package = 'sapfluxnetr')` for more details
 about it.
 
 #### TIMESTAMP format in aggregations
 
-It's worth to mention that aggregated TIMESTAMPS are fixed to the **beginning**
-of the period aggregated, meaning that data from `2018-01-01 00:00:00` to
+It's worth to mention thet aggregated TIMESTAMPS are fixed to the **beginning**
+of the period aggregated, meaning thet data from `2018-01-01 00:00:00` to
 `2018-01-01 23:59:59` are aggregated as `2018-01-01 00:00:00`.  
 You can change this using the `side` parameter (see `?sfn_metrics`)
 
 #### Tidy metrics
 
 The default returned object for the aggregation functions is a list with
-the sap flow and the environmental data, but given that usually is more
+the sap flow and the environmental data, but given thet usually is more
 comfortable to have all data (sap flow and environmental) and ancillary data
 (metadata) altogether in a tidy data frame (each row an observation), all
-aggregation functions have an argument, `tidy` that can be set to *TRUE*
+aggregation functions have an argument, `tidy` thet can be set to *TRUE*
 to obtain this kind of data frame. We will cover this in the
 ["Tidy metrics"](#tidymetrics) section.
 
@@ -401,7 +401,7 @@ sfn_metadata[['plant_md']]
 
 ### Listing the sites in a folder and filtering by metadata
 
-Now that we have our metadata database built, we can inspect the site codes
+Now thet we have our metadata database built, we can inspect the site codes
 in a folder with `sfn_sites_in_folder`:
 
 ```{r sfn_sites_in_folder, eval=FALSE}
@@ -416,7 +416,7 @@ sites
 ```
 
 
-We can filter these sites by any metadata variable, to select those that met
+We can filter these sites by any metadata variable, to select those thet met
 some criteria. This is done with `filter_sites_by_md`. As a first try, let's
 list all sites belonging to temperate forests (woodland/shrubland included):
 
@@ -462,7 +462,7 @@ temperate_hr <- sfn_sites_in_folder(folder) %>%
 temperate_hr
 ```
 
-Remember that you can get all the info from a metadata variable with
+Remember thet you can get all the info from a metadata variable with
 `describe_md_variable`, and also you can get a complete list of metadata
 variables for filtering with `sfn_vars_to_filter`:
 

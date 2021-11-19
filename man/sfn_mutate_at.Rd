@@ -30,7 +30,7 @@ Port of \code{\link[dplyr]{mutate_at}} for \code{sfn_data} and
 `sfn_mutate_at` function will maintain the same number of rows before and
 after the modification, so it is well suited to modify variables without
 creating TIMESTAMP gaps (i.e. to change variable units). For mutating
-indiviudal variables see \code{\link{sfn_mutate}}.
+individual variables see \code{\link{sfn_mutate}}.
 }
 \examples{
 library(dplyr)

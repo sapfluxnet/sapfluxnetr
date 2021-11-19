@@ -160,6 +160,6 @@ When inspecting the solar `TIMESTAMP` variable, timezone declared is UTC:
 get_solar_timestamp(ARG_TRE) %>% tz()
 ```
 
-This is so because solar timestamp is only refered to the sun position in the
+This is so because solar timestamp is only referred to the sun position in the
 sky, rendering the timezone useless in this case. So UTC was chosen as timezone
 to be able to join and compare global data.

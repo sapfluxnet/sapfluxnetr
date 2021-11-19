@@ -122,7 +122,7 @@ set of fixed arguments.
 \itemize{
   \item{mean: mean of variable (tree or environmental variable) for the
         given period. NAs are removed}
-  \item{sd: standard deviation of the variable for the givn period. NAs are
+  \item{sd: standard deviation of the variable for the given period. NAs are
         removed}
   \item{coverage: Data coverage percentage (percentage of measures without
         NAs)}

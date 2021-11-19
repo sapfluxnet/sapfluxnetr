@@ -72,7 +72,7 @@ read_sfn_data <- function(site_codes, folder = '.') {
 #' @param folder Route to the folder containing the data. Default to working
 #'   directory
 #'
-#' @param .dry Dry run. Metadata is loaded and readed, but no cache is written
+#' @param .dry Dry run. Metadata is loaded and read, but no cache is written
 #' 
 #' @examples
 #' # Let's access the data in "folder". This typically is the folder where the
@@ -213,12 +213,12 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'
 #' \code{filter_sites_by_md} function takes logical expressions for the metadata
 #' variables (i.e. \code{pl_sens_meth == 'HR'}), and list the sites that met
-#' the criteria from thos supplied
+#' the criteria from those supplied
 #'
 #' \code{.join} argument indicates how sites must be filtered between metadata
 #' classes. \code{'and'} indicates only sites meeting all conditions for all
 #' metadata classes are returned. \code{'or'} indicates all sites meeting any
-#' condition between classes are returned. For two or more filtes of the same
+#' condition between classes are returned. For two or more filters of the same
 #' metadata class, they are combined as 'and'.
 #' 
 #' @param sites character vector with the sites codes to filter, generally the
@@ -272,7 +272,7 @@ read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
 #'   .join = 'or'
 #' )
 #'
-#' @return A character vector with the sites fullfilling the premises
+#' @return A character vector with the sites fulfilling the premises
 #'
 #' @export
 

@@ -19,18 +19,18 @@ result of \code{\link{sfn_sites_in_folder}}}
 \item{.join}{Character indicating how to filter the sites, see details.}
 }
 \value{
-A character vector with the sites fullfilling the premises
+A character vector with the sites fulfilling the premises
 }
 \description{
 \code{filter_sites_by_md} function takes logical expressions for the metadata
 variables (i.e. \code{pl_sens_meth == 'HR'}), and list the sites that met
-the criteria from thos supplied
+the criteria from those supplied
 }
 \details{
 \code{.join} argument indicates how sites must be filtered between metadata
 classes. \code{'and'} indicates only sites meeting all conditions for all
 metadata classes are returned. \code{'or'} indicates all sites meeting any
-condition between classes are returned. For two or more filtes of the same
+condition between classes are returned. For two or more filters of the same
 metadata class, they are combined as 'and'.
 }
 \examples{
