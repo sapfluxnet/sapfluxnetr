@@ -15,8 +15,8 @@ tags:
 - sap flow
 - sap flux
 links:
-  url_docs: ''
-  url_source: ''
+  url_docs: 'http://sapfluxnet.creaf.cat/sapfluxnetr/'
+  url_source: 'https://github.com/sapfluxnet/sapfluxnetr'
 requirements: R (>= 4.0.0)
 description: Access, modify, aggregate and plot data from the 'Sapfluxnet' project
   (http://sapfluxnet.creaf.cat), the first global database of sap flow measurements.
