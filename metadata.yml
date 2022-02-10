@@ -1,0 +1,26 @@
+id: sapfluxnetr
+emf_type: softwork
+emf_public: true
+emf_automatized: true
+emf_reproducible: false
+emf_draft: false
+emf_data_type: emf_data_product
+data_repository: ''
+model_repository: ''
+nodes: ''
+authors: vgranda
+tags:
+- R
+- data
+- sap flow
+- sap flux
+links:
+  url_docs: ''
+  url_source: ''
+requirements: R (>= 4.0.0)
+description: Access, modify, aggregate and plot data from the 'Sapfluxnet' project
+  (http://sapfluxnet.creaf.cat), the first global database of sap flow measurements.
+date: '2022-02-10'
+date_lastmod: '2022-02-10'
+title: sapfluxnetr
+
