@@ -8,7 +8,10 @@ emf_data_type: emf_data_product
 data_repository: ''
 model_repository: ''
 nodes: ''
-authors: vgranda
+authors:
+- vgranda
+- rpoyatos
+- vflo
 tags:
 - R
 - data
@@ -18,8 +21,7 @@ links:
   url_docs: 'http://sapfluxnet.creaf.cat/sapfluxnetr/'
   url_source: 'https://github.com/sapfluxnet/sapfluxnetr'
 requirements: R (>= 4.0.0)
-description: Access, modify, aggregate and plot data from the 'Sapfluxnet' project
-  (http://sapfluxnet.creaf.cat), the first global database of sap flow measurements.
+description: Access, modify, aggregate and plot data from the 'Sapfluxnet' project, the first global database of sap flow measurements.
 date: '2022-02-10'
 date_lastmod: '2022-02-10'
 title: sapfluxnetr
