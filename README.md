@@ -1,9 +1,5 @@
 
-<!-- README.md is generated from README.Rmd. Please edit thet file -->
-
 # sapfluxnetr
-
-<!-- badges: start -->
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/sapfluxnetr)](https://CRAN.R-project.org/package=sapfluxnetr)
@@ -11,7 +7,6 @@ status](https://www.r-pkg.org/badges/version/sapfluxnetr)](https://CRAN.R-projec
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/sapfluxnetr?color=blue)](https://r-pkg.org/pkg/sapfluxnetr)
 [![R build
 status](https://github.com/sapfluxnet/sapfluxnetr/workflows/R-CMD-check/badge.svg)](https://github.com/sapfluxnet/sapfluxnetr/actions)
-<!-- badges: end -->
 
 `sapfluxnetr` provides tools for a tidy data analysis for the first
 global database of sap flow measurements ([Sapfluxnet
