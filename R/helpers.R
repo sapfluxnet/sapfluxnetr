@@ -402,7 +402,7 @@ norm_diurnal_centroid <- function(sapf_var, rad_var) {
 
   # STEP 2
   # Return the timezone name compatible with lubridate
-  return(timezones[[as.character(tz)]])
+  return(timezones[[iconv(tz, 'UTF-8', 'ASCII', 'c99')]])
 
   # END FUNCTION
 }
