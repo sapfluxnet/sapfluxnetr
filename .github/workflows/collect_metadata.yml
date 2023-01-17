@@ -22,9 +22,9 @@ jobs:
       EMF_DATABASE: ${{ secrets.EMF_DATABASE}}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-r@v2
 
       - name: Install system dependencies
         run: |
@@ -38,7 +38,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Restore R package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
