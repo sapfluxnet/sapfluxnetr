@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 1 # run each OSs and R versions one by one, to avoid blocking some APIs
+      max-parallel: 5
       matrix:
         config:
           - {os: macos-latest,   r: 'release'}
