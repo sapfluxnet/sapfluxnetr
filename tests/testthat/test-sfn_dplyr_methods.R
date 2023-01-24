@@ -63,10 +63,22 @@ test_that("sfn_filter returns correct results", {
 
   expect_s4_class(multi_sfn_filter_3, 'sfn_data_multi')
   expect_length(multi_sfn_filter_3, 0)
+  # In this case there are 4 warnings, each site and the final one. Since new
+  # versions of testthat (Config/testthat/edition: 3), all extra warnings are
+  # not captured as before so we need to nest expectations of warnings
   expect_warning(
-    sfn_filter(
-      multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 1998, 1999)
-    ), 'Any sites met the criteria, returning empty results'
+    expect_warning(
+      expect_warning(
+        expect_warning(
+          sfn_filter(
+            multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 1998, 1999)
+          ), "Any sites met the criteria, returning empty results"
+        ),
+        "AUS_CAN_ST2_MIX"
+      ),
+      "ARG_MAZ"
+    ),
+    "ARG_TRE"
   )
 
   expect_s4_class(multi_sfn_filter_4, 'sfn_data_multi')
@@ -79,10 +91,16 @@ test_that("sfn_filter returns correct results", {
 
   expect_s4_class(multi_sfn_filter_5, 'sfn_data_multi')
   expect_length(multi_sfn_filter_5, 1)
+  # In this case there are 2 warnings, each ARG_* site. Since new
+  # versions of testthat (Config/testthat/edition: 3), all extra warnings are
+  # not captured as before so we need to nest expectations of warnings
   expect_warning(
-    sfn_filter(
-      multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 2006, 2007)
-    ), 'ARG_TRE'
+    expect_warning(
+      sfn_filter(
+        multi_sfn_2, dplyr::between(lubridate::year(TIMESTAMP), 2006, 2007)
+      ), 'ARG_MAZ'
+    ),
+    'ARG_TRE'
   )
 
 })

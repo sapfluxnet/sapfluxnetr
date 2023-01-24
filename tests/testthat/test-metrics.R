@@ -855,7 +855,7 @@ test_that('.fixed_metrics_funs works', {
 
   .funs <- sapfluxnetr:::.fixed_metrics_funs(probs = c(0.95), TRUE)
 
-  expect_is(.funs, 'list')
+  expect_type(.funs, 'list')
   expect_identical(
     names(.funs),
     c('mean', 'sd', 'coverage', 'q_95', 'accumulated', 'centroid')
@@ -865,7 +865,7 @@ test_that('.fixed_metrics_funs works', {
     probs = c(0.1), FALSE
   )
 
-  expect_is(.funs_no_centroid, 'list')
+  expect_type(.funs_no_centroid, 'list')
   expect_identical(
     names(.funs_no_centroid),
     c('mean', 'sd', 'coverage', 'q_10', 'accumulated')
@@ -1034,22 +1034,22 @@ test_that(".parse_period works as intended", {
   
   skip_on_cran()
   
-  expect_is(sapfluxnetr:::.parse_period("2 days"), 'list')
+  expect_type(sapfluxnetr:::.parse_period("2 days"), 'list')
   expect_equal(sapfluxnetr:::.parse_period("2 days")$freq, 2)
   expect_equal(sapfluxnetr:::.parse_period("2 days")$period, 'days')
-  expect_is(sapfluxnetr:::.parse_period("1 day"), 'list')
+  expect_type(sapfluxnetr:::.parse_period("1 day"), 'list')
   expect_equal(sapfluxnetr:::.parse_period("1 day")$freq, 1)
   expect_equal(sapfluxnetr:::.parse_period("1 day")$period, 'day')
-  expect_is(sapfluxnetr:::.parse_period("2 months"), 'list')
+  expect_type(sapfluxnetr:::.parse_period("2 months"), 'list')
   expect_equal(sapfluxnetr:::.parse_period("2 months")$freq, 2)
   expect_equal(sapfluxnetr:::.parse_period("2 months")$period, 'months')
-  expect_is(sapfluxnetr:::.parse_period("1 month"), 'list')
+  expect_type(sapfluxnetr:::.parse_period("1 month"), 'list')
   expect_equal(sapfluxnetr:::.parse_period("1 month")$freq, 1)
   expect_equal(sapfluxnetr:::.parse_period("1 month")$period, 'month')
-  expect_is(sapfluxnetr:::.parse_period("2 years"), 'list')
+  expect_type(sapfluxnetr:::.parse_period("2 years"), 'list')
   expect_equal(sapfluxnetr:::.parse_period("2 years")$freq, 2)
   expect_equal(sapfluxnetr:::.parse_period("2 years")$period, 'years')
-  expect_is(sapfluxnetr:::.parse_period("1 year"), 'list')
+  expect_type(sapfluxnetr:::.parse_period("1 year"), 'list')
   expect_equal(sapfluxnetr:::.parse_period("1 year")$freq, 1)
   expect_equal(sapfluxnetr:::.parse_period("1 year")$period, 'year')
   

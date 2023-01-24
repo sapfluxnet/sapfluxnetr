@@ -1240,7 +1240,7 @@ metrics_tidyfier <- function(
     
     # order the columns
     dplyr::select(
-      dplyr::starts_with('TIMESTAMP'), .data$si_code, .data$pl_code,
+      dplyr::starts_with('TIMESTAMP'), "si_code", "pl_code",
       dplyr::starts_with('sapflow_'), dplyr::everything()
     )
   
@@ -1420,9 +1420,9 @@ metrics_tidyfier <- function(
       TIMESTAMP = .data$custom_dates
     ) %>%
     dplyr::right_join(
-      night_data[['sapf']] %>% dplyr::select(.data$TIMESTAMP), by = 'TIMESTAMP'
+      night_data[['sapf']] %>% dplyr::select("TIMESTAMP"), by = 'TIMESTAMP'
     ) %>%
-    tidyr::fill(.data$custom_dates) %>%
+    tidyr::fill("custom_dates") %>%
     dplyr::pull(.data$custom_dates) %>%
     lubridate::floor_date(unit = 'hour')
 }

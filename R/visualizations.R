@@ -110,7 +110,7 @@ sfn_plot <- function(
   # if formula, lets do that plot
   if (rlang::is_formula(formula_env)) {
     data <- get_env_data(sfn_data, solar = solar) %>%
-      dplyr::select(.data$TIMESTAMP, !!rlang::get_expr(formula_env)) %>%
+      dplyr::select("TIMESTAMP", !!rlang::get_expr(formula_env)) %>%
       dplyr::inner_join(get_sapf_data(sfn_data, solar = solar), by = 'TIMESTAMP')
 
     units_char <- paste0(
@@ -130,7 +130,11 @@ sfn_plot <- function(
           !dplyr::contains('TIMESTAMP'),
         names_to = 'Tree', values_to = 'Sapflow'
       ) %>%
-      ggplot(aes_(x = formula_env, y = ~Sapflow, colour = ~Tree)) +
+      ggplot(aes(
+        x = .data[[rlang::get_expr(formula_env) %>% as.character]],
+        y = .data$Sapflow,
+        colour = .data$Tree
+      )) +
       geom_point(...) +
       labs(y = paste0('Sapflow [', units_char, ']'),
            subtitle = paste0('Sap flow vs. ', rlang::get_expr(formula_env)),
@@ -154,9 +158,9 @@ sfn_plot <- function(
       res_plot <- data %>%
         # tidyr::gather(key = 'Tree', value = 'Sapflow', -.data$TIMESTAMP) %>%
         tidyr::pivot_longer(
-          -.data$TIMESTAMP, names_to = 'Tree', values_to = 'Sapflow'
+          -"TIMESTAMP", names_to = 'Tree', values_to = 'Sapflow'
         ) %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~Sapflow, colour = ~Tree)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$Sapflow, colour = .data$Tree)) +
         geom_point(...) +
         labs(y = paste0('Sapflow [', units_char, ']')) +
         scale_x_datetime()
@@ -170,10 +174,10 @@ sfn_plot <- function(
       res_plot <- data %>%
         # tidyr::gather(key = 'Variable', value = 'Value', -.data$TIMESTAMP) %>%
         tidyr::pivot_longer(
-          -.data$TIMESTAMP,
+          -"TIMESTAMP",
           names_to = 'Variable', values_to = 'Value'
         ) %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~Value, colour = ~Variable)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$Value, colour = .data$Variable)) +
         geom_point(...) +
         scale_x_datetime()
     }
@@ -189,7 +193,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~ta)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$ta)) +
         geom_point(...) +
         labs(y = 'Air Temperature [C]') +
         scale_x_datetime()
@@ -205,7 +209,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~rh)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$rh)) +
         geom_point(...) +
         labs(y = 'Relative Humidity [%]') +
         scale_x_datetime()
@@ -221,7 +225,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~vpd)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$vpd)) +
         geom_point(...) +
         labs(y = 'VPD [kPa]') +
         scale_x_datetime()
@@ -237,7 +241,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~ppfd_in)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$ppfd_in)) +
         geom_point(...) +
         labs(y = 'PPFD [?]') +
         scale_x_datetime()
@@ -253,7 +257,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~sw_in)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$sw_in)) +
         geom_point(...) +
         labs(y = 'sw [?]') +
         scale_x_datetime()
@@ -269,7 +273,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~netrad)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$netrad)) +
         geom_point(...) +
         labs(y = 'Net Radiation [?]') +
         scale_x_datetime()
@@ -285,7 +289,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~ext_rad)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$ext_rad)) +
         geom_point(...) +
         labs(y = 'Extraterrestrial Radiation [?]') +
         scale_x_datetime()
@@ -301,7 +305,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~ws)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$ws)) +
         geom_col(...) +
         labs(y = 'Wind Speed [m/s]') +
         scale_x_datetime()
@@ -317,7 +321,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~precip)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$precip)) +
         geom_col(...) +
         labs(y = 'Precipitation [?]') +
         scale_x_datetime()
@@ -333,7 +337,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~swc_shallow)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$swc_shallow)) +
         geom_point(...) +
         labs(y = 'SWC Shallow [cm3/cm3]') +
         scale_x_datetime()
@@ -349,7 +353,7 @@ sfn_plot <- function(
 
       # actual plot
       res_plot <- data %>%
-        ggplot(aes_(x = ~TIMESTAMP, y = ~swc_deep)) +
+        ggplot(aes(x = .data$TIMESTAMP, y = .data$swc_deep)) +
         geom_point(...) +
         labs(y = 'SWC Deep [cm3/cm3]') +
         scale_x_datetime()

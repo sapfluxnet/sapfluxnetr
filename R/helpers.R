@@ -1272,7 +1272,7 @@ describe_md_variable <- function(variable) {
         .data$tree, 1, stringr::str_locate(.data$tree, "(Js|Jt)_[0-9]*")[,2]
       )
     ) %>%
-    dplyr::rename(pl_code = .data$tree) %>%
+    dplyr::rename(pl_code = "tree") %>%
 
     # resources consuming step here!
     # now we have the spread (long to wide) the sapflow values by metric,

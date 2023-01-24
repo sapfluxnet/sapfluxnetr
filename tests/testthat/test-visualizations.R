@@ -5,13 +5,22 @@ multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 
 test_that('sfn_plot returns the object correctly', {
 
-  expect_s3_class(sfn_plot(ARG_TRE), 'gg')
-  expect_s3_class(sfn_plot(ARG_TRE, solar = FALSE), 'gg')
-  expect_s3_class(sfn_plot(ARG_TRE, type = 'env'), 'gg')
-  expect_s3_class(sfn_plot(ARG_TRE, type = 'ta'), 'gg')
-  expect_s3_class(sfn_plot(ARG_TRE, type = 'vpd'), 'gg')
-  expect_s3_class(sfn_plot(ARG_TRE, formula_env = ~vpd), 'gg')
-  expect_s3_class(sfn_plot(ARG_TRE, formula_env = ~ext_rad), 'gg')
+  expect_s3_class(normal_plot <- sfn_plot(ARG_TRE), 'gg')
+  expect_s3_class(solar_false_plot <- sfn_plot(ARG_TRE, solar = FALSE), 'gg')
+  expect_s3_class(env_plot <- sfn_plot(ARG_TRE, type = 'env'), 'gg')
+  expect_s3_class(ta_plot <- sfn_plot(ARG_TRE, type = 'ta'), 'gg')
+  expect_s3_class(vpd_plot <- sfn_plot(ARG_TRE, type = 'vpd'), 'gg')
+  expect_s3_class(sapf_vpd_plot <- sfn_plot(ARG_TRE, formula_env = ~vpd), 'gg')
+  expect_s3_class(sapf_ext_rad_plot <- sfn_plot(ARG_TRE, formula_env = ~ext_rad), 'gg')
+  
+  # check the objects are plottable
+  expect_no_error(normal_plot)
+  expect_no_error(solar_false_plot)
+  expect_no_error(env_plot)
+  expect_no_error(ta_plot)
+  expect_no_error(vpd_plot)
+  expect_no_error(sapf_vpd_plot)
+  expect_no_error(sapf_ext_rad_plot)
 
 })
 
@@ -58,5 +67,8 @@ test_that('sfn_plot returns the object correctly when multi', {
   expect_s3_class(multi_plot_7[['ARG_TRE']], 'gg')
   expect_s3_class(multi_plot_7[['ARG_MAZ']], 'gg')
   expect_s3_class(multi_plot_7[['AUS_CAN_ST2_MIX']], 'gg')
+  
+  # TODO
+  # add tests for plottability as in the previous test
 
 })
