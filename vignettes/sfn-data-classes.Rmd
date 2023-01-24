@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 # `sfn_data`
 
-`snf_data` is an S4 class designed for store and interact with sap flow data
+`sfn_data` is an S4 class designed for store and interact with sap flow data
 at individual plant level (not raw data), primarily from Sapfluxnet project
 sites data and metadata.
 

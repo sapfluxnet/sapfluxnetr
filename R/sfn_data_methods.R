@@ -198,7 +198,7 @@ setMethod(
 
     ## Coerce to tibble, fail if not possible
     # sapf_data
-    if (any(class(sapf_data) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
+    if (inherits(sapf_data, c('data.frame', 'tbl_df', 'tbl', 'tbl_ts'))) {
       sapf_data_tbl <- tibble::as_tibble(sapf_data)
     } else {
       stop('sapf_data must be a tibble or an object coercible to one',
@@ -206,7 +206,7 @@ setMethod(
     }
 
     # env_data
-    if (any(class(env_data) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
+    if (inherits(env_data, c('data.frame', 'tbl_df', 'tbl', 'tbl_ts'))) {
       env_data_tbl <- tibble::as_tibble(env_data)
     } else {
       stop('env_data must be a tibble or an object coercible to one',
@@ -214,7 +214,7 @@ setMethod(
     }
 
     # sapf_flags
-    if (any(class(sapf_flags) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
+    if (inherits(sapf_flags, c('data.frame', 'tbl_df', 'tbl', 'tbl_ts'))) {
       sapf_flags_tbl <- tibble::as_tibble(sapf_flags)
     } else {
       stop('sapf_flags must be a tibble or an object coercible to one',
@@ -222,7 +222,7 @@ setMethod(
     }
 
     # env_flags
-    if (any(class(env_flags) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
+    if (inherits(env_flags, c('data.frame', 'tbl_df', 'tbl', 'tbl_ts'))) {
       env_flags_tbl <- tibble::as_tibble(env_flags)
     } else {
       stop('env_flags must be a tibble or an object coercible to one',
@@ -230,7 +230,7 @@ setMethod(
     }
 
     # site_md
-    if (any(class(site_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
+    if (inherits(site_md, c('data.frame', 'tbl_df', 'tbl', 'tbl_ts'))) {
       site_md_tbl <- tibble::as_tibble(site_md)
     } else {
       stop('site_md must be a tibble or an object coercible to one',
@@ -238,7 +238,7 @@ setMethod(
     }
 
     # stand_md
-    if (any(class(stand_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
+    if (inherits(stand_md, c('data.frame', 'tbl_df', 'tbl', 'tbl_ts'))) {
       stand_md_tbl <- tibble::as_tibble(stand_md)
     } else {
       stop('stand_md must be a tibble or an object coercible to one',
@@ -246,7 +246,7 @@ setMethod(
     }
 
     # species_md
-    if (any(class(species_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
+    if (inherits(species_md, c('data.frame', 'tbl_df', 'tbl', 'tbl_ts'))) {
       species_md_tbl <- tibble::as_tibble(species_md)
     } else {
       stop('species_md must be a tibble or an object coercible to one',
@@ -254,7 +254,7 @@ setMethod(
     }
 
     # plant_md
-    if (any(class(plant_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
+    if (inherits(plant_md, c('data.frame', 'tbl_df', 'tbl', 'tbl_ts'))) {
       plant_md_tbl <- tibble::as_tibble(plant_md)
     } else {
       stop('plant_md must be a tibble or an object coercible to one',
@@ -262,7 +262,7 @@ setMethod(
     }
 
     # env_md
-    if (any(class(env_md) %in% c('data.frame', 'tbl_df','tbl', 'tbl_ts'))) {
+    if (inherits(env_md, c('data.frame', 'tbl_df', 'tbl', 'tbl_ts'))) {
       env_md_tbl <- tibble::as_tibble(env_md)
     } else {
       stop('env_md must be a tibble or an object coercible to one',
@@ -1042,7 +1042,7 @@ setMethod(
 #'
 #' @param object sfn_data containing the slot to replace
 #'
-#' @param value object with the data to replace snf_Data slot with
+#' @param value object with the data to replace sfn_data slot with
 #'
 #' @examples
 #' # preparation

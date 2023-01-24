@@ -43,7 +43,7 @@
 \arguments{
 \item{object}{sfn_data containing the slot to replace}
 
-\item{value}{object with the data to replace snf_Data slot with}
+\item{value}{object with the data to replace sfn_data slot with}
 }
 \description{
 Methods to replace the data and metadata from the sfn_data class slots

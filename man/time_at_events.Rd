@@ -29,11 +29,11 @@ statement.
 }
 \section{Functions}{
 \itemize{
-\item \code{max_time}: helper for sfn_metrics
+\item \code{max_time()}: helper for sfn_metrics
 
-\item \code{min_time}: helper for sfn_metrics
+\item \code{min_time()}: helper for sfn_metrics
+
 }}
-
 \examples{
 library(dplyr)
 storms \%>\%

@@ -98,7 +98,7 @@ sfn_plot <- function(
 ) {
 
   # if sfn_data_multi, iterate over the elements
-  if (class(sfn_data) == 'sfn_data_multi') {
+  if (inherits(sfn_data, "sfn_data_multi")) {
     plot_list <- purrr::map(
       sfn_data,
       sfn_plot, type = type, formula_env = formula_env, solar = solar, ...
