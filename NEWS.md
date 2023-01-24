@@ -1,5 +1,6 @@
-# sapfluxnetr (development version)
+# sapfluxnetr 0.1.4
 
+* Fixed warnings due to changes in dependencies `purrr`, `tidyselect` and `ggplot2`
 * Fixed problem in .timezones_dic which gives some timezones as NULL due to
   ASCII characters in env_time_zone metadata variable
 
