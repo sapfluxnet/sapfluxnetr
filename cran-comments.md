@@ -1,5 +1,5 @@
 ## Submission
-Updating package due to upcoming changes in dplyr dependency (1.0.8)
+Updating package due to upcoming changes in depedencies (purrr, tidyselect, ggplot2)
 
 ## Test environments
 * local Arch Linux install, R 4.2.2
