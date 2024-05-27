@@ -668,7 +668,13 @@ daily_metrics <- function(
   metadata = NULL,
   ...
 ) {
-  
+
+  # when tidy is TRUE, ensure metadata is not null before do anything to
+  # catch the error before any computation is done
+  if (isTRUE(tidy) && is.null(metadata)) {
+    stop("If tidy = TRUE, a metadata object (usually the result of read_sfn_metadata) must be provided in the metadata argument")
+  }
+
   # hack for cran tests
   . <- NULL
 
@@ -733,6 +739,12 @@ monthly_metrics <- function(
   metadata = NULL,
   ...
 ) {
+  
+  # when tidy is TRUE, ensure metadata is not null before do anything to
+  # catch the error before any computation is done
+  if (isTRUE(tidy) && is.null(metadata)) {
+    stop("If tidy = TRUE, a metadata object (usually the result of read_sfn_metadata) must be provided in the metadata argument")
+  }
   
   . <- NULL
 
@@ -818,6 +830,12 @@ nightly_metrics <- function(
   ...
 ) {
   
+  # when tidy is TRUE, ensure metadata is not null before do anything to
+  # catch the error before any computation is done
+  if (isTRUE(tidy) && is.null(metadata)) {
+    stop("If tidy = TRUE, a metadata object (usually the result of read_sfn_metadata) must be provided in the metadata argument")
+  }
+  
   . <- NULL
 
   period <- match.arg(period)
@@ -899,6 +917,12 @@ daylight_metrics <- function(
   metadata = NULL,
   ...
 ) {
+  
+  # when tidy is TRUE, ensure metadata is not null before do anything to
+  # catch the error before any computation is done
+  if (isTRUE(tidy) && is.null(metadata)) {
+    stop("If tidy = TRUE, a metadata object (usually the result of read_sfn_metadata) must be provided in the metadata argument")
+  }
   
   . <- NULL
 
@@ -984,6 +1008,12 @@ predawn_metrics <- function(
   ...
 ) {
   
+  # when tidy is TRUE, ensure metadata is not null before do anything to
+  # catch the error before any computation is done
+  if (isTRUE(tidy) && is.null(metadata)) {
+    stop("If tidy = TRUE, a metadata object (usually the result of read_sfn_metadata) must be provided in the metadata argument")
+  }
+  
   . <- NULL
 
   period <- match.arg(period)
@@ -1063,6 +1093,12 @@ midday_metrics <- function(
   metadata = NULL,
   ...
 ) {
+  
+  # when tidy is TRUE, ensure metadata is not null before do anything to
+  # catch the error before any computation is done
+  if (isTRUE(tidy) && is.null(metadata)) {
+    stop("If tidy = TRUE, a metadata object (usually the result of read_sfn_metadata) must be provided in the metadata argument")
+  }
   
   . <- NULL
 

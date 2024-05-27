@@ -684,6 +684,9 @@ test_that('daily metrics examples work', {
   expect_s3_class(test_expr3[['ARG_TRE']][['sapf']], 'tbl')
   expect_s3_class(test_expr4, 'tbl')
 
+  # expected errors
+  expect_error(daily_metrics(ARG_TRE, tidy = TRUE), "metadata argument")
+
 })
 
 test_that('monthly metrics examples work', {
@@ -702,6 +705,9 @@ test_that('monthly metrics examples work', {
   expect_s3_class(test_expr3[['ARG_TRE']][['env']], 'tbl')
   expect_s3_class(test_expr3[['ARG_TRE']][['sapf']], 'tbl')
   expect_s3_class(test_expr4, 'tbl')
+
+  # expected errors
+  expect_error(monthly_metrics(ARG_TRE, tidy = TRUE), "metadata argument")
   
 })
 
@@ -721,6 +727,9 @@ test_that('nightly metrics examples work', {
   expect_s3_class(test_expr3[['ARG_TRE']][['env']], 'tbl')
   expect_s3_class(test_expr3[['ARG_TRE']][['sapf']], 'tbl')
   expect_s3_class(test_expr4, 'tbl')
+
+  # expected errors
+  expect_error(nightly_metrics(ARG_TRE, tidy = TRUE), "metadata argument")
   
 })
 
@@ -740,6 +749,9 @@ test_that('daylight metrics examples work', {
   expect_s3_class(test_expr3[['ARG_TRE']][['env']], 'tbl')
   expect_s3_class(test_expr3[['ARG_TRE']][['sapf']], 'tbl')
   expect_s3_class(test_expr4, 'tbl')
+
+  # expected errors
+  expect_error(daylight_metrics(ARG_TRE, tidy = TRUE), "metadata argument")
   
 })
 
@@ -759,6 +771,9 @@ test_that('predawn metrics examples work', {
   expect_s3_class(test_expr3[['ARG_TRE']][['env']], 'tbl')
   expect_s3_class(test_expr3[['ARG_TRE']][['sapf']], 'tbl')
   expect_s3_class(test_expr4, 'tbl')
+
+  # expected errors
+  expect_error(predawn_metrics(ARG_TRE, tidy = TRUE), "metadata argument")
   
 })
 
@@ -778,6 +793,9 @@ test_that('midday metrics examples work', {
   expect_s3_class(test_expr3[['ARG_TRE']][['env']], 'tbl')
   expect_s3_class(test_expr3[['ARG_TRE']][['sapf']], 'tbl')
   expect_s3_class(test_expr4, 'tbl')
+
+  # expected errors
+  expect_error(midday_metrics(ARG_TRE, tidy = TRUE), "metadata argument")
   
 })
 
