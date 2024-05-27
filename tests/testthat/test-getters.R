@@ -17,6 +17,22 @@ test_that('read_sfn_data load the objects correctly', {
     read_sfn_data(c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'), 'Data'), 'sfn_data_multi'
   )
 
+  # expected errors
+  expect_error(
+    read_sfn_data(c('ARG_TRE', 'ARG_MAZ', 'AUS_CAN_ST2_MIX'), tempdir()),
+    'any file'
+  )
+  expect_error(
+    read_sfn_data(c('ARG_TRE'), tempdir()),
+    'any file'
+  )
+
+})
+
+test_that("read_sfn_data assertions", {
+  expect_error(read_sfn_data(25, 'Data'), "character vector")
+  expect_error(read_sfn_data('ARG_TRE', 25), "character vector")
+  expect_error(read_sfn_data("ARG_TRE", c("Data", "tururu")), "length")
 })
 
 #### as_sfn_data_multi tests ####
@@ -100,13 +116,19 @@ test_that('read_sfn_metadata works as intended', {
   expect_equal(nrow(sfn_metadata[['site_md']]), 3)
 
   sfn_metadata_2 <- read_sfn_metadata(folder)
-  expect_true(is.list(sfn_metadata))
-  expect_length(sfn_metadata, 5)
-  expect_equal(nrow(sfn_metadata[['site_md']]), 3)
+  expect_true(is.list(sfn_metadata_2))
+  expect_length(sfn_metadata_2, 5)
+  expect_equal(nrow(sfn_metadata_2[['site_md']]), 3)
   expect_identical(sfn_metadata, sfn_metadata_2)
 
   unlink(file.path(folder, '.metadata_cache.RData'))
 
+})
+
+test_that("read_sfn_metadata assertions", {
+  expect_error(read_sfn_metadata(25, FALSE), "character vector")
+  expect_error(read_sfn_metadata(c(tempdir(), 'tururu'), FALSE), "length")
+  expect_error(read_sfn_metadata(tempdir(), 25), "logical")
 })
 
 #### filter_sites_by_md tests ####
@@ -159,6 +181,14 @@ test_that('filter_sites_by_md combines all metadata correctly', {
 
   # TODO tests con los diferentes metadatas por separado, tests con combinaciones
 
+})
+
+test_that("filter_sites_by_md assertions", {
+  filters <- list(dplyr::quo(pl_sens_meth == 'HR'))
+  expect_error(filter_sites_by_md(25, sfn_metadata_ex, !!!filters), "character vector")
+  expect_error(filter_sites_by_md(sfn_sites_in_folder('Data'), 25, !!!filters), "read_sfn_metadata")
+  expect_error(filter_sites_by_md(sfn_sites_in_folder('Data'), sfn_metadata_ex[-1], !!!filters), "read_sfn_metadata")
+  expect_error(filter_sites_by_md(sfn_sites_in_folder('Data'), sfn_metadata_ex, !!!filters, .join = "bye"), "should be")
 })
 
 #### sfn_sites_in_folder ####

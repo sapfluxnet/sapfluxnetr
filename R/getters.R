@@ -36,6 +36,20 @@
 #' @export
 
 read_sfn_data <- function(site_codes, folder = '.') {
+
+  # assertions
+  assertthat::assert_that(
+    is.character(site_codes),
+    msg = "site_codes must be a character vector"
+  )
+  assertthat::assert_that(
+    length(folder) == 1,
+    msg = "folder length must be 1"
+  )
+  assertthat::assert_that(
+    is.character(folder),
+    msg = "folder must be a character vector or a path"
+  )
   
   # if more than one site we need to map the call
   if (length(site_codes) > 1) {
@@ -191,6 +205,25 @@ read_sfn_data <- function(site_codes, folder = '.') {
 #' @export
 
 read_sfn_metadata <- function(folder = '.', .write_cache = FALSE) {
+
+  # assertions
+  assertthat::assert_that(
+    length(folder) == 1,
+    msg = "folder length must be 1"
+  )
+  assertthat::assert_that(
+    is.character(folder),
+    msg = "folder must be a character vector or a path"
+  )
+  assertthat::assert_that(
+    length(.write_cache) == 1,
+    msg = ".write_cache length must be 1"
+  )
+  assertthat::assert_that(
+    is.logical(.write_cache),
+    msg = ".write_cache must be a logical (TRUE/FALSE) value"
+  )
+
   
   if (.write_cache) {
     sfn_metadata <- .write_metadata_cache(folder = folder, .dry = FALSE)
@@ -281,6 +314,18 @@ filter_sites_by_md <- function(
   ...,
   .join = c('and', 'or')
 ) {
+
+  # assertions
+  assertthat::assert_that(
+    is.character(sites),
+    msg = "sites must be a character vector"
+  )
+  assertthat::assert_that(
+    is.list(metadata),
+    assertthat::has_name(metadata, c("site_md", "stand_md", "species_md", "plant_md", "env_md")),
+    msg = "metadata object must be a list with the result of read_sfn_metadata"
+  )
+  .join <- match.arg(.join)
   
   # if we accept ... (expressions with logical result) we need to enquo them
   dots <- dplyr::quos(...)
@@ -328,7 +373,6 @@ filter_sites_by_md <- function(
     purrr::keep(~ !is.null(.x))
   
   # get the join argument
-  .join <- match.arg(.join)
   if (.join == 'or') {
     
     # 'or' indicates any site that meet any condition
