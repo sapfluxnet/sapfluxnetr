@@ -23,6 +23,6 @@ links:
 requirements: R (>= 4.0.0)
 description: Access, modify, aggregate and plot data from the 'Sapfluxnet' project, the first global database of sap flow measurements.
 date: '2022-02-10'
-date_lastmod: '2022-02-10'
+date_lastmod: '2025-07-24'
 title: sapfluxnetr
 

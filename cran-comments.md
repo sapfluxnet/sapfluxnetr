@@ -1,8 +1,8 @@
 ## Submission
-Updating package due to upcoming changes in depedencies (purrr, tidyselect, ggplot2)
+Solving CRAN note about missing package anchors
 
 ## Test environments
-* local Arch Linux install, R 4.2.2
+* local Arch Linux install, R 4.5.1
 * windows-latest (release) (on github actions)
 * macOS-latest (release) (on github actions)
 * ubuntu-latest (release) (on github actions)
