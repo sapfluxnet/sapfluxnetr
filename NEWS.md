@@ -1,3 +1,8 @@
+# sapfluxnetr 0.1.5
+
+* Fixed CRAN checks for missing package anchors (Fixes #25)
+* Better error info in metrics (Fixes #23)
+
 # sapfluxnetr 0.1.4
 
 * Fixed warnings due to changes in dependencies `purrr`, `tidyselect` and `ggplot2`
