@@ -31,9 +31,9 @@
 #'   allowed, if it exist in the site provided.
 #'
 #' @section Geometry:
-#'   By default \code{sfn_plot} generates plots using \code{\link{geom_point}}
+#'   By default \code{sfn_plot} generates plots using \code{\link[ggplot2]{geom_point}}
 #'   geometry, except in the case of \code{type = "ws"} and
-#'   \code{type = "precip"} where \code{\link{geom_col}} is used. These
+#'   \code{type = "precip"} where \code{\link[ggplot2]{geom_col}} is used. These
 #'   geometries can be modified with the \code{...} argument.
 #'
 #' @param sfn_data sfn_data object to plot. It can be also an sfn_data_multi
@@ -50,8 +50,8 @@
 #' @param solar Logical indicating if the solar timestamp must be used instead
 #'   of the site timestamp
 #'
-#' @param ... Further arguments to be passed on \code{\link{geom_point}} or
-#'   \code{\link{geom_col}} to modify geometry aesthetics.
+#' @param ... Further arguments to be passed on \code{\link[ggplot2]{geom_point}} or
+#'   \code{\link[ggplot2]{geom_col}} to modify geometry aesthetics.
 #'
 #' @examples
 #' library(ggplot2)

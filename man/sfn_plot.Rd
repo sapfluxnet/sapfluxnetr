@@ -28,8 +28,8 @@ plot vs. the sapflow values. If NULL (default), \code{sfn_plot} will use
 \item{solar}{Logical indicating if the solar timestamp must be used instead
 of the site timestamp}
 
-\item{...}{Further arguments to be passed on \code{\link{geom_point}} or
-\code{\link{geom_col}} to modify geometry aesthetics.}
+\item{...}{Further arguments to be passed on \code{\link[ggplot2]{geom_point}} or
+\code{\link[ggplot2]{geom_col}} to modify geometry aesthetics.}
 }
 \value{
 A ggplot object that can be called to see the plot. If input is an
@@ -72,9 +72,9 @@ Plot the desired data from a site object
 
 \section{Geometry}{
 
-  By default \code{sfn_plot} generates plots using \code{\link{geom_point}}
+  By default \code{sfn_plot} generates plots using \code{\link[ggplot2]{geom_point}}
   geometry, except in the case of \code{type = "ws"} and
-  \code{type = "precip"} where \code{\link{geom_col}} is used. These
+  \code{type = "precip"} where \code{\link[ggplot2]{geom_col}} is used. These
   geometries can be modified with the \code{...} argument.
 }
 
