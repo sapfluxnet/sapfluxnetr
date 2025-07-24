@@ -21,8 +21,7 @@ folder <- 'resources'
 ```
 
 `sapfluxnetr` R package provides tools for a tidy data analysis for the first
-sap flow measurements global database 
-([SAPFLUXNET Project](http://sapfluxnet.creaf.cat)). In this vignette you
+sap flow measurements global database. In this vignette you
 will learn how to install the package, download the data and get started with
 some data metrics.
 

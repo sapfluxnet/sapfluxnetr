@@ -9,8 +9,7 @@ downloads](https://cranlogs.r-pkg.org/badges/grand-total/sapfluxnetr?color=blue)
 status](https://github.com/sapfluxnet/sapfluxnetr/workflows/R-CMD-check/badge.svg)](https://github.com/sapfluxnet/sapfluxnetr/actions)
 
 `sapfluxnetr` provides tools for a tidy data analysis for the first
-global database of sap flow measurements ([Sapfluxnet
-Project](http://sapfluxnet.creaf.cat))
+global database of sap flow measurements
 
 ## Examples
 
@@ -32,6 +31,7 @@ sfn_plot(ARG_MAZ, formula_env = ~ vpd)
 <img src="man/figures/README-example_single-1.png" width="100%" />
 
 ``` r
+
 # daily sapflow and environmental metrics
 arg_maz_metrics <- daily_metrics(
   ARG_MAZ, tidy = TRUE, metadata = sfn_metadata_ex
@@ -57,12 +57,14 @@ multi_sfn <- sfn_data_multi(ARG_TRE, ARG_MAZ, AUS_CAN_ST2_MIX)
 # plotting the individual sites. It creates a list of plots
 plots_list <- sfn_plot(multi_sfn, formula_env = ~ vpd)
 plots_list[['AUS_CAN_ST2_MIX']]
-#> Warning: Removed 526066 rows containing missing values (geom_point).
+#> Warning: Removed 526066 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
 ```
 
 <img src="man/figures/README-example_multi-1.png" width="100%" />
 
 ``` r
+
 # daily sapflow standard metrics
 multi_metrics <- daily_metrics(
   multi_sfn, tidy = TRUE, metadata = sfn_metadata_ex
@@ -77,7 +79,8 @@ multi_metrics <- daily_metrics(
 # plot daily aggregations
 ggplot(multi_metrics, aes(x = vpd_q_95, y = sapflow_q_95, colour = si_code)) +
   geom_point(alpha = 0.2)
-#> Warning: Removed 10966 rows containing missing values (geom_point).
+#> Warning: Removed 10966 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
 ```
 
 <img src="man/figures/README-example_multi-2.png" width="100%" />
